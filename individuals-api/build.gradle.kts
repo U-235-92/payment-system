@@ -71,6 +71,7 @@ openApiGenerate {
 	generatorName.set("java")
 	inputSpec.set("$rootDir/individuals-api/openapi/individuals-api.yaml")
 	outputDir.set("${buildDir}/generated-sources/openapi")
+	ignoreFileOverride.set("$rootDir/individuals-api/openapi/openapi-generator-java-sources.ignore")
 	configOptions.set(mapOf(
 		"skipDefaultInterface" to "false",
 		"useBeanValidation" to "true",

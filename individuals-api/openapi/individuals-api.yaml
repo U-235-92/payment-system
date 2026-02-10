@@ -26,6 +26,7 @@ paths:
         '400':
           description: Ошибка валидации
           content:
+
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
@@ -117,14 +118,20 @@ components:
   schemas:
     UserRegistrationRequest:
       type: object
-      required: [email, password, confirm_password]
+      required: [email, password, confirm_password, username, first_name, last_name]
       properties:
         email:
           type: string
           format: email
+        username:
+          type: string
         password:
           type: string
         confirm_password:
+          type: string
+        first_name:
+          type: string
+        last_name:
           type: string
 
     UserLoginRequest:
@@ -147,12 +154,14 @@ components:
     TokenResponse:
       type: object
       properties:
+        user_id:
+          type: string
         access_token:
           type: string
         refresh_token:
           type: string
         expires_in:
-          type: integer
+          type: long
         token_type:
           type: string
           example: Bearer

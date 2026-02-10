@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+
+  individuals-api:
+    container_name: Individuals-API
+    build:
+      context: .
+      dockerfile: ./individuals-api/Dockerfile
+    image: u23592/individuals-api:latest
+    ports:
+      - 8081:8081
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: container=individuals-api
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    container_name: Postgres
+    image: postgres
+    ports:
+      - 5435:5432
+    networks:
+      - app-network
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: keycloak
+      PGDATA: /var/lib/postgresql/17/docker
+    restart: unless-stopped
+
+  keycloak:
+    container_name: Keycloak
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
+    command:
+      - "start-dev"
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      DB_USER: root
+      DB_PASSWORD: root
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  prometheus:
+    container_name: Prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:9090/-/healthy" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  loki:
+    image: grafana/loki:latest
+    container_name: Loki
+    ports:
+      - "3100:3100"
+    networks:
+      - app-network
+    command: -config.file=/etc/loki/local-config.yaml
+#    volumes:
+#      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:3100/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  grafana:
+    container_name: Grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    depends_on:
+      prometheus:
+        condition: service_healthy
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  keycloak:
+    driver: local

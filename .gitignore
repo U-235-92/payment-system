@@ -6,3 +6,5 @@ build
 ./individuals-api/build
 
 .idea
+
+./individuals-api/src/main/resources/application-secrets.yaml

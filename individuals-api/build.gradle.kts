@@ -16,10 +16,6 @@ java {
 	}
 }
 
-//tasks.jar {
-//	manifest.attributes(mapOf(pair = Pair("Main-Class", "aq.project.IndividualsApiApplication")))
-//}
-
 application {
 	mainClass = "aq.project.IndividualsApiApplication"
 }
@@ -47,32 +43,53 @@ repositories {
 	mavenCentral()
 }
 
+val dependencyVersionMap = mapOf(
+	"feign-core" to "13.6",
+	"feign-jackson" to "13.6",
+	"feign-slf4j" to "13.6",
+	"feign-form-spring" to "3.8.0",
+	"keycloak-admin-client" to "26.0.8",
+	"springdoc-openapi-starter-webmvc-ui" to "2.6.0",
+	"swagger-annotations" to "2.2.41",
+	"okhttp" to "5.3.2",
+	"logging-interceptor" to "5.3.2",
+	"okio" to "3.16.4",
+	"javax-annotation" to "1.3.2",
+	"javax-validation" to "2.0.1.Final",
+	"jsr305" to "3.0.2",
+	"spring-boot-starter-aop" to "4.0.0-M2",
+	"logstash-encoder" to "9.0",
+	"servlet-api" to "4.0.1",
+	"testcontainers" to "2.0.3",
+	"tc-keycloak" to "4.1.1"
+)
+
 dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.core:jackson-core")
 	implementation("com.fasterxml.jackson.core:jackson-annotations")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
-	implementation("io.github.openfeign:feign-core:13.6")
-	implementation("io.github.openfeign:feign-jackson:13.6")
-	implementation("io.github.openfeign:feign-slf4j:13.6")
+	implementation("io.github.openfeign:feign-core:${dependencyVersionMap.getValue("feign-core")}")
+	implementation("io.github.openfeign:feign-jackson:${dependencyVersionMap.getValue("feign-jackson")}")
+	implementation("io.github.openfeign:feign-slf4j:${dependencyVersionMap.getValue("feign-slf4j")}")
 
-	implementation("io.github.openfeign.form:feign-form-spring:3.8.0")
+	implementation("io.github.openfeign.form:feign-form-spring:${dependencyVersionMap.getValue("feign-form-spring")}")
 
-	implementation("org.keycloak:keycloak-admin-client:26.0.8")
+	implementation("org.keycloak:keycloak-admin-client:${dependencyVersionMap.getValue("keycloak-admin-client")}")
 
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${dependencyVersionMap.getValue("springdoc-openapi-starter-webmvc-ui")}")
 
-	implementation("io.swagger.core.v3:swagger-annotations:2.2.41")
+	implementation("io.swagger.core.v3:swagger-annotations:${dependencyVersionMap.getValue("swagger-annotations")}")
 
-	implementation("com.squareup.okhttp3:okhttp:5.3.2")
-	implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
-	implementation("com.squareup.okio:okio:3.16.4")
+	implementation("com.squareup.okhttp3:okhttp:${dependencyVersionMap.getValue("okhttp")}")
+	implementation("com.squareup.okhttp3:logging-interceptor:${dependencyVersionMap.getValue("logging-interceptor")}")
+	implementation("com.squareup.okio:okio:${dependencyVersionMap.getValue("okio")}")
 
-	implementation("javax.annotation:javax.annotation-api:1.3.2")
-	implementation("javax.validation:validation-api:2.0.1.Final")
+	implementation("javax.annotation:javax.annotation-api:${dependencyVersionMap.getValue("javax-annotation")}")
+	implementation("javax.validation:validation-api:${dependencyVersionMap.getValue("javax-validation")}")
 
-	implementation("com.google.code.findbugs:jsr305:3.0.2")
+	implementation("com.google.code.findbugs:jsr305:${dependencyVersionMap.getValue("jsr305")}")
 
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -80,13 +97,13 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.boot:spring-boot-starter-aop:4.0.0-M2")
+	implementation("org.springframework.boot:spring-boot-starter-aop:${dependencyVersionMap.getValue("spring-boot-starter-aop")}")
 
 	implementation("io.micrometer:micrometer-registry-prometheus")
 
-	implementation("net.logstash.logback:logstash-logback-encoder:9.0")
+	implementation("net.logstash.logback:logstash-logback-encoder:${dependencyVersionMap.getValue("logstash-encoder")}")
 
-	compileOnly("javax.servlet:javax.servlet-api:4.0.1")
+	compileOnly("javax.servlet:javax.servlet-api:${dependencyVersionMap.getValue("servlet-api")}")
 
 	compileOnly("org.projectlombok:lombok")
 
@@ -100,8 +117,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	testImplementation("org.testcontainers:testcontainers:2.0.3")
-	testImplementation("com.github.dasniko:testcontainers-keycloak:4.1.1")
+	testImplementation("org.testcontainers:testcontainers:${dependencyVersionMap.getValue("testcontainers")}")
+	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("tc-keycloak")}")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
@@ -110,7 +127,7 @@ openApiGenerate {
 	generatorName.set("java")
 	library.set("feign")
 	inputSpec.set("$rootDir/individuals-api/openapi/individuals-api.yaml")
-	outputDir.set("${buildDir}/generated-sources/openapi")
+	outputDir.set("${rootDir}/individuals-api/build/generated-sources/openapi")
 	ignoreFileOverride.set("$rootDir/individuals-api/openapi/openapi-generator-java-sources.ignore")
 	configOptions.set(mapOf(
 		"skipDefaultInterface" to "false",

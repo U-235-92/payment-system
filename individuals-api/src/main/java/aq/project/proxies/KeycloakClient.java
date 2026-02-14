@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
@@ -176,19 +174,11 @@ public class KeycloakClient {
     }
 
     private TokenResponse setUserId(TokenResponse tokenResponse, String accessToken) {
-        Matcher matcher = Pattern.compile("\\..+\\.").matcher(accessToken);
-        if(matcher.find()) {
-            tokenResponse.setUserId(extractUserIdFromAccessToken(matcher));
-        } else {
-            Mono.error(new ServiceException("Service error. Error occurred during creating user."));
-        }
-        return tokenResponse;
-    }
-
-    private String extractUserIdFromAccessToken(Matcher matcher) {
-        String payload = matcher.group().substring(1, matcher.group().length() - 1);
+        String payload = accessToken.split("\\.")[1];
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readTree(Base64.getDecoder().decode(payload)).get("sub").asString();
+        String userId = mapper.readTree(Base64.getDecoder().decode(payload)).get("sub").asString();
+        tokenResponse.setUserId(userId);
+        return tokenResponse;
     }
 
     public Mono<TokenResponse> refreshToken(TokenRefreshRequest request) {

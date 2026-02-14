@@ -4,6 +4,7 @@ import aq.project.dto.UserRegistrationRequest;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,6 +46,19 @@ public class UserRegistrationIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .isCreated();
+    }
+
+    @Test
+    @Disabled("Test case connected with no valid admin client credentials")
+    public void testFailCreateWithNoValidAdminClientCredentials() {
+        UserRegistrationRequest request = getValidUserRegistrationRequest();
+        webTestClient.post()
+                .uri("/v1/auth/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
     }
 
     private UserRegistrationRequest getValidUserRegistrationRequest() {

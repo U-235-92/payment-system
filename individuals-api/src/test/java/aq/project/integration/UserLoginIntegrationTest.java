@@ -4,7 +4,6 @@ import aq.project.dto.UserLoginRequest;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +20,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DirtiesContext
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Disabled
 public class UserLoginIntegrationTest {
 
     @Autowired

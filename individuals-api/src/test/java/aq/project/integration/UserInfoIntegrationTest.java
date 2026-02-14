@@ -1,13 +1,12 @@
 package aq.project.integration;
 
-import aq.project.controllers.AuthController;
+import aq.project.controllers.AuthRestControllerV1;
 import aq.project.dto.TokenResponse;
 import aq.project.dto.UserLoginRequest;
 import aq.project.exceptions.IncorrectUserCredentialsException;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,14 +22,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DirtiesContext
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Disabled
 public class UserInfoIntegrationTest {
 
     @Autowired
     private WebTestClient webTestClient;
 
     @Autowired
-    private AuthController authController;
+    private AuthRestControllerV1 authController;
 
     @Container
     private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.CONTAINER;

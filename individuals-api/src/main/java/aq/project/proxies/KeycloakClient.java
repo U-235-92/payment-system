@@ -88,9 +88,15 @@ public class KeycloakClient {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue(form)
                 .retrieve()
+                .onStatus(code -> code.isSameCodeAs(HttpStatus.UNAUTHORIZED), on401AdminLoginErrorResponse())
                 .bodyToMono(Map.class)
                 .flatMap(this::getAdminAccessToken)
                 .doOnSuccess(this::putAdminAccessTokenIntoCache);
+    }
+
+    private Function<ClientResponse, Mono<? extends Throwable>> on401AdminLoginErrorResponse() {
+        return response -> Mono.error(new ServiceException("Service error. " +
+                "Exception occurred during getting admin access token. Check admin client credentials."));
     }
 
     private Mono<String> getAdminAccessToken(Map<String, Object> map) {
@@ -161,12 +167,12 @@ public class KeycloakClient {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(form)
             .retrieve()
-            .onStatus(code -> code.isSameCodeAs(HttpStatus.UNAUTHORIZED), on401ErrorResponse())
+            .onStatus(code -> code.isSameCodeAs(HttpStatus.UNAUTHORIZED), on401UserLoginErrorResponse())
             .bodyToMono(TokenResponse.class)
             .map(tokenResponse -> setUserId(tokenResponse, tokenResponse.getAccessToken()));
     }
 
-    private Function<ClientResponse, Mono<? extends Throwable>> on401ErrorResponse() {
+    private Function<ClientResponse, Mono<? extends Throwable>> on401UserLoginErrorResponse() {
         return response -> Mono
                 .error(new IncorrectUserCredentialsException("Authentication error. " +
                         "Input credentials are incorrect. " +

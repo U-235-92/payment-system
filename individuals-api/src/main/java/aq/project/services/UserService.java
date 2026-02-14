@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Data
 @Service
@@ -36,7 +37,7 @@ public class UserService {
 
     public Mono<UserInfoResponse> getUserInfo() {
         return ReactiveSecurityContextHolder.getContext()
-                .flatMap(context -> getUserInfo(context.getAuthentication()))
+                .flatMap(context -> getUserInfo(Objects.requireNonNull(context.getAuthentication())))
                 .switchIfEmpty(Mono.error(new LackAccessTokenException("Access denied. Valid access token required.")));
     }
 

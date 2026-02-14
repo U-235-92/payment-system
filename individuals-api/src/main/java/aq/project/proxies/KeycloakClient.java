@@ -20,9 +20,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -39,22 +42,25 @@ public class KeycloakClient {
     private static final String CLIENT_ID = "client_id";
     private static final String GRANT_TYPE = "grant_type";
     private static final String ACCESS_TOKEN = "access_token";
+    private static final String ADMIN_ACCESS_TOKEN = "admin_access_token";
     private static final String CLIENT_SECRET = "client_secret";
     private static final String REFRESH_TOKEN = "refresh_token";
 
     private final WebClient webClient;
 
+    private final Map<String, String> keyCloakPropertiesCache = new HashMap<>();
+
     @Value("${spring.security.oauth2.client.registration.keycloak.client-id}")
     private String clientID;
     @Value("${spring.security.oauth2.client.registration.keycloak.client-secret}")
     private String clientSecret;
-    @Value("${application.keycloak.admin.client_id}")
+    @Value("${application.keycloak.admin.client-id}")
     private String adminClientID;
-    @Value("${application.keycloak.admin.client_secret}")
+    @Value("${application.keycloak.admin.client-secret}")
     private String adminClientSecret;
     @Value("${spring.security.oauth2.client.provider.keycloak.token-uri}")
     private String tokenURI;
-    @Value("${application.keycloak.admin_uri}")
+    @Value("${application.keycloak.admin-uri}")
     private String adminURI;
 
     public Mono<Void> createUser(UserRegistrationRequest request) {
@@ -63,6 +69,18 @@ public class KeycloakClient {
     }
 
     private Mono<String> requestAdminToken() {
+        if(keyCloakPropertiesCache.get(ADMIN_ACCESS_TOKEN) == null) {
+            return requestNewAdminToken();
+        } else {
+            String adminAccessToken = keyCloakPropertiesCache.get(ADMIN_ACCESS_TOKEN);
+            if(isTokenExpired(adminAccessToken)) {
+                return requestNewAdminToken();
+            }
+            return Mono.just(adminAccessToken);
+        }
+    }
+
+    private Mono<String> requestNewAdminToken() {
         LinkedMultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add(CLIENT_ID, adminClientID);
         form.add(CLIENT_SECRET, adminClientSecret);
@@ -73,7 +91,8 @@ public class KeycloakClient {
                 .bodyValue(form)
                 .retrieve()
                 .bodyToMono(Map.class)
-                .flatMap(this::getAdminAccessToken);
+                .flatMap(this::getAdminAccessToken)
+                .doOnSuccess(this::putAdminAccessTokenIntoCache);
     }
 
     private Mono<String> getAdminAccessToken(Map<String, Object> map) {
@@ -81,6 +100,20 @@ public class KeycloakClient {
             return Mono.just((String) map.get(ACCESS_TOKEN));
         }
         return Mono.error(new ServiceException("Service error. Error occurred during getting admin access token."));
+    }
+
+    private void putAdminAccessTokenIntoCache(Object accessToken) {
+        keyCloakPropertiesCache.put(ADMIN_ACCESS_TOKEN, (String) accessToken);
+    }
+
+    private boolean isTokenExpired(String accessToken) {
+        String payload = accessToken.split("\\.")[1];
+        Base64.Decoder decoder = Base64.getDecoder();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(decoder.decode(payload));
+        Instant now = Instant.now();
+        Instant exp = Instant.ofEpochSecond(node.get("exp").asLong());
+        return now.isAfter(exp);
     }
 
     private Mono<Void> createUser(String adminToken, UserRegistrationRequest request) {

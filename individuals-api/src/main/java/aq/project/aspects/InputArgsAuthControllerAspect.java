@@ -4,6 +4,7 @@ import aq.project.dto.TokenRefreshRequest;
 import aq.project.dto.UserLoginRequest;
 import aq.project.dto.UserRegistrationRequest;
 import aq.project.exceptions.InvalidPasswordConfirmException;
+import aq.project.exceptions.InvalidUserRegistrationRequestException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -24,8 +25,8 @@ public class InputArgsAuthControllerAspect {
 
     private final Validator validator;
 
-    @Before("execution(* aq.project.controllers.AuthController.createUser(..)) && args(request)")
-    public void checkUserRegistrationRequestViolations(UserRegistrationRequest request) throws InvalidPasswordConfirmException {
+    @Before("execution(* aq.project.controllers.AuthRestControllerV1.createUser(..)) && args(request)")
+    public void checkUserRegistrationRequestViolations(UserRegistrationRequest request) throws InvalidPasswordConfirmException, InvalidUserRegistrationRequestException {
         Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(request);
         if(!violations.isEmpty()) {
             String msg = "Attempt of registration an user with wrong user data: ";
@@ -34,6 +35,9 @@ public class InputArgsAuthControllerAspect {
             logWarn(warn);
             throw new ConstraintViolationException(violations);
         }
+        if(isBlank(request.getPassword()) || isBlank(request.getUsername()) || isBlank(request.getEmail())) {
+            throw new InvalidUserRegistrationRequestException("Error during registration: email, username, password must no blank");
+        }
         if(!request.getPassword().equals(request.getConfirmPassword())) {
             String msg = "Error during registration: input password and it's confirm do not match";
             logWarn(msg);
@@ -41,7 +45,11 @@ public class InputArgsAuthControllerAspect {
         }
     }
 
-    @Before("execution(* aq.project.controllers.AuthController.requestToken(..)) && args(request)")
+    private boolean isBlank(String string) {
+        return string == null || string.trim().isEmpty();
+    }
+
+    @Before("execution(* aq.project.controllers.AuthRestControllerV1.requestToken(..)) && args(request)")
     public void checkUserLoginRequestViolations(UserLoginRequest request) {
         Set<ConstraintViolation<UserLoginRequest>> violations = validator.validate(request);
         if(!violations.isEmpty()) {
@@ -53,7 +61,7 @@ public class InputArgsAuthControllerAspect {
         }
     }
 
-    @Before("execution(* aq.project.controllers.AuthController.updateToken(..)) && args(request)")
+    @Before("execution(* aq.project.controllers.AuthRestControllerV1.updateToken(..)) && args(request)")
     public void checkRefreshTokenRequestViolations(TokenRefreshRequest request) {
         Set<ConstraintViolation<TokenRefreshRequest>> violations = validator.validate(request);
         if(!violations.isEmpty()) {

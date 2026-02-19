@@ -7,3 +7,4 @@
 
 rootProject.name = "payment-system"
 include("individuals-api")
+include("user-service")

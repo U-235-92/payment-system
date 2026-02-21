@@ -7,7 +7,7 @@ spring:
     web-application-type: reactive
   config:
     import:
-      - application-secrets.yaml
+      - optional:application-secrets.yaml
   security:
     oauth2:
       resourceserver:

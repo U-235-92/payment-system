@@ -46,8 +46,13 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: keycloak
+      POSTGRES_DB: keycloak_db
       PGDATA: /var/lib/postgresql/17/docker
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d keycloak_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   keycloak:
@@ -60,14 +65,13 @@ services:
     command:
       - "start-dev"
     environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_SCHEMA: public
-      DB_USER: root
-      DB_PASSWORD: root
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak_db
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: root
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+#      KC_LOG_LEVEL: DEBUG
     depends_on:
       postgres:
         condition: service_healthy

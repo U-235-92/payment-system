@@ -12,6 +12,17 @@ spring:
     url: jdbc:postgresql://localhost:5435/keycloak_db
     username: root
     driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    baseline-version: 1
+    baseline-on-migrate: true
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    default-schema: person # Дом для Flyway (там хранятся таблицы, специфичные для Flyway)
+    schemas: # Маршруты поиска, где первая схема определяет рабочее пространство имен (квартира [схема] в доме [БД])
+      - person
+      - public
   jpa:
     generate-ddl: false
     hibernate:

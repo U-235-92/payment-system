@@ -3,7 +3,6 @@ plugins {
 	id("open-api-conventions")
 	id("java-common-conventions")
 	id("spring-common-conventions")
-	id("org.flywaydb.flyway") version "12.0.2"
 }
 
 group = "aq.payment-system"
@@ -51,8 +50,4 @@ dependencyManagement {
 	imports {
 		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
 	}
-}
-
-tasks.withType<org.flywaydb.gradle.task.AbstractFlywayTask> {
-	notCompatibleWithConfigurationCache("Accesses Project at execution time")
 }

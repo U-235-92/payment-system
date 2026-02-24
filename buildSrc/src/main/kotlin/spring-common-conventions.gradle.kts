@@ -5,12 +5,24 @@ plugins {
 }
 
 val dependencyVersionMap = mapOf(
+    "feign-core" to "13.6",
+    "feign-jackson" to "13.6",
+    "feign-slf4j" to "13.6",
+    "feign-form-spring" to "3.8.0",
     "logstash-encoder" to "9.0",
     "spring-boot-starter-aop" to "4.0.0-M2",
     "testcontainers" to "2.0.3"
 )
 
 dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.core:jackson-core")
+    implementation("com.fasterxml.jackson.core:jackson-annotations")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("io.github.openfeign:feign-core:${dependencyVersionMap.getValue("feign-core")}")
+    implementation("io.github.openfeign:feign-jackson:${dependencyVersionMap.getValue("feign-jackson")}")
+    implementation("io.github.openfeign:feign-slf4j:${dependencyVersionMap.getValue("feign-slf4j")}")
+    implementation("io.github.openfeign.form:feign-form-spring:${dependencyVersionMap.getValue("feign-form-spring")}")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
     implementation("org.springframework.boot:spring-boot-starter-security")

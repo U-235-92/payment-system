@@ -1,0 +1,26 @@
+openapi: 3.1.0
+
+info:
+  title: User service
+  description: Сервис, осуществляющий управление пользователями и связанными с ними сущностями.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8082/v1
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    IndividualUserDataRequest:
+      $ref: "./components/schemas/individual-user-data-request-schema.yaml"
+    CountryRequest:
+      $ref: "./components/schemas/country-request-schema.yaml"
+    AddressRequest:
+      $ref: "./components/schemas/address-request-schema.yaml"
+    UserRegistrationRequest:
+      $ref: "./components/schemas/user-registration-request-schema.yaml"

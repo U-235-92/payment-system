@@ -52,3 +52,7 @@ dependencyManagement {
 		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
 	}
 }
+
+tasks.withType<org.flywaydb.gradle.task.AbstractFlywayTask> {
+	notCompatibleWithConfigurationCache("Accesses Project at execution time")
+}

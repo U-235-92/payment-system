@@ -1,3 +1,36 @@
+server:
+  port: 8082
 spring:
   application:
     name: user-service
+  config:
+    import:
+      - optional:application-secrets.yaml
+      - optional:application-keycloak.yaml
+      - optional:application-keycloak-secrets.yaml
+  datasource:
+    url: jdbc:postgresql://localhost:5435/keycloak_db
+    username: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${application.keycloak.issuer-uri}
+          jwk-set-uri: ${application.keycloak.issuer-uri}/protocol/openid-connect/certs
+management:
+  metrics:
+    tags:
+      application: user-service
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+

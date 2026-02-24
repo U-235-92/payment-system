@@ -8,6 +8,8 @@ spring:
   config:
     import:
       - optional:application-secrets.yaml
+      - optional:application-keycloak.yaml
+      - optional:application-keycloak-secrets.yaml
   security:
     oauth2:
       resourceserver:
@@ -33,12 +35,3 @@ management:
           - prometheus
           - info
           - health
-application:
-  keycloak:
-    port: 8080
-    server-uri: http://localhost:${application.keycloak.port}
-    issuer-uri: ${application.keycloak.server-uri}/realms/${application.keycloak.realm}
-    admin-uri: ${application.keycloak.server-uri}/admin/realms/${application.keycloak.realm}/users
-    realm: payment-system
-    admin:
-      client_id: payment-system-admin-cli

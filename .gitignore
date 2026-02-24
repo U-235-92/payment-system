@@ -4,7 +4,9 @@
 # Ignore Gradle build output directory
 build
 ./individuals-api/build
+./user-service/build
 
 .idea
 
 ./individuals-api/src/main/resources/application-secrets.yaml
+./user-service/src/main/resources/application-secrets.yaml

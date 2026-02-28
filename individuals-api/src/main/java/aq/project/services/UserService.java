@@ -24,11 +24,11 @@ public class UserService {
 
     public Mono<TokenResponse> createUser(UserRegistrationRequest request) {
         return keycloakClient.createUser(request)
-                .then(tokenService.requestUserToken(request.getEmail(), request.getPassword()));
+                .then(tokenService.login(request.getEmail(), request.getPassword()));
     }
 
-    public Mono<TokenResponse> requestToken(UserLoginRequest request) {
-        return keycloakClient.requestToken(request.getEmail(), request.getPassword());
+    public Mono<TokenResponse> login(UserLoginRequest request) {
+        return keycloakClient.login(request.getEmail(), request.getPassword());
     }
 
     public Mono<TokenResponse> refreshToken(TokenRefreshRequest request) {

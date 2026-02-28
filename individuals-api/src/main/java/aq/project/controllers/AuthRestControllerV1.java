@@ -22,8 +22,8 @@ public class AuthRestControllerV1 {
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<TokenResponse>> requestToken(@RequestBody UserLoginRequest request) {
-        return userService.requestToken(request)
+    public Mono<ResponseEntity<TokenResponse>> login(@RequestBody UserLoginRequest request) {
+        return userService.login(request)
                 .map(token -> ResponseEntity.status(HttpStatus.OK).body(token));
     }
 

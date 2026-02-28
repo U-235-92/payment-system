@@ -13,8 +13,8 @@ public class TokenService {
 
     private final KeycloakClient keycloakClient;
 
-    public Mono<TokenResponse> requestUserToken(String email, String password) {
-        return keycloakClient.requestToken(email, password);
+    public Mono<TokenResponse> login(String email, String password) {
+        return keycloakClient.login(email, password);
     }
 
     public Mono<TokenResponse> refreshToken(TokenRefreshRequest request) {

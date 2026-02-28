@@ -61,7 +61,7 @@ public class MetricAuthControllerAspect {
         }
     }
 
-    @Around(value = "execution(* aq.project.controllers.AuthRestControllerV1.requestToken(..))")
+    @Around(value = "execution(* aq.project.controllers.AuthRestControllerV1.login(..))")
     public Object countLoginAspect(ProceedingJoinPoint pjp) throws Throwable {
         return ((Mono<?>) pjp.proceed())
                 .doOnSuccess(this::incrementSuccessLoginCount)

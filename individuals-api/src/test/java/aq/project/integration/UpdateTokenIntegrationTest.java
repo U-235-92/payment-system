@@ -44,7 +44,7 @@ public class UpdateTokenIntegrationTest {
     @Test
     public void testSuccessUpdateToken() throws IncorrectUserCredentialsException {
         UserLoginRequest loginRequest = new UserLoginRequest().email("alice@post.aq").password("123");
-        TokenResponse tokenResponse = authController.requestToken(loginRequest).block().getBody();
+        TokenResponse tokenResponse = authController.login(loginRequest).block().getBody();
         TokenRefreshRequest tokenRefreshRequest = new TokenRefreshRequest().refreshToken(tokenResponse.getRefreshToken());
         webTestClient.post()
                 .uri("/v1/auth/refresh-token")

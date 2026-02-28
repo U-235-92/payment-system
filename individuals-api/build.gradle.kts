@@ -1,6 +1,5 @@
 plugins {
 	java
-	id("open-api-conventions")
 	id("java-common-conventions")
 	id("spring-common-conventions")
 }
@@ -18,6 +17,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation(project(":common-dto"))
 
 	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-client-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test")
@@ -27,19 +27,4 @@ dependencies {
 
 springBoot {
 	mainClass = "aq.project.IndividualsApiApplication"
-}
-
-sourceSets {
-	main {
-		java {
-			srcDirs("${rootDir}/individuals-api/src/main/java",
-				"${rootDir}/individuals-api/build/generated-sources/openapi/src/main/java")
-		}
-	}
-}
-
-openApiGenerate {
-	inputSpec.set("$rootDir/individuals-api/openapi/individuals-api.yaml")
-	outputDir.set("${rootDir}/individuals-api/build/generated-sources/openapi")
-	ignoreFileOverride.set("$rootDir/individuals-api/openapi/openapi-generator-java-sources.ignore")
 }

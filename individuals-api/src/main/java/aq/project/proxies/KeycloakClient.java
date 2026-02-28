@@ -155,7 +155,7 @@ public class KeycloakClient {
                 "Only unique pair of username and email is valid."));
     }
 
-    public Mono<TokenResponse> requestToken(String email, String password) {
+    public Mono<TokenResponse> login(String email, String password) {
         LinkedMultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add(USERNAME, email);
         form.add(PASSWORD, password);

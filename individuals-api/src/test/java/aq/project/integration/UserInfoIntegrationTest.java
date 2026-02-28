@@ -44,7 +44,7 @@ public class UserInfoIntegrationTest {
         UserLoginRequest userLoginRequest = new UserLoginRequest()
                 .email("alexander@post.aq")
                 .password("123");
-        TokenResponse tokenResponse = authController.requestToken(userLoginRequest)
+        TokenResponse tokenResponse = authController.login(userLoginRequest)
                 .block()
                 .getBody();
         webTestClient.get()

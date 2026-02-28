@@ -49,7 +49,7 @@ public class InputArgsAuthControllerAspect {
         return string == null || string.trim().isEmpty();
     }
 
-    @Before("execution(* aq.project.controllers.AuthRestControllerV1.requestToken(..)) && args(request)")
+    @Before("execution(* aq.project.controllers.AuthRestControllerV1.login(..)) && args(request)")
     public void checkUserLoginRequestViolations(UserLoginRequest request) {
         Set<ConstraintViolation<UserLoginRequest>> violations = validator.validate(request);
         if(!violations.isEmpty()) {

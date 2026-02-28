@@ -21,7 +21,7 @@ public class LogKeycloakClientAspect {
                 .doOnError(this::logError);
     }
 
-    @Around(value = "execution(* aq.project.proxies.KeycloakClient.requestToken(..))")
+    @Around(value = "execution(* aq.project.proxies.KeycloakClient.login(..))")
     public Mono<?> userLoginAspect(ProceedingJoinPoint pjp) throws Throwable {
         String email = (String) pjp.getArgs()[0];
         return ((Mono<?>) pjp.proceed())

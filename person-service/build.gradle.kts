@@ -1,6 +1,5 @@
 plugins {
 	java
-	id("open-api-conventions")
 	id("java-common-conventions")
 	id("spring-common-conventions")
 }
@@ -15,6 +14,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 	implementation("org.flywaydb:flyway-database-postgresql")
+	implementation(project(":common-dto"))
 
 	runtimeOnly("org.postgresql:postgresql")
 
@@ -26,22 +26,7 @@ dependencies {
 }
 
 springBoot {
-	mainClass = "aq.project.UserServiceApplication"
-}
-
-sourceSets { // Источники исходников для проекта
-	main {
-		java {
-			srcDirs("${rootDir}/user-service/src/main/java",
-				"${rootDir}/user-service/build/generated-sources/openapi/src/main/java")
-		}
-	}
-}
-
-openApiGenerate {
-	inputSpec.set("$rootDir/user-service/openapi/user-service-api.yaml") // Источник спецификации
-	outputDir.set("$rootDir/user-service/build/generated-sources/openapi") // Путь куда генерировать исходники
-	ignoreFileOverride.set("$rootDir/user-service/openapi/openapi-generator-java-sources.ignore") // Источник, в котором указано, какие файлы следует игнорировать в процессе генерации исходников
+	mainClass = "aq.project.PersonServiceApplication"
 }
 
 extra["springCloudVersion"] = "2025.1.0"

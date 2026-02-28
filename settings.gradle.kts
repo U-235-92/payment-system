@@ -7,4 +7,5 @@
 
 rootProject.name = "payment-system"
 include("individuals-api")
-include("user-service")
+include("person-service")
+include("common-dto")

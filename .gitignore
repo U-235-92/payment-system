@@ -14,8 +14,9 @@
 .idea
 
 # Ignore application secrets files
+./common-configs/application-keycloak-secrets.yaml
 ./individuals-api/src/main/resources/application-secrets.yaml
 ./individuals-api/src/main/resources/application-keycloak-secrets.yaml
 ./user-service/src/main/resources/application-secrets.yaml
 ./user-service/src/main/resources/application-keycloak-secrets.yaml
-./common-configs/application-keycloak-secrets.yaml
+./common-dto/src/main/resources/application-keycloak-secrets.yaml

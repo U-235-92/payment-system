@@ -1,0 +1,13 @@
+type: object
+properties:
+  user_id:
+    type: string
+  access_token:
+    type: string
+  refresh_token:
+    type: string
+  expires_in:
+    type: long
+  token_type:
+    type: string
+    example: Bearer

@@ -7,6 +7,10 @@ plugins {
 group = "aq.payment-system"
 version = "1.0.0"
 
+val dependencyVersionMap = mapOf(
+	"mapstruct" to "1.6.3"
+)
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-flyway")
@@ -15,6 +19,9 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 	implementation("org.flywaydb:flyway-database-postgresql")
 	implementation(project(":common-dto"))
+	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
+
+	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
 
 	runtimeOnly("org.postgresql:postgresql")
 

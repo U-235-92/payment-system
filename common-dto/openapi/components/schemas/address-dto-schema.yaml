@@ -1,0 +1,14 @@
+type: object
+title: AddressRequest
+required: [country, state, city, address, zip_code]
+properties:
+  country:
+    $ref: "./country-request-schema.yaml"
+  state:
+    type: string
+  city:
+    type: string
+  address:
+    type: string
+  zip_code:
+    type: string

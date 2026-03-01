@@ -1,9 +1,9 @@
 type: object
-title: AddressRequest
+title: AddressDTO
 required: [country, state, city, address, zip_code]
 properties:
   country:
-    $ref: "./country-request-schema.yaml"
+    $ref: "./country-dto-schema.yaml"
   state:
     type: string
   city:

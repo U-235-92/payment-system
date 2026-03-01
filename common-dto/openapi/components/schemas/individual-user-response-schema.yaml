@@ -1,5 +1,17 @@
 type: object
-required: [id]
+required: [id, first_name, last_name, email, phone_number, passport_number, address]
 properties:
   id:
     type: string
+  first_name:
+    type: string
+  last_name:
+    type: string
+  email:
+    type: string
+  phone_number:
+    type: string
+  passport_number:
+    type: string
+  address:
+    $ref: "./address-dto-schema.yaml"

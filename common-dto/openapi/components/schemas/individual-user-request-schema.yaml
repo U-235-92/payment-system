@@ -12,4 +12,4 @@ properties:
   passport_number:
     type: string
   address:
-    $ref: "./address-request-schema.yaml"
+    $ref: "./address-dto-schema.yaml"

@@ -1,5 +1,5 @@
 type: object
-title: CountryRequest
+title: CountryDTO
 required: [name, code]
 properties:
   name:

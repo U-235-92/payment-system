@@ -17,11 +17,11 @@ components:
       bearerFormat: JWT
 
   schemas:
-    IndividualUserRequest:
-      $ref: "./components/schemas/individual-user-request-schema.yaml"
+    IndividualRequest:
+      $ref: "./components/schemas/individual-request-schema.yaml"
 
-    IndividualUserResponse:
-      $ref: "./components/schemas/individual-user-response-schema.yaml"
+    IndividualResponse:
+      $ref: "./components/schemas/individual-response-schema.yaml"
 
     UserRegistrationRequest:
       $ref: "./components/schemas/user-registration-request-schema.yaml"

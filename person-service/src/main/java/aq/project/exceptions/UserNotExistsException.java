@@ -1,7 +1,7 @@
 package aq.project.exceptions;
 
-public class UserExistsException extends Exception {
-    public UserExistsException(String message) {
+public class UserNotExistsException extends Exception {
+    public UserNotExistsException(String message) {
         super(message);
     }
 }

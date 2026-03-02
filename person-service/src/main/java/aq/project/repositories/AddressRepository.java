@@ -1,8 +1,9 @@
 package aq.project.repositories;
 
-import aq.project.entities.Country;
-import aq.project.entities.Individual;
-import org.springframework.data.repository.CrudRepository;
+import aq.project.entities.Address;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CountryRepository extends CrudRepository<Country, Long> {
+import java.util.UUID;
+
+public interface AddressRepository extends JpaRepository<Address, UUID> {
 }

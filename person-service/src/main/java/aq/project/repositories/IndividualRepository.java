@@ -1,7 +1,9 @@
 package aq.project.repositories;
 
-import aq.project.entities.User;
-import org.springframework.data.repository.CrudRepository;
+import aq.project.entities.Individual;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends CrudRepository<User, Integer> {
+import java.util.UUID;
+
+public interface IndividualRepository extends JpaRepository<Individual, UUID> {
 }

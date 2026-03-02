@@ -6,7 +6,7 @@
 # Ignore Gradle build output directory
 .build
 ./individuals-api/build
-./user-service/build
+./person-service/build
 ./common-dto/build
 ./buildSrc/build
 
@@ -17,6 +17,6 @@
 ./common-configs/application-keycloak-secrets.yaml
 ./individuals-api/src/main/resources/application-secrets.yaml
 ./individuals-api/src/main/resources/application-keycloak-secrets.yaml
-./user-service/src/main/resources/application-secrets.yaml
-./user-service/src/main/resources/application-keycloak-secrets.yaml
+./person-service/src/main/resources/application-secrets.yaml
+./person-service/src/main/resources/application-keycloak-secrets.yaml
 ./common-dto/src/main/resources/application-keycloak-secrets.yaml

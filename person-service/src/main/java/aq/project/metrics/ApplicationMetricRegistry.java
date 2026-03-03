@@ -1,12 +1,99 @@
 package aq.project.metrics;
 
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import org.springframework.stereotype.Component;
 
-public class MetricsRegistry implements MeterBinder {
-    
+import java.util.List;
+
+@Component
+public class ApplicationMetricRegistry implements MeterBinder {
+
+    private static final String STATUS = "status";
+    private static final String SUCCESS = "success";
+    private static final String FAIL = "fail";
+    private static final String BY = "by";
+    private static final String ID = "id";
+    private static final String EMAIL = "email";
+
+    private Counter successCreatePersonCounter;
+    private Counter failCreatePersonCounter;
+
+    private Counter successUpdatePersonCounter;
+    private Counter failUpdatePersonCounter;
+
+    private Counter successDeletePersonCounter;
+    private Counter failDeletePersonCounter;
+
+    private Counter successReadPersonByIdCounter;
+    private Counter failReadPersonByIdCounter;
+
+    private Counter successReadPersonByEmailCounter;
+    private Counter failReadPersonByEmailCounter;
+
     @Override
     public void bindTo(MeterRegistry meterRegistry) {
+        successCreatePersonCounter = getCounter("create_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
+        failCreatePersonCounter = getCounter("create_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
 
+        successUpdatePersonCounter = getCounter("update_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
+        failUpdatePersonCounter = getCounter("update_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
+
+        successDeletePersonCounter = getCounter("delete_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
+        failDeletePersonCounter = getCounter("delete_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
+
+        successReadPersonByIdCounter = getCounter("read_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS), Tag.of(BY, ID)));
+        failReadPersonByIdCounter = getCounter("read_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL), Tag.of(BY, ID)));
+
+        successReadPersonByEmailCounter = getCounter("read_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS), Tag.of(BY, EMAIL)));
+        failReadPersonByEmailCounter = getCounter("read_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL), Tag.of(BY, EMAIL)));
+    }
+
+    private Counter getCounter(String metricName, MeterRegistry meterRegistry, Iterable<Tag> tags) {
+        return Counter.builder("person_service." + metricName)
+                .tags(tags)
+                .register(meterRegistry);
+    }
+
+    public void incrementSuccessCreatePersonCounter() {
+        successCreatePersonCounter.increment();
+    }
+
+    public void incrementFailCreatePersonCounter() {
+        failCreatePersonCounter.increment();
+    }
+
+    public void incrementSuccessUpdatePersonCounter() {
+        successUpdatePersonCounter.increment();
+    }
+
+    public void incrementFailUpdatePersonCounter() {
+        failUpdatePersonCounter.increment();
+    }
+
+    public void incrementSuccessDeletePersonCounter() {
+        successDeletePersonCounter.increment();
+    }
+
+    public void incrementFailDeletePersonCounter() {
+        failDeletePersonCounter.increment();
+    }
+
+    public void incrementSuccessReadPersonByIdCounter() {
+        successReadPersonByIdCounter.increment();
+    }
+
+    public void incrementFailReadPersonByIdCounter() {
+        failReadPersonByIdCounter.increment();
+    }
+
+    public void incrementSuccessReadPersonByEmailCounter() {
+        successReadPersonByEmailCounter.increment();
+    }
+
+    public void incrementFailReadPersonByEmailCounter() {
+        failReadPersonByEmailCounter.increment();
     }
 }

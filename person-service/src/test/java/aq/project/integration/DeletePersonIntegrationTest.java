@@ -9,6 +9,7 @@ import aq.project.services.PersonService;
 import aq.project.util.Containers;
 import aq.project.util.PostgresqlTestApplicationProperties;
 import aq.project.util.Stubs;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,5 +73,10 @@ public class DeletePersonIntegrationTest {
     @Test
     public void failDeleteNotExistsPersonTest() {
         assertThrows(UserNotExistsException.class, () -> personService.delete(Stubs.TEST_UNKNOWN_ID));
+    }
+
+    @Test
+    public void failDeleteIncorrectPersonIdTest() {
+        assertThrows(ConstraintViolationException.class, () -> personService.delete(Stubs.TEST_INCORRECT_ID));
     }
 }

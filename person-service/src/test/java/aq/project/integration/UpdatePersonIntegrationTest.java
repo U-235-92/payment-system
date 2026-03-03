@@ -93,6 +93,11 @@ public class UpdatePersonIntegrationTest {
                 personService.update(Stubs.TEST_UNKNOWN_ID, Stubs.getUnknownPerson(getTestCountry())));
     }
 
+    @Test
+    public void failUpdatePersonWithIncorrectIdTest() {
+        assertThrows(ConstraintViolationException.class, () -> personService.update(Stubs.TEST_INCORRECT_ID, Stubs.getAlicePerson(getTestCountry())));
+    }
+
     private Country getTestCountry() {
         return countryRepository.findByCountryCode(Stubs.TEST_COUNTRY_CODE).get();
     }

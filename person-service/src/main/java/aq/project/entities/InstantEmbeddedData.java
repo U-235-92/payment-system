@@ -6,11 +6,13 @@ import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.Instant;
 
 @Getter
 @Setter
+@ToString
 @Embeddable
 public class InstantEmbeddedData {
 

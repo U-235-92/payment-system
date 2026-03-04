@@ -6,12 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name = "addresses", schema = "person")
 public class Address {
 

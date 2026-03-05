@@ -5,13 +5,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.time.Instant;
 
 @Getter
-@Setter
 @ToString
 @Embeddable
 public class InstantEmbeddedData {
@@ -28,5 +26,9 @@ public class InstantEmbeddedData {
         super();
         created = Instant.now();
         updated = Instant.from(created);
+    }
+
+    public void setUpdated(Instant instant) {
+        this.updated = Instant.from(instant);
     }
 }

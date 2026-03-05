@@ -8,7 +8,8 @@ group = "aq.payment-system"
 version = "1.0.0"
 
 val dependencyVersionMap = mapOf(
-	"mapstruct" to "1.6.3"
+	"mapstruct" to "1.6.3",
+	"hibernate-envers" to "7.2.6.Final"
 )
 
 dependencies {
@@ -20,6 +21,7 @@ dependencies {
 	implementation("org.flywaydb:flyway-database-postgresql")
 	implementation(project(":common-dto"))
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
+	implementation("org.hibernate.orm:hibernate-envers:${dependencyVersionMap.getValue("hibernate-envers")}")
 
 	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
 

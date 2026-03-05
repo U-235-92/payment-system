@@ -7,12 +7,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.envers.Audited;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@Audited
 @ToString
 @Table(name = "users", schema = "person")
 public class Person {

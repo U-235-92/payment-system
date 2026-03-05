@@ -7,12 +7,15 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@Audited
 @ToString
 @Table(name = "addresses", schema = "person")
 public class Address {
@@ -24,6 +27,7 @@ public class Address {
     @NotNull
     @JoinColumn(name = "country_id", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Country country;
 
     @NotBlank

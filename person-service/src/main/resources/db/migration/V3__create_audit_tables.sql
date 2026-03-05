@@ -1,0 +1,44 @@
+CREATE TABLE public.revinfo (
+    rev INTEGER PRIMARY KEY,
+    revtstmp BIGINT
+);
+
+CREATE TABLE person.addresses_aud (
+    id UUID NOT NULL,
+    rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
+    revtype SMALLINT,
+    address VARCHAR(128),
+    city VARCHAR(64),
+    created TIMESTAMP(6) WITH TIME ZONE,
+    updated TIMESTAMP(6) WITH TIME ZONE,
+    state VARCHAR(64),
+    zip_code VARCHAR(32),
+    country_id INTEGER,
+    PRIMARY KEY (rev, id)
+);
+
+CREATE TABLE person.individuals_aud (
+    id UUID NOT NULL,
+    rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
+    revtype SMALLINT,
+    email VARCHAR(1024),
+    created TIMESTAMP(6) WITH TIME ZONE,
+    updated TIMESTAMP(6) WITH TIME ZONE,
+    passport_number VARCHAR(32),
+    phone_number VARCHAR(32),
+    PRIMARY KEY (rev, id)
+);
+
+CREATE TABLE person.users_aud (
+    id UUID NOT NULL,
+    rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
+    revtype SMALLINT,
+    first_name VARCHAR(32),
+    created TIMESTAMP(6) WITH TIME ZONE,
+    updated TIMESTAMP(6) WITH TIME ZONE,
+    active BOOLEAN,
+    last_name VARCHAR(32),
+    address_id UUID,
+    individual_id UUID,
+    PRIMARY KEY (rev, id)
+);

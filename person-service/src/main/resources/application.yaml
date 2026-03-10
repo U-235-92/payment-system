@@ -1,42 +1,43 @@
 server:
   port: 8082
+
 spring:
   application:
-    name: user-service
+    name: person-service
+
+  profiles:
+    active:
+      - prod
+
   config:
     import:
       - optional:application-secrets.yaml
       - optional:application-keycloak.yaml
       - optional:application-keycloak-secrets.yaml
-  datasource:
-    url: jdbc:postgresql://localhost:5435/keycloak_db
-    username: root
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    baseline-version: 1
-    baseline-on-migrate: true
-    url: ${spring.datasource.url}
-    user: ${spring.datasource.username}
-    password: ${spring.datasource.password}
-    default-schema: person # Дом для Flyway (там хранятся таблицы, специфичные для Flyway)
-    schemas: # Маршруты поиска, где первая схема определяет рабочее пространство имен (квартира [схема] в доме [БД])
-      - person
-      - public
-  jpa:
-    generate-ddl: false
-    hibernate:
-      ddl-auto: validate
+
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${application.keycloak.issuer-uri}
           jwk-set-uri: ${application.keycloak.issuer-uri}/protocol/openid-connect/certs
+
 management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
+
   metrics:
     tags:
-      application: user-service
+      application: person-service
+
   endpoints:
     web:
       exposure:

@@ -11,8 +11,8 @@ import java.nio.file.Paths
 subprojects {
     tasks {
         copy {
-            from("$rootDir/common-configs/application-keycloak.yaml") // Копируем из корня проекта конфигурационный файл Keycloak
-            from("$rootDir/common-configs/application-keycloak-secrets.yaml") // Аналогично вышеупомянутой инструкции
+            from("$rootDir/common-configs/keycloak/application-keycloak.yaml") // Копируем из корня проекта конфигурационный файл Keycloak
+            from("$rootDir/common-configs/keycloak/application-keycloak-secrets.yaml") // Аналогично вышеупомянутой инструкции
             into("src/main/resources") // В директорию ресурсов каждого из подмодулей
         }
     }

@@ -1,3 +1,11 @@
+CREATE SEQUENCE public.revinfo_seq
+    START WITH 1
+    INCREMENT BY 50
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1
+    NO CYCLE;
+
 CREATE TABLE public.revinfo (
     rev INTEGER PRIMARY KEY,
     revtstmp BIGINT

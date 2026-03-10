@@ -30,13 +30,6 @@ public class PersonRestController {
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(userId);
     }
 
-    @DeleteMapping("/undo-create/{id}")
-    @Timed(value = "person_service.undo_create_person_time")
-    public ResponseEntity<Void> undoCreate(@PathVariable String id) throws UserNotExistsException {
-        personService.delete(id);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/delete/{id}")
     @Timed(value = "person_service.delete_person_time")
     public ResponseEntity<String> delete(@PathVariable String id) throws UserNotExistsException {

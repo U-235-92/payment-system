@@ -1,0 +1,35 @@
+package aq.project.controllers;
+
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@Log4j2
+@Profile("dev")
+@RestController
+@RequestMapping("/dev")
+@RequiredArgsConstructor
+public class DevRestController {
+
+    @Value("${spring.application.name}")
+    private String applicationName;
+
+    private final OpenTelemetry openTelemetry;
+
+    @GetMapping("/check-telemetry")
+    public ResponseEntity<String> checkTelemetry(@RequestBody String name) {
+        Tracer tracer = openTelemetry.getTracer( applicationName + ".hello-tracer");
+        Span span = tracer.spanBuilder("hello-span").startSpan();
+        span.setAttribute("person-name", name);
+        log.info("checkTelemetry method called with param: " + name);
+        span.end();
+//        throw new RuntimeException("Oops...");
+        return ResponseEntity.ok("Hello, " + name);
+    }
+}

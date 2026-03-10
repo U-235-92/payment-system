@@ -1,9 +1,15 @@
 package aq.project.aspects;
 
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -14,26 +20,22 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class PersonControllerLoggingAspect {
 
-    @Pointcut("within(aq.project.controllers.PersonRestController.*)")
-    public void personRestControllerPointcut() {
-    }
+    @Value("${spring.application.name}")
+    private String applicationName;
 
-    @Before("execution(* aq.project.controllers.PersonRestController.*)")
-    public void onControllerMethodsCall(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        String args = Arrays.toString(joinPoint.getArgs());
-        log.info(String.format("Call of method %s with args %s", methodName, args));
-    }
+    private final OpenTelemetry openTelemetry;
 
-    @AfterThrowing(pointcut = "personRestControllerPointcut()", throwing = "exc")
-    public void onExceptionCallMethodLog(JoinPoint joinPoint, Exception exc) {
-        String methodName = joinPoint.getSignature().getName();
-        log.warn(String.format("Exception occurred while executing %s", methodName), exc);
-    }
-
-    @AfterReturning("execution(* aq.project.controllers.PersonRestController.*)")
-    public void onSuccessfulCallMethodLog(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        log.info(String.format("Method %s was completed successfully", methodName));
+    @Around("execution(* aq.project.controllers.PersonRestController.*)")
+    public ResponseEntity<?> aroundControllerMethods(ProceedingJoinPoint pjp) throws Throwable {
+        Tracer tracer = openTelemetry.getTracer(applicationName + ".person-controller-tracer");
+        String methodName = pjp.getSignature().getName();
+        String className = pjp.getSignature().getDeclaringType().getName();
+        Span span = tracer.spanBuilder(className + "." + methodName).startSpan();
+        String args = Arrays.toString(pjp.getArgs());
+        log.debug(String.format("Call of method: %s.%s, args: %s", className, methodName, args));
+        ResponseEntity<?> result = (ResponseEntity<?>) pjp.proceed();
+        log.debug(String.format("Method: %s.%s was completed successfully", className, methodName));
+        span.end();
+        return result;
     }
 }

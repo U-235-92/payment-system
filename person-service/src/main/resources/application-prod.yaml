@@ -16,5 +16,6 @@ spring:
       - public
   jpa:
     generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate

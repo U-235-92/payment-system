@@ -23,11 +23,14 @@ public class DevRestController {
     private final OpenTelemetry openTelemetry;
 
     @GetMapping("/check-telemetry")
-    public ResponseEntity<String> checkTelemetry(@RequestBody String name) {
+    public ResponseEntity<String> checkTelemetry(@RequestParam String name) {
         Tracer tracer = openTelemetry.getTracer( applicationName + ".hello-tracer");
         Span span = tracer.spanBuilder("hello-span").startSpan();
         span.setAttribute("person-name", name);
-        log.info("checkTelemetry method called with param: " + name);
+        String traceId = span.getSpanContext().getTraceId();
+        String spanId = span.getSpanContext().getSpanId();
+        String logMessage = String.format("[%s-%s] checkTelemetry method called with param: %s", traceId, spanId, name);
+        log.info(logMessage);
         span.end();
 //        throw new RuntimeException("Oops...");
         return ResponseEntity.ok("Hello, " + name);

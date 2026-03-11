@@ -5,8 +5,10 @@ import aq.project.dto.ErrorDTO;
 import aq.project.exceptions.CountryNotExistsException;
 import aq.project.exceptions.UserExistsException;
 import aq.project.exceptions.UserNotExistsException;
+import aq.project.util.Observability;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -32,62 +34,67 @@ public class PersonRestControllerExceptionHandler {
 
     @ExceptionHandler(UserExistsException.class)
     public ResponseEntity<ErrorDTO> onUserExistsException(UserExistsException e) {
-        logException(e);
         HttpStatus conflict = HttpStatus.CONFLICT;
+        logException(e, conflict);
         return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
     }
 
     @ExceptionHandler(UserNotExistsException.class)
     public ResponseEntity<ErrorDTO> onUserNotExistsException(UserNotExistsException e) {
-        logException(e);
-        HttpStatus conflict = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        logException(e, badRequest);
+        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
     }
 
     @ExceptionHandler(CountryNotExistsException.class)
     public ResponseEntity<ErrorDTO> onCountryNotExistsException(CountryNotExistsException e) {
-        logException(e);
-        HttpStatus conflict = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        logException(e, badRequest);
+        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDTO> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        logException(e);
-        HttpStatus conflict = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        logException(e, badRequest);
+        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDTO> onConstraintViolationException(ConstraintViolationException e) {
-        logException(e);
-        HttpStatus conflict = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        logException(e, badRequest);
+        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorDTO> onMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        logException(e);
-        HttpStatus conflict = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        logException(e, badRequest);
+        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorDTO> onHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        logException(e);
-        HttpStatus conflict = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        logException(e, badRequest);
+        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
     }
 
     private ErrorDTO getErrorDTO(Exception exception, HttpStatus httpStatus, String message) {
         return new ErrorDTO(exception.getClass(), httpStatus.value(), message);
     }
 
-    private void logException(Exception exception) {
+    private void logException(Exception exception, HttpStatus status) {
         Tracer tracer = openTelemetry.getTracer(applicationName + ".exception-tracer");
         Span span = tracer.spanBuilder("exception-span").startSpan();
+        span.setStatus(StatusCode.ERROR, String.format("%d: %s", status.value(), status.getReasonPhrase()));
         span.recordException(exception);
-        String logMessage = String.format("%s occurred at: %s", exception.getClass().getName(), exception.getMessage());
+        String traceId = Observability.getTraceId(span);
+        String spanId = Observability.getSpanId(span);
+        String exceptionClassName = exception.getClass().getSimpleName();
+        String exceptionMessage = exception.getMessage();
+        String logMessage = String.format("[%s-%s] %s occurred at: %s", traceId, spanId, exceptionClassName, exceptionMessage);
         log.warn(logMessage);
         span.end();
     }

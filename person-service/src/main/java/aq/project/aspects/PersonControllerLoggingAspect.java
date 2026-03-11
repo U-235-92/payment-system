@@ -1,7 +1,9 @@
 package aq.project.aspects;
 
+import aq.project.util.Observability;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +33,14 @@ public class PersonControllerLoggingAspect {
         String methodName = pjp.getSignature().getName();
         String className = pjp.getSignature().getDeclaringType().getName();
         Span span = tracer.spanBuilder(className + "." + methodName).startSpan();
-        String args = Arrays.toString(pjp.getArgs());
-        log.debug(String.format("Call of method: %s.%s, args: %s", className, methodName, args));
+        String traceId = Observability.getTraceId(span);
+        String spanId = Observability.getSpanId(span);
+        String beforeCallMethodLogMessage = String.format("[%s-%s] call of method: %s.%s", traceId, spanId, className, methodName);
+        log.debug(beforeCallMethodLogMessage);
         ResponseEntity<?> result = (ResponseEntity<?>) pjp.proceed();
-        log.debug(String.format("Method: %s.%s was completed successfully", className, methodName));
+        String afterCallMethodLogMessage = String.format("[%s-%s] method: %s.%s was completed successfully", traceId, spanId, className, methodName);
+        log.debug(afterCallMethodLogMessage);
+        span.setStatus(StatusCode.OK);
         span.end();
         return result;
     }

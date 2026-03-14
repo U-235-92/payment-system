@@ -1,4 +1,4 @@
-package aq.project.util;
+package aq.project.util.containers;
 
 import org.testcontainers.postgresql.PostgreSQLContainer;
 

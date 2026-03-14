@@ -1,4 +1,4 @@
-package aq.project.util;
+package aq.project.util.configs;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -9,7 +9,5 @@ public abstract class PostgresqlTestApplicationProperties {
         registry.add("spring.datasource.url", container::getJdbcUrl);
         registry.add("spring.datasource.username", container::getUsername);
         registry.add("spring.datasource.password", container::getPassword);
-        registry.add("spring.jpa.generate-ddl", () -> true);
-        registry.add("spring.jpa.show-sql", () -> true);
     }
 }

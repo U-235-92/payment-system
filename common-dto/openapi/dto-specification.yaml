@@ -17,26 +17,27 @@ components:
       bearerFormat: JWT
 
   schemas:
-    IndividualRequest:
-      $ref: "./components/schemas/individual-request-schema.yaml"
 
-    IndividualResponse:
-      $ref: "./components/schemas/individual-response-schema.yaml"
-
-    UserRegistrationRequest:
-      $ref: "./components/schemas/user-registration-request-schema.yaml"
-
-    UserLoginRequest:
-      $ref: "./components/schemas/user-login-request-schema.yaml"
-
-    TokenRefreshRequest:
-      $ref: "./components/schemas/token-refresh-request-schema.yaml"
-
+#    Response schemas
+    IndividualDataResponse:
+      $ref: "./components/schemas/response/individual-data-response-schema.yaml"
     TokenResponse:
-      $ref: "./components/schemas/token-response-schema.yaml"
-
+      $ref: "./components/schemas/response/token-response-schema.yaml"
     UserInfoResponse:
-      $ref: "./components/schemas/user-info-response-schema.yaml"
+      $ref: "./components/schemas/response/user-info-response-schema.yaml"
 
-    ErrorResponse:
-      $ref: "./components/schemas/error-response-schema.yaml"
+#      Request schemas
+    CreateUserRequest:
+      $ref: "./components/schemas/request/create/create-user-request-schema.yaml"
+
+#      Update schemas
+    UpdateUserRequest:
+      $ref: "./components/schemas/request/update/update-user-request-schema.yaml"
+
+#      Login schemas
+    LoginUserRequest:
+      $ref: "./components/schemas/request/login/login-user-request-schema.yaml"
+
+#      Token schemas
+    RefreshTokenRequest:
+      $ref: "./components/schemas/request/token/refresh-token-request-schema.yaml"

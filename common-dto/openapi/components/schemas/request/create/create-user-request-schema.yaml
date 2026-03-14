@@ -1,0 +1,13 @@
+type: object
+required: [username, password, confirm_password, individual_data]
+properties:
+  keycloak_user_id:
+    type: string
+  username:
+    type: string
+  password:
+    type: string
+  confirm_password:
+    type: string
+  individual_data:
+    $ref: "./create-individual-data-request-schema.yaml"

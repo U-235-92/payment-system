@@ -1,7 +1,8 @@
 type: object
-required: [id, first_name, last_name, email, phone_number, passport_number, address]
+title: CreateIndividualDataRequest
+required: [keycloak_user_id, first_name, last_name, email, phone_number, passport_number, address]
 properties:
-  id:
+  keycloak_user_id:
     type: string
   first_name:
     type: string
@@ -14,4 +15,4 @@ properties:
   passport_number:
     type: string
   address:
-    $ref: "./address-dto-schema.yaml"
+    $ref: "../../dto/address-dto-schema.yaml"

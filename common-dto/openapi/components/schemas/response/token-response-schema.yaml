@@ -1,4 +1,5 @@
 type: object
+required: [user_id, access_token, refresh_token, expires_in, token_type]
 properties:
   user_id:
     type: string

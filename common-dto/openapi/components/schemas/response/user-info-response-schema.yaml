@@ -1,0 +1,18 @@
+type: object
+required: [id, keycloak_id, email, roles, created, individual_data]
+properties:
+  id:
+    type: string
+  keycloak_id:
+    type: string
+  email:
+    type: string
+  roles:
+    type: array
+    items:
+      type: string
+  created:
+    type: string
+    format: date-time
+  individual_data:
+    $ref: "./individual-data-response-schema.yaml"

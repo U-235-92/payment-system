@@ -5,7 +5,7 @@ import aq.project.dto.ErrorDTO;
 import aq.project.exceptions.CountryNotExistsException;
 import aq.project.exceptions.UserExistsException;
 import aq.project.exceptions.UserNotExistsException;
-import aq.project.util.Observability;
+import aq.project.util.observability.ObserverUtils;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
@@ -81,6 +81,13 @@ public class PersonRestControllerExceptionHandler {
         return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDTO> onIllegalArgumentException(IllegalArgumentException e) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        logException(e, badRequest);
+        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
+    }
+
     private ErrorDTO getErrorDTO(Exception exception, HttpStatus httpStatus, String message) {
         return new ErrorDTO(exception.getClass(), httpStatus.value(), message);
     }
@@ -90,8 +97,8 @@ public class PersonRestControllerExceptionHandler {
         Span span = tracer.spanBuilder("exception-span").startSpan();
         span.setStatus(StatusCode.ERROR, String.format("%d: %s", status.value(), status.getReasonPhrase()));
         span.recordException(exception);
-        String traceId = Observability.getTraceId(span);
-        String spanId = Observability.getSpanId(span);
+        String traceId = ObserverUtils.getTraceId(span);
+        String spanId = ObserverUtils.getSpanId(span);
         String exceptionClassName = exception.getClass().getSimpleName();
         String exceptionMessage = exception.getMessage();
         String logMessage = String.format("[%s-%s] %s occurred at: %s", traceId, spanId, exceptionClassName, exceptionMessage);

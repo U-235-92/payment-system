@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -38,7 +39,25 @@ public class Individual {
     @Column(name = "phone_number", nullable = false, unique = true, length = 32)
     private String phoneNumber;
 
-    @NotNull
     @Embedded
     private InstantEmbeddedData instantEmbeddedData;
+
+    public Individual() {
+        this.instantEmbeddedData = new InstantEmbeddedData();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Individual that = (Individual) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(passportNumber, that.passportNumber) &&
+                Objects.equals(phoneNumber, that.phoneNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, passportNumber, phoneNumber);
+    }
 }

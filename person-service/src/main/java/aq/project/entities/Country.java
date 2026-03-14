@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @Setter
@@ -30,7 +32,24 @@ public class Country {
     @Column(name = "code", nullable = false, length = 3, unique = true)
     private String code;
 
-    @NotNull
     @Embedded
     private InstantEmbeddedData instantEmbeddedData;
+
+    public Country() {
+        this.instantEmbeddedData = new InstantEmbeddedData();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Country country = (Country) o;
+        return id == country.id &&
+                Objects.equals(name, country.name) &&
+                Objects.equals(code, country.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, code);
+    }
 }

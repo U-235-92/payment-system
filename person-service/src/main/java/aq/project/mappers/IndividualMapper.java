@@ -1,33 +1,55 @@
 package aq.project.mappers;
 
-import aq.project.dto.AddressDTO;
-import aq.project.dto.CountryDTO;
-import aq.project.dto.IndividualRequest;
-import aq.project.dto.IndividualResponse;
+import aq.project.dto.*;
 import aq.project.entities.Address;
 import aq.project.entities.Country;
 import aq.project.entities.Individual;
 import aq.project.entities.Person;
+import aq.project.exceptions.UserNotExistsException;
+import aq.project.repositories.PersonRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class IndividualMapper {
 
+    @Autowired
+    private PersonRepository personRepository;
+
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "individual", expression = "java(toIndividual(request))")
     @Mapping(target = "address", expression = "java(toAddress(request.getAddress()))")
-    public abstract Person toPerson(IndividualRequest request);
+    @Mapping(target = "keycloakId", source = "keycloakUserId")
+    public abstract Person toPerson(CreateIndividualDataRequest request);
 
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "passportNumber", source = "passportNumber")
-    protected abstract Individual toIndividual(IndividualRequest request);
+    protected abstract Individual toIndividual(CreateIndividualDataRequest request);
+
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
+    @Mapping(target = "individual", expression = "java(toIndividual(request))")
+    @Mapping(target = "address", expression = "java(toAddress(request.getAddress()))")
+    @Mapping(target = "keycloakId", source = "keycloakUserId")
+    public abstract Person toPerson(UpdateIndividualDataRequest request) throws UserNotExistsException;
+
+    @Mapping(target = "email", expression = "java(getPersonEmail(request.getKeycloakUserId()))")
+    @Mapping(target = "phoneNumber", source = "phoneNumber")
+    @Mapping(target = "passportNumber", source = "passportNumber")
+    protected abstract Individual toIndividual(UpdateIndividualDataRequest request) throws UserNotExistsException;
+
+    @Named("getPersonEmail")
+    protected String getPersonEmail(String keycloakUserId) throws UserNotExistsException {
+        String msg = String.format("Error occurred during update user. User with keycloakId %s does not exist", keycloakUserId);
+        return personRepository.findEmailByKeycloakId(keycloakUserId).orElseThrow(() -> new UserNotExistsException(msg));
+    }
 
     @Mapping(target = "state", source = "state")
     @Mapping(target = "city", source = "city")
@@ -47,7 +69,7 @@ public abstract class IndividualMapper {
     @Mapping(target = "phoneNumber", expression = "java(person.getIndividual().getPhoneNumber())")
     @Mapping(target = "passportNumber", expression = "java(person.getIndividual().getPassportNumber())")
     @Mapping(target = "address", expression = "java(toAddressDTO(person.getAddress()))")
-    public abstract IndividualResponse toIndividualResponse(Person person);
+    public abstract IndividualDataResponse toIndividualResponse(Person person);
 
     @Named("toStringUUID")
     protected String toStringUUID(UUID uuid) {

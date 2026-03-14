@@ -12,4 +12,10 @@ public interface PersonRepository extends JpaRepository<Person, UUID> {
 
     @Query("SELECT p FROM Person p JOIN p.individual i WHERE i.email = :email")
     Optional<Person> findByEmail(@Param("email") String email);
+
+    @Query("SELECT p FROM Person p WHERE p.keycloakId = :keycloakId")
+    Optional<Person> findByKeycloakId(@Param("keycloakId") String keycloakId);
+
+    @Query("SELECT i.email FROM Person p JOIN p.individual i WHERE p.keycloakId = :keycloakId")
+    Optional<String> findEmailByKeycloakId(@Param("keycloakId") String keycloakId);
 }

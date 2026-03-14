@@ -30,6 +30,8 @@ public class PersonService {
         if(isCountryNotExists(countryCode)) {
             throw new CountryNotExistsException(String.format("Country with code [ %s ] doesn't exist", countryCode));
         }
+        person.setActive(true);
+        person.getAddress().setCountry(countryRepository.findByCountryCode(countryCode).get());
         Person saved = personRepository.save(person);
         return saved.getId().toString();
     }
@@ -39,30 +41,46 @@ public class PersonService {
                 new UserNotExistsException(String.format("User with email [ %s ] doesn't exist", email)));
     }
 
-    public Person getById(String id) throws UserNotExistsException {
-        return findById(id);
+    public Person getByKeycloakId(String keycloakId) throws UserNotExistsException {
+        return findByKeycloakId(keycloakId);
+    }
+
+    public Person getByPersonId(String personId) throws UserNotExistsException {
+        return findByPersonId(personId);
     }
 
     @Transactional
-    public void update(String id, Person from) throws UserNotExistsException, CountryNotExistsException {
+    public void update(Person from) throws UserNotExistsException, CountryNotExistsException {
         String countryCode = from.getAddress().getCountry().getCode();
         if(isCountryNotExists(countryCode)) {
             throw new CountryNotExistsException(String.format("Country with code [ %s ] doesn't exist", countryCode));
         }
-        Person to = findById(id);
+        Person to = findByKeycloakId(from.getKeycloakId());
+        to.getAddress().setCountry(countryRepository.findByCountryCode(countryCode).get());
         PersonMapper.map(from, to);
         personRepository.save(to);
     }
 
     @Transactional
-    public void delete(String id) throws UserNotExistsException {
-        Person person = findById(id);
+    public void deleteByPersonId(String personId) throws UserNotExistsException {
+        Person person = findByPersonId(personId);
         personRepository.delete(person);
     }
 
-    private Person findById(String id) throws UserNotExistsException {
-        return personRepository.findById(UUID.fromString(id)).orElseThrow(() ->
-                new UserNotExistsException(String.format("User with id [ %s ] doesn't exist", id)));
+    @Transactional
+    public void deleteByKeycloakId(String keycloakId) throws UserNotExistsException {
+        Person person = findByKeycloakId(keycloakId);
+        personRepository.delete(person);
+    }
+
+    private Person findByPersonId(String personId) throws UserNotExistsException {
+        return personRepository.findById(UUID.fromString(personId)).orElseThrow(() ->
+                new UserNotExistsException(String.format("User with id [ %s ] doesn't exist", personId)));
+    }
+
+    private Person findByKeycloakId(String keycloakId) throws UserNotExistsException {
+        return personRepository.findByKeycloakId(keycloakId).orElseThrow(() ->
+                new UserNotExistsException(String.format("User with id [ %s ] doesn't exist", keycloakId)));
     }
 
     private boolean isCountryNotExists(String countryCode) {

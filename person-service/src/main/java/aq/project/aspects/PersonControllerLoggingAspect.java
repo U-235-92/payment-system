@@ -1,6 +1,6 @@
 package aq.project.aspects;
 
-import aq.project.util.Observability;
+import aq.project.util.observability.ObserverUtils;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 @Slf4j
 @Aspect
 @Component
@@ -28,20 +26,25 @@ public class PersonControllerLoggingAspect {
     private final OpenTelemetry openTelemetry;
 
     @Around("execution(* aq.project.controllers.PersonRestController.*)")
-    public ResponseEntity<?> aroundControllerMethods(ProceedingJoinPoint pjp) throws Throwable {
+    public ResponseEntity<?> aroundControllerMethods(ProceedingJoinPoint pjp) {
         Tracer tracer = openTelemetry.getTracer(applicationName + ".person-controller-tracer");
         String methodName = pjp.getSignature().getName();
         String className = pjp.getSignature().getDeclaringType().getName();
         Span span = tracer.spanBuilder(className + "." + methodName).startSpan();
-        String traceId = Observability.getTraceId(span);
-        String spanId = Observability.getSpanId(span);
+        String traceId = ObserverUtils.getTraceId(span);
+        String spanId = ObserverUtils.getSpanId(span);
         String beforeCallMethodLogMessage = String.format("[%s-%s] call of method: %s.%s", traceId, spanId, className, methodName);
         log.debug(beforeCallMethodLogMessage);
-        ResponseEntity<?> result = (ResponseEntity<?>) pjp.proceed();
-        String afterCallMethodLogMessage = String.format("[%s-%s] method: %s.%s was completed successfully", traceId, spanId, className, methodName);
-        log.debug(afterCallMethodLogMessage);
-        span.setStatus(StatusCode.OK);
-        span.end();
-        return result;
+        try {
+            ResponseEntity<?> result = (ResponseEntity<?>) pjp.proceed();
+            String afterCallMethodLogMessage = String.format("[%s-%s] method: %s.%s was completed successfully", traceId, spanId, className, methodName);
+            log.debug(afterCallMethodLogMessage);
+            span.setStatus(StatusCode.OK);
+            return result;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        } finally {
+            span.end();
+        }
     }
 }

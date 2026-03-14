@@ -24,14 +24,24 @@ public class PersonServiceMetricsAspect {
         applicationMetricRegistry.incrementFailCreatePersonCounter();
     }
 
-    @After("execution(* aq.project.controllers.PersonRestController.delete(..))")
-    public void onSuccessPersonDelete() {
-        applicationMetricRegistry.incrementSuccessDeletePersonCounter();
+    @After("execution(* aq.project.controllers.PersonRestController.deleteByPersonId(..))")
+    public void onSuccessPersonDeleteByPersonId() {
+        applicationMetricRegistry.incrementSuccessDeletePersonByPersonIdCounter();
     }
 
-    @AfterThrowing("execution(* aq.project.controllers.PersonRestController.delete(..))")
-    public void onFailPersonDelete() {
-        applicationMetricRegistry.incrementFailDeletePersonCounter();
+    @AfterThrowing("execution(* aq.project.controllers.PersonRestController.deleteByPersonId(..))")
+    public void onFailPersonDeleteByPersonId() {
+        applicationMetricRegistry.incrementFailDeletePersonByPersonIdCounter();
+    }
+
+    @After("execution(* aq.project.controllers.PersonRestController.deleteByKeycloakId(..))")
+    public void onSuccessPersonDeleteByKeycloakId() {
+        applicationMetricRegistry.incrementSuccessDeletePersonByKeycloakIdCounter();
+    }
+
+    @AfterThrowing("execution(* aq.project.controllers.PersonRestController.deleteByKeycloakId(..))")
+    public void onFailPersonDeleteByKeycloakId() {
+        applicationMetricRegistry.incrementFailDeletePersonByKeycloakIdCounter();
     }
 
     @After("execution(* aq.project.controllers.PersonRestController.update(..))")
@@ -44,14 +54,24 @@ public class PersonServiceMetricsAspect {
         applicationMetricRegistry.incrementFailUpdatePersonCounter();
     }
 
-    @After("execution(* aq.project.controllers.PersonRestController.getById(..))")
-    public void onSuccessReadPersonById() {
-        applicationMetricRegistry.incrementSuccessReadPersonByIdCounter();
+    @After("execution(* aq.project.controllers.PersonRestController.getByKeycloakId(..))")
+    public void onSuccessReadKeycloakById() {
+        applicationMetricRegistry.incrementSuccessReadPersonByKeycloakIdCounter();
     }
 
-    @AfterThrowing("execution(* aq.project.controllers.PersonRestController.getById(..))")
+    @AfterThrowing("execution(* aq.project.controllers.PersonRestController.getByKeycloakId(..))")
+    public void onFailReadKeycloakById() {
+        applicationMetricRegistry.incrementFailReadPersonByKeycloakIdCounter();
+    }
+
+    @After("execution(* aq.project.controllers.PersonRestController.getByPersonId(..))")
+    public void onSuccessReadPersonById() {
+        applicationMetricRegistry.incrementSuccessReadPersonByPersonIdCounter();
+    }
+
+    @AfterThrowing("execution(* aq.project.controllers.PersonRestController.getByPersonId(..))")
     public void onFailReadPersonById() {
-        applicationMetricRegistry.incrementFailReadPersonByIdCounter();
+        applicationMetricRegistry.incrementFailReadPersonByPersonIdCounter();
     }
 
     @After("execution(* aq.project.controllers.PersonRestController.getByEmail(..))")

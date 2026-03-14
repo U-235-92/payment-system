@@ -3,7 +3,6 @@ package aq.project.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -14,21 +13,19 @@ import java.time.Instant;
 @Embeddable
 public class InstantEmbeddedData {
 
-    @NotNull
     @Column(name = "created", nullable = false)
-    private Instant created;
+    private long created;
 
-    @NotNull
     @Column(name = "updated", nullable = false)
-    private Instant updated;
+    private long updated;
 
     public InstantEmbeddedData() {
         super();
-        created = Instant.now();
-        updated = Instant.from(created);
+        created = Instant.now().toEpochMilli();
+        updated = created;
     }
 
     public void setUpdated(Instant instant) {
-        this.updated = Instant.from(instant);
+        this.updated = Instant.from(instant).toEpochMilli();
     }
 }

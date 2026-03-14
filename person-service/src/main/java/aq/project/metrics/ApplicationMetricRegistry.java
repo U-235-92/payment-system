@@ -24,11 +24,17 @@ public class ApplicationMetricRegistry implements MeterBinder {
     private Counter successUpdatePersonCounter;
     private Counter failUpdatePersonCounter;
 
-    private Counter successDeletePersonCounter;
-    private Counter failDeletePersonCounter;
+    private Counter successDeletePersonByPersonIdCounter;
+    private Counter failDeletePersonByPersonIdCounter;
 
-    private Counter successReadPersonByIdCounter;
-    private Counter failReadPersonByIdCounter;
+    private Counter successDeletePersonByKeycloakIdCounter;
+    private Counter failDeletePersonByKeycloakIdCounter;
+
+    private Counter successReadPersonByKeycloakIdCounter;
+    private Counter failReadPersonByKeycloakIdCounter;
+
+    private Counter successReadPersonByPersonIdCounter;
+    private Counter failReadPersonByPersonIdCounter;
 
     private Counter successReadPersonByEmailCounter;
     private Counter failReadPersonByEmailCounter;
@@ -41,11 +47,17 @@ public class ApplicationMetricRegistry implements MeterBinder {
         successUpdatePersonCounter = getCounter("update_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
         failUpdatePersonCounter = getCounter("update_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
 
-        successDeletePersonCounter = getCounter("delete_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
-        failDeletePersonCounter = getCounter("delete_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
+        successDeletePersonByPersonIdCounter = getCounter("delete_person_by_person_id_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
+        failDeletePersonByPersonIdCounter = getCounter("delete_person_by_person_id_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
 
-        successReadPersonByIdCounter = getCounter("read_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS), Tag.of(BY, ID)));
-        failReadPersonByIdCounter = getCounter("read_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL), Tag.of(BY, ID)));
+        successDeletePersonByKeycloakIdCounter = getCounter("delete_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
+        failDeletePersonByKeycloakIdCounter = getCounter("delete_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
+
+        successReadPersonByKeycloakIdCounter = getCounter("read_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS), Tag.of(BY, ID)));
+        failReadPersonByKeycloakIdCounter = getCounter("read_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, FAIL), Tag.of(BY, ID)));
+
+        successReadPersonByPersonIdCounter = getCounter("read_person_by_person_id_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS), Tag.of(BY, ID)));
+        failReadPersonByPersonIdCounter = getCounter("read_person_by_person_id_count", meterRegistry, List.of(Tag.of(STATUS, FAIL), Tag.of(BY, ID)));
 
         successReadPersonByEmailCounter = getCounter("read_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS), Tag.of(BY, EMAIL)));
         failReadPersonByEmailCounter = getCounter("read_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL), Tag.of(BY, EMAIL)));
@@ -73,20 +85,36 @@ public class ApplicationMetricRegistry implements MeterBinder {
         failUpdatePersonCounter.increment();
     }
 
-    public void incrementSuccessDeletePersonCounter() {
-        successDeletePersonCounter.increment();
+    public void incrementSuccessDeletePersonByPersonIdCounter() {
+        successDeletePersonByPersonIdCounter.increment();
     }
 
-    public void incrementFailDeletePersonCounter() {
-        failDeletePersonCounter.increment();
+    public void incrementFailDeletePersonByPersonIdCounter() {
+        failDeletePersonByPersonIdCounter.increment();
     }
 
-    public void incrementSuccessReadPersonByIdCounter() {
-        successReadPersonByIdCounter.increment();
+    public void incrementSuccessDeletePersonByKeycloakIdCounter() {
+        successDeletePersonByKeycloakIdCounter.increment();
     }
 
-    public void incrementFailReadPersonByIdCounter() {
-        failReadPersonByIdCounter.increment();
+    public void incrementFailDeletePersonByKeycloakIdCounter() {
+        failDeletePersonByKeycloakIdCounter.increment();
+    }
+
+    public void incrementSuccessReadPersonByKeycloakIdCounter() {
+        successReadPersonByKeycloakIdCounter.increment();
+    }
+
+    public void incrementFailReadPersonByKeycloakIdCounter() {
+        failReadPersonByKeycloakIdCounter.increment();
+    }
+
+    public void incrementSuccessReadPersonByPersonIdCounter() {
+        successReadPersonByPersonIdCounter.increment();
+    }
+
+    public void incrementFailReadPersonByPersonIdCounter() {
+        failReadPersonByPersonIdCounter.increment();
     }
 
     public void incrementSuccessReadPersonByEmailCounter() {

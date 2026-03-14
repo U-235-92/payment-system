@@ -35,31 +35,22 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain commonSecurityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/**")
+                .securityMatcher("/v1/person/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .authorizeHttpRequests(customizer -> customizer
+                        .requestMatchers(HttpMethod.POST, "/v1/person/create").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/v1/person/undo-create/*").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/v1/person/delete/*").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/v1/person/update/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/person/get/*").authenticated())
                 .build();
     }
 
     @Bean
     @Order(3)
-    public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) {
-        return http
-                .securityMatcher("/v1/person/**")
-                .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, "/create").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/undo-create/*").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/delete/*").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/update/*").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/get/*").authenticated())
-                .build();
-
-    }
-
-    @Bean
-    @Order(4)
     public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/actuator/**")

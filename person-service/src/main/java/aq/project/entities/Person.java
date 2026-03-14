@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -23,6 +24,11 @@ public class Person {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @NotNull
+    @Column(name = "keycloak_id", nullable = false)
+    @JoinColumn(name = "id", table = "public.user_entity", nullable = false)
+    private String keycloakId;
 
     @NotBlank
     @Size(max = 32)
@@ -47,7 +53,26 @@ public class Person {
     @JoinColumn(name = "individual_id", nullable = false)
     private Individual individual;
 
-    @NotNull
     @Embedded
     private InstantEmbeddedData instantEmbeddedData;
+
+    public Person() {
+        this.instantEmbeddedData = new InstantEmbeddedData();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals(id, person.id) &&
+                Objects.equals(keycloakId, person.keycloakId) &&
+                Objects.equals(firstName, person.firstName) &&
+                Objects.equals(lastName, person.lastName) &&
+                isActive == person.isActive;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, keycloakId, firstName, lastName, isActive);
+    }
 }

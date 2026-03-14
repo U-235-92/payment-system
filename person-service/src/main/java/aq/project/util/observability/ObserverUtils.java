@@ -1,10 +1,10 @@
-package aq.project.util;
+package aq.project.util.observability;
 
 import io.opentelemetry.api.trace.Span;
 
-public final class Observability {
+public final class ObserverUtils {
 
-    private Observability() {};
+    private ObserverUtils() {};
 
     public static String getTraceId(Span span) {
         return span.getSpanContext().getTraceId();

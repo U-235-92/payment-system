@@ -20,12 +20,18 @@ public class PersonServiceValidationAspect {
     @Before("execution(* aq.project.services.PersonService.getByEmail(..)) && args(email)")
     public void checkGetByEmail(@Email String email) {}
 
-    @Before("execution(* aq.project.services.PersonService.getById(..)) && args(id)")
-    public void checkGetById(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String id) {}
+    @Before("execution(* aq.project.services.PersonService.getByKeycloakId(..)) && args(keycloakId)")
+    public void checkGetByKeycloakId(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String keycloakId) {}
 
-    @Before("execution(* aq.project.services.PersonService.update(..)) && args(id, from)")
-    public void checkUpdate(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String id, @Valid Person from) {}
+    @Before("execution(* aq.project.services.PersonService.getByPersonId(..)) && args(personId)")
+    public void checkGetByPersonId(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String personId) {}
 
-    @Before("execution(* aq.project.services.PersonService.delete(..)) && args(id)")
-    public void checkDelete(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String id) {}
+    @Before("execution(* aq.project.services.PersonService.update(..)) && args(from)")
+    public void checkUpdate(@Valid Person from) {}
+
+    @Before("execution(* aq.project.services.PersonService.deleteByPersonId(..)) && args(personId)")
+    public void checkDeleteByPersonId(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String personId) {}
+
+    @Before("execution(* aq.project.services.PersonService.deleteByKeycloakId(..)) && args(keycloakId)")
+    public void checkDeleteByKeycloakId(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String keycloakId) {}
 }

@@ -35,16 +35,17 @@ public class PersonControllerLoggingAspect {
         String spanId = ObserverUtils.getSpanId(span);
         String beforeCallMethodLogMessage = String.format("[%s-%s] call of method: %s.%s", traceId, spanId, className, methodName);
         log.debug(beforeCallMethodLogMessage);
+        ResponseEntity<?> result = null;
         try {
-            ResponseEntity<?> result = (ResponseEntity<?>) pjp.proceed();
+            result = (ResponseEntity<?>) pjp.proceed();
             String afterCallMethodLogMessage = String.format("[%s-%s] method: %s.%s was completed successfully", traceId, spanId, className, methodName);
             log.debug(afterCallMethodLogMessage);
             span.setStatus(StatusCode.OK);
-            return result;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {
             span.end();
         }
+        return result;
     }
 }

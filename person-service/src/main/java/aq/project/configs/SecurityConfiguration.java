@@ -42,10 +42,12 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers(HttpMethod.POST, "/v1/person/create").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/v1/person/undo-create/*").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/v1/person/delete/*").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/v1/person/delete-by-person-id/*").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/v1/person/delete-by-keycloak-id/*").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/v1/person/update/*").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/v1/person/get/*").authenticated())
+                        .requestMatchers(HttpMethod.GET, "/v1/person/get-by-keycloak-id/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/person/get-by-person-id/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/person/get-by-email/*").authenticated())
                 .build();
     }
 

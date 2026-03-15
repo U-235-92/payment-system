@@ -3,6 +3,9 @@ server:
 spring:
   application:
     name: individuals-api
+  profiles:
+    active:
+      - dev
   main:
     web-application-type: reactive
   config:
@@ -14,17 +17,21 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${application.keycloak.issuer-uri}
-          jwk-set-uri: ${application.keycloak.issuer-uri}/protocol/openid-connect/certs
+          issuer-uri: ${keycloak.issuer-uri}
+          jwk-set-uri: ${keycloak.issuer-uri}/protocol/openid-connect/certs
       client:
         provider:
           keycloak:
-            issuer-uri: ${application.keycloak.issuer-uri}
-            token-uri: ${application.keycloak.server-uri}/realms/${application.keycloak.realm}/protocol/openid-connect/token
+            issuer-uri: ${keycloak.issuer-uri}
+            token-uri: ${keycloak.server-uri}/realms/${keycloak.realm}/protocol/openid-connect/token
         registration:
           keycloak:
             client-id: individuals-api
 management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
   metrics:
     tags:
       application: individuals-api
@@ -35,3 +42,11 @@ management:
           - prometheus
           - info
           - health
+application:
+  person-service:
+    uri: http://localhost:8082
+    endpoints:
+      create-person: /api/person/create-person
+      delete-person-by-keycloak-id: /api/person/delete-person-by-keycloak-id/
+      update-person: /api/person/update-person
+      get-person-info-by-keycloak-id: /api/person/get-person-by-keycloak-id/

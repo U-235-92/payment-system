@@ -39,8 +39,10 @@ public class CreatePersonIntegrationTest {
 
     @Autowired
     private PersonService personService;
+
     @Autowired
     private PersonRepository personRepository;
+
     @Autowired
     private CountryRepository countryRepository;
 

@@ -8,9 +8,9 @@ import aq.project.exceptions.UserNotExistsException;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
 import aq.project.services.PersonService;
+import aq.project.util.configs.PostgresqlTestApplicationProperties;
 import aq.project.util.containers.Containers;
 import aq.project.util.entity.Countries;
-import aq.project.util.configs.PostgresqlTestApplicationProperties;
 import aq.project.util.entity.Persons;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
@@ -26,10 +26,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static aq.project.util.entity.Constants.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
 @DirtiesContext
@@ -48,8 +47,6 @@ public class UpdatePersonIntegrationTest {
 
     @Container
     private static final PostgreSQLContainer POSTGRESQL = Containers.POSTGRESQL;
-
-    private String personID;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {

@@ -104,7 +104,6 @@ public class GetPersonIntegrationTest {
         assertThrows(ConstraintViolationException.class, () -> personService.getByKeycloakId(INCORRECT_PERSON_ID));
     }
 
-//    TODO: Необходимо добавить тесты для проверки get по personId! (см. тесты для keycloakId)
     @Test
     public void successfulGetUserByPersonIdTest() throws UserNotExistsException {
         Person person = personService.getByPersonId(alice.getId().toString());

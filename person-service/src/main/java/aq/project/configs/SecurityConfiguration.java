@@ -37,17 +37,17 @@ public class SecurityConfiguration {
     @Order(2)
     public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/v1/person/**")
+                .securityMatcher("/api/person/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, "/v1/person/create").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/v1/person/delete-by-person-id/*").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/v1/person/delete-by-keycloak-id/*").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/v1/person/update/*").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/v1/person/get-by-keycloak-id/*").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/v1/person/get-by-person-id/*").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/v1/person/get-by-email/*").authenticated())
+                        .requestMatchers(HttpMethod.POST, "/api/person/create-person").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/person/delete-person-by-person-id/*").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/person/delete-person-by-keycloak-id/*").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/person/update-person").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/person/get-person-by-keycloak-id/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/person/get-person-by-person-id/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/person/get-person-by-email/*").authenticated())
                 .build();
     }
 

@@ -26,15 +26,17 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityWebFilterChain authControllerSecurityWebFilterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain gatewayUserRestControllerSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
-                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/v1/auth/**"))
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/gateway/api/user/**"))
                 .authorizeExchange(customizer -> customizer
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/registration").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/v1/auth/context").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/refresh-token").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/v1/auth/me").permitAll())
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/create-user").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/login-user").permitAll()
+                        .pathMatchers(HttpMethod.PATCH, "/gateway/api/user/update-user").authenticated()
+                        .pathMatchers(HttpMethod.DELETE, "/gateway/api/user/delete-user-by-keycloak-id/*").authenticated()
+                        .pathMatchers(HttpMethod.DELETE, "/gateway/api/user/delete-user-by-user-id/*").authenticated()
+                        .pathMatchers(HttpMethod.GET, "/gateway/api/user/get-user-info").authenticated()
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/refresh-token").authenticated())
                 .build();
     }
 

@@ -1,6 +1,6 @@
 package aq.project.aspects;
 
-import aq.project.dto.UserRegistrationRequest;
+import aq.project.dto.CreateUserRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -15,13 +15,13 @@ public class LogKeycloakClientAspect {
 
     @Around(value = "execution(* aq.project.proxies.KeycloakClient.createUser(..))")
     public Mono<?> userCreationAspect(ProceedingJoinPoint pjp) throws Throwable {
-        UserRegistrationRequest request = (UserRegistrationRequest) pjp.getArgs()[0];
+        CreateUserRequest createUserRequest = (CreateUserRequest) pjp.getArgs()[0];
         return ((Mono<?>) pjp.proceed())
-                .doOnSuccess(obj -> log.info(String.format("User with email %s was registered successfully.", request.getEmail())))
+                .doOnSuccess(obj -> log.info(String.format("User with email %s was registered successfully.", createUserRequest.getIndividualData().getEmail())))
                 .doOnError(this::logError);
     }
 
-    @Around(value = "execution(* aq.project.proxies.KeycloakClient.login(..))")
+    @Around(value = "execution(* aq.project.proxies.KeycloakClient.loginUser(..))")
     public Mono<?> userLoginAspect(ProceedingJoinPoint pjp) throws Throwable {
         String email = (String) pjp.getArgs()[0];
         return ((Mono<?>) pjp.proceed())

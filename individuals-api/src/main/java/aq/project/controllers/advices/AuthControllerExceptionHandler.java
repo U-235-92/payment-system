@@ -82,6 +82,46 @@ public class AuthControllerExceptionHandler {
         return Mono.just(response);
     }
 
+    @ExceptionHandler(value = LackIndividualsDataException.class)
+    public Mono<ResponseEntity<ErrorDTO>> onLackIndividualsDataException(LackIndividualsDataException exc) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage(), exc);
+        ResponseEntity<ErrorDTO> response = ResponseEntity.status(status).body(errorDTO);
+        return Mono.just(response);
+    }
+
+    @ExceptionHandler(value = CreateUserException.class)
+    public Mono<ResponseEntity<ErrorDTO>> onCreateUserException(CreateUserException exc) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage(), exc);
+        ResponseEntity<ErrorDTO> response = ResponseEntity.status(status).body(errorDTO);
+        return Mono.just(response);
+    }
+
+    @ExceptionHandler(value = UpdateUserException.class)
+    public Mono<ResponseEntity<ErrorDTO>> onUpdateUserException(UpdateUserException exc) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage(), exc);
+        ResponseEntity<ErrorDTO> response = ResponseEntity.status(status).body(errorDTO);
+        return Mono.just(response);
+    }
+
+    @ExceptionHandler(value = DeleteUserException.class)
+    public Mono<ResponseEntity<ErrorDTO>> onDeleteUserException(DeleteUserException exc) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage(), exc);
+        ResponseEntity<ErrorDTO> response = ResponseEntity.status(status).body(errorDTO);
+        return Mono.just(response);
+    }
+
+    @ExceptionHandler(value = GetUserInfoException.class)
+    public Mono<ResponseEntity<ErrorDTO>> onGetUserInfoException(GetUserInfoException exc) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage(), exc);
+        ResponseEntity<ErrorDTO> response = ResponseEntity.status(status).body(errorDTO);
+        return Mono.just(response);
+    }
+
     private ErrorDTO getErrorDTO(HttpStatus httpStatus, String message, Exception exception) {
         return new ErrorDTO(exception.getClass(), httpStatus.value(), message);
     }

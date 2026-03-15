@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class ApplicationMetricsRegistry implements MeterBinder {
 
     private static final String METRIC_PREFIX = "individuals_api.";
-    private static final String METRIC_LOGIN_COUNT = "login.count";
+    private static final String METRIC_LOGIN_COUNT = "loginUser.count";
     private static final String METRIC_REGISTRATION_COUNT = "registration.count";
 
     private static final String STATUS = "status";

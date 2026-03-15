@@ -15,11 +15,11 @@ import reactor.core.publisher.Mono;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class MetricAuthControllerAspect {
+public class MetricApiRestControllerAspect {
 
     private final ApplicationMetricsRegistry applicationMetricsRegistry;
 
-    @Around(value = "execution(* aq.project.controllers.AuthRestControllerV1.*(..))")
+    @Around(value = "execution(* aq.project.controllers.ApiRestController.*(..))")
     public Object requestLatencyAspect(ProceedingJoinPoint pjp) {
         return Mono.just(System.nanoTime()).flatMap(start -> evaluateRequestLatency(start, pjp));
     }
@@ -37,7 +37,7 @@ public class MetricAuthControllerAspect {
         applicationMetricsRegistry.evaluateRequestLatency(start, end);
     }
 
-    @Around(value = "execution(* aq.project.controllers.AuthRestControllerV1.createUser(..))")
+    @Around(value = "execution(* aq.project.controllers.ApiRestController.createUser(..))")
     public Mono<?> createUserAspect(ProceedingJoinPoint pjp) throws Throwable {
         return ((Mono<?>) pjp.proceed())
                 .doOnSuccess(this::incrementSuccessRegistrationAndLoginCounters)
@@ -61,7 +61,7 @@ public class MetricAuthControllerAspect {
         }
     }
 
-    @Around(value = "execution(* aq.project.controllers.AuthRestControllerV1.login(..))")
+    @Around(value = "execution(* aq.project.controllers.ApiRestController.loginUser(..))")
     public Object countLoginAspect(ProceedingJoinPoint pjp) throws Throwable {
         return ((Mono<?>) pjp.proceed())
                 .doOnSuccess(this::incrementSuccessLoginCount)

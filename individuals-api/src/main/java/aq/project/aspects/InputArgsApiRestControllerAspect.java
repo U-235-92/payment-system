@@ -1,10 +1,11 @@
 package aq.project.aspects;
 
-import aq.project.dto.TokenRefreshRequest;
-import aq.project.dto.UserLoginRequest;
-import aq.project.dto.UserRegistrationRequest;
+import aq.project.dto.CreateUserRequest;
+import aq.project.dto.LoginUserRequest;
+import aq.project.dto.RefreshTokenRequest;
 import aq.project.exceptions.InvalidPasswordConfirmException;
 import aq.project.exceptions.InvalidUserRegistrationRequestException;
+import aq.project.exceptions.LackIndividualsDataException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -21,13 +22,13 @@ import java.util.stream.Collectors;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class InputArgsAuthControllerAspect {
+public class InputArgsApiRestControllerAspect {
 
     private final Validator validator;
 
-    @Before("execution(* aq.project.controllers.AuthRestControllerV1.createUser(..)) && args(request)")
-    public void checkUserRegistrationRequestViolations(UserRegistrationRequest request) throws InvalidPasswordConfirmException, InvalidUserRegistrationRequestException {
-        Set<ConstraintViolation<UserRegistrationRequest>> violations = validator.validate(request);
+    @Before("execution(* aq.project.controllers.ApiRestController.createUser(..)) && args(request)")
+    public void checkUserRegistrationRequestViolations(CreateUserRequest createUserRequest) throws InvalidPasswordConfirmException, InvalidUserRegistrationRequestException, LackIndividualsDataException {
+        Set<ConstraintViolation<CreateUserRequest>> violations = validator.validate(createUserRequest);
         if(!violations.isEmpty()) {
             String msg = "Attempt of registration an user with wrong user data: ";
             String details = getConstrainViolationDetails(violations);
@@ -35,10 +36,13 @@ public class InputArgsAuthControllerAspect {
             logWarn(warn);
             throw new ConstraintViolationException(violations);
         }
-        if(isBlank(request.getPassword()) || isBlank(request.getUsername()) || isBlank(request.getEmail())) {
+        if(createUserRequest.getIndividualData() == null) {
+            throw new LackIndividualsDataException("Error during registration: individual data of user is null");
+        }
+        if(isBlank(createUserRequest.getPassword()) || isBlank(createUserRequest.getUsername()) || isBlank(createUserRequest.getIndividualData().getEmail())) {
             throw new InvalidUserRegistrationRequestException("Error during registration: email, username, password must no blank");
         }
-        if(!request.getPassword().equals(request.getConfirmPassword())) {
+        if(!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
             String msg = "Error during registration: input password and it's confirm do not match";
             logWarn(msg);
             throw new InvalidPasswordConfirmException(msg);
@@ -49,11 +53,11 @@ public class InputArgsAuthControllerAspect {
         return string == null || string.trim().isEmpty();
     }
 
-    @Before("execution(* aq.project.controllers.AuthRestControllerV1.login(..)) && args(request)")
-    public void checkUserLoginRequestViolations(UserLoginRequest request) {
-        Set<ConstraintViolation<UserLoginRequest>> violations = validator.validate(request);
+    @Before("execution(* aq.project.controllers.ApiRestController.loginUser(..)) && args(request)")
+    public void checkUserLoginRequestViolations(LoginUserRequest loginUserRequest) {
+        Set<ConstraintViolation<LoginUserRequest>> violations = validator.validate(loginUserRequest);
         if(!violations.isEmpty()) {
-            String msg = "Attempt of login an user with wrong user data: ";
+            String msg = "Attempt of loginUser an user with wrong user data: ";
             String details = getConstrainViolationDetails(violations);
             String warn = msg + details;
             logWarn(warn);
@@ -61,9 +65,9 @@ public class InputArgsAuthControllerAspect {
         }
     }
 
-    @Before("execution(* aq.project.controllers.AuthRestControllerV1.updateToken(..)) && args(request)")
-    public void checkRefreshTokenRequestViolations(TokenRefreshRequest request) {
-        Set<ConstraintViolation<TokenRefreshRequest>> violations = validator.validate(request);
+    @Before("execution(* aq.project.controllers.ApiRestController.updateToken(..)) && args(request)")
+    public void checkRefreshTokenRequestViolations(RefreshTokenRequest refreshTokenRequest) {
+        Set<ConstraintViolation<RefreshTokenRequest>> violations = validator.validate(refreshTokenRequest);
         if(!violations.isEmpty()) {
             String msg = "Attempt of getting new tokens with wrong refresh token input data: ";
             String details = getConstrainViolationDetails(violations);

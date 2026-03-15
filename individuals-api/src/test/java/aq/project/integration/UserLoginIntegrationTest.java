@@ -1,6 +1,6 @@
 package aq.project.integration;
 
-import aq.project.dto.UserLoginRequest;
+import aq.project.dto.LoginUserRequest;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -37,9 +37,9 @@ public class UserLoginIntegrationTest {
     @Test
     public void testSuccessUserLogin() {
         webTestClient.post()
-                .uri("/v1/auth/login")
+                .uri("/v1/auth/loginUser")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new UserLoginRequest().email("alice@post.aq").password("123"))
+                .bodyValue(new LoginUserRequest().email("alice@post.aq").password("123"))
                 .exchange()
                 .expectStatus()
                 .isOk();
@@ -48,9 +48,9 @@ public class UserLoginIntegrationTest {
     @Test
     public void testFailUserLogin() {
         webTestClient.post()
-                .uri("/v1/auth/login")
+                .uri("/v1/auth/loginUser")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new UserLoginRequest().email("novalid@post.aq").password("123"))
+                .bodyValue(new LoginUserRequest().email("novalid@post.aq").password("123"))
                 .exchange()
                 .expectStatus()
                 .isUnauthorized();
@@ -59,9 +59,9 @@ public class UserLoginIntegrationTest {
     @Test
     public void testFailUserLoginWithNullRequestData() {
         webTestClient.post()
-                .uri("/v1/auth/login")
+                .uri("/v1/auth/loginUser")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new UserLoginRequest().email(null).password("123"))
+                .bodyValue(new LoginUserRequest().email(null).password("123"))
                 .exchange()
                 .expectStatus()
                 .isBadRequest();

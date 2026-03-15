@@ -1,8 +1,8 @@
 package aq.project.integration;
 
-import aq.project.controllers.AuthRestControllerV1;
+import aq.project.controllers.GatewayUserRestController;
+import aq.project.dto.LoginUserRequest;
 import aq.project.dto.TokenResponse;
-import aq.project.dto.UserLoginRequest;
 import aq.project.exceptions.IncorrectUserCredentialsException;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
@@ -28,7 +28,7 @@ public class UserInfoIntegrationTest {
     private WebTestClient webTestClient;
 
     @Autowired
-    private AuthRestControllerV1 authController;
+    private GatewayUserRestController authController;
 
     @Container
     private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.CONTAINER;
@@ -41,10 +41,10 @@ public class UserInfoIntegrationTest {
 
     @Test
     public void testSuccessGetUserInfo() throws IncorrectUserCredentialsException {
-        UserLoginRequest userLoginRequest = new UserLoginRequest()
+        LoginUserRequest userLoginRequest = new LoginUserRequest()
                 .email("alexander@post.aq")
                 .password("123");
-        TokenResponse tokenResponse = authController.login(userLoginRequest)
+        TokenResponse tokenResponse = authController.loginUser(userLoginRequest)
                 .block()
                 .getBody();
         webTestClient.get()

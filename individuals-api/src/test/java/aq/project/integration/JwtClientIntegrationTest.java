@@ -1,0 +1,39 @@
+package aq.project.integration;
+
+import aq.project.proxies.JwtClient;
+import aq.project.util.TestApplicationProperties;
+import aq.project.util.TestContainers;
+import dasniko.testcontainers.keycloak.KeycloakContainer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+@Testcontainers
+@DirtiesContext
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class JwtClientIntegrationTest {
+
+    @Autowired
+    private JwtClient jwtClient;
+
+    @Container
+    private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.CONTAINER;
+
+    @DynamicPropertySource
+    static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
+        TestApplicationProperties.KeycloakProperties
+                .registerApplicationContextContainerProperties(registry, KEYCLOAK);
+    }
+
+    @Test
+    public void successGettingAdminJwtTest() {
+        String jwt = jwtClient.requestAdminToken().block();
+        Assertions.assertNotNull(jwt);
+    }
+}

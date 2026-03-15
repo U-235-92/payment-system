@@ -1,6 +1,9 @@
 package aq.project.integration;
 
-import aq.project.dto.UserRegistrationRequest;
+import aq.project.dto.AddressDTO;
+import aq.project.dto.CountryDTO;
+import aq.project.dto.CreateIndividualDataRequest;
+import aq.project.dto.CreateUserRequest;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -12,6 +15,7 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -20,6 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @DirtiesContext
+@ActiveProfiles("dev")
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserRegistrationIntegrationTest {
@@ -38,7 +43,7 @@ public class UserRegistrationIntegrationTest {
 
     @Test
     public void testSuccessfulCreateUser() {
-        UserRegistrationRequest request = getValidUserRegistrationRequest();
+        CreateUserRequest request = getValidCreateUserRequest();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -50,8 +55,8 @@ public class UserRegistrationIntegrationTest {
 
     @Test
     @Disabled("Test case connected with no valid admin client credentials")
-    public void testFailCreateWithNoValidAdminClientCredentials() {
-        UserRegistrationRequest request = getValidUserRegistrationRequest();
+    public void testFailCreateUserWithNoValidAdminClientCredentials() {
+        CreateUserRequest request = getValidCreateUserRequest();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -61,19 +66,37 @@ public class UserRegistrationIntegrationTest {
                 .is5xxServerError();
     }
 
-    private UserRegistrationRequest getValidUserRegistrationRequest() {
-        return new UserRegistrationRequest()
-                .email("valid@mail.aq")
+    private CreateUserRequest getValidCreateUserRequest() {
+        CountryDTO countryDTO = new CountryDTO();
+        countryDTO.setName("country");
+        countryDTO.setCode("cty");
+
+        AddressDTO addressDTO = new AddressDTO();
+        addressDTO.setCountry(countryDTO);
+        addressDTO.setState("state");
+        addressDTO.setCity("city");
+        addressDTO.setAddress("address");
+        addressDTO.setZipCode("zipcode");
+
+        CreateIndividualDataRequest individualDataRequest = new CreateIndividualDataRequest();
+        individualDataRequest.setFirstName("firstName");
+        individualDataRequest.setLastName("lastName");
+        individualDataRequest.setEmail("email@post.aq");
+        individualDataRequest.phoneNumber("1234567890");
+        individualDataRequest.setPassportNumber("1234567890");
+        individualDataRequest.setAddress(addressDTO);
+
+        return new CreateUserRequest()
+                .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad458")
                 .username("username")
                 .password("password")
                 .confirmPassword("password")
-                .firstName("firstName")
-                .lastName("lastName");
+                .individualData(individualDataRequest);
     }
 
     @Test
     public void testDuplicateCreateUserFail() {
-        UserRegistrationRequest request = getDuplicateUserRegistrationRequest();
+        CreateUserRequest request = getDuplicateCreateUserRequest();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,19 +106,37 @@ public class UserRegistrationIntegrationTest {
                 .isEqualTo(HttpStatus.CONFLICT);
     }
 
-    private UserRegistrationRequest getDuplicateUserRegistrationRequest() {
-        return new UserRegistrationRequest()
-                .email("alice@post.aq")
+    private CreateUserRequest getDuplicateCreateUserRequest() {
+        CountryDTO countryDTO = new CountryDTO();
+        countryDTO.setName("country");
+        countryDTO.setCode("cty");
+
+        AddressDTO addressDTO = new AddressDTO();
+        addressDTO.setCountry(countryDTO);
+        addressDTO.setState("state");
+        addressDTO.setCity("city");
+        addressDTO.setAddress("address");
+        addressDTO.setZipCode("zipcode");
+
+        CreateIndividualDataRequest individualDataRequest = new CreateIndividualDataRequest();
+        individualDataRequest.setFirstName("Alice");
+        individualDataRequest.setLastName("K");
+        individualDataRequest.setEmail("alice@post.aq");
+        individualDataRequest.phoneNumber("1234567890");
+        individualDataRequest.setPassportNumber("1234567890");
+        individualDataRequest.setAddress(addressDTO);
+
+        return new CreateUserRequest()
+                .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad407")
                 .username("alice")
                 .password("password")
                 .confirmPassword("password")
-                .firstName("Alice")
-                .lastName("K");
+                .individualData(individualDataRequest);
     }
 
     @Test
-    public void testNoMatchPasswordsUserRegistrationRequest() {
-        UserRegistrationRequest request = getIncorrectUserRegistrationRequestWithDoNotMatchPasswords();
+    public void testNoMatchPasswordsCreateUserRequest() {
+        CreateUserRequest request = getIncorrectCreateUserRequestWithDoNotMatchPasswords();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -105,19 +146,37 @@ public class UserRegistrationIntegrationTest {
                 .isBadRequest();
     }
 
-    private UserRegistrationRequest getIncorrectUserRegistrationRequestWithDoNotMatchPasswords() {
-        return new UserRegistrationRequest()
-                .email("bob@post.aq")
+    private CreateUserRequest getIncorrectCreateUserRequestWithDoNotMatchPasswords() {
+        CountryDTO countryDTO = new CountryDTO();
+        countryDTO.setName("country");
+        countryDTO.setCode("cty");
+
+        AddressDTO addressDTO = new AddressDTO();
+        addressDTO.setCountry(countryDTO);
+        addressDTO.setState("state");
+        addressDTO.setCity("city");
+        addressDTO.setAddress("address");
+        addressDTO.setZipCode("zipcode");
+
+        CreateIndividualDataRequest individualDataRequest = new CreateIndividualDataRequest();
+        individualDataRequest.setFirstName("Bob");
+        individualDataRequest.setLastName("K");
+        individualDataRequest.setEmail("bob@post.aq");
+        individualDataRequest.phoneNumber("1234567890");
+        individualDataRequest.setPassportNumber("1234567890");
+        individualDataRequest.setAddress(addressDTO);
+
+        return new CreateUserRequest()
+                .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad477")
                 .username("bob")
                 .password("password")
                 .confirmPassword("123")
-                .firstName("Bob")
-                .lastName("K");
+                .individualData(individualDataRequest);
     }
 
     @Test
-    public void testNullFieldsUserRegistrationRequest() {
-        UserRegistrationRequest request = getIncorrectUserRegistrationRequestWithNullFields();
+    public void testNullFieldsCreateUserRequest() {
+        CreateUserRequest request = getIncorrectCreateUserRequestWithNullFields();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -127,13 +186,30 @@ public class UserRegistrationIntegrationTest {
                 .isBadRequest();
     }
 
-    private UserRegistrationRequest getIncorrectUserRegistrationRequestWithNullFields() {
-        return new UserRegistrationRequest()
-                .email(null)
+    private CreateUserRequest getIncorrectCreateUserRequestWithNullFields() {
+        return new CreateUserRequest()
                 .username(null)
                 .password("password")
+                .confirmPassword("123");
+    }
+
+    @Test
+    public void testCreateUserWithNullIndividualData() {
+        CreateUserRequest request = getIncorrectCreateUserRequestWithNullIndividualData();
+        webTestClient.post()
+                .uri("/v1/auth/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+    }
+
+    private CreateUserRequest getIncorrectCreateUserRequestWithNullIndividualData() {
+        return new CreateUserRequest()
+                .username("test")
+                .password("password")
                 .confirmPassword("123")
-                .firstName("Bob")
-                .lastName("K");
+                .individualData(null);
     }
 }

@@ -1,9 +1,9 @@
 package aq.project.integration;
 
-import aq.project.controllers.AuthRestControllerV1;
-import aq.project.dto.TokenRefreshRequest;
+import aq.project.controllers.GatewayUserRestController;
+import aq.project.dto.LoginUserRequest;
+import aq.project.dto.RefreshTokenRequest;
 import aq.project.dto.TokenResponse;
-import aq.project.dto.UserLoginRequest;
 import aq.project.exceptions.IncorrectUserCredentialsException;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
@@ -30,7 +30,7 @@ public class UpdateTokenIntegrationTest {
     private WebTestClient webTestClient;
 
     @Autowired
-    private AuthRestControllerV1 authController;
+    private GatewayUserRestController authController;
 
     @Container
     private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.CONTAINER;
@@ -43,9 +43,9 @@ public class UpdateTokenIntegrationTest {
 
     @Test
     public void testSuccessUpdateToken() throws IncorrectUserCredentialsException {
-        UserLoginRequest loginRequest = new UserLoginRequest().email("alice@post.aq").password("123");
-        TokenResponse tokenResponse = authController.login(loginRequest).block().getBody();
-        TokenRefreshRequest tokenRefreshRequest = new TokenRefreshRequest().refreshToken(tokenResponse.getRefreshToken());
+        LoginUserRequest loginRequest = new LoginUserRequest().email("alice@post.aq").password("123");
+        TokenResponse tokenResponse = authController.loginUser(loginRequest).block().getBody();
+        RefreshTokenRequest tokenRefreshRequest = new RefreshTokenRequest().refreshToken(tokenResponse.getRefreshToken());
         webTestClient.post()
                 .uri("/v1/auth/refresh-token")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -57,7 +57,7 @@ public class UpdateTokenIntegrationTest {
 
     @Test
     public void testFailNullUpdateToken() throws IncorrectUserCredentialsException {
-        TokenRefreshRequest tokenRefreshRequest = new TokenRefreshRequest().refreshToken(null);
+        RefreshTokenRequest tokenRefreshRequest = new RefreshTokenRequest().refreshToken(null);
         webTestClient.post()
                 .uri("/v1/auth/refresh-token")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -69,7 +69,7 @@ public class UpdateTokenIntegrationTest {
 
     @Test
     public void testFailWrongUpdateToken() throws IncorrectUserCredentialsException {
-        TokenRefreshRequest tokenRefreshRequest = new TokenRefreshRequest().refreshToken("wrong-token");
+        RefreshTokenRequest tokenRefreshRequest = new RefreshTokenRequest().refreshToken("wrong-token");
         webTestClient.post()
                 .uri("/v1/auth/refresh-token")
                 .contentType(MediaType.APPLICATION_JSON)

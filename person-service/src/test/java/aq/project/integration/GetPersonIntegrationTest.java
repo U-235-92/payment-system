@@ -7,8 +7,8 @@ import aq.project.exceptions.UserNotExistsException;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
 import aq.project.services.PersonService;
-import aq.project.util.containers.Containers;
 import aq.project.util.configs.PostgresqlTestApplicationProperties;
+import aq.project.util.containers.Containers;
 import aq.project.util.entity.Persons;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
@@ -26,8 +26,9 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static aq.project.util.entity.Constants.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
 @DirtiesContext
@@ -73,50 +74,18 @@ public class GetPersonIntegrationTest {
     }
 
     @Test
-    public void successfulGetUserByEmailTest() throws UserNotExistsException {
-        Person person = personService.getByEmail(CORRECT_EMAIL);
-        assertNotNull(person);
-    }
-
-    @Test
-    public void failGetUserByNotExistsEmailTest() {
-        assertThrows(UserNotExistsException.class, () -> personService.getByEmail(UNKNOWN_EMAIL));
-    }
-
-    @Test
-    public void failGetUserByIncorrectEmailTest() {
-        assertThrows(ConstraintViolationException.class, () -> personService.getByEmail(INCORRECT_EMAIL));
-    }
-
-    @Test
     public void successfulGetUserByKeycloakIdTest() throws UserNotExistsException {
-        Person person = personService.getByKeycloakId(alice.getKeycloakId());
+        Person person = personService.getPersonByKeycloakId(alice.getKeycloakId());
         assertNotNull(person);
     }
 
     @Test
     public void failGetUserByNotExistsKeycloakIdTest() {
-        assertThrows(UserNotExistsException.class, () -> personService.getByKeycloakId(UNKNOWN_PERSON_ID));
+        assertThrows(UserNotExistsException.class, () -> personService.getPersonByKeycloakId(UNKNOWN_PERSON_ID));
     }
 
     @Test
     public void failGetUserByIncorrectKeycloakIdTest() {
-        assertThrows(ConstraintViolationException.class, () -> personService.getByKeycloakId(INCORRECT_PERSON_ID));
-    }
-
-    @Test
-    public void successfulGetUserByPersonIdTest() throws UserNotExistsException {
-        Person person = personService.getByPersonId(alice.getId().toString());
-        assertNotNull(person);
-    }
-
-    @Test
-    public void failGetUserByNotExistsPersonIdTest() {
-        assertThrows(UserNotExistsException.class, () -> personService.getByPersonId(UNKNOWN_PERSON_ID));
-    }
-
-    @Test
-    public void failGetUserByIncorrectPersonIdTest() {
-        assertThrows(ConstraintViolationException.class, () -> personService.getByPersonId(INCORRECT_PERSON_ID));
+        assertThrows(ConstraintViolationException.class, () -> personService.getPersonByKeycloakId(INCORRECT_PERSON_ID));
     }
 }

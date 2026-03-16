@@ -76,34 +76,18 @@ public class DeletePersonIntegrationTest {
     }
 
     @Test
-    public void successfulDeletePersonByPersonIdTest() throws UserNotExistsException {
-         personService.deleteByPersonId(personID.toString());
-         assertTrue(personRepository.findById(personID).isEmpty());
-    }
-
-    @Test
-    public void failDeleteNotExistsPersonByPersonIdTest() {
-        assertThrows(UserNotExistsException.class, () -> personService.deleteByPersonId(UNKNOWN_PERSON_ID));
-    }
-
-    @Test
-    public void failDeleteIncorrectPersonByPersonIdTest() {
-        assertThrows(ConstraintViolationException.class, () -> personService.deleteByPersonId(INCORRECT_PERSON_ID));
-    }
-
-    @Test
     public void successfulDeletePersonByKeycloakIdTest() throws UserNotExistsException {
-        personService.deleteByKeycloakId(alice.getKeycloakId());
+        personService.deletePersonByKeycloakId(alice.getKeycloakId());
         assertTrue(personRepository.findByKeycloakId(alice.getKeycloakId()).isEmpty());
     }
 
     @Test
     public void failDeleteNotExistsPersonByKeycloakIdTest() {
-        assertThrows(UserNotExistsException.class, () -> personService.deleteByKeycloakId(UNKNOWN_PERSON_ID));
+        assertThrows(UserNotExistsException.class, () -> personService.deletePersonByKeycloakId(UNKNOWN_PERSON_ID));
     }
 
     @Test
     public void failDeleteIncorrectPersonByKeycloakIdTest() {
-        assertThrows(ConstraintViolationException.class, () -> personService.deleteByKeycloakId(INCORRECT_PERSON_ID));
+        assertThrows(ConstraintViolationException.class, () -> personService.deletePersonByKeycloakId(INCORRECT_PERSON_ID));
     }
 }

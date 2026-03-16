@@ -77,7 +77,7 @@ public class UpdatePersonIntegrationTest {
         originalPerson.setFirstName("Bob");
         originalPerson.getIndividual().setEmail("bob@post.aq");
 //        Run test logic
-        personService.update(originalPerson);
+        personService.updatePerson(originalPerson);
 //        Check results
         Person updatedPerson = personRepository.findByKeycloakId(originalPerson.getKeycloakId()).get();
         assertEquals("Bob", updatedPerson.getFirstName());
@@ -88,25 +88,25 @@ public class UpdatePersonIntegrationTest {
     @Test
     public void failUpdateUserWithWrongDataTest() {
         assertThrows(ConstraintViolationException.class, () ->
-                personService.update(Persons.getWrongPerson()));
+                personService.updatePerson(Persons.getWrongPerson()));
     }
 
     @Test
     public void failUpdateUserWithUnknownCountryTest() {
         assertThrows(CountryNotExistsException.class, () ->
-                personService.update(Persons.getAlicePerson(Countries.getUnknownCountry())));
+                personService.updatePerson(Persons.getAlicePerson(Countries.getUnknownCountry())));
     }
 
     @Test
     public void failUpdateUnknownUserTest() {
         assertThrows(UserNotExistsException.class, () ->
-                personService.update(Persons.getUnknownPerson(getTestCountry())));
+                personService.updatePerson(Persons.getUnknownPerson(getTestCountry())));
     }
 
     @Test
     public void failUpdatePersonWithIncorrectIdTest() {
         assertThrows(IllegalArgumentException.class, () ->
-                personService.update(Persons.getPersonWithIncorrectId(getTestCountry())));
+                personService.updatePerson(Persons.getPersonWithIncorrectId(getTestCountry())));
     }
 
     private Country getTestCountry() {

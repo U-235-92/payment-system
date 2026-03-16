@@ -91,23 +91,23 @@ public class CreatePersonIntegrationTest {
     public void failCreateDuplicateUserTest() throws UserExistsException, CountryNotExistsException {
         createTestPersonAndGetId(getTestCountry());
         assertThrows(UserExistsException.class, () ->
-                personService.create(Persons.getAlicePerson(getTestCountry())));
+                personService.createPerson(Persons.getAlicePerson(getTestCountry())));
     }
 
     @Test
     public void failCreateUserWithWrongDataTest() {
         assertThrows(ConstraintViolationException.class, () ->
-                personService.create(Persons.getWrongPerson()));
+                personService.createPerson(Persons.getWrongPerson()));
     }
 
     @Test
     public void failCreateUserWithUnknownCountryTest() {
         assertThrows(CountryNotExistsException.class, () ->
-                personService.create(Persons.getAlicePerson(Countries.getUnknownCountry())));
+                personService.createPerson(Persons.getAlicePerson(Countries.getUnknownCountry())));
     }
 
     private String createTestPersonAndGetId(Country country) throws UserExistsException, CountryNotExistsException {
-        return personService.create(Persons.getAlicePerson(country));
+        return personService.createPerson(Persons.getAlicePerson(country));
     }
 
     private Country getTestCountry() {

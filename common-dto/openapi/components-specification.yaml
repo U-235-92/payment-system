@@ -26,18 +26,14 @@ components:
     UserInfoResponse:
       $ref: "./components/schemas/response/user-info-response-schema.yaml"
 
-#      Request schemas
-    CreateUserRequest:
-      $ref: "./components/schemas/request/create/create-user-request-schema.yaml"
+#      Event schemas
+    CreateUserEvent:
+      $ref: "./components/schemas/event/create/create-user-event-schema.yaml"
+    UpdateUserEvent:
+      $ref: "./components/schemas/event/update/update-user-event-schema.yaml"
+    LoginUserEvent:
+      $ref: "./components/schemas/event/login/login-user-event-schema.yaml"
 
-#      Update schemas
-    UpdateUserRequest:
-      $ref: "./components/schemas/request/update/update-user-request-schema.yaml"
-
-#      Login schemas
-    LoginUserRequest:
-      $ref: "./components/schemas/request/login/login-user-request-schema.yaml"
-
-#      Token schemas
-    RefreshTokenRequest:
-      $ref: "./components/schemas/request/token/refresh-token-request-schema.yaml"
+#      DTO schemas
+    RefreshTokenDTO:
+      $ref: "./components/schemas/dto/refresh-token-dto-schema.yaml"

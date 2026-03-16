@@ -1,5 +1,5 @@
 type: object
-title: UpdateIndividualDataRequest
+title: UpdateIndividualDataEvent
 required: [keycloak_user_id, first_name, last_name, phone_number, passport_number, address]
 properties:
   keycloak_user_id:

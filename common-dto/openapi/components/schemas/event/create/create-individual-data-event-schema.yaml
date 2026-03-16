@@ -1,5 +1,5 @@
 type: object
-title: CreateIndividualDataRequest
+title: CreateIndividualDataEvent
 required: [keycloak_user_id, first_name, last_name, email, phone_number, passport_number, address]
 properties:
   keycloak_user_id:

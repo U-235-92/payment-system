@@ -10,4 +10,4 @@ properties:
   confirm_password:
     type: string
   individual_data:
-    $ref: "./create-individual-data-request-schema.yaml"
+    $ref: "./create-individual-data-event-schema.yaml"

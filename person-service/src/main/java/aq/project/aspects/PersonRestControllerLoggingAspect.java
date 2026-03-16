@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class PersonControllerLoggingAspect {
+public class PersonRestControllerLoggingAspect {
 
     @Value("${spring.application.name}")
     private String applicationName;

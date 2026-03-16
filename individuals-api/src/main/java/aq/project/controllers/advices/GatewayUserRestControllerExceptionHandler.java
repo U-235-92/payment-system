@@ -74,8 +74,8 @@ public class AuthControllerExceptionHandler {
         return Mono.just(response);
     }
 
-    @ExceptionHandler(value = InvalidUserRegistrationRequestException.class)
-    public Mono<ResponseEntity<ErrorDTO>> onConstraintViolationException(InvalidUserRegistrationRequestException exc) {
+    @ExceptionHandler(value = InvalidUserRegistrationEventException.class)
+    public Mono<ResponseEntity<ErrorDTO>> onConstraintViolationException(InvalidUserRegistrationEventException exc) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage(), exc);
         ResponseEntity<ErrorDTO> response = ResponseEntity.status(status).body(errorDTO);

@@ -28,7 +28,7 @@ CREATE TABLE person.individuals (
 
 CREATE TABLE person.users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    keycloak_id VARCHAR(36) REFERENCES public.user_entity(id),
+    keycloak_id VARCHAR(36) REFERENCES public.user_entity(id) UNIQUE NOT NULL,
     first_name VARCHAR(32),
     last_name VARCHAR(32),
     created BIGINT NOT NULL,

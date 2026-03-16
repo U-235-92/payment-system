@@ -39,7 +39,7 @@ CREATE TABLE person.individuals_aud (
 
 CREATE TABLE person.users_aud (
     id UUID NOT NULL,
-    keycloak_id VARCHAR(36) REFERENCES public.user_entity(id),
+    keycloak_id VARCHAR(36),
     rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
     revtype SMALLINT,
     first_name VARCHAR(32),

@@ -23,27 +23,27 @@ public abstract class IndividualMapper {
 
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "individual", expression = "java(toIndividual(request))")
-    @Mapping(target = "address", expression = "java(toAddress(request.getAddress()))")
+    @Mapping(target = "individual", expression = "java(toIndividual(event))")
+    @Mapping(target = "address", expression = "java(toAddress(event.getAddress()))")
     @Mapping(target = "keycloakId", source = "keycloakUserId")
-    public abstract Person toPerson(CreateIndividualDataRequest request);
+    public abstract Person toPerson(CreateIndividualDataEvent event);
 
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "passportNumber", source = "passportNumber")
-    protected abstract Individual toIndividual(CreateIndividualDataRequest request);
+    protected abstract Individual toIndividual(CreateIndividualDataEvent event);
 
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "individual", expression = "java(toIndividual(request))")
-    @Mapping(target = "address", expression = "java(toAddress(request.getAddress()))")
+    @Mapping(target = "individual", expression = "java(toIndividual(event))")
+    @Mapping(target = "address", expression = "java(toAddress(event.getAddress()))")
     @Mapping(target = "keycloakId", source = "keycloakUserId")
-    public abstract Person toPerson(UpdateIndividualDataRequest request) throws UserNotExistsException;
+    public abstract Person toPerson(UpdateIndividualDataEvent event) throws UserNotExistsException;
 
-    @Mapping(target = "email", expression = "java(getPersonEmail(request.getKeycloakUserId()))")
+    @Mapping(target = "email", expression = "java(getPersonEmail(event.getKeycloakUserId()))")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "passportNumber", source = "passportNumber")
-    protected abstract Individual toIndividual(UpdateIndividualDataRequest request) throws UserNotExistsException;
+    protected abstract Individual toIndividual(UpdateIndividualDataEvent event) throws UserNotExistsException;
 
     @Named("getPersonEmail")
     protected String getPersonEmail(String keycloakUserId) throws UserNotExistsException {

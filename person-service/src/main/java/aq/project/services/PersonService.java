@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class PersonService {
@@ -21,7 +19,7 @@ public class PersonService {
     private final CountryRepository countryRepository;
 
     @Transactional
-    public String create(Person person) throws UserExistsException, CountryNotExistsException {
+    public String createPerson(Person person) throws UserExistsException, CountryNotExistsException {
         String email = person.getIndividual().getEmail();
         if(personRepository.findByEmail(email).isPresent()) {
             throw new UserExistsException(String.format("User with email [ %s ] is already exists", email));
@@ -36,49 +34,39 @@ public class PersonService {
         return saved.getId().toString();
     }
 
-    public Person getByEmail(String email) throws UserNotExistsException {
-        return personRepository.findByEmail(email).orElseThrow(() ->
-                new UserNotExistsException(String.format("User with email [ %s ] doesn't exist", email)));
-    }
-
-    public Person getByKeycloakId(String keycloakId) throws UserNotExistsException {
-        return findByKeycloakId(keycloakId);
-    }
-
-    public Person getByPersonId(String personId) throws UserNotExistsException {
-        return findByPersonId(personId);
+    public Person getPersonByKeycloakId(String keycloakId) throws UserNotExistsException {
+        return findPersonByKeycloakId(keycloakId);
     }
 
     @Transactional
-    public void update(Person from) throws UserNotExistsException, CountryNotExistsException {
+    public void updatePerson(Person from) throws UserNotExistsException, CountryNotExistsException {
         String countryCode = from.getAddress().getCountry().getCode();
         if(isCountryNotExists(countryCode)) {
             throw new CountryNotExistsException(String.format("Country with code [ %s ] doesn't exist", countryCode));
         }
-        Person to = findByKeycloakId(from.getKeycloakId());
+        Person to = findPersonByKeycloakId(from.getKeycloakId());
         to.getAddress().setCountry(countryRepository.findByCountryCode(countryCode).get());
         PersonMapper.map(from, to);
         personRepository.save(to);
     }
 
     @Transactional
-    public void deleteByPersonId(String personId) throws UserNotExistsException {
-        Person person = findByPersonId(personId);
+    public void undoUpdatePerson(String keycloakId) {
+
+    }
+
+    @Transactional
+    public void deletePersonByKeycloakId(String keycloakId) throws UserNotExistsException {
+        Person person = findPersonByKeycloakId(keycloakId);
         personRepository.delete(person);
     }
 
     @Transactional
-    public void deleteByKeycloakId(String keycloakId) throws UserNotExistsException {
-        Person person = findByKeycloakId(keycloakId);
-        personRepository.delete(person);
+    public void undoDeletePersonByKeycloakId(String keycloakId) {
+
     }
 
-    private Person findByPersonId(String personId) throws UserNotExistsException {
-        return personRepository.findById(UUID.fromString(personId)).orElseThrow(() ->
-                new UserNotExistsException(String.format("User with id [ %s ] doesn't exist", personId)));
-    }
-
-    private Person findByKeycloakId(String keycloakId) throws UserNotExistsException {
+    private Person findPersonByKeycloakId(String keycloakId) throws UserNotExistsException {
         return personRepository.findByKeycloakId(keycloakId).orElseThrow(() ->
                 new UserNotExistsException(String.format("User with id [ %s ] doesn't exist", keycloakId)));
     }

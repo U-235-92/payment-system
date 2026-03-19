@@ -2,17 +2,18 @@ package aq.project.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.envers.Audited;
 
 import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
+@Audited
 @ToString
 @Table(name = "countries", schema = "person")
 public class Country {
@@ -43,13 +44,12 @@ public class Country {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Country country = (Country) o;
-        return id == country.id &&
-                Objects.equals(name, country.name) &&
+        return Objects.equals(name, country.name) &&
                 Objects.equals(code, country.code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code);
+        return Objects.hash(name, code);
     }
 }

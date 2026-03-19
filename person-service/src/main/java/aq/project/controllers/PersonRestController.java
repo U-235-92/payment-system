@@ -2,12 +2,13 @@ package aq.project.controllers;
 
 import aq.project.dto.CreateIndividualDataEvent;
 import aq.project.dto.IndividualDataResponse;
+import aq.project.dto.UndoOperationDTO;
 import aq.project.dto.UpdateIndividualDataEvent;
 import aq.project.entities.Person;
-import aq.project.exceptions.CountryNotExistsException;
-import aq.project.exceptions.UserExistsException;
-import aq.project.exceptions.UserNotExistsException;
+import aq.project.entities.UndoEvent;
+import aq.project.exceptions.*;
 import aq.project.mappers.IndividualMapper;
+import aq.project.mappers.UndoOperationMapper;
 import aq.project.services.PersonService;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class PersonRestController {
     private final PersonService personService;
 
     private final IndividualMapper individualMapper;
+    private final UndoOperationMapper undoOperationMapper;
 
     @PostMapping("/create-person")
     @Timed(value = "person_service.create_person_time")
@@ -39,10 +41,11 @@ public class PersonRestController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/undo-delete-person-by-keycloak-id/{keycloakId}")
+    @PostMapping("/undo-delete-person-by-keycloak-id")
     @Timed(value = "person_service.undo_delete_person_by_keycloak_id_time")
-    public ResponseEntity<Void> undoDeletePersonByKeycloakId(@PathVariable String keycloakId) {
-        personService.undoDeletePersonByKeycloakId(keycloakId);
+    public ResponseEntity<Void> undoDeletePersonByKeycloakId(@RequestBody UndoOperationDTO undoOperationDTO) throws IllegalUndoEventPayloadPropertyException, NotFoundRevisionException, NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
+        UndoEvent undoEvent = undoOperationMapper.toUndoEvent(undoOperationDTO);
+        personService.undoDeletePersonByKeycloakId(undoEvent);
         return ResponseEntity.ok().build();
     }
 
@@ -54,10 +57,11 @@ public class PersonRestController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/undo-update-person/{keycloakId}")
+    @PostMapping("/undo-update-person")
     @Timed(value = "person_service.undo_update_person_time")
-    public ResponseEntity<Void> undoUpdatePerson(@PathVariable String keycloakId) {
-        personService.undoUpdatePerson(keycloakId);
+    public ResponseEntity<Void> undoUpdatePerson(@RequestBody UndoOperationDTO undoOperationDTO) throws IllegalUndoEventPayloadPropertyException, NotFoundRevisionException, NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
+        UndoEvent undoEvent = undoOperationMapper.toUndoEvent(undoOperationDTO);
+        personService.undoUpdatePerson(undoEvent);
         return ResponseEntity.ok().build();
     }
 

@@ -12,7 +12,8 @@ val dependencyVersionMap = mapOf(
 	"hibernate-envers" to "7.2.6.Final",
 	"opentelemetry-api" to "1.59.0",
 	"opentelemetry-sdk" to "1.59.0",
-	"opentelemetry-annotations" to "2.25.0"
+	"opentelemetry-annotations" to "2.25.0",
+	"spring-data-envers" to "4.0.4"
 )
 
 dependencies {
@@ -24,7 +25,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-h2console")
 	implementation("org.springframework.boot:spring-boot-starter-flyway")
 	implementation("org.flywaydb:flyway-database-postgresql")
-	implementation("org.hibernate.orm:hibernate-envers:${dependencyVersionMap.getValue("hibernate-envers")}")
+	implementation("org.springframework.data:spring-data-envers:${dependencyVersionMap.getValue("spring-data-envers")}")
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("com.h2database:h2")
 

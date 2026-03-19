@@ -5,15 +5,19 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.envers.repository.config.EnableEnversRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableAsync
 @Configuration
+@EnableScheduling
 @EnableAspectJAutoProxy
-@EnableJpaRepositories(basePackages = "aq.project.repositories")
+@EnableEnversRepositories(basePackages = "aq.project.repositories")
 public class ApplicationConfiguration {
 
     @Bean
-    public TimedAspect  timedAspect(MeterRegistry meterRegistry) {
+    public TimedAspect timedAspect(MeterRegistry meterRegistry) {
         return new TimedAspect(meterRegistry);
     }
 }

@@ -5,7 +5,7 @@ logging:
         security: debug
 spring:
   datasource:
-    url: jdbc:h2:mem:person-service-test-db;INIT=CREATE SCHEMA IF NOT EXISTS person
+    url: jdbc:h2:mem:person-service-test-db;INIT=RUNSCRIPT FROM 'classpath:dev/db/init.sql'
     driver-class-name: org.h2.Driver
     username: root
     password:

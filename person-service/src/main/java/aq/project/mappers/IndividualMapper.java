@@ -26,6 +26,7 @@ public abstract class IndividualMapper {
     @Mapping(target = "individual", expression = "java(toIndividual(event))")
     @Mapping(target = "address", expression = "java(toAddress(event.getAddress()))")
     @Mapping(target = "keycloakId", source = "keycloakUserId")
+    @Mapping(target = "active", source = "active")
     public abstract Person toPerson(CreateIndividualDataEvent event);
 
     @Mapping(target = "email", source = "email")
@@ -38,6 +39,7 @@ public abstract class IndividualMapper {
     @Mapping(target = "individual", expression = "java(toIndividual(event))")
     @Mapping(target = "address", expression = "java(toAddress(event.getAddress()))")
     @Mapping(target = "keycloakId", source = "keycloakUserId")
+    @Mapping(target = "active", source = "active")
     public abstract Person toPerson(UpdateIndividualDataEvent event) throws UserNotExistsException;
 
     @Mapping(target = "email", expression = "java(getPersonEmail(event.getKeycloakUserId()))")

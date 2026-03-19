@@ -11,6 +11,17 @@ CREATE TABLE public.revinfo (
     revtstmp BIGINT
 );
 
+CREATE TABLE person.countries_aud (
+    id SERIAL NOT NULL,
+    rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
+    revtype SMALLINT,
+    created BIGINT,
+    updated BIGINT,
+    name VARCHAR(64),
+    code VARCHAR(3),
+    PRIMARY KEY (rev, id)
+);
+
 CREATE TABLE person.addresses_aud (
     id UUID NOT NULL,
     rev INTEGER NOT NULL REFERENCES public.revinfo(rev),

@@ -3,6 +3,7 @@ package aq.project.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,7 @@ public class Person {
     @NotNull
     @Column(name = "keycloak_id", nullable = false)
     @JoinColumn(name = "id", table = "public.user_entity", nullable = false)
+    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
     private String keycloakId;
 
     @NotBlank
@@ -60,12 +62,33 @@ public class Person {
         this.instantEmbeddedData = new InstantEmbeddedData();
     }
 
+    public Person(Person person) {
+        keycloakId = person.getKeycloakId();
+        firstName =  person.getFirstName();
+        lastName =  person.getLastName();
+        isActive = person.isActive();
+        instantEmbeddedData = person.getInstantEmbeddedData();
+
+        address = new Address();
+        address.setCountry(person.getAddress().getCountry());
+        address.setState(person.getAddress().getState());
+        address.setCity(person.getAddress().getCity());
+        address.setAddress(person.getAddress().getAddress());
+        address.setZip(person.getAddress().getZip());
+        address.setInstantEmbeddedData(person.getInstantEmbeddedData());
+
+        individual = new Individual();
+        individual.setEmail(person.getIndividual().getEmail());
+        individual.setPassportNumber(person.getIndividual().getPassportNumber());
+        individual.setPhoneNumber(person.getIndividual().getPhoneNumber());
+        individual.setInstantEmbeddedData(person.getInstantEmbeddedData());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return Objects.equals(id, person.id) &&
-                Objects.equals(keycloakId, person.keycloakId) &&
+        return Objects.equals(keycloakId, person.keycloakId) &&
                 Objects.equals(firstName, person.firstName) &&
                 Objects.equals(lastName, person.lastName) &&
                 isActive == person.isActive;
@@ -73,6 +96,6 @@ public class Person {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, keycloakId, firstName, lastName, isActive);
+        return Objects.hash(keycloakId, firstName, lastName, isActive);
     }
 }

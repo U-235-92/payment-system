@@ -2,7 +2,6 @@ package aq.project.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,17 +25,17 @@ public class Individual {
 
     @NotBlank
     @Size(max = 1024)
-    @Column(name = "email", nullable = false, unique = true, length = 1024)
+    @Column(name = "email", nullable = false, length = 1024)
     private String email;
 
     @NotBlank
     @Size(max = 32)
-    @Column(name = "passport_number", nullable = false, unique = true, length = 32)
+    @Column(name = "passport_number", nullable = false, length = 32)
     private String passportNumber;
 
     @NotBlank
     @Size(max = 32)
-    @Column(name = "phone_number", nullable = false, unique = true, length = 32)
+    @Column(name = "phone_number", nullable = false, length = 32)
     private String phoneNumber;
 
     @Embedded
@@ -50,14 +49,13 @@ public class Individual {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Individual that = (Individual) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(email, that.email) &&
+        return Objects.equals(email, that.email) &&
                 Objects.equals(passportNumber, that.passportNumber) &&
                 Objects.equals(phoneNumber, that.phoneNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, passportNumber, phoneNumber);
+        return Objects.hash(email, passportNumber, phoneNumber);
     }
 }

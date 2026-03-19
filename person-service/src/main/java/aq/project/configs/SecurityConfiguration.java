@@ -25,8 +25,9 @@ public class SecurityConfiguration {
     @Profile("dev")
     public SecurityFilterChain h2SecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/h2-console/**", "/dev/**")
+                .securityMatcher("/h2-console/**", "/dev/**", "/api/person/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .cors(CorsConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
@@ -35,6 +36,7 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
+    @Profile("prod")
     public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/api/person/**")
@@ -43,7 +45,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers(HttpMethod.POST, "/api/person/create-person").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/person/delete-person-by-keycloak-id/*").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/person/undo-delete-person-by-keycloak-id").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/person/update-person").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/person/undo-update-person").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/person/get-person-by-keycloak-id/*").authenticated())
                 .build();
     }

@@ -1,9 +1,8 @@
 package aq.project.services;
 
 import aq.project.entities.Person;
-import aq.project.exceptions.CountryNotExistsException;
-import aq.project.exceptions.UserExistsException;
-import aq.project.exceptions.UserNotExistsException;
+import aq.project.entities.UndoEvent;
+import aq.project.exceptions.*;
 import aq.project.mappers.PersonMapper;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
@@ -14,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PersonService {
+
+    private final UndoService undoService;
 
     private final PersonRepository personRepository;
     private final CountryRepository countryRepository;
@@ -51,8 +52,9 @@ public class PersonService {
     }
 
     @Transactional
-    public void undoUpdatePerson(String keycloakId) {
-
+    public void undoUpdatePerson(UndoEvent undoEvent) throws NotFoundRevisionException, NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
+        undoService.saveUndoEvent(undoEvent);
+        undoService.undoOperation(undoEvent);
     }
 
     @Transactional
@@ -62,13 +64,14 @@ public class PersonService {
     }
 
     @Transactional
-    public void undoDeletePersonByKeycloakId(String keycloakId) {
-
+    public void undoDeletePersonByKeycloakId(UndoEvent undoEvent) throws NotFoundRevisionException, NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
+        undoService.saveUndoEvent(undoEvent);
+        undoService.undoOperation(undoEvent);
     }
 
     private Person findPersonByKeycloakId(String keycloakId) throws UserNotExistsException {
         return personRepository.findByKeycloakId(keycloakId).orElseThrow(() ->
-                new UserNotExistsException(String.format("User with id [ %s ] doesn't exist", keycloakId)));
+                new UserNotExistsException(String.format("Person with keycloak id [ %s ] doesn't exist", keycloakId)));
     }
 
     private boolean isCountryNotExists(String countryCode) {

@@ -2,6 +2,8 @@ package aq.project.controllers.advices;
 
 import aq.project.controllers.DevRestController;
 import aq.project.dto.ErrorDTO;
+import aq.project.exceptions.IllegalUndoEventPayloadPropertyException;
+import aq.project.exceptions.NotFoundRevisionException;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -10,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -24,24 +24,24 @@ public class DevRestControllerExceptionHandler {
     private final OpenTelemetry openTelemetry;
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorDTO> onUserExistsException(RuntimeException e) {
+    public ResponseEntity<ErrorDTO> onRuntimeException(RuntimeException e) {
         logException(e);
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
     }
 
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorDTO> onMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+    @ExceptionHandler(NotFoundRevisionException.class)
+    public ResponseEntity<ErrorDTO> onLackRevisionException(NotFoundRevisionException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         logException(e);
-        HttpStatus conflict = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
+        return ResponseEntity.status(status.value()).body(getErrorDTO(e, status, e.getMessage()));
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorDTO> onHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    @ExceptionHandler(IllegalUndoEventPayloadPropertyException.class)
+    public ResponseEntity<ErrorDTO> onIllegalUndoEventPayloadPropertyException(IllegalUndoEventPayloadPropertyException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         logException(e);
-        HttpStatus conflict = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(conflict.value()).body(getErrorDTO(e, conflict, e.getMessage()));
+        return ResponseEntity.status(status.value()).body(getErrorDTO(e, status, e.getMessage()));
     }
 
     private ErrorDTO getErrorDTO(Exception exception, HttpStatus httpStatus, String message) {

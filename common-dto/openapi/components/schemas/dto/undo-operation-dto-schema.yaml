@@ -1,0 +1,13 @@
+type: object
+required: [operation, payload]
+properties:
+  id:
+    type: string
+  operation:
+    enum:
+      - update
+      - delete
+  payload:
+    type: object
+    additionalProperties:
+      type: string

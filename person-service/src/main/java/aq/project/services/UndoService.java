@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UndoService {
@@ -18,16 +20,16 @@ public class UndoService {
     private final UndoEventRepository undoEventRepository;
 
     @Transactional
-    public void undoOperation(UndoEvent undoEvent) throws NotFoundRevisionException {
-        Person revision = personRepository.findUndoRevisionByKeycloakId(undoEvent.getPersonKeycloakId().toString());
+    public void undoOperation(String personKeycloakId, UUID undoEventId) throws NotFoundRevisionException {
+        Person revision = personRepository.findUndoRevisionByKeycloakId(personKeycloakId);
         Person restored = new Person(revision);
         personRepository.delete(revision);
         personRepository.save(restored);
-        undoEventRepository.delete(undoEvent);
+        undoEventRepository.deleteById(undoEventId);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveUndoEvent(UndoEvent undoEvent) {
-        undoEventRepository.save(undoEvent);
+    public UUID saveUndoEvent(UndoEvent undoEvent) {
+        return undoEventRepository.save(undoEvent).getId();
     }
 }

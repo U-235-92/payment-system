@@ -34,7 +34,7 @@ import java.util.Optional;
 @DirtiesContext
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UndoDeletePersonIntegrationTest {
+public class UndoUpdatePersonIntegrationTest {
 
     @Container
     private static final PostgreSQLContainer POSTGRESQL = Containers.POSTGRESQL;
@@ -68,48 +68,50 @@ public class UndoDeletePersonIntegrationTest {
     }
 
     @Test
-    public void successUndoDeletePersonTest() throws Exception {
-        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
-        personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO());
+    public void successUndoUpdatePersonTest() throws Exception {
+        personRestController.updatePerson(DTO.getUpdateIndividualDataEvent());
+        personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO());
         Optional<Person> person = personRepository.findByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
         Assertions.assertNotNull(person.get());
-        Assertions.assertEquals(Constants.CORRECT_PERSON_KEYCLOAK_ID, person.get().getKeycloakId());
+        Assertions.assertEquals(DTO.getValidCreateIndividualDataEvent().getKeycloakUserId(), person.get().getKeycloakId());
+        Assertions.assertEquals(DTO.getValidCreateIndividualDataEvent().getFirstName(), person.get().getFirstName());
+        Assertions.assertEquals(DTO.getValidCreateIndividualDataEvent().getLastName(), person.get().getLastName());
     }
 
     @Test
-    public void failCallUndoDeletePersonAfterCallUndoDeletePersonTest() throws Exception {
-        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
-//        First [undo-delete] call
-        personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO());
-//        Second [undo-delete] call
-        Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
-    }
-
-    @Test
-    public void failCallUndoDeletePersonWhenPreviousCallWasNotDeleteTest() throws Exception {
+    public void failCallUndoUpdatePersonAfterCallUndoUpdatePersonTest() throws Exception {
         personRestController.updatePerson(DTO.getUpdateIndividualDataEvent());
+//        First [undo-update] call
+        personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO());
+//        Second [undo-update] call
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO()));
     }
 
     @Test
-    public void failCallUndoDeletePersonWhenPreviousCallWasCreatePersonTest() {
+    public void failCallUndoUpdatePersonWhenPreviousCallWasNotUpdateTest() throws Exception {
+        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO()));
     }
 
     @Test
-    public void failCallUndoDeletePersonWithWrongUndoEvent() {
+    public void failCallUndoUpdatePersonWhenPreviousCallWasCreatePersonTest() {
+        Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
+                () -> personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO()));
+    }
+
+    @Test
+    public void failCallUndoUpdatePersonWithWrongUndoEvent() {
         UndoEvent invalidUndoEvent = Events.getInvalidUndoEvent();
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> personService.undoDeletePersonByKeycloakId(invalidUndoEvent));
+                () -> personService.undoUpdatePerson(invalidUndoEvent));
     }
 
     @Test
     @Disabled("To use this test you have to disable @BeforeEach because before run this one database MUST be clean")
-    public void failCallUndoDeletePersonWhenDatabaseEmptyTest() {
+    public void failCallUndoUpdatePersonWhenDatabaseEmptyTest() {
         Assertions.assertThrows(NotFoundUndoOperationCallException.class,
-                () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO()));
     }
 }

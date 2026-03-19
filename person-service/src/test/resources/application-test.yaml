@@ -13,5 +13,13 @@ spring:
   jpa:
     generate-ddl: false
     show-sql: true
+#    properties: # красивый вывод sql запросов
+#      hibernate:
+#          format_sql: true
+#          type: trace
     hibernate:
       ddl-auto: validate
+logging:
+  level:
+    org:
+      hibernate: info

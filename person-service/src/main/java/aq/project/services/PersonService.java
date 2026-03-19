@@ -9,6 +9,7 @@ import aq.project.repositories.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -53,8 +54,8 @@ public class PersonService {
 
     @Transactional
     public void undoUpdatePerson(UndoEvent undoEvent) throws NotFoundRevisionException, NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
-        undoService.saveUndoEvent(undoEvent);
-        undoService.undoOperation(undoEvent);
+        UUID undoEventId = undoService.saveUndoEvent(undoEvent);
+        undoService.undoOperation(undoEvent.getPersonKeycloakId().toString(), undoEventId);
     }
 
     @Transactional
@@ -65,8 +66,8 @@ public class PersonService {
 
     @Transactional
     public void undoDeletePersonByKeycloakId(UndoEvent undoEvent) throws NotFoundRevisionException, NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
-        undoService.saveUndoEvent(undoEvent);
-        undoService.undoOperation(undoEvent);
+        UUID undoEventId = undoService.saveUndoEvent(undoEvent);
+        undoService.undoOperation(undoEvent.getPersonKeycloakId().toString(), undoEventId);
     }
 
     private Person findPersonByKeycloakId(String keycloakId) throws UserNotExistsException {

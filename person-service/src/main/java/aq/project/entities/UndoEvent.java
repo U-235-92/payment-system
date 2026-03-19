@@ -2,6 +2,7 @@ package aq.project.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -28,10 +29,10 @@ public class UndoEvent {
     @Column(name = "operation", nullable = false)
     private String operation;
 
+    @Positive
     @Column(name = "timestamp", nullable = false)
     private long timestamp;
 
-    @NotNull
-    @Column(name = "description", nullable = false,  length = 2048)
+    @Column(name = "description", length = 2048)
     private String description;
 }

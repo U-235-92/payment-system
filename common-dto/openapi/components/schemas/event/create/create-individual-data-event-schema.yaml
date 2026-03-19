@@ -14,5 +14,8 @@ properties:
     type: string
   passport_number:
     type: string
+  active:
+    type: boolean
+    default: true
   address:
     $ref: "../../dto/address-dto-schema.yaml"

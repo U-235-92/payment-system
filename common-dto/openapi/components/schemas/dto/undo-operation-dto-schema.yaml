@@ -5,8 +5,8 @@ properties:
     type: string
   operation:
     enum:
-      - update
-      - delete
+      - undo_update_person
+      - undo_delete_person
   payload:
     type: object
     additionalProperties:

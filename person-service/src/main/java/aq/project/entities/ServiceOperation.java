@@ -12,7 +12,7 @@ public class ServiceOperation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @Column(name = "timestamp", nullable = false, updatable = false)
     private long timestamp;

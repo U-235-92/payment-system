@@ -11,6 +11,7 @@ public interface Constants {
     String BOB_PERSON_ID = "31699ff9-ce23-469a-a90f-99495d696b85";
     String CORRECT_PERSON_ID = "31699ff9-ce23-469a-a90f-99495d585f88";
     String UNKNOWN_PERSON_ID = "31699ff9-ce23-469a-a90f-99495d696f66";
+    String CORRECT_PERSON_KEYCLOAK_ID = "64b75225-6c18-4fb6-a975-ec1176d62298";
     String INCORRECT_PERSON_ID = "incorrect";
     String CORRECT_FIRST_NAME = "Alice";
     String CORRECT_LAST_NAME = "K";

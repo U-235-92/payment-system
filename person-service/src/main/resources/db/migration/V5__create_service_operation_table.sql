@@ -1,5 +1,5 @@
 CREATE TABLE service.service_operations (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     timestamp BIGINT NOT NULL,
     operation VARCHAR(255) NOT NULL,
     status VARCHAR(255) NOT NULL,

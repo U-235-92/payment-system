@@ -9,19 +9,9 @@ import static aq.project.util.entity.Constants.*;
 public abstract class Persons {
 
     public static Person getAlicePerson(Country country) {
-        Address address = new Address();
-        address.setCountry(country);
-        address.setState(CORRECT_STATE);
-        address.setCity(CORRECT_CITY);
-        address.setAddress(CORRECT_ADDRESS);
-        address.setZip(CORRECT_ZIP);
-        address.setInstantEmbeddedData(new InstantEmbeddedData());
+        Address address = Addresses.getValidAddresses(country);
 
-        Individual individual = new Individual();
-        individual.setEmail(CORRECT_EMAIL);
-        individual.setPhoneNumber(CORRECT_PHONE);
-        individual.setPassportNumber(CORRECT_PASSPORT);
-        individual.setInstantEmbeddedData(new InstantEmbeddedData());
+        Individual individual = Individuals.getValidIndividual();
 
         Person alice = new Person();
         alice.setKeycloakId(ALICE_KEYCLOAK_ID);
@@ -35,13 +25,7 @@ public abstract class Persons {
     }
 
     public static Person getBobPerson(Country country) {
-        Address address = new Address();
-        address.setCountry(country);
-        address.setState(CORRECT_STATE);
-        address.setCity(CORRECT_CITY);
-        address.setAddress(CORRECT_ADDRESS);
-        address.setZip(CORRECT_ZIP);
-        address.setInstantEmbeddedData(new InstantEmbeddedData());
+        Address address = Addresses.getValidAddresses(country);
 
         Individual individual = new Individual();
         individual.setEmail("bob@post.aq");
@@ -61,17 +45,9 @@ public abstract class Persons {
     }
 
     public static Person getWrongPerson() {
-        Address address = new Address();
-        address.setState("WRONG");
-        address.setCity(null);
-        address.setZip("WRONG_ZIP");
-        address.setInstantEmbeddedData(new InstantEmbeddedData());
+        Address address = Addresses.getInvalidAddresses();
 
-        Individual individual = new Individual();
-        individual.setEmail("wrong@post.aq");
-        individual.setPhoneNumber("wrong");
-        individual.setPassportNumber("wrong");
-        individual.setInstantEmbeddedData(new InstantEmbeddedData());
+        Individual individual = Individuals.getInvalidIndividual();
 
         Person wrong = new Person();
         wrong.setKeycloakId(CORRECT_PERSON_ID);

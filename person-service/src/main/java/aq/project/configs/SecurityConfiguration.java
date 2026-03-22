@@ -23,7 +23,7 @@ public class SecurityConfiguration {
     @Bean
     @Order(1)
     @Profile("dev")
-    public SecurityFilterChain h2SecurityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/h2-console/**", "/dev/**", "/api/person/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
@@ -37,7 +37,7 @@ public class SecurityConfiguration {
     @Bean
     @Order(2)
     @Profile("prod")
-    public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/api/person/**")
                 .csrf(AbstractHttpConfigurer::disable)

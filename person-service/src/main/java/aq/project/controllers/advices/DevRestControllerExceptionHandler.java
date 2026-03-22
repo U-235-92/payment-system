@@ -27,25 +27,25 @@ public class DevRestControllerExceptionHandler {
     public ResponseEntity<ErrorDTO> onRuntimeException(RuntimeException e) {
         logException(e);
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(e, badRequest, e.getMessage()));
+        return ResponseEntity.status(badRequest.value()).body(getErrorDTO(badRequest, e.getMessage()));
     }
 
     @ExceptionHandler(NotFoundRevisionException.class)
     public ResponseEntity<ErrorDTO> onLackRevisionException(NotFoundRevisionException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         logException(e);
-        return ResponseEntity.status(status.value()).body(getErrorDTO(e, status, e.getMessage()));
+        return ResponseEntity.status(status.value()).body(getErrorDTO(status, e.getMessage()));
     }
 
     @ExceptionHandler(IllegalUndoEventPayloadPropertyException.class)
     public ResponseEntity<ErrorDTO> onIllegalUndoEventPayloadPropertyException(IllegalUndoEventPayloadPropertyException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         logException(e);
-        return ResponseEntity.status(status.value()).body(getErrorDTO(e, status, e.getMessage()));
+        return ResponseEntity.status(status.value()).body(getErrorDTO(status, e.getMessage()));
     }
 
-    private ErrorDTO getErrorDTO(Exception exception, HttpStatus httpStatus, String message) {
-        return new ErrorDTO(exception.getClass(), httpStatus.value(), message);
+    private ErrorDTO getErrorDTO(HttpStatus httpStatus, String message) {
+        return new ErrorDTO(httpStatus.value(), message);
     }
 
     private void logException(Exception exception) {

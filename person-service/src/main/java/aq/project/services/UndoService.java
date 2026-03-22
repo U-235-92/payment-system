@@ -20,7 +20,12 @@ public class UndoService {
     private final UndoEventRepository undoEventRepository;
 
     @Transactional
-    public void undoOperation(String personKeycloakId, UUID undoEventId) throws NotFoundRevisionException {
+    public void undoOperation(String personKeycloakId, UUID undoEventId, String undoOperationName) throws NotFoundRevisionException {
+        if(undoEventId == null) {
+            String msg = String.format("Exception occurred while trying to [%s]: undoEventId is null. " +
+                    "Check UndoService.saveUndoEvent() method call.", undoOperationName);
+            throw new RuntimeException(msg);
+        }
         Person revision = personRepository.findUndoRevisionByKeycloakId(personKeycloakId);
         Person restored = new Person(revision);
         personRepository.delete(revision);

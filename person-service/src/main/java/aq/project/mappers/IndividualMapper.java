@@ -64,7 +64,6 @@ public abstract class IndividualMapper {
     @Mapping(target = "code", source = "code")
     protected abstract Country toCountry(CountryDTO country);
 
-    @Mapping(target = "id", expression = "java(toStringUUID(person.getId()))")
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "email", expression = "java(person.getIndividual().getEmail())")

@@ -1,7 +1,7 @@
 type: object
-required: [user_id, access_token, refresh_token, expires_in, token_type]
+required: [keycloak_user_id, access_token, refresh_token, expires_in, token_type]
 properties:
-  user_id:
+  keycloak_user_id:
     type: string
   access_token:
     type: string

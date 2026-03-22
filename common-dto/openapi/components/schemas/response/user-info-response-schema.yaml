@@ -1,9 +1,7 @@
 type: object
-required: [id, keycloak_id, email, roles, created, individual_data]
+required: [keycloak_user_id, email, roles, created, individual_data]
 properties:
-  id:
-    type: string
-  keycloak_id:
+  keycloak_user_id:
     type: string
   email:
     type: string

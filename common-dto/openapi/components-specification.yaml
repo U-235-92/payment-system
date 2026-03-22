@@ -19,8 +19,6 @@ components:
   schemas:
 
 #    Response schemas
-    IndividualDataResponse:
-      $ref: "./components/schemas/response/individual-data-response-schema.yaml"
     TokenResponse:
       $ref: "./components/schemas/response/token-response-schema.yaml"
     UserInfoResponse:

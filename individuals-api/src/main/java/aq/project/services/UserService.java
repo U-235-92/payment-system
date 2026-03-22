@@ -1,9 +1,12 @@
 package aq.project.services;
 
 import aq.project.dto.*;
+import aq.project.exceptions.ExternalServiceException;
 import aq.project.exceptions.LackAccessTokenException;
+import aq.project.exceptions.ServiceException;
 import aq.project.proxies.KeycloakClient;
 import aq.project.proxies.PersonClient;
+import aq.project.util.http.HttpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -24,51 +27,86 @@ public class UserService {
     private final TokenService tokenService;
     private final KeycloakClient keycloakClient;
 
-    public Mono<TokenResponse> createUser(CreateUserRequest createUserRequest) {
-//        TODO: добавить операцию отката в сервисе individuals-api в случае ошибки [create] в person-service!
-//        TODO: в случае ошибки - удалить созданного в Keycloak пользователя в сервисе individuals-api!
-//        TODO: следует использовать паттерн transaction-outbox!
-        return keycloakClient.createUser(createUserRequest)
-                .flatMap(keycloakUserId -> personClient.createUser(createUserRequest, keycloakUserId))
-                .then(tokenService.login(createUserRequest.getIndividualData().getEmail(), createUserRequest.getPassword()));
+    public Mono<TokenResponse> createUser(CreateUserEvent createUserEvent) {
+        return keycloakClient.createUser(createUserEvent)
+                .flatMap(keycloakUserId -> personClient.createUser(createUserEvent.getIndividualData(), keycloakUserId)
+                        .flatMap(personServiceResponse -> {
+                            if(HttpUtil.isErrorStatusCode(personServiceResponse.getStatusCode()))
+                                return keycloakClient.undoCreateUser(keycloakUserId)
+                                        .flatMap(keyclaokClientHttpStatusCode -> {
+                                            if(HttpUtil.isErrorStatusCode(keyclaokClientHttpStatusCode))
+                                                return Mono.error(new ExternalServiceException("Error occurred during [undo-create] user on keycloak service side."));
+                                            return Mono.empty();
+                                        })
+                                        .then(Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("create", personServiceResponse.getBody()))));
+                            return Mono.empty();
+                        }))
+                .then(tokenService.login(createUserEvent.getIndividualData().getEmail(), createUserEvent.getPassword()));
     }
 
-    public Mono<TokenResponse> loginUser(LoginUserRequest loginUserRequest) {
-        return keycloakClient.loginUser(loginUserRequest.getEmail(), loginUserRequest.getPassword());
+    public Mono<TokenResponse> loginUser(LoginUserEvent loginUserEvent) {
+        return keycloakClient.loginUser(loginUserEvent.getEmail(), loginUserEvent.getPassword());
     }
 
-    public Mono<Void> updateUser(UpdateUserRequest updateUserRequest) {
-//        TODO: добавить операцию отката в сервисе person-service в случае ошибки [update] в individuals-api!
-//        TODO: в случае ошибки - откатить внесенные изменения в person-service на первом шаге!
-//        TODO: следует использовать паттерн transaction-outbox!
-        return personClient.updateUser(updateUserRequest)
-                .then(keycloakClient.updateUser(updateUserRequest));
+    public Mono<Void> updateUser(UpdateUserEvent updateUserEvent) {
+        return personClient.updateUser(updateUserEvent.getIndividualData())
+                .flatMap(personServiceResponse -> {
+                    if(HttpUtil.isErrorStatusCode(personServiceResponse.getStatusCode()))
+                        return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("update", personServiceResponse.getBody())));
+                    return Mono.empty();
+                })
+                .then(keycloakClient.updateUser(updateUserEvent)
+                        .flatMap(keycloakHttpResponseStatus -> {
+                            if(HttpUtil.isErrorStatusCode(keycloakHttpResponseStatus))
+                                return personClient.undoUpdateUser(updateUserEvent.getKeycloakUserId())
+                                        .flatMap(personServiceResponse -> {
+                                            if(HttpUtil.isErrorStatusCode(personServiceResponse.getStatusCode()))
+                                                return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("undo-update", personServiceResponse.getBody())));
+                                            return Mono.empty();
+                                        })
+                                        .then(Mono.error(new ServiceException(getIndividualsApiServiceCallExceptionMessage("update"))));
+                            return Mono.empty();
+                        }));
     }
 
     public Mono<Void> deleteUserByKeycloakId(String keycloakId) {
-//        TODO: добавить операцию отката в сервисе person-service в случае ошибки [delete] в individuals-api!
-//        TODO: в случае ошибки - откатить внесенные изменения в person-service на первом шаге!
-//        TODO: следует использовать паттерн transaction-outbox!
         return personClient.deleteUserByKeycloakId(keycloakId)
-                .then(keycloakClient.deleteUserByKeycloakId(keycloakId));
+                .flatMap(personServiceResponse -> {
+                    if(HttpUtil.isErrorStatusCode(personServiceResponse.getStatusCode()))
+                        return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("delete", personServiceResponse.getBody())));
+                    return Mono.empty();
+                })
+                .then(keycloakClient.deleteUserByKeycloakId(keycloakId)
+                        .flatMap(keycloakHttpResponseStatus -> {
+                            if(HttpUtil.isErrorStatusCode(keycloakHttpResponseStatus))
+                                return personClient.undoDeleteUserByKeycloakId(keycloakId)
+                                        .flatMap(personServiceResponse -> {
+                                            if(HttpUtil.isErrorStatusCode(personServiceResponse.getStatusCode()))
+                                                return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("undo-delete", personServiceResponse.getBody())));
+                                            return Mono.empty();
+                                        })
+                                        .then(Mono.error(new ServiceException(getIndividualsApiServiceCallExceptionMessage("delete"))));
+                            return Mono.empty();
+                        }));
     }
 
-    public Mono<UserInfoResponse> getUserInfo() {
+    public Mono<UserInfoResponse> getIndividualDataResponseAndCombineWithUserInfoResponse() {
         return ReactiveSecurityContextHolder.getContext()
-                .flatMap(context -> getUserInfo(Objects.requireNonNull(context.getAuthentication())))
-                .switchIfEmpty(Mono.error(new LackAccessTokenException("Access denied. Valid access token required.")));
+                .flatMap(context -> getUserInfoResponseFromIncomingJwt(Objects.requireNonNull(context.getAuthentication()))
+                        .flatMap(this::getIndividualDataResponseAndCombineWithUserInfoResponse))
+                        .switchIfEmpty(Mono.error(new LackAccessTokenException(getLackAccessTokenExceptionMessage())));
     }
 
-    private Mono<UserInfoResponse> getUserInfo(Authentication authentication) {
+    private Mono<UserInfoResponse> getUserInfoResponseFromIncomingJwt(Authentication authentication) {
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             UserInfoResponse response = new UserInfoResponse();
-            response.id(jwt.getSubject())
+            response.keycloakUserId(jwt.getSubject())
                     .email(jwt.getClaim("email"))
                     .roles(getUserRoles(jwt))
                     .created(jwt.getIssuedAt().atOffset(ZoneOffset.UTC));
             return Mono.just(response);
         }
-        return Mono.error(() -> new LackAccessTokenException("Access denied. Valid access token required."));
+        return Mono.error(() -> new LackAccessTokenException(getLackAccessTokenExceptionMessage()));
     }
 
     private List<String> getUserRoles(Jwt jwt) {
@@ -79,7 +117,30 @@ public class UserService {
                 .toList();
     }
 
-    public Mono<TokenResponse> refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        return tokenService.refreshToken(refreshTokenRequest);
+    private Mono<UserInfoResponse> getIndividualDataResponseAndCombineWithUserInfoResponse(UserInfoResponse userInfoResponse) {
+        return personClient.getUserInfoByKeycloakId(userInfoResponse.getKeycloakUserId())
+                .flatMap(personServiceResponse -> {
+                    if(HttpUtil.isErrorStatusCode(personServiceResponse.getStatusCode()))
+                        return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("get-info", personServiceResponse.getBody().toString())));
+                    userInfoResponse.setIndividualData((IndividualDataResponse) personServiceResponse.getBody());
+                    return Mono.just(userInfoResponse);
+                });
+    }
+
+    public Mono<TokenResponse> refreshToken(RefreshTokenDTO refreshTokenDTO) {
+        return tokenService.refreshToken(refreshTokenDTO);
+    }
+
+    private String getPersonServiceCallExceptionMessage(String operation, String message) {
+        return String.format("Error occurred during [%s user] on person-service side: %s", operation, message);
+    }
+
+    private String getIndividualsApiServiceCallExceptionMessage(String operation) {
+        return String.format("Error occurred during [%s user] on individuals-api-service side. Check individuals-api logs and try again later.", operation);
+    }
+
+    private String getLackAccessTokenExceptionMessage() {
+        return "Access denied. Valid access token required. " +
+                "The request must include [Authorization] header with [Bearer [access_token]] value";
     }
 }

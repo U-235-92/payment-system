@@ -14,8 +14,13 @@ import java.util.concurrent.TimeUnit;
 public class ApplicationMetricsRegistry implements MeterBinder {
 
     private static final String METRIC_PREFIX = "individuals_api.";
-    private static final String METRIC_LOGIN_COUNT = "loginUser.count";
-    private static final String METRIC_REGISTRATION_COUNT = "registration.count";
+
+    private static final String LOGIN_USER_METRIC_COUNT = "login_user.count";
+    private static final String CREATE_USER_METRIC_COUNT = "create_user.count";
+    private static final String UPDATE_USER_METRIC_COUNT = "update_user.count";
+    private static final String DELETE_USER_METRIC_COUNT = "delete_user.count";
+    private static final String GET_USER_INFO_METRIC_COUNT = "get_user_info.count";
+    private static final String REFRESH_TOKEN_METRIC_COUNT = "refresh_token.count";
 
     private static final String STATUS = "status";
 
@@ -24,19 +29,45 @@ public class ApplicationMetricsRegistry implements MeterBinder {
 
     private Timer requestLatencyTimer;
 
-    private Counter successLoginCounter;
-    private Counter failLoginCounter;
+    private Counter successLoginUserCounter;
+    private Counter failLoginUserCounter;
 
-    private Counter successRegistrationCounter;
-    private Counter failRegistrationCounter;
+    private Counter successCreateUserCounter;
+    private Counter failCreateUserCounter;
+
+    private Counter successUpdateUserCounter;
+    private Counter failUpdateUserCounter;
+
+    private Counter successDeleteUserByKeycloakIdCounter;
+    private Counter failDeleteUserByKeycloakIdCounter;
+
+    private Counter successGetUserInfoCounter;
+    private Counter failGetUserInfoCounter;
+
+    private Counter successRefreshTokenCounter;
+    private Counter failRefreshTokenCounter;
 
     @Override
     public void bindTo(MeterRegistry registry) {
         requestLatencyTimer = Timer.builder(METRIC_PREFIX + "request_latency").register(registry);
-        successLoginCounter = getCounter(METRIC_LOGIN_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
-        failLoginCounter = getCounter(METRIC_LOGIN_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
-        successRegistrationCounter = getCounter(METRIC_REGISTRATION_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
-        failRegistrationCounter = getCounter(METRIC_REGISTRATION_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successLoginUserCounter = getCounter(LOGIN_USER_METRIC_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failLoginUserCounter = getCounter(LOGIN_USER_METRIC_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successCreateUserCounter = getCounter(CREATE_USER_METRIC_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failCreateUserCounter = getCounter(CREATE_USER_METRIC_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successUpdateUserCounter = getCounter(UPDATE_USER_METRIC_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failUpdateUserCounter = getCounter(UPDATE_USER_METRIC_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successDeleteUserByKeycloakIdCounter = getCounter(DELETE_USER_METRIC_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failDeleteUserByKeycloakIdCounter = getCounter(DELETE_USER_METRIC_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successGetUserInfoCounter = getCounter(GET_USER_INFO_METRIC_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failGetUserInfoCounter = getCounter(GET_USER_INFO_METRIC_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successRefreshTokenCounter = getCounter(REFRESH_TOKEN_METRIC_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failRefreshTokenCounter = getCounter(REFRESH_TOKEN_METRIC_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
     }
 
     private Counter getCounter(String metricName, MeterRegistry meterRegistry, Iterable<Tag> tags) {
@@ -45,20 +76,52 @@ public class ApplicationMetricsRegistry implements MeterBinder {
                 .register(meterRegistry);
     }
 
-    public void incrementSuccessLoginCounter() {
-        successLoginCounter.increment();
+    public void incrementSuccessLoginUserCounter() {
+        successLoginUserCounter.increment();
     }
 
-    public void incrementFailLoginCounter() {
-        failLoginCounter.increment();
+    public void incrementFailLoginUserCounter() {
+        failLoginUserCounter.increment();
     }
 
-    public void incrementSuccessRegistrationCounter() {
-        successRegistrationCounter.increment();
+    public void incrementSuccessCreateUserCounter() {
+        successCreateUserCounter.increment();
     }
 
-    public void incrementFailRegistrationCounter() {
-        failRegistrationCounter.increment();
+    public void incrementFailCreateUserCounter() {
+        failCreateUserCounter.increment();
+    }
+
+    public void incrementSuccessUpdateUserCounter() {
+        successUpdateUserCounter.increment();
+    }
+
+    public void incrementFailUpdateUserCounter() {
+        failUpdateUserCounter.increment();
+    }
+
+    public void incrementSuccessDeleteUserByKeycloakIdCounter() {
+        successDeleteUserByKeycloakIdCounter.increment();
+    }
+
+    public void incrementFailDeleteUserByKeycloakIdCounter() {
+        failDeleteUserByKeycloakIdCounter.increment();
+    }
+
+    public void incrementSuccessGetUserInfoCounter() {
+        successGetUserInfoCounter.increment();
+    }
+
+    public void incrementFailGetUserInfoCounter() {
+        failGetUserInfoCounter.increment();
+    }
+
+    public void incrementSuccessRefreshTokenCounter() {
+        successRefreshTokenCounter.increment();
+    }
+
+    public void incrementFailRefreshTokenCounter() {
+        failRefreshTokenCounter.increment();
     }
 
     public void evaluateRequestLatency(long start, long end) {

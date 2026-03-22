@@ -1,6 +1,6 @@
 package aq.project.services;
 
-import aq.project.dto.RefreshTokenRequest;
+import aq.project.dto.RefreshTokenDTO;
 import aq.project.dto.TokenResponse;
 import aq.project.proxies.KeycloakClient;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class TokenService {
         return keycloakClient.loginUser(email, password);
     }
 
-    public Mono<TokenResponse> refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        return keycloakClient.refreshToken(refreshTokenRequest);
+    public Mono<TokenResponse> refreshToken(RefreshTokenDTO refreshTokenDTO) {
+        return keycloakClient.refreshToken(refreshTokenDTO);
     }
 }

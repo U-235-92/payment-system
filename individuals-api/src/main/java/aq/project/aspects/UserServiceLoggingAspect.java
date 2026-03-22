@@ -11,19 +11,19 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Aspect
 @Component
-public class LogUserServiceAspect {
+public class UserServiceLoggingAspect {
 
     @Around(value = "execution(* aq.project.services.UserService.getUserInfo(..))")
     public Mono<?> userInfoAspect(ProceedingJoinPoint pjp) throws Throwable {
         return ((Mono<UserInfoResponse>) pjp.proceed())
                 .doOnNext(response -> doLogOnUserInfoResponse(response))
-                .doOnError(exception -> log.error("Attempt of unsuccessful getting user-info. " +
+                .doOnError(exception -> log.error("Error occurred during get user info. " +
                         exception.getMessage(), exception));
     }
 
     private void doLogOnUserInfoResponse(UserInfoResponse response) {
         if(response != null) {
-            log.info(String.format("User with email %s has requested user-info.", response.getEmail()));
+            log.info(String.format("User with email %s requested user info.", response.getEmail()));
         }
     }
 }

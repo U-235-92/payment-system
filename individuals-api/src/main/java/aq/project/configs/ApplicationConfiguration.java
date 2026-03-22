@@ -1,5 +1,7 @@
 package aq.project.configs;
 
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -33,5 +35,10 @@ public class ApplicationConfiguration {
     Validator validator() {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         return validatorFactory.getValidator();
+    }
+
+    @Bean
+    public TimedAspect timedAspect(MeterRegistry meterRegistry) {
+        return new TimedAspect(meterRegistry);
     }
 }

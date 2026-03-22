@@ -34,7 +34,6 @@ public class SecurityConfiguration {
                         .pathMatchers(HttpMethod.POST, "/gateway/api/user/login-user").permitAll()
                         .pathMatchers(HttpMethod.PATCH, "/gateway/api/user/update-user").authenticated()
                         .pathMatchers(HttpMethod.DELETE, "/gateway/api/user/delete-user-by-keycloak-id/*").authenticated()
-                        .pathMatchers(HttpMethod.DELETE, "/gateway/api/user/delete-user-by-user-id/*").authenticated()
                         .pathMatchers(HttpMethod.GET, "/gateway/api/user/get-user-info").authenticated()
                         .pathMatchers(HttpMethod.POST, "/gateway/api/user/refresh-token").authenticated())
                 .build();

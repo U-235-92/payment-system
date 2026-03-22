@@ -48,5 +48,7 @@ application:
     endpoints:
       create-person: /api/person/create-person
       delete-person-by-keycloak-id: /api/person/delete-person-by-keycloak-id/
+      undo-delete-person-by-keycloak-id: /api/person/undo-delete-person-by-keycloak-id/
       update-person: /api/person/update-person
+      undo-update-person: /api/person/undo-update-person
       get-person-info-by-keycloak-id: /api/person/get-person-by-keycloak-id/

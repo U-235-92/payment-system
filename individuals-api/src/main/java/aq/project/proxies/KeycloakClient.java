@@ -1,13 +1,14 @@
 package aq.project.proxies;
 
-import aq.project.dto.CreateUserRequest;
-import aq.project.dto.RefreshTokenRequest;
+import aq.project.dto.CreateUserEvent;
+import aq.project.dto.RefreshTokenDTO;
 import aq.project.dto.TokenResponse;
-import aq.project.dto.UpdateUserRequest;
+import aq.project.dto.UpdateUserEvent;
 import aq.project.exceptions.IncorrectUserCredentialsException;
 import aq.project.exceptions.InvalidTokenException;
 import aq.project.exceptions.ServiceException;
 import aq.project.exceptions.UserExistsException;
+import aq.project.util.http.HttpUtil;
 import aq.project.util.keycloak.KeycloakUtils;
 import org.keycloak.OAuth2Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,21 +53,20 @@ public class KeycloakClient {
     @Autowired
     @Qualifier("keycloakWebClient")
     private WebClient webClient;
-
     @Autowired
     private JwtClient jwtClient;
 
-    public Mono<String> createUser(CreateUserRequest createUserRequest) {
+    public Mono<String> createUser(CreateUserEvent createUserEvent) {
         return jwtClient.requestAdminToken()
-                .flatMap(adminToken -> createUser(adminToken, createUserRequest));
+                .flatMap(adminToken -> createUser(adminToken, createUserEvent));
     }
 
-    private Mono<String> createUser(String adminToken, CreateUserRequest createUserRequest) {
+    private Mono<String> createUser(String adminToken, CreateUserEvent createUserEvent) {
         return webClient.post()
                 .uri(adminURI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + adminToken)
-                .bodyValue(KeycloakUtils.getUserRepresentation(createUserRequest))
+                .bodyValue(KeycloakUtils.getUserRepresentation(createUserEvent))
                 .exchangeToMono(this::extractUserId);
     }
 
@@ -79,6 +79,18 @@ public class KeycloakClient {
         String location = locationURI.getPath();
         String userId = location.substring(location.lastIndexOf('/') + 1);
         return Mono.just(userId);
+    }
+
+    public Mono<HttpStatusCode> undoCreateUser(String keycloakUserId) {
+        return jwtClient.requestAdminToken()
+                .flatMap(adminToken -> webClient.delete()
+                        .uri(adminURI + "/" + keycloakUserId)
+                        .header(HttpHeaders.AUTHORIZATION, BEARER + adminToken)
+                        .exchangeToMono(response -> {
+                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                                return Mono.just(response.statusCode());
+                            return Mono.just(HttpStatus.OK);
+                        }));
     }
 
     public Mono<TokenResponse> loginUser(String email, String password) {
@@ -106,47 +118,42 @@ public class KeycloakClient {
         String payload = accessToken.split("\\.")[1];
         ObjectMapper mapper = new ObjectMapper();
         String userId = mapper.readTree(Base64.getDecoder().decode(payload)).get("sub").asString();
-        tokenResponse.setUserId(userId);
+        tokenResponse.setKeycloakUserId(userId);
         return tokenResponse;
     }
 
-    public Mono<Void> updateUser(UpdateUserRequest updateUserRequest) {
-//        TODO: перенести в файл свойств адрес URI если он корректен!
+    public Mono<HttpStatusCode> updateUser(UpdateUserEvent updateUserEvent) {
         return jwtClient.requestAdminToken()
                 .flatMap(adminAccessToken -> webClient.put()
-                        .uri("http://localhost:8080/admin/realms/payment-system/users/" + updateUserRequest.getKeycloakUserId())
+                        .uri(adminURI + "/" + updateUserEvent.getKeycloakUserId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
-                        .bodyValue(KeycloakUtils.getUserRepresentation(updateUserRequest))
+                        .bodyValue(KeycloakUtils.getUserRepresentation(updateUserEvent))
                         .exchangeToMono(response -> {
-                            if(isErrorStatusCode(response.statusCode()))
-                                return Mono.error(new ServiceException("Error occurred during update user."));
-                            return response.bodyToMono(Void.class);
+                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                                return Mono.just(response.statusCode());
+                            return Mono.just(HttpStatus.OK);
                         }));
     }
 
-    public Mono<Void> deleteUserByKeycloakId(String keycloakUserId) {
+    public Mono<HttpStatusCode> deleteUserByKeycloakId(String keycloakUserId) {
         return jwtClient.requestAdminToken()
                 .flatMap(adminToken -> webClient.delete()
                         .uri(adminURI + "/" + keycloakUserId)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminToken)
                         .exchangeToMono(response -> {
-                            if(isErrorStatusCode(response.statusCode()))
-                                return Mono.error(new ServiceException("Error occurred during delete user."));
-                            return response.bodyToMono(Void.class);
+                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                                return Mono.just(response.statusCode());
+                            return Mono.just(HttpStatus.OK);
                         }));
     }
 
-    private boolean isErrorStatusCode(HttpStatusCode statusCode) {
-        return statusCode.is4xxClientError() || statusCode.is5xxServerError();
-    }
-
-    public Mono<TokenResponse> refreshToken(RefreshTokenRequest refreshTokenRequest) {
+    public Mono<TokenResponse> refreshToken(RefreshTokenDTO refreshTokenDTO) {
         LinkedMultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add(CLIENT_ID, clientID);
         form.add(CLIENT_SECRET, clientSecret);
         form.add(GRANT_TYPE, OAuth2Constants.REFRESH_TOKEN);
-        form.add(OAuth2Constants.REFRESH_TOKEN, refreshTokenRequest.getRefreshToken());
+        form.add(OAuth2Constants.REFRESH_TOKEN, refreshTokenDTO.getRefreshToken());
         return webClient.post()
                 .uri(tokenURI)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)

@@ -2,8 +2,8 @@ package aq.project.integration;
 
 import aq.project.dto.AddressDTO;
 import aq.project.dto.CountryDTO;
-import aq.project.dto.CreateIndividualDataRequest;
-import aq.project.dto.CreateUserRequest;
+import aq.project.dto.CreateIndividualDataEvent;
+import aq.project.dto.CreateUserEvent;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -43,11 +43,11 @@ public class UserRegistrationIntegrationTest {
 
     @Test
     public void testSuccessfulCreateUser() {
-        CreateUserRequest request = getValidCreateUserRequest();
+        CreateUserEvent Event = getValidCreateUserEvent();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
+                .bodyValue(Event)
                 .exchange()
                 .expectStatus()
                 .isCreated();
@@ -56,17 +56,17 @@ public class UserRegistrationIntegrationTest {
     @Test
     @Disabled("Test case connected with no valid admin client credentials")
     public void testFailCreateUserWithNoValidAdminClientCredentials() {
-        CreateUserRequest request = getValidCreateUserRequest();
+        CreateUserEvent Event = getValidCreateUserEvent();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
+                .bodyValue(Event)
                 .exchange()
                 .expectStatus()
                 .is5xxServerError();
     }
 
-    private CreateUserRequest getValidCreateUserRequest() {
+    private CreateUserEvent getValidCreateUserEvent() {
         CountryDTO countryDTO = new CountryDTO();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
@@ -78,35 +78,35 @@ public class UserRegistrationIntegrationTest {
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataRequest individualDataRequest = new CreateIndividualDataRequest();
-        individualDataRequest.setFirstName("firstName");
-        individualDataRequest.setLastName("lastName");
-        individualDataRequest.setEmail("email@post.aq");
-        individualDataRequest.phoneNumber("1234567890");
-        individualDataRequest.setPassportNumber("1234567890");
-        individualDataRequest.setAddress(addressDTO);
+        CreateIndividualDataEvent individualDataEvent = new CreateIndividualDataEvent();
+        individualDataEvent.setFirstName("firstName");
+        individualDataEvent.setLastName("lastName");
+        individualDataEvent.setEmail("email@post.aq");
+        individualDataEvent.phoneNumber("1234567890");
+        individualDataEvent.setPassportNumber("1234567890");
+        individualDataEvent.setAddress(addressDTO);
 
-        return new CreateUserRequest()
+        return new CreateUserEvent()
                 .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad458")
                 .username("username")
                 .password("password")
                 .confirmPassword("password")
-                .individualData(individualDataRequest);
+                .individualData(individualDataEvent);
     }
 
     @Test
     public void testDuplicateCreateUserFail() {
-        CreateUserRequest request = getDuplicateCreateUserRequest();
+        CreateUserEvent Event = getDuplicateCreateUserEvent();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
+                .bodyValue(Event)
                 .exchange()
                 .expectStatus()
                 .isEqualTo(HttpStatus.CONFLICT);
     }
 
-    private CreateUserRequest getDuplicateCreateUserRequest() {
+    private CreateUserEvent getDuplicateCreateUserEvent() {
         CountryDTO countryDTO = new CountryDTO();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
@@ -118,35 +118,35 @@ public class UserRegistrationIntegrationTest {
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataRequest individualDataRequest = new CreateIndividualDataRequest();
-        individualDataRequest.setFirstName("Alice");
-        individualDataRequest.setLastName("K");
-        individualDataRequest.setEmail("alice@post.aq");
-        individualDataRequest.phoneNumber("1234567890");
-        individualDataRequest.setPassportNumber("1234567890");
-        individualDataRequest.setAddress(addressDTO);
+        CreateIndividualDataEvent individualDataEvent = new CreateIndividualDataEvent();
+        individualDataEvent.setFirstName("Alice");
+        individualDataEvent.setLastName("K");
+        individualDataEvent.setEmail("alice@post.aq");
+        individualDataEvent.phoneNumber("1234567890");
+        individualDataEvent.setPassportNumber("1234567890");
+        individualDataEvent.setAddress(addressDTO);
 
-        return new CreateUserRequest()
+        return new CreateUserEvent()
                 .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad407")
                 .username("alice")
                 .password("password")
                 .confirmPassword("password")
-                .individualData(individualDataRequest);
+                .individualData(individualDataEvent);
     }
 
     @Test
-    public void testNoMatchPasswordsCreateUserRequest() {
-        CreateUserRequest request = getIncorrectCreateUserRequestWithDoNotMatchPasswords();
+    public void testNoMatchPasswordsCreateUserEvent() {
+        CreateUserEvent Event = getIncorrectCreateUserEventWithDoNotMatchPasswords();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
+                .bodyValue(Event)
                 .exchange()
                 .expectStatus()
                 .isBadRequest();
     }
 
-    private CreateUserRequest getIncorrectCreateUserRequestWithDoNotMatchPasswords() {
+    private CreateUserEvent getIncorrectCreateUserEventWithDoNotMatchPasswords() {
         CountryDTO countryDTO = new CountryDTO();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
@@ -158,36 +158,36 @@ public class UserRegistrationIntegrationTest {
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataRequest individualDataRequest = new CreateIndividualDataRequest();
-        individualDataRequest.setFirstName("Bob");
-        individualDataRequest.setLastName("K");
-        individualDataRequest.setEmail("bob@post.aq");
-        individualDataRequest.phoneNumber("1234567890");
-        individualDataRequest.setPassportNumber("1234567890");
-        individualDataRequest.setAddress(addressDTO);
+        CreateIndividualDataEvent individualDataEvent = new CreateIndividualDataEvent();
+        individualDataEvent.setFirstName("Bob");
+        individualDataEvent.setLastName("K");
+        individualDataEvent.setEmail("bob@post.aq");
+        individualDataEvent.phoneNumber("1234567890");
+        individualDataEvent.setPassportNumber("1234567890");
+        individualDataEvent.setAddress(addressDTO);
 
-        return new CreateUserRequest()
+        return new CreateUserEvent()
                 .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad477")
                 .username("bob")
                 .password("password")
                 .confirmPassword("123")
-                .individualData(individualDataRequest);
+                .individualData(individualDataEvent);
     }
 
     @Test
-    public void testNullFieldsCreateUserRequest() {
-        CreateUserRequest request = getIncorrectCreateUserRequestWithNullFields();
+    public void testNullFieldsCreateUserEvent() {
+        CreateUserEvent Event = getIncorrectCreateUserEventWithNullFields();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
+                .bodyValue(Event)
                 .exchange()
                 .expectStatus()
                 .isBadRequest();
     }
 
-    private CreateUserRequest getIncorrectCreateUserRequestWithNullFields() {
-        return new CreateUserRequest()
+    private CreateUserEvent getIncorrectCreateUserEventWithNullFields() {
+        return new CreateUserEvent()
                 .username(null)
                 .password("password")
                 .confirmPassword("123");
@@ -195,18 +195,18 @@ public class UserRegistrationIntegrationTest {
 
     @Test
     public void testCreateUserWithNullIndividualData() {
-        CreateUserRequest request = getIncorrectCreateUserRequestWithNullIndividualData();
+        CreateUserEvent Event = getIncorrectCreateUserEventWithNullIndividualData();
         webTestClient.post()
                 .uri("/v1/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
+                .bodyValue(Event)
                 .exchange()
                 .expectStatus()
                 .isBadRequest();
     }
 
-    private CreateUserRequest getIncorrectCreateUserRequestWithNullIndividualData() {
-        return new CreateUserRequest()
+    private CreateUserEvent getIncorrectCreateUserEventWithNullIndividualData() {
+        return new CreateUserEvent()
                 .username("test")
                 .password("password")
                 .confirmPassword("123")

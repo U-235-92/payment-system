@@ -1,7 +1,7 @@
 package aq.project.exceptions;
 
-public class InvalidUserRegistrationRequestException extends Exception {
-    public InvalidUserRegistrationRequestException(String message) {
+public class InvalidUserRegistrationEventException extends Exception {
+    public InvalidUserRegistrationEventException(String message) {
         super(message);
     }
 }

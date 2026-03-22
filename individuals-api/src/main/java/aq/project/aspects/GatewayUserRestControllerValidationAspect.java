@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 @Component
 @Validated
 @RequiredArgsConstructor
-public class InputArgsGatewayUserRestControllerAspect {
+public class GatewayUserRestControllerValidationAspect {
 
     private final Validator validator;
 
-    @Before("execution(* aq.project.controllers.ApiRestController.createUser(..)) && args(createUserEvent)")
+    @Before("execution(* aq.project.controllers.GatewayUserRestController.createUser(..)) && args(createUserEvent)")
     public void checkCreateUserViolations(CreateUserEvent createUserEvent) throws InvalidPasswordConfirmException, InvalidUserRegistrationEventException, LackIndividualsDataException {
         Set<ConstraintViolation<CreateUserEvent>> violations = validator.validate(createUserEvent);
         if(!violations.isEmpty()) {
@@ -57,7 +57,7 @@ public class InputArgsGatewayUserRestControllerAspect {
         return string == null || string.trim().isEmpty();
     }
 
-    @Before("execution(* aq.project.controllers.ApiRestController.loginUser(..)) && args(loginUserEvent)")
+    @Before("execution(* aq.project.controllers.GatewayUserRestController.loginUser(..)) && args(loginUserEvent)")
     public void checkLoginUserViolations(LoginUserEvent loginUserEvent) {
         Set<ConstraintViolation<LoginUserEvent>> violations = validator.validate(loginUserEvent);
         if(!violations.isEmpty()) {
@@ -69,7 +69,7 @@ public class InputArgsGatewayUserRestControllerAspect {
         }
     }
 
-    @Before("execution(* aq.project.controllers.ApiRestController.updateUser(..)) && args(updateUserEvent)")
+    @Before("execution(* aq.project.controllers.GatewayUserRestController.updateUser(..)) && args(updateUserEvent)")
     public void checkUpdateUserViolations(UpdateUserEvent updateUserEvent) {
         Set<ConstraintViolation<UpdateUserEvent>> violations = validator.validate(updateUserEvent);
         if(!violations.isEmpty()) {
@@ -81,12 +81,12 @@ public class InputArgsGatewayUserRestControllerAspect {
         }
     }
 
-    @Before("execution(* aq.project.controllers.ApiRestController.deleteUserByKeycloakId(..)) && args(keycloakId)")
+    @Before("execution(* aq.project.controllers.GatewayUserRestController.deleteUserByKeycloakId(..)) && args(keycloakId)")
     public void checkDeleteUserByKeycloakIdViolations(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String keycloakId) {
     }
 
-    @Before("execution(* aq.project.controllers.ApiRestController.refreshToken(..)) && args(refreshTokenDTO)")
-    public void checkRefreshTokenEventViolations(RefreshTokenDTO refreshTokenDTO) {
+    @Before("execution(* aq.project.controllers.GatewayUserRestController.refreshToken(..)) && args(refreshTokenDTO)")
+    public void checkRefreshTokenViolations(RefreshTokenDTO refreshTokenDTO) {
         Set<ConstraintViolation<RefreshTokenDTO>> violations = validator.validate(refreshTokenDTO);
         if(!violations.isEmpty()) {
             String msg = "Attempt of refresh token with wrong data: ";

@@ -1,6 +1,7 @@
 package aq.project.aspects;
 
-import aq.project.dto.CreateUserRequest;
+import aq.project.dto.CreateUserEvent;
+import aq.project.dto.UpdateUserEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -11,26 +12,42 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Aspect
 @Component
-public class LogKeycloakClientAspect {
+public class KeycloakClientLoggingAspect {
 
     @Around(value = "execution(* aq.project.proxies.KeycloakClient.createUser(..))")
-    public Mono<?> userCreationAspect(ProceedingJoinPoint pjp) throws Throwable {
-        CreateUserRequest createUserRequest = (CreateUserRequest) pjp.getArgs()[0];
+    public Mono<?> createUserAspect(ProceedingJoinPoint pjp) throws Throwable {
+        CreateUserEvent createUserRequest = (CreateUserEvent) pjp.getArgs()[0];
         return ((Mono<?>) pjp.proceed())
                 .doOnSuccess(obj -> log.info(String.format("User with email %s was registered successfully.", createUserRequest.getIndividualData().getEmail())))
                 .doOnError(this::logError);
     }
 
     @Around(value = "execution(* aq.project.proxies.KeycloakClient.loginUser(..))")
-    public Mono<?> userLoginAspect(ProceedingJoinPoint pjp) throws Throwable {
+    public Mono<?> loginUserAspect(ProceedingJoinPoint pjp) throws Throwable {
         String email = (String) pjp.getArgs()[0];
         return ((Mono<?>) pjp.proceed())
                 .doOnSuccess(obj -> log.info(String.format("User with email %s was logged in successfully.", email)))
                 .doOnError(this::logError);
     }
 
+    @Around(value = "execution(* aq.project.proxies.KeycloakClient.updateUser(..))")
+    public Mono<?> updateUserAspect(ProceedingJoinPoint pjp) throws Throwable {
+        UpdateUserEvent updateUserEvent = (UpdateUserEvent) pjp.getArgs()[0];
+        return ((Mono<?>) pjp.proceed())
+                .doOnSuccess(obj -> log.info(String.format("User with keycloakId %s was updated successfully.", updateUserEvent.getKeycloakUserId())))
+                .doOnError(this::logError);
+    }
+
+    @Around(value = "execution(* aq.project.proxies.KeycloakClient.deleteUserByKeycloakId(..))")
+    public Mono<?> deleteUserByKeycloakIdAspect(ProceedingJoinPoint pjp) throws Throwable {
+        String keycloakUserId = (String) pjp.getArgs()[0];
+        return ((Mono<?>) pjp.proceed())
+                .doOnSuccess(obj -> log.info(String.format("User with keycloakId %s was deleted successfully.", keycloakUserId)))
+                .doOnError(this::logError);
+    }
+
     @Around(value = "execution(* aq.project.proxies.KeycloakClient.refreshToken(..))")
-    public Mono<?> userRefreshTokenAspect(ProceedingJoinPoint pjp) throws Throwable {
+    public Mono<?> refreshTokenAspect(ProceedingJoinPoint pjp) throws Throwable {
         return ((Mono<?>) pjp.proceed())
                 .doOnSuccess(obj -> log.info("Token was refreshed successfully."))
                 .doOnError(this::logError);

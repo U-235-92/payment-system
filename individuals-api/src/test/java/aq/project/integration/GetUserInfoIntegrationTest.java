@@ -1,7 +1,7 @@
 package aq.project.integration;
 
 import aq.project.controllers.GatewayUserRestController;
-import aq.project.dto.LoginUserRequest;
+import aq.project.dto.LoginUserEvent;
 import aq.project.dto.TokenResponse;
 import aq.project.exceptions.IncorrectUserCredentialsException;
 import aq.project.util.TestApplicationProperties;
@@ -41,7 +41,7 @@ public class UserInfoIntegrationTest {
 
     @Test
     public void testSuccessGetUserInfo() throws IncorrectUserCredentialsException {
-        LoginUserRequest userLoginRequest = new LoginUserRequest()
+        LoginUserEvent userLoginRequest = new LoginUserEvent()
                 .email("alexander@post.aq")
                 .password("123");
         TokenResponse tokenResponse = authController.loginUser(userLoginRequest)

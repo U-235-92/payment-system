@@ -2,6 +2,7 @@ package aq.project.util;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.springframework.test.context.DynamicPropertyRegistry;
+import org.testcontainers.containers.GenericContainer;
 
 public class TestApplicationProperties {
 
@@ -32,6 +33,26 @@ public class TestApplicationProperties {
             registry.add("keycloak.admin.client-id", () -> ADMIN_CLIENT_ID);
             registry.add("keycloak.admin.client-secret", () -> CLIENT_SECRET);
             registry.add("keycloak.admin-uri", () -> baseUrl + ADMIN_URI);
+        }
+    }
+
+    public static class PersonServiceProperties {
+        public static void registerApplicationContextContainerProperties(DynamicPropertyRegistry registry, GenericContainer<?> genericContainer) {
+//            Set up Individuals-API actual Person-service URI
+            String genericContainerHost = genericContainer.getHost();
+            int genericContainerPort = genericContainer.getMappedPort(8082);
+            String actualPersonServiceUri = String.format("http://%s:%d", genericContainerHost, genericContainerPort);
+            registry.add("application.person-service.uri", () -> actualPersonServiceUri);
+
+//            Set up Person-service actual Keycloak connection (as resource service) URIs
+            String keycloakContainerHost = TestContainers.Keycloak.KEYCLOAK_CONTAINER.getHost();
+            int keycloakContainerPort = TestContainers.Keycloak.KEYCLOAK_CONTAINER.getMappedPort(8080);
+            genericContainer.withEnv("SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI",
+                    String.format("http://%s:%d/realms/payment-system",
+                            keycloakContainerHost, keycloakContainerPort));
+            genericContainer.withEnv("SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI",
+                    String.format("http://%s:%d/realms/payment-system/protocol/openid-connect/certs",
+                            keycloakContainerHost, keycloakContainerPort));
         }
     }
 }

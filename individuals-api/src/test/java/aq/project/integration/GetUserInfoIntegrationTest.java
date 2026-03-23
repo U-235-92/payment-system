@@ -22,7 +22,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DirtiesContext
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserInfoIntegrationTest {
+public class GetUserInfoIntegrationTest {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -31,7 +31,7 @@ public class UserInfoIntegrationTest {
     private GatewayUserRestController authController;
 
     @Container
-    private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.CONTAINER;
+    private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.KEYCLOAK_CONTAINER;
 
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {

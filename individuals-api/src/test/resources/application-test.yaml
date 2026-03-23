@@ -3,30 +3,8 @@ server:
 spring:
   application:
     name: individuals-api
-  profiles:
-    active:
-      - dev
   main:
     web-application-type: reactive
-  config:
-    import:
-      - optional:application-secrets.yaml
-      - optional:application-keycloak.yaml
-      - optional:application-keycloak-secrets.yaml
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${keycloak.issuer-uri}
-          jwk-set-uri: ${keycloak.issuer-uri}/protocol/openid-connect/certs
-      client:
-        provider:
-          keycloak:
-            issuer-uri: ${keycloak.issuer-uri}
-            token-uri: ${keycloak.server-uri}/realms/${keycloak.realm}/protocol/openid-connect/token
-        registration:
-          keycloak:
-            client-id: individuals-api
 management:
   otlp:
     metrics:

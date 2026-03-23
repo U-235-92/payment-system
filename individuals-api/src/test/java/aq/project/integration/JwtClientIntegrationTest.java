@@ -23,7 +23,7 @@ public class JwtClientIntegrationTest {
     private JwtClient jwtClient;
 
     @Container
-    private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.CONTAINER;
+    private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.KEYCLOAK_CONTAINER;
 
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {

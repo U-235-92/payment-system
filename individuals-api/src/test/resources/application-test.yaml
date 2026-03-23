@@ -1,0 +1,54 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: individuals-api
+  profiles:
+    active:
+      - dev
+  main:
+    web-application-type: reactive
+  config:
+    import:
+      - optional:application-secrets.yaml
+      - optional:application-keycloak.yaml
+      - optional:application-keycloak-secrets.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${keycloak.issuer-uri}
+          jwk-set-uri: ${keycloak.issuer-uri}/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${keycloak.issuer-uri}
+            token-uri: ${keycloak.server-uri}/realms/${keycloak.realm}/protocol/openid-connect/token
+        registration:
+          keycloak:
+            client-id: individuals-api
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: individuals-api
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+application:
+  person-service:
+    uri: http://localhost:8082
+    endpoints:
+      create-person: /api/person/create-person
+      delete-person-by-keycloak-id: /api/person/delete-person-by-keycloak-id/
+      undo-delete-person-by-keycloak-id: /api/person/undo-delete-person-by-keycloak-id/
+      update-person: /api/person/update-person
+      undo-update-person: /api/person/undo-update-person
+      get-person-info-by-keycloak-id: /api/person/get-person-by-keycloak-id/

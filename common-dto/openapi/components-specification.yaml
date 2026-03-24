@@ -17,23 +17,22 @@ components:
       bearerFormat: JWT
 
   schemas:
+    UserInfoResponseDTO:
+      $ref: "./components/schemas/dto/response/response-user-info-dto-schema.yaml"
 
-#    Response schemas
-    TokenResponse:
-      $ref: "./components/schemas/response/token-response-schema.yaml"
-    UserInfoResponse:
-      $ref: "./components/schemas/response/user-info-response-schema.yaml"
+    CreateUserDTO:
+      $ref: "./components/schemas/dto/create/create-user-dto-schema.yaml"
 
-#      Event schemas
-    CreateUserEvent:
-      $ref: "./components/schemas/event/create/create-user-event-schema.yaml"
-    UpdateUserEvent:
-      $ref: "./components/schemas/event/update/update-user-event-schema.yaml"
-    LoginUserEvent:
-      $ref: "./components/schemas/event/login/login-user-event-schema.yaml"
+    UpdateUserDTO:
+      $ref: "./components/schemas/dto/update/update-user-dto-schema.yaml"
 
-#      DTO schemas
+    LoginUserDTO:
+      $ref: "./components/schemas/dto/login/login-user-dto-schema.yaml"
+
     RefreshTokenDTO:
-      $ref: "./components/schemas/dto/refresh-token-dto-schema.yaml"
+      $ref: "./components/schemas/dto/token/refresh-token-dto-schema.yaml"
+    ResponseTokenDTO:
+      $ref: "./components/schemas/dto/token/response-token-dto-schema.yaml"
+
     UndoOperationDTO:
-      $ref: "./components/schemas/dto/undo-operation-dto-schema.yaml"
+      $ref: "./components/schemas/dto/undo/undo-operation-dto-schema.yaml"

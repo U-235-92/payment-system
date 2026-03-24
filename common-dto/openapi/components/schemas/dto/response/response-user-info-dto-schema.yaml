@@ -13,4 +13,4 @@ properties:
     type: string
     format: date-time
   individual_data:
-    $ref: "./individual-data-response-schema.yaml"
+    $ref: "./response-individual-data-dto-schema.yaml"

@@ -1,5 +1,5 @@
 type: object
-title: IndividualDataResponse
+title: IndividualDataResponseDTO
 required: [first_name, last_name, email, phone_number, passport_number, address]
 properties:
   first_name:
@@ -13,4 +13,4 @@ properties:
   passport_number:
     type: string
   address:
-    $ref: "../dto/address-dto-schema.yaml"
+    $ref: "../common/address-dto-schema.yaml"

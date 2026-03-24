@@ -11,4 +11,4 @@ properties:
     type: long
   token_type:
     type: string
-    example: Bearer
+    example: Bearer [token]

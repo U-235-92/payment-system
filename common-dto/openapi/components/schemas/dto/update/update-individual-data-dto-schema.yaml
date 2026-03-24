@@ -1,14 +1,12 @@
 type: object
-title: CreateIndividualDataEvent
-required: [first_name, last_name, email, phone_number, passport_number, address]
+title: UpdateIndividualDataDTO
+required: [keycloak_user_id, first_name, last_name, phone_number, passport_number, address]
 properties:
   keycloak_user_id:
     type: string
   first_name:
     type: string
   last_name:
-    type: string
-  email:
     type: string
   phone_number:
     type: string
@@ -18,4 +16,4 @@ properties:
     type: boolean
     default: true
   address:
-    $ref: "../../dto/address-dto-schema.yaml"
+    $ref: "../common/address-dto-schema.yaml"

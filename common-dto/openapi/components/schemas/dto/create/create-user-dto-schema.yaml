@@ -1,11 +1,13 @@
 type: object
-required: [keycloak_user_id, password, confirm_password, individual_data]
+required: [username, password, confirm_password, individual_data]
 properties:
   keycloak_user_id:
+    type: string
+  username:
     type: string
   password:
     type: string
   confirm_password:
     type: string
   individual_data:
-    $ref: "./update-individual-data-event-schema.yaml"
+    $ref: "./create-individual-data-dto-schema.yaml"

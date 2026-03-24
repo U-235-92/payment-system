@@ -1,9 +1,9 @@
 package aq.project.controllers;
 
-import aq.project.dto.CreateIndividualDataEvent;
-import aq.project.dto.IndividualDataResponse;
+import aq.project.dto.CreateIndividualDataDTO;
+import aq.project.dto.IndividualDataResponseDTO;
 import aq.project.dto.UndoOperationDTO;
-import aq.project.dto.UpdateIndividualDataEvent;
+import aq.project.dto.UpdateIndividualDataDTO;
 import aq.project.entities.Person;
 import aq.project.entities.UndoEvent;
 import aq.project.exceptions.*;
@@ -28,8 +28,8 @@ public class PersonRestController {
 
     @PostMapping("/create-person")
     @Timed(value = "person_service.create_person_time")
-    public ResponseEntity<String> createPerson(@RequestBody CreateIndividualDataEvent createIndividualDataEvent) throws UserExistsException, CountryNotExistsException {
-        Person person = individualMapper.toPerson(createIndividualDataEvent);
+    public ResponseEntity<String> createPerson(@RequestBody CreateIndividualDataDTO createIndividualDataDTO) throws UserExistsException, CountryNotExistsException {
+        Person person = individualMapper.toPerson(createIndividualDataDTO);
         String userId = personService.createPerson(person);
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(userId);
     }
@@ -51,8 +51,8 @@ public class PersonRestController {
 
     @PatchMapping("/update-person")
     @Timed(value = "person_service.update_person_time")
-    public ResponseEntity<Void> updatePerson(@RequestBody UpdateIndividualDataEvent updateIndividualDataEvent) throws UserNotExistsException, CountryNotExistsException {
-        Person person = individualMapper.toPerson(updateIndividualDataEvent);
+    public ResponseEntity<Void> updatePerson(@RequestBody UpdateIndividualDataDTO updateIndividualDataDTO) throws UserNotExistsException, CountryNotExistsException {
+        Person person = individualMapper.toPerson(updateIndividualDataDTO);
         personService.updatePerson(person);
         return ResponseEntity.ok().build();
     }
@@ -67,8 +67,8 @@ public class PersonRestController {
 
     @GetMapping("/get-person-by-keycloak-id/{keycloakId}")
     @Timed(value = "person_service.get_person_by_keycloak_id_time")
-    public ResponseEntity<IndividualDataResponse> getPersonByKeycloakId(@PathVariable String keycloakId) throws UserNotExistsException {
-        IndividualDataResponse response = individualMapper.toIndividualResponse(personService.getPersonByKeycloakId(keycloakId));
+    public ResponseEntity<IndividualDataResponseDTO> getPersonByKeycloakId(@PathVariable String keycloakId) throws UserNotExistsException {
+        IndividualDataResponseDTO response = individualMapper.toIndividualResponseDTO(personService.getPersonByKeycloakId(keycloakId));
         return ResponseEntity.ok().body(response);
     }
 }

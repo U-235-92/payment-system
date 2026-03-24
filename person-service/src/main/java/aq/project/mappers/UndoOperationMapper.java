@@ -14,37 +14,37 @@ import java.util.UUID;
 public abstract class UndoOperationMapper {
 
     @Mapping(target = "id", source = "id")
-    @Mapping(target = "personKeycloakId", expression = "java(toPersonKeycloakId(event))")
-    @Mapping(target = "operation", expression = "java(toOperation(event))")
-    @Mapping(target = "timestamp", expression = "java(toTimestamp(event))")
-    @Mapping(target = "description", expression = "java(toDescription(event))")
-    public abstract UndoEvent toUndoEvent(UndoOperationDTO event) throws IllegalUndoEventPayloadPropertyException;
+    @Mapping(target = "personKeycloakId", expression = "java(toPersonKeycloakId(dto))")
+    @Mapping(target = "operation", expression = "java(toOperation(dto))")
+    @Mapping(target = "timestamp", expression = "java(toTimestamp(dto))")
+    @Mapping(target = "description", expression = "java(toDescription(dto))")
+    public abstract UndoEvent toUndoEvent(UndoOperationDTO dto) throws IllegalUndoEventPayloadPropertyException;
 
     @Named("toPersonKeycloakId")
-    protected UUID toPersonKeycloakId(UndoOperationDTO event) throws IllegalUndoEventPayloadPropertyException {
-        if(event.getPayload().get("person-keycloak-id") == null)
+    protected UUID toPersonKeycloakId(UndoOperationDTO dto) throws IllegalUndoEventPayloadPropertyException {
+        if(dto.getPayload().get("person-keycloak-id") == null)
             throw getIllegalUndoEventPayloadPropertyException("person-keycloak-id", "null");
-        return UUID.fromString(event.getPayload().get("person-keycloak-id"));
+        return UUID.fromString(dto.getPayload().get("person-keycloak-id"));
     }
 
     @Named("toOperation")
-    protected String toOperation(UndoOperationDTO event) {
-        return event.getOperation().getValue();
+    protected String toOperation(UndoOperationDTO dto) {
+        return dto.getOperation().getValue();
     }
 
     @Named("toTimestamp")
-    protected long toTimestamp(UndoOperationDTO event) throws IllegalUndoEventPayloadPropertyException {
-        if(event.getPayload().get("timestamp") == null)
+    protected long toTimestamp(UndoOperationDTO dto) throws IllegalUndoEventPayloadPropertyException {
+        if(dto.getPayload().get("timestamp") == null)
             throw getIllegalUndoEventPayloadPropertyException("timestamp", "null");
-        String created = event.getPayload().get("timestamp");
+        String created = dto.getPayload().get("timestamp");
         return Long.parseLong(created);
     }
 
     @Named("toDescription")
-    protected String toDescription(UndoOperationDTO event) throws IllegalUndoEventPayloadPropertyException {
-        if(event.getPayload().get("description") == null)
+    protected String toDescription(UndoOperationDTO dto) throws IllegalUndoEventPayloadPropertyException {
+        if(dto.getPayload().get("description") == null)
             throw getIllegalUndoEventPayloadPropertyException("description", "null");
-        return event.getPayload().get("description");
+        return dto.getPayload().get("description");
     }
 
     private IllegalUndoEventPayloadPropertyException getIllegalUndoEventPayloadPropertyException(String propertyName, String propertyValue) {

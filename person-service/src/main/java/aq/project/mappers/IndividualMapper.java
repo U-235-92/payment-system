@@ -23,29 +23,29 @@ public abstract class IndividualMapper {
 
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "individual", expression = "java(toIndividual(event))")
-    @Mapping(target = "address", expression = "java(toAddress(event.getAddress()))")
+    @Mapping(target = "individual", expression = "java(toIndividual(dto))")
+    @Mapping(target = "address", expression = "java(toAddress(dto.getAddress()))")
     @Mapping(target = "keycloakId", source = "keycloakUserId")
     @Mapping(target = "active", source = "active")
-    public abstract Person toPerson(CreateIndividualDataEvent event);
+    public abstract Person toPerson(CreateIndividualDataDTO dto);
 
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "passportNumber", source = "passportNumber")
-    protected abstract Individual toIndividual(CreateIndividualDataEvent event);
+    protected abstract Individual toIndividual(CreateIndividualDataDTO dto);
 
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "individual", expression = "java(toIndividual(event))")
-    @Mapping(target = "address", expression = "java(toAddress(event.getAddress()))")
+    @Mapping(target = "individual", expression = "java(toIndividual(dto))")
+    @Mapping(target = "address", expression = "java(toAddress(dto.getAddress()))")
     @Mapping(target = "keycloakId", source = "keycloakUserId")
     @Mapping(target = "active", source = "active")
-    public abstract Person toPerson(UpdateIndividualDataEvent event) throws UserNotExistsException;
+    public abstract Person toPerson(UpdateIndividualDataDTO dto) throws UserNotExistsException;
 
-    @Mapping(target = "email", expression = "java(getPersonEmail(event.getKeycloakUserId()))")
+    @Mapping(target = "email", expression = "java(getPersonEmail(dto.getKeycloakUserId()))")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "passportNumber", source = "passportNumber")
-    protected abstract Individual toIndividual(UpdateIndividualDataEvent event) throws UserNotExistsException;
+    protected abstract Individual toIndividual(UpdateIndividualDataDTO dto) throws UserNotExistsException;
 
     @Named("getPersonEmail")
     protected String getPersonEmail(String keycloakUserId) throws UserNotExistsException {
@@ -70,7 +70,7 @@ public abstract class IndividualMapper {
     @Mapping(target = "phoneNumber", expression = "java(person.getIndividual().getPhoneNumber())")
     @Mapping(target = "passportNumber", expression = "java(person.getIndividual().getPassportNumber())")
     @Mapping(target = "address", expression = "java(toAddressDTO(person.getAddress()))")
-    public abstract IndividualDataResponse toIndividualResponse(Person person);
+    public abstract IndividualDataResponseDTO toIndividualResponseDTO(Person person);
 
     @Named("toStringUUID")
     protected String toStringUUID(UUID uuid) {

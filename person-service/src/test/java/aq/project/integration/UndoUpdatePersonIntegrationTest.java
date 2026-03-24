@@ -58,7 +58,7 @@ public class UndoUpdatePersonIntegrationTest {
     @BeforeEach
     public void setUp() throws UserExistsException, CountryNotExistsException {
         countryRepository.save(Countries.getValidTestCountry());
-        personRestController.createPerson(DTO.getValidCreateIndividualDataEvent());
+        personRestController.createPerson(DTO.getValidCreateIndividualDataDTO());
     }
 
     @AfterEach
@@ -69,18 +69,18 @@ public class UndoUpdatePersonIntegrationTest {
 
     @Test
     public void successUndoUpdatePersonTest() throws Exception {
-        personRestController.updatePerson(DTO.getUpdateIndividualDataEvent());
+        personRestController.updatePerson(DTO.getUpdateIndividualDataDTO());
         personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO());
         Optional<Person> person = personRepository.findByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
         Assertions.assertNotNull(person.get());
-        Assertions.assertEquals(DTO.getValidCreateIndividualDataEvent().getKeycloakUserId(), person.get().getKeycloakId());
-        Assertions.assertEquals(DTO.getValidCreateIndividualDataEvent().getFirstName(), person.get().getFirstName());
-        Assertions.assertEquals(DTO.getValidCreateIndividualDataEvent().getLastName(), person.get().getLastName());
+        Assertions.assertEquals(DTO.getValidCreateIndividualDataDTO().getKeycloakUserId(), person.get().getKeycloakId());
+        Assertions.assertEquals(DTO.getValidCreateIndividualDataDTO().getFirstName(), person.get().getFirstName());
+        Assertions.assertEquals(DTO.getValidCreateIndividualDataDTO().getLastName(), person.get().getLastName());
     }
 
     @Test
     public void failCallUndoUpdatePersonAfterCallUndoUpdatePersonTest() throws Exception {
-        personRestController.updatePerson(DTO.getUpdateIndividualDataEvent());
+        personRestController.updatePerson(DTO.getUpdateIndividualDataDTO());
 //        First [undo-update] call
         personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO());
 //        Second [undo-update] call

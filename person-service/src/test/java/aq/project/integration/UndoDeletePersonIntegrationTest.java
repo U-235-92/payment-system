@@ -58,7 +58,7 @@ public class UndoDeletePersonIntegrationTest {
     @BeforeEach
     public void setUp() throws UserExistsException, CountryNotExistsException {
         countryRepository.save(Countries.getValidTestCountry());
-        personRestController.createPerson(DTO.getValidCreateIndividualDataEvent());
+        personRestController.createPerson(DTO.getValidCreateIndividualDataDTO());
     }
 
     @AfterEach
@@ -88,7 +88,7 @@ public class UndoDeletePersonIntegrationTest {
 
     @Test
     public void failCallUndoDeletePersonWhenPreviousCallWasNotDeleteTest() throws Exception {
-        personRestController.updatePerson(DTO.getUpdateIndividualDataEvent());
+        personRestController.updatePerson(DTO.getUpdateIndividualDataDTO());
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
                 () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
     }

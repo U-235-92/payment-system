@@ -1,13 +1,11 @@
 package aq.project.proxies;
 
 import aq.project.dto.*;
-import aq.project.exceptions.ExternalServiceException;
-import aq.project.util.http.HttpUtil;
+import aq.project.util.http.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -41,33 +39,33 @@ public class PersonClient {
     private String getPersonByKeycloakIdEndpoint;
 
     @Autowired
+    private JwtClient jwtClient;
+    @Autowired
     @Qualifier("personWebClient")
     private WebClient personWebClient;
-    @Autowired
-    private JwtClient jwtClient;
 
-    public Mono<ResponseEntity<String>> createUser(CreateIndividualDataEvent createIndividualDataEvent, String keycloakUserId) {
-        createIndividualDataEvent.setKeycloakUserId(keycloakUserId);
+    public Mono<ResponseEntity<String>> createUser(CreateIndividualDataDTO createIndividualDataDTO, String keycloakUserId) {
+        createIndividualDataDTO.setKeycloakUserId(keycloakUserId);
         return jwtClient.requestAdminToken()
                 .flatMap(adminAccessToken -> personWebClient.post()
                         .uri(createPersonEndpoint)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
-                        .bodyValue(createIndividualDataEvent)
+                        .bodyValue(createIndividualDataDTO)
                         .exchangeToMono(response ->  {
-                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
                                 return getErrorResponseEntityMono(response);
                             return getOkResponseEntityMono();
                         }));
     }
 
-    public Mono<ResponseEntity<String>> updateUser(UpdateIndividualDataEvent updateIndividualDataEvent) {
+    public Mono<ResponseEntity<String>> updateUser(UpdateIndividualDataDTO updateIndividualDataDTO) {
         return jwtClient.requestAdminToken()
                 .flatMap(adminAccessToken -> personWebClient.patch()
                         .uri(updatePersonEndpoint)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
-                        .bodyValue(updateIndividualDataEvent)
+                        .bodyValue(updateIndividualDataDTO)
                         .exchangeToMono(response ->  {
-                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
                                 return getErrorResponseEntityMono(response);
                             return getOkResponseEntityMono();
                         }));
@@ -87,7 +85,7 @@ public class PersonClient {
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
                         .bodyValue(undoOperationDTO)
                         .exchangeToMono(response ->  {
-                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
                                 return getErrorResponseEntityMono(response);
                             return getOkResponseEntityMono();
                         }));
@@ -99,7 +97,7 @@ public class PersonClient {
                         .uri(deletePersonByKeycloakIdEndpoint + keycloakUserId)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
                         .exchangeToMono(response ->  {
-                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
                                 return getErrorResponseEntityMono(response);
                             return getOkResponseEntityMono();
                         }));
@@ -111,7 +109,7 @@ public class PersonClient {
                         .uri(undoDeletePersonByKeycloakIdEndpoint + keycloakUserId)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
                         .exchangeToMono(response ->  {
-                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
                                 return getErrorResponseEntityMono(response);
                             return getOkResponseEntityMono();
                         }));
@@ -123,10 +121,10 @@ public class PersonClient {
                         .uri(getPersonByKeycloakIdEndpoint + keycloakUserId)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
                         .exchangeToMono(response ->  {
-                            if(HttpUtil.isErrorStatusCode(response.statusCode()))
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
                                 return response.bodyToMono(ErrorDTO.class)
                                         .map(errorDTO -> ResponseEntity.status(errorDTO.httpStatus()).body(errorDTO.message()));
-                            return response.bodyToMono(IndividualDataResponse.class)
+                            return response.bodyToMono(IndividualDataResponseDTO.class)
                                     .map(ResponseEntity::ok);
                         }));
     }

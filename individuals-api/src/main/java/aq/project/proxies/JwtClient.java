@@ -2,7 +2,7 @@ package aq.project.proxies;
 
 import aq.project.exceptions.ServiceException;
 import aq.project.repositories.JwtTokenRepository;
-import aq.project.util.jwt.JwtUtil;
+import aq.project.util.jwt.JwtUtils;
 import org.keycloak.OAuth2Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,7 +45,7 @@ public class JwtClient {
     public Mono<String> requestAdminToken() {
         if(jwtTokenRepository.isAdminTokenExists()) {
             String adminAccessToken = jwtTokenRepository.getAdminAccessToken();
-            if(JwtUtil.isTokenExpired(adminAccessToken))
+            if(JwtUtils.isTokenExpired(adminAccessToken))
                 return requestNewAdminToken();
             return Mono.just(adminAccessToken);
         } else {

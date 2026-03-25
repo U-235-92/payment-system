@@ -19,6 +19,7 @@ public class GatewayUserRestControllerMetricAspect {
 
     private final ApplicationMetricsRegistry applicationMetricsRegistry;
 
+//    Changed on @Timed annotation under all the methods of GatewayUserRestController
 //    @Around(value = "execution(* aq.project.controllers.GatewayUserRestController.*(..))")
 //    public Object requestLatencyAspect(ProceedingJoinPoint pjp) {
 //        return Mono.just(System.nanoTime()).flatMap(start -> evaluateRequestLatency(start, pjp));

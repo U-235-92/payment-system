@@ -1,7 +1,7 @@
 package aq.project.util.keycloak;
 
-import aq.project.dto.CreateUserEvent;
-import aq.project.dto.UpdateUserEvent;
+import aq.project.dto.CreateUserDTO;
+import aq.project.dto.UpdateUserDTO;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
@@ -9,38 +9,38 @@ import java.util.List;
 
 public final class KeycloakUtils {
 
-    public static UserRepresentation getUserRepresentation(UpdateUserEvent updateUserEvent) {
+    public static UserRepresentation getUserRepresentation(UpdateUserDTO updateUserDTO) {
         UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setFirstName(updateUserEvent.getIndividualData().getFirstName());
-        userRepresentation.setLastName(updateUserEvent.getIndividualData().getLastName());
-        userRepresentation.setCredentials(List.of(getCredentialRepresentation(updateUserEvent)));
+        userRepresentation.setFirstName(updateUserDTO.getIndividualData().getFirstName());
+        userRepresentation.setLastName(updateUserDTO.getIndividualData().getLastName());
+        userRepresentation.setCredentials(List.of(getCredentialRepresentation(updateUserDTO)));
         return userRepresentation;
     }
 
-    private static CredentialRepresentation getCredentialRepresentation(UpdateUserEvent updateUserEvent) {
+    private static CredentialRepresentation getCredentialRepresentation(UpdateUserDTO updateUserDTO) {
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setTemporary(false);
         credentialRepresentation.setType("password");
-        credentialRepresentation.setValue(updateUserEvent.getPassword());
+        credentialRepresentation.setValue(updateUserDTO.getPassword());
         return credentialRepresentation;
     }
 
-    public static UserRepresentation getUserRepresentation(CreateUserEvent createUserEvent) {
+    public static UserRepresentation getUserRepresentation(CreateUserDTO createUserDTO) {
         UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setFirstName(createUserEvent.getIndividualData().getFirstName());
-        userRepresentation.setLastName(createUserEvent.getIndividualData().getLastName());
-        userRepresentation.setUsername(createUserEvent.getUsername());
-        userRepresentation.setEmail(createUserEvent.getIndividualData().getEmail());
+        userRepresentation.setFirstName(createUserDTO.getIndividualData().getFirstName());
+        userRepresentation.setLastName(createUserDTO.getIndividualData().getLastName());
+        userRepresentation.setUsername(createUserDTO.getUsername());
+        userRepresentation.setEmail(createUserDTO.getIndividualData().getEmail());
         userRepresentation.setEnabled(true);
-        userRepresentation.setCredentials(List.of(getCredentialRepresentation(createUserEvent)));
+        userRepresentation.setCredentials(List.of(getCredentialRepresentation(createUserDTO)));
         return userRepresentation;
     }
 
-    private static CredentialRepresentation getCredentialRepresentation(CreateUserEvent createUserEvent) {
+    private static CredentialRepresentation getCredentialRepresentation(CreateUserDTO createUserDTO) {
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setTemporary(false);
         credentialRepresentation.setType("password");
-        credentialRepresentation.setValue(createUserEvent.getPassword());
+        credentialRepresentation.setValue(createUserDTO.getPassword());
         return credentialRepresentation;
     }
 }

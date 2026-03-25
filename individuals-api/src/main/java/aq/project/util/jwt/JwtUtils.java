@@ -6,7 +6,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.Base64;
 
-public final class JwtUtil {
+public final class JwtUtils {
 
     public static boolean isTokenExpired(String accessToken) {
         String payload = accessToken.split("\\.")[1];

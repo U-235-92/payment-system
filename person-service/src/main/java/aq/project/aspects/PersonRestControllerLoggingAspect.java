@@ -25,7 +25,7 @@ public class PersonRestControllerLoggingAspect {
 
     private final OpenTelemetry openTelemetry;
 
-    @Around("execution(* aq.project.controllers.PersonRestController.*)")
+    @Around("execution(* aq.project.controllers.PersonRestController.*(..))")
     public ResponseEntity<?> aroundControllerMethods(ProceedingJoinPoint pjp) {
         Tracer tracer = openTelemetry.getTracer(applicationName + ".person-controller-tracer");
         String methodName = pjp.getSignature().getName();

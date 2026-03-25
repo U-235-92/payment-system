@@ -9,6 +9,7 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequiredArgsConstructor
 @RestControllerAdvice(assignableTypes = DevRestController.class)
 public class DevRestControllerExceptionHandler {
+
+    @Value("${spring.application.name}")
+    private String applicationName;
 
     private final OpenTelemetry openTelemetry;
 
@@ -49,7 +53,7 @@ public class DevRestControllerExceptionHandler {
     }
 
     private void logException(Exception exception) {
-        Tracer tracer = openTelemetry.getTracer("person-service.exception-tracer");
+        Tracer tracer = openTelemetry.getTracer(applicationName + ".exception-tracer");
         Span span = tracer.spanBuilder("exception-span").startSpan();
         span.recordException(exception);
         String logMessage = String.format("%s occurred at: %s", exception.getClass().getName(), exception.getMessage());

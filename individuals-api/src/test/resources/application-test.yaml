@@ -20,6 +20,9 @@ management:
           - prometheus
           - info
           - health
+logging:
+  level:
+    org.springframework.security: debug
 application:
   person-service:
     uri: http://localhost:8082

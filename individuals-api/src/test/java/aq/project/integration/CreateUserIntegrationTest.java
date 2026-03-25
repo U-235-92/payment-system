@@ -1,11 +1,12 @@
 package aq.project.integration;
 
-import aq.project.controllers.GatewayUserRestController;
-import aq.project.dto.*;
+import aq.project.dto.AddressDTO;
+import aq.project.dto.CountryDTO;
+import aq.project.dto.CreateIndividualDataDTO;
+import aq.project.dto.CreateUserDTO;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -33,9 +33,6 @@ public class CreateUserIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @Autowired
-    private GatewayUserRestController  gatewayUserRestController;
-
     @Container
     private static final KeycloakContainer KEYCLOAK_CONTAINER = TestContainers.Keycloak.KEYCLOAK_CONTAINER;
 
@@ -45,39 +42,41 @@ public class CreateUserIntegrationTest {
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
         TestApplicationProperties.KeycloakProperties
-                .registerApplicationContextContainerProperties(registry, KEYCLOAK_CONTAINER);
+                .registerApplicationContextContainerProperties(registry);
         TestApplicationProperties.PersonServiceProperties
-                .registerApplicationContextContainerProperties(registry, PERSON_SERVICE_CONTAINER);
+                .registerApplicationContextContainerProperties(registry);
     }
 
     @Test
     public void successCreateUserTest() {
-        System.out.println("Env variables of PERSON_SERVICE_CONTAINER:");
-        PERSON_SERVICE_CONTAINER.getEnv().stream().forEach(System.out::println);
-
-        System.out.println("Env variables of KEYCLOAK_CONTAINER:");
-        KEYCLOAK_CONTAINER.getEnv().stream().forEach(System.out::println);
-        System.out.println(String.format("KEYCLOAK_CONTAINER: http://%s:%d", KEYCLOAK_CONTAINER.getHost(), KEYCLOAK_CONTAINER.getMappedPort(8080)));
-
-        CreateUserEvent createUserEvent = getValidCreateUserEvent();
-        ResponseEntity<TokenResponse> response = gatewayUserRestController.createUser(createUserEvent).block();
-        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    }
-
-    @Test
-    @Disabled("Test case connected with no valid admin client credentials")
-    public void testFailCreateUserWithNoValidAdminClientCredentials() {
-        CreateUserEvent Event = getValidCreateUserEvent();
+        CreateUserDTO validCreateUserDTO = getValidCreateUserDTO();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Event)
+                .bodyValue(validCreateUserDTO)
+                .exchange()
+                .expectStatus()
+                .isCreated();
+    }
+
+    @Test
+    @Disabled("Test case connected with no valid admin client credentials. " +
+            "To do this you have to change both [keycloak.admin.client-id] " +
+            "and [keycloak.admin.client-secret] property values on any random value in " +
+            "TestApplicationProperties.KeycloakProperties class in" +
+            "registerApplicationContextContainerProperties() method")
+    public void testFailCreateUserWithNoValidAdminClientCredentials() {
+        CreateUserDTO validCreateUserDTO = getValidCreateUserDTO();
+        webTestClient.post()
+                .uri("/gateway/api/user/create-user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(validCreateUserDTO)
                 .exchange()
                 .expectStatus()
                 .is5xxServerError();
     }
 
-    private CreateUserEvent getValidCreateUserEvent() {
+    private CreateUserDTO getValidCreateUserDTO() {
         CountryDTO countryDTO = new CountryDTO();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
@@ -89,25 +88,24 @@ public class CreateUserIntegrationTest {
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataEvent individualDataEvent = new CreateIndividualDataEvent();
-        individualDataEvent.setFirstName("firstName");
-        individualDataEvent.setLastName("lastName");
-        individualDataEvent.setEmail("email@post.aq");
-        individualDataEvent.phoneNumber("1234567890");
-        individualDataEvent.setPassportNumber("1234567890");
-        individualDataEvent.setAddress(addressDTO);
+        CreateIndividualDataDTO createIndividualDataDTO = new CreateIndividualDataDTO();
+        createIndividualDataDTO.setFirstName("firstName");
+        createIndividualDataDTO.setLastName("lastName");
+        createIndividualDataDTO.setEmail("email@post.aq");
+        createIndividualDataDTO.phoneNumber("1234567890");
+        createIndividualDataDTO.setPassportNumber("1234567890");
+        createIndividualDataDTO.setAddress(addressDTO);
 
-        return new CreateUserEvent()
-//                .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad458")
+        return new CreateUserDTO()
                 .username("username")
                 .password("password")
                 .confirmPassword("password")
-                .individualData(individualDataEvent);
+                .individualData(createIndividualDataDTO);
     }
 
     @Test
     public void testDuplicateCreateUserFail() {
-        CreateUserEvent Event = getDuplicateCreateUserEvent();
+        CreateUserDTO Event = getDuplicateCreateUserDTO();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -117,7 +115,7 @@ public class CreateUserIntegrationTest {
                 .isEqualTo(HttpStatus.CONFLICT);
     }
 
-    private CreateUserEvent getDuplicateCreateUserEvent() {
+    private CreateUserDTO getDuplicateCreateUserDTO() {
         CountryDTO countryDTO = new CountryDTO();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
@@ -129,25 +127,25 @@ public class CreateUserIntegrationTest {
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataEvent individualDataEvent = new CreateIndividualDataEvent();
-        individualDataEvent.setFirstName("Alice");
-        individualDataEvent.setLastName("K");
-        individualDataEvent.setEmail("alice@post.aq");
-        individualDataEvent.phoneNumber("1234567890");
-        individualDataEvent.setPassportNumber("1234567890");
-        individualDataEvent.setAddress(addressDTO);
+        CreateIndividualDataDTO createIndividualDataDTO = new CreateIndividualDataDTO();
+        createIndividualDataDTO.setFirstName("Alice");
+        createIndividualDataDTO.setLastName("K");
+        createIndividualDataDTO.setEmail("alice@post.aq");
+        createIndividualDataDTO.phoneNumber("1234567890");
+        createIndividualDataDTO.setPassportNumber("1234567890");
+        createIndividualDataDTO.setAddress(addressDTO);
 
-        return new CreateUserEvent()
+        return new CreateUserDTO()
                 .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad407")
                 .username("alice")
                 .password("password")
                 .confirmPassword("password")
-                .individualData(individualDataEvent);
+                .individualData(createIndividualDataDTO);
     }
 
     @Test
     public void testNoMatchPasswordsCreateUserEvent() {
-        CreateUserEvent Event = getIncorrectCreateUserEventWithDoNotMatchPasswords();
+        CreateUserDTO Event = getIncorrectCreateUserDTOWithDoNotMatchPasswords();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -157,7 +155,7 @@ public class CreateUserIntegrationTest {
                 .isBadRequest();
     }
 
-    private CreateUserEvent getIncorrectCreateUserEventWithDoNotMatchPasswords() {
+    private CreateUserDTO getIncorrectCreateUserDTOWithDoNotMatchPasswords() {
         CountryDTO countryDTO = new CountryDTO();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
@@ -169,7 +167,7 @@ public class CreateUserIntegrationTest {
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataEvent individualDataEvent = new CreateIndividualDataEvent();
+        CreateIndividualDataDTO individualDataEvent = new CreateIndividualDataDTO();
         individualDataEvent.setFirstName("Bob");
         individualDataEvent.setLastName("K");
         individualDataEvent.setEmail("bob@post.aq");
@@ -177,7 +175,7 @@ public class CreateUserIntegrationTest {
         individualDataEvent.setPassportNumber("1234567890");
         individualDataEvent.setAddress(addressDTO);
 
-        return new CreateUserEvent()
+        return new CreateUserDTO()
                 .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad477")
                 .username("bob")
                 .password("password")
@@ -186,8 +184,8 @@ public class CreateUserIntegrationTest {
     }
 
     @Test
-    public void testNullFieldsCreateUserEvent() {
-        CreateUserEvent Event = getIncorrectCreateUserEventWithNullFields();
+    public void testNullFieldsCreateUserDTO() {
+        CreateUserDTO Event = getIncorrectCreateUserDTOWithNullFields();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -197,8 +195,8 @@ public class CreateUserIntegrationTest {
                 .isBadRequest();
     }
 
-    private CreateUserEvent getIncorrectCreateUserEventWithNullFields() {
-        return new CreateUserEvent()
+    private CreateUserDTO getIncorrectCreateUserDTOWithNullFields() {
+        return new CreateUserDTO()
                 .username(null)
                 .password("password")
                 .confirmPassword("123");
@@ -206,7 +204,7 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void testCreateUserWithNullIndividualData() {
-        CreateUserEvent Event = getIncorrectCreateUserEventWithNullIndividualData();
+        CreateUserDTO Event = getIncorrectCreateUserDTOWithNullIndividualData();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -216,8 +214,8 @@ public class CreateUserIntegrationTest {
                 .isBadRequest();
     }
 
-    private CreateUserEvent getIncorrectCreateUserEventWithNullIndividualData() {
-        return new CreateUserEvent()
+    private CreateUserDTO getIncorrectCreateUserDTOWithNullIndividualData() {
+        return new CreateUserDTO()
                 .username("test")
                 .password("password")
                 .confirmPassword("123")

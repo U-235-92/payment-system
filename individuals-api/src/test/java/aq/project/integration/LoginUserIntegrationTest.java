@@ -1,6 +1,6 @@
 package aq.project.integration;
 
-import aq.project.dto.LoginUserEvent;
+import aq.project.dto.LoginUserDTO;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -18,6 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @DirtiesContext
+@ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginUserIntegrationTest {
@@ -31,15 +33,15 @@ public class LoginUserIntegrationTest {
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
         TestApplicationProperties.KeycloakProperties
-                .registerApplicationContextContainerProperties(registry, KEYCLOAK);
+                .registerApplicationContextContainerProperties(registry);
     }
 
     @Test
     public void testSuccessUserLogin() {
         webTestClient.post()
-                .uri("/v1/auth/loginUser")
+                .uri("/gateway/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginUserEvent().email("alice@post.aq").password("123"))
+                .bodyValue(new LoginUserDTO().email("alice@post.aq").password("123"))
                 .exchange()
                 .expectStatus()
                 .isOk();
@@ -48,9 +50,9 @@ public class LoginUserIntegrationTest {
     @Test
     public void testFailUserLogin() {
         webTestClient.post()
-                .uri("/v1/auth/loginUser")
+                .uri("/gateway/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginUserEvent().email("novalid@post.aq").password("123"))
+                .bodyValue(new LoginUserDTO().email("novalid@post.aq").password("123"))
                 .exchange()
                 .expectStatus()
                 .isUnauthorized();
@@ -59,9 +61,9 @@ public class LoginUserIntegrationTest {
     @Test
     public void testFailUserLoginWithNullRequestData() {
         webTestClient.post()
-                .uri("/v1/auth/loginUser")
+                .uri("/gateway/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginUserEvent().email(null).password("123"))
+                .bodyValue(new LoginUserDTO().email(null).password("123"))
                 .exchange()
                 .expectStatus()
                 .isBadRequest();

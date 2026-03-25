@@ -32,6 +32,11 @@ management:
     metrics:
       export:
         enabled: false
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
   metrics:
     tags:
       application: individuals-api

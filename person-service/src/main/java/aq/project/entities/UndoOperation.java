@@ -13,8 +13,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@Table(name = "undo_events", schema = "service")
-public class UndoEvent {
+@Table(name = "undo_operations", schema = "service")
+public class UndoOperation {
 
     @Id
     @Column(name = "id")

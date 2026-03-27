@@ -42,14 +42,14 @@ public class PersonRestControllerServiceOperationAspect {
         operationService.saveServiceOperation(serviceOperation);
     }
 
-    @AfterReturning("execution(* aq.project.controllers.PersonRestController.undoDeletePersonByKeycloakId(..))")
-    public void onSuccessUndoDeletePersonByKeycloakId() {
+    @AfterReturning("execution(* aq.project.controllers.PersonRestController.undoDeletePerson(..))")
+    public void onSuccessUndoDeletePerson() {
         ServiceOperation serviceOperation = operationService.createServiceOperation(UNDO_DELETE_PERSON_OP, COMPLETE_STATUS, null);
         operationService.saveServiceOperation(serviceOperation);
     }
 
-    @AfterThrowing(value = "execution(* aq.project.controllers.PersonRestController.undoDeletePersonByKeycloakId(..))", throwing = "e")
-    public void onFailUndoDeletePersonByKeycloakId(Exception e) {
+    @AfterThrowing(value = "execution(* aq.project.controllers.PersonRestController.undoDeletePerson(..))", throwing = "e")
+    public void onFailUndoDeletePerson(Exception e) {
         ServiceOperation serviceOperation = operationService.createServiceOperation(UNDO_DELETE_PERSON_OP, FAIL_STATUS, e.getMessage());
         operationService.saveServiceOperation(serviceOperation);
     }

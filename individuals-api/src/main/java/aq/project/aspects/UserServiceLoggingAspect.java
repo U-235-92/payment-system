@@ -40,7 +40,7 @@ public class UserServiceLoggingAspect {
         String traceId = getTraceId(span);
         String spanId = getSpanId(span);
         return ((Mono<?>) pjp.proceed())
-                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with email [%s] was created successfully", getTraceId(span), getSpanId(span), createUserDTO.getIndividualData().getEmail())))
+                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with email [%s] was created successfully", traceId, spanId, createUserDTO.getIndividualData().getEmail())))
                 .doOnError(exc -> logAspectError(pjp, exc, log, traceId, spanId))
                 .doFinally(st -> span.end());
     }
@@ -53,7 +53,7 @@ public class UserServiceLoggingAspect {
         String traceId = getTraceId(span);
         String spanId = getSpanId(span);
         return ((Mono<?>) pjp.proceed())
-                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with email [%s] was logged in successfully.", getTraceId(span), getSpanId(span), loginUserDTO.getEmail())))
+                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with email [%s] was logged in successfully.", traceId, spanId, loginUserDTO.getEmail())))
                 .doOnError(exc -> logAspectError(pjp, exc, log, traceId, spanId))
                 .doFinally(st -> span.end());
     }
@@ -66,7 +66,7 @@ public class UserServiceLoggingAspect {
         String traceId = getTraceId(span);
         String spanId = getSpanId(span);
         return ((Mono<?>) pjp.proceed())
-                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with keycloakId [%s] was updated successfully.", getTraceId(span), getSpanId(span), updateUserDTO.getKeycloakUserId())))
+                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with keycloakId [%s] was updated successfully.", traceId, spanId, updateUserDTO.getKeycloakUserId())))
                 .doOnError(exc -> logAspectError(pjp, exc, log, traceId, spanId))
                 .doFinally(st -> span.end());
     }
@@ -79,7 +79,7 @@ public class UserServiceLoggingAspect {
         String traceId = getTraceId(span);
         String spanId = getSpanId(span);
         return ((Mono<?>) pjp.proceed())
-                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with keycloakId [%s] was deleted successfully.", getTraceId(span), getSpanId(span), keycloakUserId)))
+                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with keycloakId [%s] was deleted successfully.", traceId, spanId, keycloakUserId)))
                 .doOnError(exc -> logAspectError(pjp, exc, log, traceId, spanId))
                 .doFinally(st -> span.end());
     }
@@ -95,7 +95,7 @@ public class UserServiceLoggingAspect {
         String traceId = getTraceId(span);
         String spanId = getSpanId(span);
         return ((Mono<?>) pjp.proceed())
-                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with email [%s] requested user info successfully.", getTraceId(span), getSpanId(span), email[0])))
+                .doOnSuccess(obj -> log.info(String.format("[%s-%s] User with email [%s] requested user info successfully.", traceId, spanId, email[0])))
                 .doOnError(exc -> logAspectError(pjp, exc, log, traceId, spanId))
                 .doFinally(st -> span.end());
     }

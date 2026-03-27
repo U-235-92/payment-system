@@ -32,25 +32,23 @@ public class GatewayUserRestControllerLoggingAspect {
         Span span = getSpan(tracer, pjp);
         String traceId = getTraceId(span);
         String spanId = getSpanId(span);
-        logBeforeCallMethod(span, pjp);
+        logBeforeCallMethod(pjp, traceId, spanId);
         return Mono.just((Mono<ResponseEntity<?>>) pjp.proceed())
                 .flatMap(responseEntity -> responseEntity)
-                .doOnSuccess(response -> logAfterCompletedCallMethod(span, pjp))
+                .doOnSuccess(response -> logAfterCompletedCallMethod(pjp, traceId, spanId))
                 .doOnError(exc -> logAspectError(pjp, exc, log, traceId, spanId))
                 .doFinally(st -> span.end());
     }
 
-    private void logBeforeCallMethod(Span span, ProceedingJoinPoint pjp) {
+    private void logBeforeCallMethod(ProceedingJoinPoint pjp, String traceId, String spanId) {
         String methodName = pjp.getSignature().getName();
         String className = pjp.getSignature().getDeclaringType().getName();
-        log.info(String.format("[%s-%s] Attempt of call method [%s.%s]", getTraceId(span), getSpanId(span),
-                className, methodName));
+        log.info(String.format("[%s-%s] Attempt of call method [%s.%s]", traceId, spanId, className, methodName));
     }
 
-    private void logAfterCompletedCallMethod(Span span, ProceedingJoinPoint pjp) {
+    private void logAfterCompletedCallMethod(ProceedingJoinPoint pjp, String traceId, String spanId) {
         String methodName = pjp.getSignature().getName();
         String className = pjp.getSignature().getDeclaringType().getName();
-        log.info(String.format("[%s-%s] Call of method [%s.%s] completed", getTraceId(span), getSpanId(span),
-                className, methodName));
+        log.info(String.format("[%s-%s] Call of method [%s.%s] completed", traceId, spanId, className, methodName));
     }
 }

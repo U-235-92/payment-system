@@ -34,14 +34,14 @@ public class PersonRestControllerMetricsAspect {
         applicationMetricRegistry.incrementFailDeletePersonByKeycloakIdCounter();
     }
 
-    @After("execution(* aq.project.controllers.PersonRestController.undoDeletePersonByKeycloakId(..))")
-    public void onSuccessUndoDeletePersonByKeycloakId() {
-        applicationMetricRegistry.incrementSuccessUndoDeletePersonByKeycloakIdCounter();
+    @After("execution(* aq.project.controllers.PersonRestController.undoDeletePerson(..))")
+    public void onSuccessUndoDeletePerson() {
+        applicationMetricRegistry.incrementSuccessUndoDeletePersonCounter();
     }
 
-    @AfterThrowing("execution(* aq.project.controllers.PersonRestController.undoDeletePersonByKeycloakId(..))")
-    public void onFailUndoDeletePersonByKeycloakId() {
-        applicationMetricRegistry.incrementFailUndoDeletePersonByKeycloakIdCounter();
+    @AfterThrowing("execution(* aq.project.controllers.PersonRestController.undoDeletePerson(..))")
+    public void onFailUndoDeletePerson() {
+        applicationMetricRegistry.incrementFailUndoDeletePersonCounter();
     }
 
     @After("execution(* aq.project.controllers.PersonRestController.updatePerson(..))")

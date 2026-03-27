@@ -2,7 +2,7 @@ package aq.project.controllers.advices;
 
 import aq.project.controllers.DevRestController;
 import aq.project.dto.ErrorDTO;
-import aq.project.exceptions.IllegalUndoEventPayloadPropertyException;
+import aq.project.exceptions.IllegalUndoOperationPayloadPropertyException;
 import aq.project.exceptions.NotFoundRevisionException;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
@@ -41,8 +41,8 @@ public class DevRestControllerExceptionHandler {
         return ResponseEntity.status(status.value()).body(getErrorDTO(status, e.getMessage()));
     }
 
-    @ExceptionHandler(IllegalUndoEventPayloadPropertyException.class)
-    public ResponseEntity<ErrorDTO> onIllegalUndoEventPayloadPropertyException(IllegalUndoEventPayloadPropertyException e) {
+    @ExceptionHandler(IllegalUndoOperationPayloadPropertyException.class)
+    public ResponseEntity<ErrorDTO> onIllegalUndoOperationPayloadPropertyException(IllegalUndoOperationPayloadPropertyException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         logException(e);
         return ResponseEntity.status(status.value()).body(getErrorDTO(status, e.getMessage()));

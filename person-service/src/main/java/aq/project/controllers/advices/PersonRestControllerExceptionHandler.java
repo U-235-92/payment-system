@@ -92,8 +92,8 @@ public class PersonRestControllerExceptionHandler {
         return ResponseEntity.status(status.value()).body(getErrorDTO(status, e.getMessage()));
     }
 
-    @ExceptionHandler(IllegalUndoEventPayloadPropertyException.class)
-    public ResponseEntity<ErrorDTO> onIllegalUndoEventPayloadPropertyException(IllegalUndoEventPayloadPropertyException e) {
+    @ExceptionHandler(IllegalUndoOperationPayloadPropertyException.class)
+    public ResponseEntity<ErrorDTO> onIllegalUndoOperationPayloadPropertyException(IllegalUndoOperationPayloadPropertyException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         logException(e, status);
         return ResponseEntity.status(status.value()).body(getErrorDTO(status, e.getMessage()));

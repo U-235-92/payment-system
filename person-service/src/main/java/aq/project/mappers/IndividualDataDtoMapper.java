@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.UUID;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public abstract class IndividualMapper {
+public abstract class IndividualDataDtoMapper {
 
     @Autowired
     private PersonRepository personRepository;

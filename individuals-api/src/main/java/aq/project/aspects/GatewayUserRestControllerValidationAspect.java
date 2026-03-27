@@ -99,8 +99,7 @@ public class GatewayUserRestControllerValidationAspect {
     }
 
     @Before("execution(* aq.project.controllers.GatewayUserRestController.deleteUserByKeycloakId(..)) && args(keycloakId)")
-    public void checkDeleteUserByKeycloakIdViolations(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String keycloakId) {
-    }
+    public void checkDeleteUserByKeycloakIdViolations(@Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String keycloakId) {}
 
     @Before("execution(* aq.project.controllers.GatewayUserRestController.refreshToken(..)) && args(refreshTokenDTO)")
     public void checkRefreshTokenViolations(RefreshTokenDTO refreshTokenDTO) {

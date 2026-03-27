@@ -26,7 +26,7 @@ public class PersonRestControllerLoggingAspect {
     private final OpenTelemetry openTelemetry;
 
     @Around("execution(* aq.project.controllers.PersonRestController.*(..))")
-    public ResponseEntity<?> aroundControllerMethods(ProceedingJoinPoint pjp) {
+    public Object aroundControllerMethods(ProceedingJoinPoint pjp) throws Throwable {
         Tracer tracer = openTelemetry.getTracer(applicationName + ".person-controller-tracer");
         String methodName = pjp.getSignature().getName();
         String className = pjp.getSignature().getDeclaringType().getName();
@@ -34,15 +34,13 @@ public class PersonRestControllerLoggingAspect {
         String traceId = ObserverUtils.getTraceId(span);
         String spanId = ObserverUtils.getSpanId(span);
         String beforeCallMethodLogMessage = String.format("[%s-%s] call of method: %s.%s", traceId, spanId, className, methodName);
-        log.debug(beforeCallMethodLogMessage);
-        ResponseEntity<?> result = null;
+        log.info(beforeCallMethodLogMessage);
+        Object result = null;
         try {
-            result = (ResponseEntity<?>) pjp.proceed();
+            result = pjp.proceed();
             String afterCallMethodLogMessage = String.format("[%s-%s] method: %s.%s was completed successfully", traceId, spanId, className, methodName);
-            log.debug(afterCallMethodLogMessage);
+            log.info(afterCallMethodLogMessage);
             span.setStatus(StatusCode.OK);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
         } finally {
             span.end();
         }

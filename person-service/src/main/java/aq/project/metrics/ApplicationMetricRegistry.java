@@ -30,8 +30,8 @@ public class ApplicationMetricRegistry implements MeterBinder {
     private Counter successDeletePersonByPersonIdCounter;
     private Counter failDeletePersonByPersonIdCounter;
 
-    private Counter successUndoDeletePersonByKeycloakIdCounter;
-    private Counter failUndoDeletePersonByKeycloakIdCounter;
+    private Counter successUndoDeletePersonCounter;
+    private Counter failUndoDeletePersonCounter;
 
     private Counter successDeletePersonByKeycloakIdCounter;
     private Counter failDeletePersonByKeycloakIdCounter;
@@ -62,8 +62,8 @@ public class ApplicationMetricRegistry implements MeterBinder {
         successDeletePersonByKeycloakIdCounter = getCounter("delete_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
         failDeletePersonByKeycloakIdCounter = getCounter("delete_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
 
-        successUndoDeletePersonByKeycloakIdCounter = getCounter("undo_delete_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
-        failUndoDeletePersonByKeycloakIdCounter = getCounter("undo_delete_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
+        successUndoDeletePersonCounter = getCounter("undo_delete_person_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS)));
+        failUndoDeletePersonCounter = getCounter("undo_delete_person_count", meterRegistry, List.of(Tag.of(STATUS, FAIL)));
 
         successReadPersonByKeycloakIdCounter = getCounter("read_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, SUCCESS), Tag.of(BY, ID)));
         failReadPersonByKeycloakIdCounter = getCounter("read_person_by_keycloak_id_count", meterRegistry, List.of(Tag.of(STATUS, FAIL), Tag.of(BY, ID)));
@@ -121,12 +121,12 @@ public class ApplicationMetricRegistry implements MeterBinder {
         failDeletePersonByKeycloakIdCounter.increment();
     }
 
-    public void incrementSuccessUndoDeletePersonByKeycloakIdCounter() {
-        successUndoDeletePersonByKeycloakIdCounter.increment();
+    public void incrementSuccessUndoDeletePersonCounter() {
+        successUndoDeletePersonCounter.increment();
     }
 
-    public void incrementFailUndoDeletePersonByKeycloakIdCounter() {
-        failUndoDeletePersonByKeycloakIdCounter.increment();
+    public void incrementFailUndoDeletePersonCounter() {
+        failUndoDeletePersonCounter.increment();
     }
 
     public void incrementSuccessGetPersonByKeycloakIdCounter() {

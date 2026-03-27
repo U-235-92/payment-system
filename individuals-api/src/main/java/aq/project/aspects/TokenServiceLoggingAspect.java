@@ -32,7 +32,7 @@ public class TokenServiceLoggingAspect {
         String traceId = getTraceId(span);
         String spanId = getSpanId(span);
         return ((Mono<?>) pjp.proceed())
-                .doOnSuccess(obj -> log.info(String.format("[%s-%s] Token was refreshed successfully.", getTraceId(span), getSpanId(span))))
+                .doOnSuccess(obj -> log.info(String.format("[%s-%s] Token was refreshed successfully.", traceId, spanId)))
                 .doOnError(exc -> logAspectError(pjp, exc, log, traceId, spanId))
                 .doFinally(st -> span.end());
     }

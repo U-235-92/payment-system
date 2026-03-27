@@ -144,10 +144,8 @@ public class GatewayUserRestControllerExceptionHandler {
     private void logException(Exception exception) {
         Tracer tracer = getTracer(applicationName, "gateway-user-rest-controller-exception-handler-tracer", openTelemetry);
         Span span = getSpan(tracer, "exception-span");
-        String traceId = getTraceId(span);
-        String spanId = getSpanId(span);
         span.recordException(exception);
-        String logMessage = String.format("[%s-%s] %s occurred at: %s", traceId, spanId, exception.getClass().getName(), exception.getMessage());
+        String logMessage = String.format("[%s-%s] %s occurred at: %s", getTraceId(span), getSpanId(span), exception.getClass().getName(), exception.getMessage());
         log.warn(logMessage);
         span.end();
     }

@@ -28,7 +28,6 @@ public final class PersonMapper {
             to.setAddress(from.getAddress());
             to.setZip(from.getZip());
             to.getInstantEmbeddedData().setUpdated(Instant.now());
-            to.setCountry(from.getCountry());
         }
     }
 

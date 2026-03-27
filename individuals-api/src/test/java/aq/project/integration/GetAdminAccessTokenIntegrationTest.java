@@ -19,7 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DirtiesContext
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class JwtClientIntegrationTest {
+public class GetAdminAccessTokenIntegrationTest {
 
     @Autowired
     private JwtClient jwtClient;
@@ -34,7 +34,7 @@ public class JwtClientIntegrationTest {
     }
 
     @Test
-    public void successGettingAdminJwtTest() {
+    public void successGetAdminJwtTest() {
         String jwt = jwtClient.requestAdminToken().block();
         Assertions.assertNotNull(jwt);
     }

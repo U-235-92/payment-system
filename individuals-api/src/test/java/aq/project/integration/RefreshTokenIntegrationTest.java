@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UpdateTokenIntegrationTest {
+public class RefreshTokenIntegrationTest {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -43,7 +43,7 @@ public class UpdateTokenIntegrationTest {
     }
 
     @Test
-    public void testSuccessUpdateToken() {
+    public void successRefreshTokenTest() {
         LoginUserDTO loginUserDTO = new LoginUserDTO().email("alice@post.aq").password("123");
         ResponseTokenDTO responseTokenDTO = authController.loginUser(loginUserDTO).block().getBody();
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken(responseTokenDTO.getRefreshToken());
@@ -57,7 +57,7 @@ public class UpdateTokenIntegrationTest {
     }
 
     @Test
-    public void testFailNullUpdateToken() {
+    public void failRefreshNullTokenTest() {
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken(null);
         webTestClient.post()
                 .uri("/gateway/api/user/refresh-token")
@@ -69,7 +69,7 @@ public class UpdateTokenIntegrationTest {
     }
 
     @Test
-    public void testFailWrongUpdateToken() {
+    public void failRefreshWrongTokenTest() {
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken("wrong-token");
         webTestClient.post()
                 .uri("/gateway/api/user/refresh-token")

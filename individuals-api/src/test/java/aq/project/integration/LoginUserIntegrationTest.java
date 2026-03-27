@@ -37,7 +37,7 @@ public class LoginUserIntegrationTest {
     }
 
     @Test
-    public void testSuccessUserLogin() {
+    public void successLoginUserTest() {
         webTestClient.post()
                 .uri("/gateway/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -48,7 +48,7 @@ public class LoginUserIntegrationTest {
     }
 
     @Test
-    public void testFailUserLogin() {
+    public void failLoginUserTest() {
         webTestClient.post()
                 .uri("/gateway/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +59,7 @@ public class LoginUserIntegrationTest {
     }
 
     @Test
-    public void testFailUserLoginWithNullRequestData() {
+    public void failLoginUserWithNullRequestDataTest() {
         webTestClient.post()
                 .uri("/gateway/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -2,7 +2,7 @@ package aq.project.integration;
 
 import aq.project.controllers.PersonRestController;
 import aq.project.entities.Person;
-import aq.project.entities.UndoEvent;
+import aq.project.entities.UndoOperation;
 import aq.project.exceptions.CountryNotExistsException;
 import aq.project.exceptions.NotExpectedUndoOperationCallException;
 import aq.project.exceptions.NotFoundUndoOperationCallException;
@@ -70,7 +70,7 @@ public class UndoDeletePersonIntegrationTest {
     @Test
     public void successUndoDeletePersonTest() throws Exception {
         personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
-        personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO());
+        personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO());
         Optional<Person> person = personRepository.findByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
         Assertions.assertNotNull(person.get());
         Assertions.assertEquals(Constants.CORRECT_PERSON_KEYCLOAK_ID, person.get().getKeycloakId());
@@ -80,36 +80,36 @@ public class UndoDeletePersonIntegrationTest {
     public void failCallUndoDeletePersonAfterCallUndoDeletePersonTest() throws Exception {
         personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
 //        First [undo-delete] call
-        personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO());
+        personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO());
 //        Second [undo-delete] call
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO()));
     }
 
     @Test
     public void failCallUndoDeletePersonWhenPreviousCallWasNotDeleteTest() throws Exception {
         personRestController.updatePerson(DTO.getUpdateIndividualDataDTO());
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO()));
     }
 
     @Test
     public void failCallUndoDeletePersonWhenPreviousCallWasCreatePersonTest() {
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO()));
     }
 
     @Test
-    public void failCallUndoDeletePersonWithWrongUndoEvent() {
-        UndoEvent invalidUndoEvent = Events.getInvalidUndoEvent();
+    public void failCallUndoDeletePersonWithWrongUndoOperation() {
+        UndoOperation invalidUndoOperation = Events.getInvalidUndoOperation();
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> personService.undoDeletePersonByKeycloakId(invalidUndoEvent));
+                () -> personService.undoDeletePerson(invalidUndoOperation));
     }
 
     @Test
     @Disabled("To use this test you have to disable @BeforeEach because before run this one database MUST be clean")
     public void failCallUndoDeletePersonWhenDatabaseEmptyTest() {
         Assertions.assertThrows(NotFoundUndoOperationCallException.class,
-                () -> personRestController.undoDeletePersonByKeycloakId(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO()));
     }
 }

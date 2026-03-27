@@ -1,6 +1,7 @@
 package aq.project.integration;
 
-import aq.project.dto.*;
+import aq.project.dto.LoginUserDTO;
+import aq.project.dto.ResponseTokenDTO;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,7 +30,7 @@ import reactor.test.StepVerifier;
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UpdateUserIntegrationTest {
+public class DeleteUserIntegrationTest {
 
     @Value("${application.individuals-api.test.actual-user-keycloak-id}")
     private String actualUserKeycloakId;
@@ -59,23 +59,17 @@ public class UpdateUserIntegrationTest {
     }
 
     @Test
-    public void successUpdateUserTest() {
+    public void successDeleteUserTest() {
         LoginUserDTO loginUserDTO = new LoginUserDTO();
         loginUserDTO.setEmail("alice@post.aq");
         loginUserDTO.setPassword("123");
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO);
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDTO(updateIndividualDataDTO);
-
         WebClient webClient = getWebClient();
 
         Mono<ResponseEntity<Void>> updateUserMono = loginUserMono(loginUserDTO)
-                .flatMap(responseEntity -> webClient.patch()
-                        .uri("/gateway/api/user/update-user")
+                .flatMap(responseEntity -> webClient.delete()
+                        .uri("/gateway/api/user/delete-user-by-keycloak-id/" + actualUserKeycloakId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + responseEntity.getBody().getAccessToken())
-                        .bodyValue(updateUserDTO)
                         .exchangeToMono(response -> {
                             if(response.statusCode().is2xxSuccessful())
                                 return Mono.just(ResponseEntity.ok().build());
@@ -87,23 +81,17 @@ public class UpdateUserIntegrationTest {
     }
 
     @Test
-    public void failUpdateUserWithUnknownUserKeycloakIdTest() {
+    public void failDeleteUserWithUnknownUserKeycloakIdTest() {
         LoginUserDTO loginUserDTO = new LoginUserDTO();
         loginUserDTO.setEmail("alice@post.aq");
         loginUserDTO.setPassword("123");
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDtoWithUnknownKeycloakUserId(addressDTO);
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDtoWithUnknownKeycloakUserId(updateIndividualDataDTO);
-
         WebClient webClient = getWebClient();
 
         Mono<ResponseEntity<Void>> updateUserMono = loginUserMono(loginUserDTO)
-                .flatMap(responseEntity -> webClient.patch()
-                        .uri("/gateway/api/user/update-user")
+                .flatMap(responseEntity -> webClient.delete()
+                        .uri("/gateway/api/user/delete-user-by-keycloak-id/" + unknownUserKeycloakId)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + responseEntity.getBody().getAccessToken())
-                        .bodyValue(updateUserDTO)
                         .exchangeToMono(response -> {
                             if(response.statusCode().is2xxSuccessful())
                                 return Mono.just(ResponseEntity.ok().build());
@@ -114,54 +102,18 @@ public class UpdateUserIntegrationTest {
     }
 
     @Test
-    public void failUpdateUserWithNoMatchPasswordsOfUpdateUserDtoTest() {
-        LoginUserDTO loginUserDTO = new LoginUserDTO();
-        loginUserDTO.setEmail("alice@post.aq");
-        loginUserDTO.setPassword("123");
-
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO);
-        UpdateUserDTO updateUserDTO = getInvalidUpdateUserDtoWithNoMatchPassword(updateIndividualDataDTO);
-
-        WebClient webClient = getWebClient();
-
-        Mono<ResponseEntity<Void>> updateUserMono = loginUserMono(loginUserDTO)
-                .flatMap(responseEntity -> webClient.patch()
-                        .uri("/gateway/api/user/update-user")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + responseEntity.getBody().getAccessToken())
-                        .bodyValue(updateUserDTO)
-                        .exchangeToMono(response -> {
-                            if(response.statusCode().is2xxSuccessful())
-                                return Mono.just(ResponseEntity.ok().build());
-                            return Mono.just(ResponseEntity.status(response.statusCode()).build());
-                        }));
-        StepVerifier.create(updateUserMono)
-                .expectNextMatches(response -> response.getStatusCode().is4xxClientError());
-    }
-
-    @Test
-    public void failUpdateUserWithNullFieldsOfUpdateUserDtoTest() {
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO);
-        UpdateUserDTO updateUserDTO = getInvalidUpdateUserDtoWithNullFields(updateIndividualDataDTO);
-                webTestClient.patch()
-                .uri("/gateway/api/user/update-user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateUserDTO)
+    public void failUpdateUserWithEmptyKeycloakIdTest() {
+        webTestClient.delete()
+                .uri("/gateway/api/user/delete-user-by-keycloak-id/")
                 .exchange()
                 .expectStatus()
-                .isBadRequest();
+                .isNotFound();
     }
 
     @Test
-    public void failUpdateUserWithNullUpdateIndividualDataDtoTest() {
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDTO(null);
-        webTestClient.patch()
-                .uri("/gateway/api/user/update-user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(updateUserDTO)
+    public void failUpdateUserWithNoValidKeycloakIdTest() {
+                webTestClient.delete()
+                .uri("/gateway/api/user/delete-user-by-keycloak-id/no_valid_keycloak_id")
                 .exchange()
                 .expectStatus()
                 .isBadRequest();
@@ -178,76 +130,5 @@ public class UpdateUserIntegrationTest {
 
     private WebClient getWebClient() {
         return WebClient.builder().baseUrl("http://localhost:" + port).build();
-    }
-
-    private CountryDTO getValidCountryDTO() {
-        CountryDTO countryDTO = new CountryDTO();
-        countryDTO.setName("Russia");
-        countryDTO.setCode("RU");
-        return countryDTO;
-    }
-
-    private AddressDTO getValidAddressDTO(CountryDTO countryDTO) {
-        AddressDTO addressDTO = new AddressDTO();
-        addressDTO.setCountry(countryDTO);
-        addressDTO.setState("updated_state");
-        addressDTO.setCity("updated_city");
-        addressDTO.setAddress("updated_address");
-        addressDTO.setZipCode("updated_zipcode");
-        return addressDTO;
-    }
-
-    private UpdateIndividualDataDTO getValidUpdateIndividualDataDTO(AddressDTO addressDTO) {
-        UpdateIndividualDataDTO updateIndividualDataDTO = new UpdateIndividualDataDTO();
-        updateIndividualDataDTO.setKeycloakUserId(actualUserKeycloakId);
-        updateIndividualDataDTO.setFirstName("updatedFirstName");
-        updateIndividualDataDTO.setLastName("updatedLastName");
-        updateIndividualDataDTO.phoneNumber("9876543210");
-        updateIndividualDataDTO.setPassportNumber("9876543210");
-        updateIndividualDataDTO.setAddress(addressDTO);
-        return updateIndividualDataDTO;
-    }
-
-    private UpdateIndividualDataDTO getValidUpdateIndividualDataDtoWithUnknownKeycloakUserId(AddressDTO addressDTO) {
-        UpdateIndividualDataDTO updateIndividualDataDTO = new UpdateIndividualDataDTO();
-        updateIndividualDataDTO.setKeycloakUserId(unknownUserKeycloakId);
-        updateIndividualDataDTO.setFirstName("updatedFirstName");
-        updateIndividualDataDTO.setLastName("updatedLastName");
-        updateIndividualDataDTO.phoneNumber("9876543210");
-        updateIndividualDataDTO.setPassportNumber("9876543210");
-        updateIndividualDataDTO.setAddress(addressDTO);
-        return updateIndividualDataDTO;
-    }
-
-    private UpdateUserDTO getValidUpdateUserDTO(UpdateIndividualDataDTO updateIndividualDataDTO) {
-        return new UpdateUserDTO()
-                .keycloakUserId(actualUserKeycloakId)
-                .password("password")
-                .confirmPassword("password")
-                .individualData(updateIndividualDataDTO);
-    }
-
-    private UpdateUserDTO getValidUpdateUserDtoWithUnknownKeycloakUserId(UpdateIndividualDataDTO updateIndividualDataDTO) {
-        return new UpdateUserDTO()
-                .keycloakUserId(unknownUserKeycloakId)
-                .password("password")
-                .confirmPassword("password")
-                .individualData(updateIndividualDataDTO);
-    }
-
-    private UpdateUserDTO getInvalidUpdateUserDtoWithNoMatchPassword(UpdateIndividualDataDTO updateIndividualDataDTO) {
-        return new UpdateUserDTO()
-                .keycloakUserId(actualUserKeycloakId)
-                .password("foo")
-                .confirmPassword("bar")
-                .individualData(updateIndividualDataDTO);
-    }
-
-    private UpdateUserDTO getInvalidUpdateUserDtoWithNullFields(UpdateIndividualDataDTO updateIndividualDataDTO) {
-        return new UpdateUserDTO()
-                .keycloakUserId(actualUserKeycloakId)
-                .password(null)
-                .confirmPassword("bar")
-                .individualData(updateIndividualDataDTO);
     }
 }

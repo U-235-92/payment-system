@@ -53,7 +53,7 @@ public class GetUserInfoIntegrationTest {
     }
 
     @Test
-    public void testSuccessGetUserInfo() {
+    public void successGetUserInfoTest() {
 //        In this test we are using regular WebClient instead of other tests.
 //        This happens because when you use WebTestClient the SecurityContext lives through one request reactive chain.
 //        When you start next independent request reactive chain - the previous SecurityContext will not go to the new reactive chain
@@ -127,7 +127,7 @@ public class GetUserInfoIntegrationTest {
     }
 
     @Test
-    public void testFailGetUserInfoWithNoAccessToken() {
+    public void failGetUserInfoWithNoAccessTokenTest() {
         webTestClient.get()
                 .uri("/gateway/api/user/get-user-info")
                 .exchange()
@@ -136,7 +136,7 @@ public class GetUserInfoIntegrationTest {
     }
 
     @Test
-    public void testFailGetUserInfoWithInvalidAccessToken() {
+    public void failGetUserInfoWithInvalidAccessTokenTest() {
         String wrongAccessToken = "wrong-access-token";
         webTestClient.get()
                 .uri("/gateway/api/user/get-user-info")

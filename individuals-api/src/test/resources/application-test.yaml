@@ -1,31 +1,21 @@
-server:
-  port: 8081
-spring:
-  application:
-    name: individuals-api
-  main:
-    web-application-type: reactive
 management:
   otlp:
     metrics:
       export:
         enabled: false
-  metrics:
-    tags:
-      application: individuals-api
   endpoints:
     web:
       exposure:
         include:
-          - prometheus
-          - info
           - health
 logging:
   level:
-    org.springframework.security: debug
+    org:
+      springframework:
+        security: debug
 application:
   person-service:
-    uri: http://localhost:8082
+    uri: http://person-service:8082
     endpoints:
       create-person: /api/person/create-person
       delete-person-by-keycloak-id: /api/person/delete-person-by-keycloak-id/
@@ -33,3 +23,7 @@ application:
       update-person: /api/person/update-person
       undo-update-person: /api/person/undo-update-person
       get-person-info-by-keycloak-id: /api/person/get-person-by-keycloak-id/
+  individuals-api:
+    test:
+      actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)
+      unknown-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407

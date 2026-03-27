@@ -65,7 +65,7 @@ public class CreateUserIntegrationTest {
             "and [keycloak.admin.client-secret] property values on any random value in " +
             "TestApplicationProperties.KeycloakProperties class in" +
             "registerApplicationContextContainerProperties() method")
-    public void testFailCreateUserWithNoValidAdminClientCredentials() {
+    public void failCreateUserWithNoValidAdminClientCredentialsTest() {
         CreateUserDTO validCreateUserDTO = getValidCreateUserDTO();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
@@ -104,7 +104,7 @@ public class CreateUserIntegrationTest {
     }
 
     @Test
-    public void testDuplicateCreateUserFail() {
+    public void failCreateDuplicateUserTest() {
         CreateUserDTO Event = getDuplicateCreateUserDTO();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
@@ -144,7 +144,7 @@ public class CreateUserIntegrationTest {
     }
 
     @Test
-    public void testNoMatchPasswordsCreateUserEvent() {
+    public void failCreateUserWithNoMatchPasswordsTest() {
         CreateUserDTO Event = getIncorrectCreateUserDTOWithDoNotMatchPasswords();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
@@ -184,7 +184,7 @@ public class CreateUserIntegrationTest {
     }
 
     @Test
-    public void testNullFieldsCreateUserDTO() {
+    public void failCreateUserWithNullFieldsTest() {
         CreateUserDTO Event = getIncorrectCreateUserDTOWithNullFields();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")
@@ -203,7 +203,7 @@ public class CreateUserIntegrationTest {
     }
 
     @Test
-    public void testCreateUserWithNullIndividualData() {
+    public void failCreateUserWithNullIndividualDataTest() {
         CreateUserDTO Event = getIncorrectCreateUserDTOWithNullIndividualData();
         webTestClient.post()
                 .uri("/gateway/api/user/create-user")

@@ -2,7 +2,7 @@ package aq.project.integration;
 
 import aq.project.controllers.PersonRestController;
 import aq.project.entities.Person;
-import aq.project.entities.UndoEvent;
+import aq.project.entities.UndoOperation;
 import aq.project.exceptions.CountryNotExistsException;
 import aq.project.exceptions.NotExpectedUndoOperationCallException;
 import aq.project.exceptions.NotFoundUndoOperationCallException;
@@ -102,10 +102,10 @@ public class UndoUpdatePersonIntegrationTest {
     }
 
     @Test
-    public void failCallUndoUpdatePersonWithWrongUndoEvent() {
-        UndoEvent invalidUndoEvent = Events.getInvalidUndoEvent();
+    public void failCallUndoUpdatePersonWithWrongUndoOperation() {
+        UndoOperation invalidUndoOperation = Events.getInvalidUndoOperation();
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> personService.undoUpdatePerson(invalidUndoEvent));
+                () -> personService.undoUpdatePerson(invalidUndoOperation));
     }
 
     @Test

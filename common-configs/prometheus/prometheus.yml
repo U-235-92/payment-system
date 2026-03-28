@@ -10,5 +10,5 @@ scrape_configs:
 
   - job_name: person-service-metrics
     static_configs:
-      - targets: [ 'person-service:8082' ]
+      - targets: ['person-service:8082']
     metrics_path: '/actuator/prometheus'

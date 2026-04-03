@@ -27,17 +27,30 @@ public class UndoService {
     private final ServiceOperationRepository serviceOperationRepository;
 
     @Transactional
-    public void undoOperation(String personKeycloakId, UUID undoOperationId, String undoOperationName) throws NotFoundRevisionException {
-        if(undoOperationId == null) {
-            String msg = String.format("Exception occurred while trying to [%s]: undoOperationId is null. " +
-                    "Check UndoService.saveUndoOperation() method call.", undoOperationName);
-            throw new RuntimeException(msg);
-        }
+    public void undoUpdatePerson(String personKeycloakId, UUID undoOperationId, String undoOperationName) throws NotFoundRevisionException {
+        if(undoOperationId == null)
+            throw new RuntimeException(getOnUndoOperationIdIsNullExceptionMessage(undoOperationName));
+        Person revision = personRepository.findUndoRevisionByKeycloakId(personKeycloakId);
+        personRepository.save(revision);
+        undoOperationRepository.deleteById(undoOperationId);
+    }
+
+    @Transactional
+    public void undoDeletePerson(String personKeycloakId, UUID undoOperationId, String undoOperationName) throws NotFoundRevisionException {
+        if(undoOperationId == null)
+            throw new RuntimeException(getOnUndoOperationIdIsNullExceptionMessage(undoOperationName));
         Person revision = personRepository.findUndoRevisionByKeycloakId(personKeycloakId);
         Person restored = new Person(revision);
-        personRepository.delete(revision);
+        restored.setId(null);
+        restored.getAddress().setId(null);
+        restored.getIndividual().setId(null);
         personRepository.save(restored);
         undoOperationRepository.deleteById(undoOperationId);
+    }
+
+    private String getOnUndoOperationIdIsNullExceptionMessage(String undoOperationName) {
+        return String.format("Exception occurred while trying to [%s]: undoOperationId is null. " +
+                "Check UndoService.saveUndoOperation() method call.", undoOperationName);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

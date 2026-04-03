@@ -58,7 +58,7 @@ public class PersonService {
     public void undoUpdatePerson(UndoOperation undoOperation) throws NotFoundRevisionException, NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
         undoService.checkUndoUpdate(undoOperation);
         UUID undoOperationId = undoService.saveUndoOperation(undoOperation);
-        undoService.undoOperation(undoOperation.getPersonKeycloakId().toString(), undoOperationId, undoOperation.getOperation());
+        undoService.undoUpdatePerson(undoOperation.getPersonKeycloakId().toString(), undoOperationId, undoOperation.getOperation());
     }
 
     @Transactional
@@ -76,7 +76,7 @@ public class PersonService {
     public void undoDeletePerson(UndoOperation undoOperation) throws NotFoundRevisionException, NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
         undoService.checkUndoDelete(undoOperation);
         UUID undoOperationId = undoService.saveUndoOperation(undoOperation);
-        undoService.undoOperation(undoOperation.getPersonKeycloakId().toString(), undoOperationId, undoOperation.getOperation());
+        undoService.undoDeletePerson(undoOperation.getPersonKeycloakId().toString(), undoOperationId, undoOperation.getOperation());
     }
 
     private Person findPersonByKeycloakId(String keycloakId) throws UserNotExistsException {

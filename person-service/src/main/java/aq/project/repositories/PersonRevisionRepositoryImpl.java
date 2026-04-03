@@ -23,43 +23,54 @@ public class PersonRevisionRepositoryImpl implements PersonRevisionRepository {
     @Override
     public List<Person> findRevisionsByKeycloakId(String keycloakId) {
         EntityManager entityManager = createEntityManager();
-        AuditReader reader = AuditReaderFactory.get(entityManager);
-        return reader.createQuery()
-                .forRevisionsOfEntity(Person.class, true, true)
-                .add(AuditEntity.property("keycloakId").eq(keycloakId))
-                .getResultList();
+        try {
+            AuditReader reader = AuditReaderFactory.get(entityManager);
+            return reader.createQuery()
+                    .forRevisionsOfEntity(Person.class, true, true)
+                    .add(AuditEntity.property("keycloakId").eq(keycloakId))
+                    .getResultList();
+        } finally {
+            entityManager.close();
+        }
     }
 
     @Override
     public Person findLastRevisionByKeycloakId(String keycloakId) throws NotFoundRevisionException {
         EntityManager entityManager = createEntityManager();
-        AuditReader reader = AuditReaderFactory.get(entityManager);
-        int lastRevisionId = getLastRevisionId();
-        return Optional
-                .of((Person) reader.createQuery()
-                    .forRevisionsOfEntity(Person.class, true, true)
-                    .add(AuditEntity.revisionNumber().eq(lastRevisionId))
-                    .getSingleResult())
-                .get();
+        try {
+            AuditReader reader = AuditReaderFactory.get(entityManager);
+            int lastRevisionId = getLastRevisionId(entityManager);
+            return new Person(Optional
+                    .of((Person) reader.createQuery()
+                            .forRevisionsOfEntity(Person.class, true, true)
+                            .add(AuditEntity.revisionNumber().eq(lastRevisionId))
+                            .getSingleResult())
+                    .get());
+        } finally {
+            entityManager.close();
+        }
     }
 
     @Override
     public Person findUndoRevisionByKeycloakId(String keycloakId) throws NotFoundRevisionException {
         EntityManager entityManager = createEntityManager();
-        AuditReader reader = AuditReaderFactory.get(entityManager);
-        int undoRevisionId = getLastRevisionId() - 1;
-        if(undoRevisionId <= 1)
-            throw new NotFoundRevisionException("No undo revision found");
-        return Optional
-                .ofNullable((Person) reader.createQuery()
-                    .forRevisionsOfEntity(Person.class, true, true)
-                    .add(AuditEntity.revisionNumber().eq(undoRevisionId))
-                    .getSingleResult())
-                .orElseThrow(this::getLackRevisionException);
+        try {
+            AuditReader reader = AuditReaderFactory.get(entityManager);
+            int undoRevisionId = getLastRevisionId(entityManager) - 1;
+            if(undoRevisionId <= 1)
+                throw new NotFoundRevisionException("No undo revision found");
+            return new Person(Optional
+                    .ofNullable((Person) reader.createQuery()
+                            .forRevisionsOfEntity(Person.class, true, true)
+                            .add(AuditEntity.revisionNumber().eq(undoRevisionId))
+                            .getSingleResult())
+                    .orElseThrow(this::getLackRevisionException));
+        } finally {
+            entityManager.close();
+        }
     }
 
-    private int getLastRevisionId() throws NotFoundRevisionException {
-        EntityManager entityManager = createEntityManager();
+    private int getLastRevisionId(EntityManager entityManager) throws NotFoundRevisionException {
         AuditReader reader = AuditReaderFactory.get(entityManager);
         return Optional
                 .ofNullable((Integer) reader.createQuery()

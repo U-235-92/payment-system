@@ -63,6 +63,7 @@ public class Person {
     }
 
     public Person(Person person) {
+        id = person.getId();
         keycloakId = person.getKeycloakId();
         firstName =  person.getFirstName();
         lastName =  person.getLastName();
@@ -71,6 +72,7 @@ public class Person {
 
         address = new Address();
         address.setCountry(person.getAddress().getCountry());
+        address.setId(person.getAddress().getId());
         address.setState(person.getAddress().getState());
         address.setCity(person.getAddress().getCity());
         address.setAddress(person.getAddress().getAddress());
@@ -78,6 +80,7 @@ public class Person {
         address.setInstantEmbeddedData(person.getInstantEmbeddedData());
 
         individual = new Individual();
+        individual.setId(person.getIndividual().getId());
         individual.setEmail(person.getIndividual().getEmail());
         individual.setPassportNumber(person.getIndividual().getPassportNumber());
         individual.setPhoneNumber(person.getIndividual().getPhoneNumber());

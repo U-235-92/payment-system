@@ -3,6 +3,7 @@ package aq.project.configs;
 import jakarta.ws.rs.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -26,20 +27,31 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityWebFilterChain authControllerSecurityWebFilterChain(ServerHttpSecurity http) {
+    @Profile("dev")
+    public SecurityWebFilterChain devSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
-                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/v1/auth/**"))
-                .authorizeExchange(customizer -> customizer
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/registration").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/v1/auth/context").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/refresh-token").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/v1/auth/me").permitAll())
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/gateway/api/user/**", "/dev/**"))
+                .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
                 .build();
     }
 
     @Bean
     @Order(3)
+    public SecurityWebFilterChain gatewayUserRestControllerSecurityWebFilterChain(ServerHttpSecurity http) {
+        return http
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/gateway/api/user/**"))
+                .authorizeExchange(customizer -> customizer
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/create-user").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/login-user").permitAll()
+                        .pathMatchers(HttpMethod.PATCH, "/gateway/api/user/update-user").authenticated()
+                        .pathMatchers(HttpMethod.DELETE, "/gateway/api/user/delete-user-by-keycloak-id/*").authenticated()
+                        .pathMatchers(HttpMethod.GET, "/gateway/api/user/get-user-info").authenticated()
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/refresh-token").authenticated())
+                .build();
+    }
+
+    @Bean
+    @Order(4)
     public SecurityWebFilterChain actuatorSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/actuator/**"))

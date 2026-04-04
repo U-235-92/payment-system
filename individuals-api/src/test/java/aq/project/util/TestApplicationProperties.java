@@ -1,6 +1,5 @@
 package aq.project.util;
 
-import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.springframework.test.context.DynamicPropertyRegistry;
 
 public class TestApplicationProperties {
@@ -21,17 +20,29 @@ public class TestApplicationProperties {
 
         private static final String CLIENT_SECRET = "TEST-SECRET";
 
-        public static void registerApplicationContextContainerProperties(DynamicPropertyRegistry registry, KeycloakContainer container) {
-            String baseUrl = container.getAuthServerUrl();
-            registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> baseUrl + ISSUER_URI);
-            registry.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", () -> baseUrl + JWK_SET_URI);
-            registry.add("spring.security.oauth2.client.provider.keycloak.issuer-uri", () -> baseUrl + ISSUER_URI);
-            registry.add("spring.security.oauth2.client.provider.keycloak.token-uri", () -> baseUrl + TOKEN_URI);
+        public static void registerApplicationContextContainerProperties(DynamicPropertyRegistry registry) {
+            String keycloakContainerBaseExposedUrl = TestContainers.Keycloak.KEYCLOAK_CONTAINER.getAuthServerUrl();
+
+            registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> keycloakContainerBaseExposedUrl + ISSUER_URI);
+            registry.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", () -> keycloakContainerBaseExposedUrl + JWK_SET_URI);
+            registry.add("spring.security.oauth2.client.provider.keycloak.issuer-uri", () -> keycloakContainerBaseExposedUrl + ISSUER_URI);
+            registry.add("spring.security.oauth2.client.provider.keycloak.token-uri", () -> keycloakContainerBaseExposedUrl + TOKEN_URI);
             registry.add("spring.security.oauth2.client.registration.keycloak.client-id", () -> CLIENT_ID);
             registry.add("spring.security.oauth2.client.registration.keycloak.client-secret", () -> CLIENT_SECRET);
-            registry.add("application.keycloak.admin.client-id", () -> ADMIN_CLIENT_ID);
-            registry.add("application.keycloak.admin.client-secret", () -> CLIENT_SECRET);
-            registry.add("application.keycloak.admin-uri", () -> baseUrl + ADMIN_URI);
+            registry.add("keycloak.admin.client-id", () -> ADMIN_CLIENT_ID);
+            registry.add("keycloak.admin.client-secret", () -> CLIENT_SECRET);
+            registry.add("keycloak.admin-uri", () -> keycloakContainerBaseExposedUrl + ADMIN_URI);
+        }
+    }
+
+    public static class PersonServiceProperties {
+        public static void registerApplicationContextContainerProperties(DynamicPropertyRegistry registry) {
+//            Set up in Individuals-API test area (works on local machine) actual Person-service URI (fetched from container, person-service works on container)
+            String personServiceContainerExposedHost = TestContainers.PersonService.PERSON_SERVICE_CONTAINER.getHost();
+            int personServiceContainerExposedPort = TestContainers.PersonService.PERSON_SERVICE_CONTAINER.getMappedPort(8082);
+            String personServiceContainerExposedUri = String.format("http://%s:%d", personServiceContainerExposedHost, personServiceContainerExposedPort);
+
+            registry.add("application.person-service.uri", () -> personServiceContainerExposedUri);
         }
     }
 }

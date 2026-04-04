@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations:
+      - classpath:db/test-migration
+    create-schemas: true
+    schemas:
+      - person
+      - public
+      - service
+  jpa:
+    generate-ddl: false
+    show-sql: true
+#    properties: # красивый вывод sql запросов
+#      hibernate:
+#          format_sql: true
+#          type: trace
+    hibernate:
+      ddl-auto: validate
+logging:
+  level:
+    org:
+      hibernate: info

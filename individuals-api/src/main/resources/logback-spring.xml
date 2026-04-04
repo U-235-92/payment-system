@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-    <appender name="json_appender" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <providers>
-                <timestamp />
-                <logLevel />
-                <threadName />
-                <message />
-            </providers>
-        </encoder>
-    </appender>
-    <root level="INFO">
-        <appender-ref ref="json_appender"/>
-    </root>
+    <springProfile name = "prod">
+        <appender name="json_appender" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp />
+                    <logLevel />
+                    <threadName />
+                    <message />
+                    <stackTrace />
+                    <mdc />
+                </providers>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="json_appender"/>
+        </root>
+    </springProfile>
+    <springProfile name = "dev">
+        <appender name="console_appender" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n</pattern>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="console_appender"/>
+        </root>
+    </springProfile>
 </configuration>

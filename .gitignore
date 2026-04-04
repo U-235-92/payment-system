@@ -1,10 +1,22 @@
-# Ignore Gradle project-specific cache directory
+# Ignore project-specific cache directory
 .gradle
+./buildSrc/.gradle
+./buildSrc/.kotlin
 
 # Ignore Gradle build output directory
-build
+.build
 ./individuals-api/build
+./person-service/build
+./common-dto/build
+./buildSrc/build
 
+# Ignore Idea specific directory
 .idea
 
+# Ignore application secrets files
+./common-configs/application-keycloak-secrets.yaml
 ./individuals-api/src/main/resources/application-secrets.yaml
+./individuals-api/src/main/resources/application-keycloak-secrets.yaml
+./person-service/src/main/resources/application-secrets.yaml
+./person-service/src/main/resources/application-keycloak-secrets.yaml
+./common-dto/src/main/resources/application-keycloak-secrets.yaml

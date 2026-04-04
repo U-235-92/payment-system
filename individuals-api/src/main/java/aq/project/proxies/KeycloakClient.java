@@ -1,37 +1,34 @@
 package aq.project.proxies;
 
-import aq.project.dto.TokenRefreshRequest;
-import aq.project.dto.TokenResponse;
-import aq.project.dto.UserRegistrationRequest;
+import aq.project.dto.CreateUserDTO;
+import aq.project.dto.RefreshTokenDTO;
+import aq.project.dto.ResponseTokenDTO;
+import aq.project.dto.UpdateUserDTO;
 import aq.project.exceptions.IncorrectUserCredentialsException;
 import aq.project.exceptions.InvalidTokenException;
 import aq.project.exceptions.ServiceException;
 import aq.project.exceptions.UserExistsException;
-import lombok.RequiredArgsConstructor;
+import aq.project.util.http.HttpUtils;
+import aq.project.util.keycloak.KeycloakUtils;
 import org.keycloak.OAuth2Constants;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.Instant;
+import java.net.URI;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 @Component
-@RequiredArgsConstructor
 public class KeycloakClient {
 
     private static final String BEARER = "Bearer ";
@@ -39,123 +36,64 @@ public class KeycloakClient {
     private static final String PASSWORD = "password";
     private static final String CLIENT_ID = "client_id";
     private static final String GRANT_TYPE = "grant_type";
-    private static final String ACCESS_TOKEN = "access_token";
-    private static final String ADMIN_ACCESS_TOKEN = "admin_access_token";
     private static final String CLIENT_SECRET = "client_secret";
-    private static final String REFRESH_TOKEN = "refresh_token";
 
-    private final WebClient webClient;
-
-    private final Map<String, String> keyCloakPropertiesCache = new HashMap<>();
+    @Value("${spring.security.oauth2.client.provider.keycloak.token-uri}")
+    private String tokenURI;
 
     @Value("${spring.security.oauth2.client.registration.keycloak.client-id}")
     private String clientID;
+
     @Value("${spring.security.oauth2.client.registration.keycloak.client-secret}")
     private String clientSecret;
-    @Value("${application.keycloak.admin.client-id}")
-    private String adminClientID;
-    @Value("${application.keycloak.admin.client-secret}")
-    private String adminClientSecret;
-    @Value("${spring.security.oauth2.client.provider.keycloak.token-uri}")
-    private String tokenURI;
-    @Value("${application.keycloak.admin-uri}")
+
+    @Value("${keycloak.admin-uri}")
     private String adminURI;
 
-    public Mono<Void> createUser(UserRegistrationRequest request) {
-        return requestAdminToken()
-                .flatMap(adminToken -> createUser(adminToken, request));
+    @Autowired
+    @Qualifier("keycloakWebClient")
+    private WebClient webClient;
+    @Autowired
+    private JwtClient jwtClient;
+
+    public Mono<String> createUser(CreateUserDTO createUserDTO) {
+        return jwtClient.requestAdminToken()
+                .flatMap(adminToken -> createUser(adminToken, createUserDTO));
     }
 
-    private Mono<String> requestAdminToken() {
-        if(keyCloakPropertiesCache.get(ADMIN_ACCESS_TOKEN) == null) {
-            return requestNewAdminToken();
-        } else {
-            String adminAccessToken = keyCloakPropertiesCache.get(ADMIN_ACCESS_TOKEN);
-            if(isTokenExpired(adminAccessToken)) {
-                return requestNewAdminToken();
-            }
-            return Mono.just(adminAccessToken);
-        }
-    }
-
-    private Mono<String> requestNewAdminToken() {
-        LinkedMultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add(CLIENT_ID, adminClientID);
-        form.add(CLIENT_SECRET, adminClientSecret);
-        form.add(GRANT_TYPE, OAuth2Constants.CLIENT_CREDENTIALS);
-        return webClient.post()
-                .uri(tokenURI)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(form)
-                .retrieve()
-                .onStatus(code -> code.isSameCodeAs(HttpStatus.UNAUTHORIZED), on401AdminLoginErrorResponse())
-                .bodyToMono(Map.class)
-                .flatMap(this::getAdminAccessToken)
-                .doOnSuccess(this::putAdminAccessTokenIntoCache);
-    }
-
-    private Function<ClientResponse, Mono<? extends Throwable>> on401AdminLoginErrorResponse() {
-        return response -> Mono.error(new ServiceException("Service error. " +
-                "Exception occurred during getting admin access token. Check admin client credentials."));
-    }
-
-    private Mono<String> getAdminAccessToken(Map<String, Object> map) {
-        if(map.get(ACCESS_TOKEN) != null) {
-            return Mono.just((String) map.get(ACCESS_TOKEN));
-        }
-        return Mono.error(new ServiceException("Service error. Error occurred during getting admin access token."));
-    }
-
-    private void putAdminAccessTokenIntoCache(Object accessToken) {
-        keyCloakPropertiesCache.put(ADMIN_ACCESS_TOKEN, (String) accessToken);
-    }
-
-    private boolean isTokenExpired(String accessToken) {
-        String payload = accessToken.split("\\.")[1];
-        Base64.Decoder decoder = Base64.getDecoder();
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(decoder.decode(payload));
-        Instant now = Instant.now();
-        Instant exp = Instant.ofEpochSecond(node.get("exp").asLong());
-        return now.isAfter(exp);
-    }
-
-    private Mono<Void> createUser(String adminToken, UserRegistrationRequest request) {
+    private Mono<String> createUser(String adminToken, CreateUserDTO createUserDTO) {
         return webClient.post()
                 .uri(adminURI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + adminToken)
-                .bodyValue(getUserRepresentation(request))
-                .retrieve()
-                .onStatus(code -> code.isSameCodeAs(HttpStatus.CONFLICT), on409ErrorResponse())
-                .bodyToMono(Void.class);
+                .bodyValue(KeycloakUtils.getUserRepresentation(createUserDTO))
+                .exchangeToMono(this::extractUserId);
     }
 
-    private UserRepresentation getUserRepresentation(UserRegistrationRequest request) {
-        UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setFirstName(request.getFirstName());
-        userRepresentation.setLastName(request.getLastName());
-        userRepresentation.setUsername(request.getUsername());
-        userRepresentation.setEmail(request.getEmail());
-        userRepresentation.setEnabled(true);
-        userRepresentation.setCredentials(List.of(getCredentialRepresentation(request)));
-        return userRepresentation;
+    private Mono<String> extractUserId(ClientResponse clientResponse) {
+        if(clientResponse.statusCode().isSameCodeAs(HttpStatus.CONFLICT))
+            return Mono.error(new UserExistsException("Registration error. Only unique pair of username and email is valid."));
+        URI locationURI = clientResponse.headers().asHttpHeaders().getLocation();
+        if(locationURI == null || locationURI.getPath() == null || clientResponse.statusCode().is5xxServerError())
+            return Mono.error(new ServiceException("Error occurred during creating user."));
+        String location = locationURI.getPath();
+        String userId = location.substring(location.lastIndexOf('/') + 1);
+        return Mono.just(userId);
     }
 
-    private CredentialRepresentation getCredentialRepresentation(UserRegistrationRequest request) {
-        CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
-        credentialRepresentation.setTemporary(false);
-        credentialRepresentation.setType("password");
-        credentialRepresentation.setValue(request.getPassword());
-        return credentialRepresentation;
+    public Mono<HttpStatusCode> undoCreateUser(String keycloakUserId) {
+        return jwtClient.requestAdminToken()
+                .flatMap(adminToken -> webClient.delete()
+                        .uri(adminURI + "/" + keycloakUserId)
+                        .header(HttpHeaders.AUTHORIZATION, BEARER + adminToken)
+                        .exchangeToMono(response -> {
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
+                                return Mono.just(response.statusCode());
+                            return Mono.just(HttpStatus.OK);
+                        }));
     }
 
-    private Function<ClientResponse, Mono<? extends Throwable>> on409ErrorResponse() {
-        return response -> Mono.error(new UserExistsException("Registration error. " +
-                "Only unique pair of username and email is valid."));
-    }
-
-    public Mono<TokenResponse> requestToken(String email, String password) {
+    public Mono<ResponseTokenDTO> loginUser(String email, String password) {
         LinkedMultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add(USERNAME, email);
         form.add(PASSWORD, password);
@@ -166,44 +104,66 @@ public class KeycloakClient {
             .uri(tokenURI)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(form)
-            .retrieve()
-            .onStatus(code -> code.isSameCodeAs(HttpStatus.UNAUTHORIZED), on401UserLoginErrorResponse())
-            .bodyToMono(TokenResponse.class)
-            .map(tokenResponse -> setUserId(tokenResponse, tokenResponse.getAccessToken()));
+            .exchangeToMono(response -> {
+                if(response.statusCode().is5xxServerError())
+                    return Mono.error(new ServiceException("Error occurred during login user."));
+                if(response.statusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED))
+                    return Mono.error(new IncorrectUserCredentialsException("Authentication error. Input credentials are incorrect. Check email and password and try again."));
+                return response.bodyToMono(ResponseTokenDTO.class);
+            })
+            .map(tokenResponse -> setTokenResponseUserId(tokenResponse, tokenResponse.getAccessToken()));
     }
 
-    private Function<ClientResponse, Mono<? extends Throwable>> on401UserLoginErrorResponse() {
-        return response -> Mono
-                .error(new IncorrectUserCredentialsException("Authentication error. " +
-                        "Input credentials are incorrect. " +
-                        "Check email and password and try again."));
-    }
-
-    private TokenResponse setUserId(TokenResponse tokenResponse, String accessToken) {
+    private ResponseTokenDTO setTokenResponseUserId(ResponseTokenDTO responseTokenDTO, String accessToken) {
         String payload = accessToken.split("\\.")[1];
         ObjectMapper mapper = new ObjectMapper();
         String userId = mapper.readTree(Base64.getDecoder().decode(payload)).get("sub").asString();
-        tokenResponse.setUserId(userId);
-        return tokenResponse;
+        responseTokenDTO.setKeycloakUserId(userId);
+        return responseTokenDTO;
     }
 
-    public Mono<TokenResponse> refreshToken(TokenRefreshRequest request) {
+    public Mono<HttpStatusCode> updateUser(UpdateUserDTO updateUserDTO) {
+        return jwtClient.requestAdminToken()
+                .flatMap(adminAccessToken -> webClient.put()
+                        .uri(adminURI + "/" + updateUserDTO.getKeycloakUserId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
+                        .bodyValue(KeycloakUtils.getUserRepresentation(updateUserDTO))
+                        .exchangeToMono(response -> {
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
+                                return Mono.just(response.statusCode());
+                            return Mono.just(HttpStatus.OK);
+                        }));
+    }
+
+    public Mono<HttpStatusCode> deleteUserByKeycloakId(String keycloakUserId) {
+        return jwtClient.requestAdminToken()
+                .flatMap(adminToken -> webClient.delete()
+                        .uri(adminURI + "/" + keycloakUserId)
+                        .header(HttpHeaders.AUTHORIZATION, BEARER + adminToken)
+                        .exchangeToMono(response -> {
+                            if(HttpUtils.isErrorStatusCode(response.statusCode()))
+                                return Mono.just(response.statusCode());
+                            return Mono.just(HttpStatus.OK);
+                        }));
+    }
+
+    public Mono<ResponseTokenDTO> refreshToken(RefreshTokenDTO refreshTokenDTO) {
         LinkedMultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add(CLIENT_ID, clientID);
         form.add(CLIENT_SECRET, clientSecret);
         form.add(GRANT_TYPE, OAuth2Constants.REFRESH_TOKEN);
-        form.add(OAuth2Constants.REFRESH_TOKEN, request.getRefreshToken());
+        form.add(OAuth2Constants.REFRESH_TOKEN, refreshTokenDTO.getRefreshToken());
         return webClient.post()
                 .uri(tokenURI)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue(form)
-                .retrieve()
-                .onStatus(code -> code.isSameCodeAs(HttpStatus.BAD_REQUEST), on400ErrorResponse())
-                .bodyToMono(TokenResponse.class);
-    }
-
-    private Function<ClientResponse, Mono<? extends Throwable>> on400ErrorResponse() {
-        return response -> Mono
-                .error(new InvalidTokenException("Access denied. The access token has expired or is invalid."));
+                .exchangeToMono(response -> {
+                    if(response.statusCode().is5xxServerError())
+                        return Mono.error(new ServiceException("Error occurred during refresh token."));
+                    if(response.statusCode().isSameCodeAs(HttpStatus.BAD_REQUEST))
+                        return Mono.error(new InvalidTokenException("Access denied. The access token has expired or is invalid."));
+                    return response.bodyToMono(ResponseTokenDTO.class);
+                });
     }
 }

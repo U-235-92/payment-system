@@ -1,0 +1,8 @@
+keycloak:
+  port: 8080
+  server-uri: http://localhost:${keycloak.port}
+  issuer-uri: http://localhost:${keycloak.port}/realms/${keycloak.realm}
+  admin-uri: http://localhost:${keycloak.port}/admin/realms/${keycloak.realm}/users
+  realm: payment-system
+  admin:
+    client_id: payment-system-admin-cli

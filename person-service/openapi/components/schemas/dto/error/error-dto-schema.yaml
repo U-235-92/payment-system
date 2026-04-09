@@ -1,0 +1,7 @@
+type: object
+required: [http_status, message]
+properties:
+  http_status:
+    type: int
+  message:
+    type: string

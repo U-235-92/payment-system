@@ -121,7 +121,7 @@ public class PersonRestControllerExceptionHandler {
     }
 
     private ErrorDTO getErrorDTO(HttpStatus httpStatus, String message) {
-        return new ErrorDTO(httpStatus.value(), message);
+        return new ErrorDTO().httpStatus(httpStatus.value()).message(message);
     }
 
     private void logException(Exception exception, HttpStatus status) {

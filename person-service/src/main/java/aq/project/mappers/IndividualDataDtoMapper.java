@@ -70,7 +70,7 @@ public abstract class IndividualDataDtoMapper {
     @Mapping(target = "phoneNumber", expression = "java(person.getIndividual().getPhoneNumber())")
     @Mapping(target = "passportNumber", expression = "java(person.getIndividual().getPassportNumber())")
     @Mapping(target = "address", expression = "java(toAddressDTO(person.getAddress()))")
-    public abstract IndividualDataResponseDTO toIndividualResponseDTO(Person person);
+    public abstract ResponseIndividualDataDTO toIndividualResponseDTO(Person person);
 
     @Named("toStringUUID")
     protected String toStringUUID(UUID uuid) {

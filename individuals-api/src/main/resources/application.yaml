@@ -1,32 +1,30 @@
 server:
-  port: 8081
+  port: ${APP_PORT}
 spring:
   application:
-    name: individuals-api
+    name: ${APP_NAME}
   profiles:
     active:
       - dev
   main:
     web-application-type: reactive
-  config:
-    import:
-      - optional:application-secrets.yaml
-      - optional:application-keycloak.yaml
-      - optional:application-keycloak-secrets.yaml
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${keycloak.issuer-uri}
-          jwk-set-uri: ${keycloak.issuer-uri}/protocol/openid-connect/certs
+          issuer-uri: ${JWT_ISSUER_URI}
+          jwk-set-uri: ${JWT_JWK_SET_URI}
       client:
         provider:
           keycloak:
-            issuer-uri: ${keycloak.issuer-uri}
-            token-uri: ${keycloak.server-uri}/realms/${keycloak.realm}/protocol/openid-connect/token
+            issuer-uri: ${KEYCLOAK_ISSUER_URI}
+            token-uri: ${KEYCLOAK_TOKEN_URI}
         registration:
           keycloak:
-            client-id: individuals-api
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            admin-id: ${KEYCLOAK_ADMIN_ID}
+            admin-secret: ${KEYCLOAK_ADMIN_SECRET}
 management:
   otlp:
     metrics:
@@ -36,10 +34,10 @@ management:
     tracing:
       export:
         otlp:
-          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
+          endpoint: ${OTEL_COLLECTOR_URI} # Connect to OTEL collector
   metrics:
     tags:
-      application: individuals-api
+      application: ${APP_NAME}
   endpoints:
     web:
       exposure:
@@ -49,11 +47,11 @@ management:
           - health
 application:
   person-service:
-    uri: http://localhost:8082
+    uri: ${PERSON_SERVICE_URI}
     endpoints:
-      create-person: /api/person/create-person
-      delete-person-by-keycloak-id: /api/person/delete-person-by-keycloak-id/
-      undo-delete-person-by-keycloak-id: /api/person/undo-delete-person-by-keycloak-id/
-      update-person: /api/person/update-person
-      undo-update-person: /api/person/undo-update-person
-      get-person-info-by-keycloak-id: /api/person/get-person-by-keycloak-id/
+      create-person: ${PERSON_SERVICE_CREATE_PERSON_ENDPOINT}
+      delete-person-by-keycloak-id: ${PERSON_SERVICE_DELETE_PERSON_ENDPOINT}
+      undo-delete-person-by-keycloak-id: ${PERSON_SERVICE_UNDO_DELETE_PERSON_ENDPOINT}
+      update-person: ${PERSON_SERVICE_UPDATE_PERSON_ENDPOINT}
+      undo-update-person: ${PERSON_SERVICE_UNDO_UPDATE_PERSON_ENDPOINT}
+      get-person-info-by-keycloak-id: ${PERSON_SERVICE_GET_PERSON_INFO_ENDPOINT}

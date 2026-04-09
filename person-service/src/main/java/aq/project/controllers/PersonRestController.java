@@ -1,7 +1,7 @@
 package aq.project.controllers;
 
 import aq.project.dto.CreateIndividualDataDTO;
-import aq.project.dto.IndividualDataResponseDTO;
+import aq.project.dto.ResponseIndividualDataDTO;
 import aq.project.dto.UndoOperationDTO;
 import aq.project.dto.UpdateIndividualDataDTO;
 import aq.project.entities.Person;
@@ -67,8 +67,8 @@ public class PersonRestController {
 
     @GetMapping("/get-person-by-keycloak-id/{keycloakId}")
     @Timed(value = "person_service.get_person_by_keycloak_id_time")
-    public ResponseEntity<IndividualDataResponseDTO> getPersonByKeycloakId(@PathVariable String keycloakId) throws UserNotExistsException {
-        IndividualDataResponseDTO response = individualDataDtoMapper.toIndividualResponseDTO(personService.getPersonByKeycloakId(keycloakId));
+    public ResponseEntity<ResponseIndividualDataDTO> getPersonByKeycloakId(@PathVariable String keycloakId) throws UserNotExistsException {
+        ResponseIndividualDataDTO response = individualDataDtoMapper.toIndividualResponseDTO(personService.getPersonByKeycloakId(keycloakId));
         return ResponseEntity.ok().body(response);
     }
 }

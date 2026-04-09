@@ -17,8 +17,11 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(1)
-    public SecurityWebFilterChain commonSecurityWebFilterChain(ServerHttpSecurity http) {
+    @Profile("dev")
+    public SecurityWebFilterChain devSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/gateway/api/user/**", "/dev/**"))
+                .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .oauth2Client(Customizer.withDefaults())
@@ -27,16 +30,6 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    @Profile("dev")
-    public SecurityWebFilterChain devSecurityWebFilterChain(ServerHttpSecurity http) {
-        return http
-                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/gateway/api/user/**", "/dev/**"))
-                .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
-                .build();
-    }
-
-    @Bean
-    @Order(3)
     public SecurityWebFilterChain gatewayUserRestControllerSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/gateway/api/user/**"))
@@ -47,11 +40,14 @@ public class SecurityConfiguration {
                         .pathMatchers(HttpMethod.DELETE, "/gateway/api/user/delete-user-by-keycloak-id/*").authenticated()
                         .pathMatchers(HttpMethod.GET, "/gateway/api/user/get-user-info").authenticated()
                         .pathMatchers(HttpMethod.POST, "/gateway/api/user/refresh-token").authenticated())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .oauth2Client(Customizer.withDefaults())
                 .build();
     }
 
     @Bean
-    @Order(4)
+    @Order(3)
     public SecurityWebFilterChain actuatorSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/actuator/**"))
@@ -59,6 +55,7 @@ public class SecurityConfiguration {
                         .pathMatchers(HttpMethod.GET, "/actuator/prometheus").permitAll()
                         .pathMatchers(HttpMethod.GET, "/actuator/info").permitAll()
                         .pathMatchers(HttpMethod.GET, "/actuator/health").permitAll())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .build();
     }
 }

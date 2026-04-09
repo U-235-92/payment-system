@@ -29,8 +29,8 @@ public class TestApplicationProperties {
             registry.add("spring.security.oauth2.client.provider.keycloak.token-uri", () -> keycloakContainerBaseExposedUrl + TOKEN_URI);
             registry.add("spring.security.oauth2.client.registration.keycloak.client-id", () -> CLIENT_ID);
             registry.add("spring.security.oauth2.client.registration.keycloak.client-secret", () -> CLIENT_SECRET);
-            registry.add("keycloak.admin.client-id", () -> ADMIN_CLIENT_ID);
-            registry.add("keycloak.admin.client-secret", () -> CLIENT_SECRET);
+            registry.add("spring.security.oauth2.client.registration.keycloak.admin-id", () -> ADMIN_CLIENT_ID);
+            registry.add("spring.security.oauth2.client.registration.keycloak.admin-secret", () -> CLIENT_SECRET);
             registry.add("keycloak.admin-uri", () -> keycloakContainerBaseExposedUrl + ADMIN_URI);
         }
     }

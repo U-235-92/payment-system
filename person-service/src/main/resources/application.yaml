@@ -1,22 +1,17 @@
 server:
-  port: 8082
+  port: ${APP_PORT}
 spring:
   application:
-    name: person-service
+    name: ${APP_NAME}
   profiles:
     active:
       - dev
-  config:
-    import:
-      - optional:application-secrets.yaml
-      - optional:application-keycloak.yaml
-      - optional:application-keycloak-secrets.yaml
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${keycloak.issuer-uri}
-          jwk-set-uri: ${keycloak.issuer-uri}/protocol/openid-connect/certs
+          issuer-uri: ${JWT_ISSUER_URI}
+          jwk-set-uri: ${JWT_JWK_SET_URI}
 management:
   otlp:
     metrics:
@@ -26,10 +21,10 @@ management:
     tracing:
       export:
         otlp:
-          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
+          endpoint: ${OTEL_COLLECTOR_URI} # Connect to OTEL collector
   metrics:
     tags:
-      application: person-service
+      application: ${APP_NAME}
   endpoints:
     web:
       exposure:

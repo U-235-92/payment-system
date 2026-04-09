@@ -6,20 +6,14 @@ COPY ./settings.gradle.kts ./settings.gradle.kts
 
 #Copy modules of root project
 #Copy individuals-api module (without this module build fail. E.g. [./settings.gradle.kts] include this module)
-COPY ./individuals-api/build.gradle.kts ./individuals-api/build.gradle.kts
 COPY ./individuals-api/src ./individuals-api/src
+COPY ./individuals-api/openapi ./individuals-api/openapi
+COPY ./individuals-api/build.gradle.kts ./individuals-api/build.gradle.kts
 
 #Copy person-service module
 COPY ./person-service/src ./person-service/src
+COPY ./person-service/openapi ./person-service/openapi
 COPY ./person-service/build.gradle.kts ./person-service/build.gradle.kts
-
-#Copy common plugins and dependencies of project (see gradle documentation about buildSrc module)
-COPY ./buildSrc ./buildSrc
-
-#Copy common OpenApi DTO specification [./common-dto/openapi] + Java DTO [./common-dto/src/main/java]
-COPY ./common-dto/src ./common-dto/src
-COPY ./common-dto/openapi ./common-dto/openapi
-COPY ./common-dto/build.gradle.kts ./common-dto/build.gradle.kts
 
 #Build individuals-api module
 RUN gradle --no-daemon clean bootJar

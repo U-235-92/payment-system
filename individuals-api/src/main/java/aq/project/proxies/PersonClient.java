@@ -123,7 +123,7 @@ public class PersonClient {
                         .exchangeToMono(response ->  {
                             if(HttpUtils.isErrorStatusCode(response.statusCode()))
                                 return response.bodyToMono(ErrorDTO.class)
-                                        .map(errorDTO -> ResponseEntity.status(errorDTO.httpStatus()).body(errorDTO.message()));
+                                        .map(errorDTO -> ResponseEntity.status(errorDTO.getHttpStatus()).body(errorDTO.getMessage()));
                             return response.bodyToMono(IndividualDataResponseDTO.class)
                                     .map(ResponseEntity::ok);
                         }));
@@ -131,7 +131,7 @@ public class PersonClient {
 
     private Mono<ResponseEntity<String>> getErrorResponseEntityMono(ClientResponse response) {
         return response.bodyToMono(ErrorDTO.class)
-                .map(errorDTO -> ResponseEntity.status(errorDTO.httpStatus()).body(errorDTO.message()));
+                .map(errorDTO -> ResponseEntity.status(errorDTO.getHttpStatus()).body(errorDTO.getMessage()));
     }
 
     private Mono<ResponseEntity<String>> getOkResponseEntityMono() {

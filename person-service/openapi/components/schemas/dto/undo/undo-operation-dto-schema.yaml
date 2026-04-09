@@ -1,0 +1,13 @@
+type: object
+required: [operation, payload]
+properties:
+  id:
+    type: string
+  operation:
+    enum:
+      - undo_update_person
+      - undo_delete_person
+  payload:
+    type: object
+    additionalProperties:
+      type: string

@@ -1,0 +1,18 @@
+type: object
+required: [keycloak_user_id, first_name, last_name, phone_number, passport_number, address]
+properties:
+  keycloak_user_id:
+    type: string
+  first_name:
+    type: string
+  last_name:
+    type: string
+  phone_number:
+    type: string
+  passport_number:
+    type: string
+  active:
+    type: boolean
+    default: true
+  address:
+    $ref: "../common/address-dto-schema.yaml"

@@ -8,12 +8,12 @@ import java.nio.file.Paths
  * Learn more about Gradle by exploring our Samples at https://docs.gradle.org/9.2.1/samples
  */
 // Задача для всех подмодулей
-subprojects {
-    tasks {
-        copy {
-            from("$rootDir/common-configs/keycloak/application-keycloak.yaml") // Копируем из корня проекта конфигурационный файл Keycloak
-            from("$rootDir/common-configs/keycloak/application-keycloak-secrets.yaml") // Аналогично вышеупомянутой инструкции
-            into("src/main/resources") // В директорию ресурсов каждого из подмодулей
-        }
-    }
-}
+//subprojects {
+//    tasks {
+//        copy {
+//            from("$rootDir/common-configs/keycloak/application-keycloak.yaml") // Копируем из корня проекта конфигурационный файл Keycloak
+//            from("$rootDir/common-configs/keycloak/application-keycloak-secrets.yaml") // Аналогично вышеупомянутой инструкции
+//            into("src/main/resources") // В директорию ресурсов каждого из подмодулей
+//        }
+//    }
+//}

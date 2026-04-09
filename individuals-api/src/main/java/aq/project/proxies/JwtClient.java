@@ -26,10 +26,10 @@ public class JwtClient {
     private static final String ACCESS_TOKEN = "access_token";
     private static final String CLIENT_SECRET = "client_secret";
 
-    @Value("${keycloak.admin.client-id}")
+    @Value("spring.security.oauth2.client.registration.keycloak.admin-id")
     private String adminClientID;
 
-    @Value("${keycloak.admin.client-secret}")
+    @Value("spring.security.oauth2.client.registration.keycloak.admin-secret")
     private String adminClientSecret;
 
     @Value("${spring.security.oauth2.client.provider.keycloak.token-uri}")

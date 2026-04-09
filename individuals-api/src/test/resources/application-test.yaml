@@ -13,9 +13,10 @@ logging:
     org:
       springframework:
         security: debug
+        web: debug
 application:
   person-service:
-    uri: http://person-service:8082
+#    uri: http://person-service:8082 # You must override this property in test environment! Don't use this raw value!
     endpoints:
       create-person: /api/person/create-person
       delete-person-by-keycloak-id: /api/person/delete-person-by-keycloak-id/
@@ -24,6 +25,13 @@ application:
       undo-update-person: /api/person/undo-update-person
       get-person-info-by-keycloak-id: /api/person/get-person-by-keycloak-id/
   individuals-api:
+    endpoints:
+      create-user: /gateway/api/user/create-user
+      login-user: /gateway/api/user/login-user
+      update-user: /gateway/api/user/update-user
+      delete-user-by-keycloak-id: /gateway/api/user/delete-user-by-keycloak-id/
+      get-user-info: /gateway/api/user/get-user-info
+      refresh-token: /gateway/api/user/refresh-token
     test:
       actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)
       unknown-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407

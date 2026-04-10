@@ -107,7 +107,7 @@ public class KeycloakClient {
             .exchangeToMono(response -> {
                 if(response.statusCode().is5xxServerError())
                     return Mono.error(new ServiceException("Error occurred during login user."));
-                if(response.statusCode().isSameCodeAs(HttpStatus.UNAUTHORIZED))
+                if(response.statusCode().is4xxClientError())
                     return Mono.error(new IncorrectUserCredentialsException("Authentication error. Input credentials are incorrect. Check email and password and try again."));
                 return response.bodyToMono(ResponseTokenDTO.class);
             })

@@ -1,0 +1,40 @@
+openapi: 3.1.0
+
+info:
+  title: Common DTO specifications
+  description: Спецификация DTO
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8082
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserInfoResponseDTO:
+      $ref: "./components/schemas/dto/response/response-user-info-dto-schema.yaml"
+
+    CreateUserDTO:
+      $ref: "./components/schemas/dto/create/create-user-dto-schema.yaml"
+
+    UpdateUserDTO:
+      $ref: "./components/schemas/dto/update/update-user-dto-schema.yaml"
+
+    LoginUserDTO:
+      $ref: "./components/schemas/dto/login/login-user-dto-schema.yaml"
+
+    RefreshTokenDTO:
+      $ref: "./components/schemas/dto/token/refresh-token-dto-schema.yaml"
+    ResponseTokenDTO:
+      $ref: "./components/schemas/dto/token/response-token-dto-schema.yaml"
+
+    UndoOperationDTO:
+      $ref: "./components/schemas/dto/undo/undo-operation-dto-schema.yaml"
+
+    ErrorDTO:
+      $ref: "./components/schemas/dto/error/error-dto-schema.yaml"

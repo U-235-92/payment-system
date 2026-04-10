@@ -3,6 +3,7 @@ package aq.project.configs;
 import jakarta.ws.rs.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -16,8 +17,11 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(1)
-    public SecurityWebFilterChain commonSecurityWebFilterChain(ServerHttpSecurity http) {
+    @Profile("dev")
+    public SecurityWebFilterChain devSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/gateway/api/user/**", "/dev/**"))
+                .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .oauth2Client(Customizer.withDefaults())
@@ -26,15 +30,19 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityWebFilterChain authControllerSecurityWebFilterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain gatewayUserRestControllerSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
-                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/v1/auth/**"))
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/gateway/api/user/**"))
                 .authorizeExchange(customizer -> customizer
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/registration").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/v1/auth/context").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/v1/auth/refresh-token").permitAll()
-                        .pathMatchers(HttpMethod.GET, "/v1/auth/me").permitAll())
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/create-user").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/login-user").permitAll()
+                        .pathMatchers(HttpMethod.PATCH, "/gateway/api/user/update-user").authenticated()
+                        .pathMatchers(HttpMethod.DELETE, "/gateway/api/user/delete-user-by-keycloak-id/*").authenticated()
+                        .pathMatchers(HttpMethod.GET, "/gateway/api/user/get-user-info").authenticated()
+                        .pathMatchers(HttpMethod.POST, "/gateway/api/user/refresh-token").authenticated())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .oauth2Client(Customizer.withDefaults())
                 .build();
     }
 
@@ -47,6 +55,7 @@ public class SecurityConfiguration {
                         .pathMatchers(HttpMethod.GET, "/actuator/prometheus").permitAll()
                         .pathMatchers(HttpMethod.GET, "/actuator/info").permitAll()
                         .pathMatchers(HttpMethod.GET, "/actuator/health").permitAll())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .build();
     }
 }

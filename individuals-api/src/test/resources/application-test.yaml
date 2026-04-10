@@ -1,0 +1,37 @@
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+logging:
+  level:
+    org:
+      springframework:
+        security: debug
+        web: debug
+application:
+  person-service:
+    uri: http://override-me-in-dynamic-property-regestry:8082 # You must override this property in test environment!
+    endpoints:
+      create-person: ${PERSON_SERVICE_CREATE_PERSON_ENDPOINT}
+      delete-person-by-keycloak-id: ${PERSON_SERVICE_DELETE_PERSON_ENDPOINT}
+      undo-delete-person-by-keycloak-id: ${PERSON_SERVICE_UNDO_DELETE_PERSON_ENDPOINT}
+      update-person: ${PERSON_SERVICE_UPDATE_PERSON_ENDPOINT}
+      undo-update-person: ${PERSON_SERVICE_UNDO_UPDATE_PERSON_ENDPOINT}
+      get-person-info-by-keycloak-id: ${PERSON_SERVICE_GET_PERSON_INFO_ENDPOINT}
+  individuals-api:
+    endpoints:
+      create-user: /gateway/api/user/create-user
+      login-user: /gateway/api/user/login-user
+      update-user: /gateway/api/user/update-user
+      delete-user-by-keycloak-id: /gateway/api/user/delete-user-by-keycloak-id/
+      get-user-info: /gateway/api/user/get-user-info
+      refresh-token: /gateway/api/user/refresh-token
+    test:
+      actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)
+      unknown-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407

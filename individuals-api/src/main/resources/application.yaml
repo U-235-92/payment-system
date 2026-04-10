@@ -1,31 +1,21 @@
 server:
-  port: 8081
+  port: ${APP_PORT}
 spring:
   application:
-    name: individuals-api
+    name: ${APP_NAME}
+  profiles:
+    active:
+      - dev
   main:
     web-application-type: reactive
-  config:
-    import:
-      - application-secrets.yaml
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${application.keycloak.issuer-uri}
-          jwk-set-uri: ${application.keycloak.issuer-uri}/protocol/openid-connect/certs
-      client:
-        provider:
-          keycloak:
-            issuer-uri: ${application.keycloak.issuer-uri}
-            token-uri: ${application.keycloak.server-uri}/realms/${application.keycloak.realm}/protocol/openid-connect/token
-        registration:
-          keycloak:
-            client-id: individuals-api
 management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
   metrics:
     tags:
-      application: individuals-api
+      application: ${APP_NAME}
   endpoints:
     web:
       exposure:
@@ -33,12 +23,3 @@ management:
           - prometheus
           - info
           - health
-application:
-  keycloak:
-    port: 8080
-    server-uri: http://localhost:${application.keycloak.port}
-    issuer-uri: ${application.keycloak.server-uri}/realms/${application.keycloak.realm}
-    admin-uri: ${application.keycloak.server-uri}/admin/realms/${application.keycloak.realm}/users
-    realm: payment-system
-    admin:
-      client_id: payment-system-admin-cli

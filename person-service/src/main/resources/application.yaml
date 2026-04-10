@@ -1,0 +1,24 @@
+server:
+  port: ${APP_PORT}
+spring:
+  application:
+    name: ${APP_NAME}
+  profiles:
+    active:
+      - dev
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: ${APP_NAME}
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+

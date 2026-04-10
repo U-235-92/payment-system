@@ -1,0 +1,37 @@
+logging:
+  level:
+    org:
+      springframework:
+        security: debug
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # OTEL collector URI
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+  datasource:
+    url: jdbc:h2:mem:person-service-test-db;INIT=RUNSCRIPT FROM 'classpath:dev/db/init.sql'
+    driver-class-name: org.h2.Driver
+    username: root
+    password:
+  flyway:
+    enabled: false
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true

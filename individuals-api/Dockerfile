@@ -1,19 +1,26 @@
 FROM gradle:jdk25-alpine AS builder
+
 WORKDIR /source
-COPY ./individuals-api/build.gradle.kts ./individuals-api/build.gradle.kts
-COPY ./settings.gradle.kts ./settings.gradle.kts
-COPY ./individuals-api/src ./individuals-api/src
-COPY ./individuals-api/openapi ./individuals-api/openapi
-WORKDIR /source
-RUN gradle --no-daemon clean bootJar
+
+#Copy individuals-api sources
+COPY ./individuals-api/settings.gradle.kts ./settings.gradle.kts
+COPY ./individuals-api/src ./src
+COPY ./individuals-api/openapi ./openapi
+COPY ./individuals-api/build.gradle.kts ./build.gradle.kts
+
+#Build project
+RUN gradle --no-daemon clean bootJar -x test
 
 FROM eclipse-temurin:25-jre
+
 RUN apt-get update && apt-get install -y curl
-ENV APPLICATION_KEYCLOAK_PORT=8080
-ENV APPLICATION_KEYCLOAK_SERVER-URI=http://keycloak:${APPLICATION_KEYCLOAK_PORT}
-ENV APPLICATION_KEYCLOAK_ADMIN_CLIENT-SECRET=usnNtI5mRaOPUpPcs2ItplZdSfL8oq6N
-ENV SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT-SECRET=yshqPX8p75HdUQU4EZ03Up0JAyOBfaCo
+
 WORKDIR /app
-COPY --from=builder /source/individuals-api/build/libs/*.jar ./individuals-api.jar
+
+COPY --from=builder /source/build/libs/*.jar ./individuals-api.jar
+
+#Spring env:
+ENV SPRING_PROFILES_ACTIVE=prod
+
 EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "individuals-api.jar"]

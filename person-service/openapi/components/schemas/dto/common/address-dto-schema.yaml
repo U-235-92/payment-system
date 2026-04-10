@@ -1,0 +1,14 @@
+type: object
+title: AddressDTO
+required: [country, state, city, address, zip_code]
+properties:
+  country:
+    $ref: "./country-dto-schema.yaml"
+  state:
+    type: string
+  city:
+    type: string
+  address:
+    type: string
+  zip_code:
+    type: string

@@ -1,0 +1,34 @@
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_COLLECTOR_URI} # OTEL collector URI
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI}
+          jwk-set-uri: ${JWT_JWK_SET_URI}
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: ${DATASOURCE_DRIVER_CLASS_NAME}
+  flyway:
+    enabled: true
+    baseline-version: 1
+    baseline-on-migrate: true
+    url: ${FLYWAY_DB_URL}
+    user: ${FLYWAY_DB_USERNAME}
+    password: ${FLYWAY_DB_PASSWORD}
+    default-schema: person # Дом для Flyway (там хранятся таблицы, специфичные для Flyway)
+    schemas: # Маршруты поиска, где первая схема определяет рабочее пространство имен (квартира [схема] в доме [БД])
+      - person
+      - public
+  jpa:
+    generate-ddl: false
+    database-platform: ${JPA_DB_PLATFORM}
+    hibernate:
+      ddl-auto: validate

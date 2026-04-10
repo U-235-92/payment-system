@@ -6,22 +6,11 @@ spring:
   profiles:
     active:
       - dev
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${JWT_ISSUER_URI}
-          jwk-set-uri: ${JWT_JWK_SET_URI}
 management:
   otlp:
     metrics:
       export:
         enabled: false
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: ${OTEL_COLLECTOR_URI} # Connect to OTEL collector
   metrics:
     tags:
       application: ${APP_NAME}

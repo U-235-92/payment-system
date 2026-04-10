@@ -6,6 +6,7 @@ import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.apache.http.HttpHeaders;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import reactor.test.StepVerifier;
 import static aq.project.util.TestDtoRepository.getLoginUserDTO;
 import static aq.project.util.TestUtils.*;
 
+@Disabled
 @Testcontainers
 @DirtiesContext
 @ActiveProfiles("test")

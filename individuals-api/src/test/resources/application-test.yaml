@@ -16,14 +16,14 @@ logging:
         web: debug
 application:
   person-service:
-#    uri: http://person-service:8082 # You must override this property in test environment! Don't use this raw value!
+    uri: http://override-me-in-dynamic-property-regestry:8082 # You must override this property in test environment!
     endpoints:
-      create-person: /api/person/create-person
-      delete-person-by-keycloak-id: /api/person/delete-person-by-keycloak-id/
-      undo-delete-person-by-keycloak-id: /api/person/undo-delete-person-by-keycloak-id/
-      update-person: /api/person/update-person
-      undo-update-person: /api/person/undo-update-person
-      get-person-info-by-keycloak-id: /api/person/get-person-by-keycloak-id/
+      create-person: ${PERSON_SERVICE_CREATE_PERSON_ENDPOINT}
+      delete-person-by-keycloak-id: ${PERSON_SERVICE_DELETE_PERSON_ENDPOINT}
+      undo-delete-person-by-keycloak-id: ${PERSON_SERVICE_UNDO_DELETE_PERSON_ENDPOINT}
+      update-person: ${PERSON_SERVICE_UPDATE_PERSON_ENDPOINT}
+      undo-update-person: ${PERSON_SERVICE_UNDO_UPDATE_PERSON_ENDPOINT}
+      get-person-info-by-keycloak-id: ${PERSON_SERVICE_GET_PERSON_INFO_ENDPOINT}
   individuals-api:
     endpoints:
       create-user: /gateway/api/user/create-user

@@ -106,10 +106,6 @@ java {
 	}
 }
 
-springBoot {
-	mainClass = "aq.project.PersonServiceApplication"
-}
-
 repositories {
 	mavenCentral()
 }
@@ -117,16 +113,16 @@ repositories {
 sourceSets { // Источники исходников для проекта
 	main {
 		java {
-			srcDirs("${rootDir}/individuals-api/src/main/java",
-				"${rootDir}/individuals-api/build/generated/openapi/src/main/java")
+			srcDirs("${rootDir}/src/main/java",
+				"${rootDir}/build/generated/openapi/src/main/java")
 		}
 	}
 }
 
 openApiGenerate {
-	inputSpec.set("$rootDir/individuals-api/openapi/components-specification.yaml") // Источник спецификации
-	outputDir.set("$rootDir/individuals-api/build/generated/openapi") // Путь куда генерировать исходники
-	ignoreFileOverride.set("$rootDir/individuals-api/openapi/openapi-generator-java-sources.ignore") // Источник, в котором указано, какие файлы следует игнорировать в процессе генерации исходников
+	inputSpec.set("$rootDir/openapi/components-specification.yaml") // Источник спецификации
+	outputDir.set("$rootDir/build/generated/openapi") // Путь куда генерировать исходники
+	ignoreFileOverride.set("$rootDir/openapi/openapi-generator-java-sources.ignore") // Источник, в котором указано, какие файлы следует игнорировать в процессе генерации исходников
 	generatorName.set("java") // Использовать генератор Java для создания исходников на этом языке
 	library.set("feign") // Без явного указания библиотеки генератор Java (выше) настроен на работу с okhttp-gson, по этой причине инструкция serializationLibrary работать не будет (игнорируется) и все DTO начинают использовать библиотеку gson для JSON! Эта инструкция явно указывает использование нужной библиотеки API, которая использует Jackson для JSON
 	modelPackage.set("aq.project.dto") // Название пакета модели

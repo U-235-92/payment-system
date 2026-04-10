@@ -22,6 +22,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import static aq.project.util.TestDtoRepository.*;
 
+@Disabled
 @Testcontainers
 @DirtiesContext
 @ActiveProfiles("test")

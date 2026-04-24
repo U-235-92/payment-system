@@ -69,7 +69,7 @@ services:
       driver: loki
       options:
         loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: container=individuals-api
+        loki-external-labels: container=person-service
     healthcheck:
       test: [ "CMD", "curl", "http://localhost:8082/actuator/health" ]
       interval: 10s

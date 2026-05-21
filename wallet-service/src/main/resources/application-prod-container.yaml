@@ -1,0 +1,29 @@
+logging:
+  level:
+    root: info
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${CONTAINER_OTEL_COLLECTOR_URI}
+spring:
+  kafka:
+    bootstrapServers: ${CONTAINER_KAFKA_BOOTSTRAP_SERVERS}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${CONTAINER_JWT_ISSUER_URI}
+          jwk-set-uri: ${CONTAINER_JWT_JWK_SET_URI}
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:container-sharding.yaml?placeholder-type=environment
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    database-platform: ${DB_DIALECT}
+    hibernate:
+      ddl-auto: validate
+
+

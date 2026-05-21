@@ -17,19 +17,118 @@ components:
 
   schemas:
     ResponseIndividualDataDTO:
-      $ref: "./components/schemas/dto/response/response-individual-data-dto-schema.yaml"
+      type: object
+      required: [ first_name, last_name, email, phone_number, passport_number, address ]
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone_number:
+          type: string
+        passport_number:
+          type: string
+        address:
+          $ref: "#/components/schemas/AddressDTO"
+
+    AddressDTO:
+      type: object
+      required: [ country, state, city, address, zip_code ]
+      properties:
+        country:
+          $ref: "#/components/schemas/CountryDTO"
+        state:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        zip_code:
+          type: string
+
+    CountryDTO:
+      type: object
+      required: [ name, code ]
+      properties:
+        name:
+          type: string
+        code:
+          type: string
 
     CreateIndividualDataDTO:
-      $ref: "./components/schemas/dto/create/create-individual-data-dto-schema.yaml"
+      type: object
+      required: [ first_name, last_name, email, phone_number, passport_number, address ]
+      properties:
+        keycloak_user_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone_number:
+          type: string
+        passport_number:
+          type: string
+        active:
+          type: boolean
+          default: true
+        address:
+          $ref: "#/components/schemas/AddressDTO"
 
     UpdateIndividualDataDTO:
-      $ref: "./components/schemas/dto/update/update-individual-data-dto-schema.yaml"
+      type: object
+      required: [ keycloak_user_id, first_name, last_name, phone_number, passport_number, address ]
+      properties:
+        keycloak_user_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        passport_number:
+          type: string
+        active:
+          type: boolean
+          default: true
+        address:
+          $ref: "#/components/schemas/AddressDTO"
 
     LoginUserDTO:
-      $ref: "./components/schemas/dto/login/login-user-dto-schema.yaml"
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
 
     UndoOperationDTO:
-      $ref: "./components/schemas/dto/undo/undo-operation-dto-schema.yaml"
+      type: object
+      required: [ operation, payload ]
+      properties:
+        id:
+          type: string
+        operation:
+          enum:
+            - undo_update_person
+            - undo_delete_person
+        payload:
+          type: object
+          additionalProperties:
+            type: string
 
     ErrorDTO:
-      $ref: "./components/schemas/dto/error/error-dto-schema.yaml"
+      type: object
+      required: [ http_status, message ]
+      properties:
+        http_status:
+          type: int
+        message:
+          type: string

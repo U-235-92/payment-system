@@ -1,3 +1,91 @@
+logging:
+  level:
+    org.springframework.security: info
+server:
+  port: ${SERVICE_PORT}
 spring:
   application:
-    name: transaction-service
+    name: ${SERVICE_NAME}
+  profiles:
+    active:
+      - prod-local
+  kafka:
+    bootstrapServers: ${LOCAL_KAFKA_BOOTSTRAP_SERVERS}
+    listener:
+      ack-mode: RECORD
+    producer:
+      acks: all
+      retries: 5
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      group-id: ${SERVICE_NAME}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "aq.project.messages"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_LOCAL_JWT_ISSUER_URI}
+          jwk-set-uri: ${OAUTH2_LOCAL_JWT_JWK_SET_URI}
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_LOCAL_ISSUER_URI}
+            token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_LOCAL_TOKEN_URI}
+        registration:
+          keycloak:
+            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
+            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
+            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: ${SERVICE_NAME}
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+otel:
+  instrumentation:
+    annotations:
+      enabled: true
+service:
+  kafka:
+    topics:
+      wallet_operation_response:
+        name: wallet_operation_response
+      wallet_operation_request:
+        name: wallet_operation_request
+    partitions:
+      deposit:
+        name: deposit
+      withdraw:
+        name: withdraw
+      transfer:
+        name: transfer
+  individuals-api:
+    name: ${INDIVIDUALS_API_SERVICE_NAME}
+    uri: ${INDIVIDUALS_API_SERVICE_LOCAL_URL}
+    endpoints:
+      handle-transaction-response: ${INDIVIDUALS_API_SERVICE_ENDPOINTS_HANDLE_TRANSACTION_RESPONSE}
+  wallet-service:
+    name: ${WALLET_SERVICE_NAME}
+    uri: ${WALLET_SERVICE_LOCAL_URL}
+    endpoints:
+      get-transaction-status: ${WALLET_SERVICE_ENDPOINTS_GET_TRANSACTION_STATUS}

@@ -1,0 +1,192 @@
+openapi: 3.1.0
+
+info:
+  title: Common DTO specifications
+  description: Спецификация DTO
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8083
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateWalletRequestDTO:
+      type: object
+      required: [ personId, walletStatus, creator, modifier, currencyCode, balance, cardNumber, cardCvvNumber, cardExpirationDate, cardType ]
+      properties:
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        walletStatus:
+          $ref: "#/components/schemas/WalletStatus"
+        creator:
+          type: string
+          maxLength: 255
+        modifier:
+          type: string
+          maxLength: 255
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        balance:
+          $ref: "#/components/schemas/AmountDefinition"
+        cardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        cardCvvNumber:
+          $ref: "#/components/schemas/CardCvvDefinition"
+        cardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+        cardType:
+          $ref: "#/components/schemas/CardType"
+
+    WithdrawRequestDTO:
+      type: object
+      required: [ transactionId, personId, walletId, amount, currencyCode, cardNumber, cardType, cardExpirationDate ]
+      properties:
+        transactionId:
+          $ref: "#/components/schemas/UuidDefinition"
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        walletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        cardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        cardType:
+          $ref: "#/components/schemas/CardType"
+        cardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    TransferRequestDTO:
+      type: object
+      required: [ transactionId, personId, fromWalletId, toWalletId, amount, currencyCode, fromCardNumber, fromCardType, toCardNumber, toCardType, fromCardExpirationDate, toCardExpirationDate ]
+      properties:
+        transactionId:
+          $ref: "#/components/schemas/UuidDefinition"
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        fromWalletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        toWalletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        fromCardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        fromCardType:
+          $ref: "#/components/schemas/CardType"
+        fromCardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+        toCardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        toCardType:
+          $ref: "#/components/schemas/CardType"
+        toCardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    DepositRequestDTO:
+      type: object
+      required: [ transactionId, personId, walletId, amount, currencyCode, cardNumber, cardType, cardExpirationDate ]
+      properties:
+        transactionId:
+          $ref: "#/components/schemas/UuidDefinition"
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        walletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        cardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        cardType:
+          $ref: "#/components/schemas/CardType"
+        cardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    WalletInfoResponseDTO:
+      type: object
+      required: [ personId, walletId, balance, currencyCode, cardNumber, cardExpirationDate, cardType, createdAt, modifiedAt ]
+      properties:
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        walletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        createdAt:
+          type: string
+        modifiedAt:
+          type: string
+        balance:
+          $ref: "#/components/schemas/AmountDefinition"
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        cardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        cardType:
+          $ref: "#/components/schemas/CardType"
+        cardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    ErrorDTO:
+      type: object
+      required: [ http_status, message ]
+      properties:
+        http_status:
+          type: int
+        message:
+          type: string
+
+    WalletStatus:
+      enum: [ "ACTIVE", "BLOCKED" ]
+
+    CardType:
+      enum: [ "VISA", "MASTERCARD", "MIR", "AMERICAN_EXPRESS", "UNION_PAY" ]
+
+    OperationType:
+      enum: [ "DEPOSIT", "WITHDRAW", "TRANSFER" ]
+
+    TransactionStatus:
+      enum: [ "PENDING", "COMPLETED", "FAILED" ]
+
+    CurrencyCodeDefinition:
+      type: string
+      pattern: '^[A-Z]{3}$'
+      minLength: 3
+      maxLength: 3
+
+    AmountDefinition:
+      type: string
+      pattern: '^([1-9][0-9]*|[0]+)\.[0-9][0-9]$'
+      description: "Описание шаблона денежных средств в формате: 0.XX или Х.ХХ"
+
+    UuidDefinition:
+      type: string
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+    CardCvvDefinition:
+      type: string
+      pattern: '^[0-9]{3}$'
+      minLength: 3
+      maxLength: 3
+
+    CardNumberDefinition:
+      type: string
+      pattern: '^[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}$'
+      description: "Описание шаблона номера карты в формате: ХХХХ ХХХХ ХХХХ ХХХХ"
+
+    CardExpirationDateDefinition:
+      type: string
+      pattern: '^([0][1-9]|[1][0-2])/[0-9][0-9]$'
+      minLength: 5
+      maxLength: 5
+

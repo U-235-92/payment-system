@@ -47,6 +47,18 @@ public class ApplicationMetricsRegistry implements MeterBinder {
     private Counter successRefreshTokenCounter;
     private Counter failRefreshTokenCounter;
 
+    private Counter successCreateWalletCounter;
+    private Counter failCreateWalletCounter;
+
+    private Counter successGetWalletInfoRequestCounter;
+    private Counter failGetWalletInfoRequestCounter;
+
+    private Counter successGetTransactionStatusCounter;
+    private Counter failGetTransactionStatusCounter;
+
+    private Counter successDoTransactionCounter;
+    private Counter failDoTransactionCounter;
+
     @Override
     public void bindTo(MeterRegistry registry) {
         requestLatencyTimer = Timer.builder(METRIC_PREFIX + "request_latency").register(registry);
@@ -68,6 +80,18 @@ public class ApplicationMetricsRegistry implements MeterBinder {
 
         successRefreshTokenCounter = getCounter(REFRESH_TOKEN_METRIC_COUNT, registry, List.of(Tag.of(STATUS, SUCCESS)));
         failRefreshTokenCounter = getCounter(REFRESH_TOKEN_METRIC_COUNT, registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successCreateWalletCounter = getCounter("create_wallet_count", registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failCreateWalletCounter = getCounter("create_wallet_count", registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successGetWalletInfoRequestCounter = getCounter("get_wallet_info_request_count", registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failGetWalletInfoRequestCounter = getCounter("get_wallet_info_request_count", registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successGetTransactionStatusCounter = getCounter("get_transaction_status_count", registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failGetTransactionStatusCounter = getCounter("get_transaction_status_count", registry, List.of(Tag.of(STATUS, FAIL)));
+
+        successDoTransactionCounter = getCounter("do_transaction_count", registry, List.of(Tag.of(STATUS, SUCCESS)));
+        failDoTransactionCounter = getCounter("do_transaction_count", registry, List.of(Tag.of(STATUS, FAIL)));
     }
 
     private Counter getCounter(String metricName, MeterRegistry meterRegistry, Iterable<Tag> tags) {
@@ -122,6 +146,38 @@ public class ApplicationMetricsRegistry implements MeterBinder {
 
     public void incrementFailRefreshTokenCounter() {
         failRefreshTokenCounter.increment();
+    }
+
+    public void incrementSuccessCreateWalletCounter() {
+        successCreateWalletCounter.increment();
+    }
+
+    public void incrementFailCreateWalletCounter() {
+        failCreateWalletCounter.increment();
+    }
+
+    public void incrementSuccessGetWalletInfoRequestCounter() {
+        successGetWalletInfoRequestCounter.increment();
+    }
+
+    public void incrementFailGetWalletInfoRequestCounter() {
+        failGetWalletInfoRequestCounter.increment();
+    }
+
+    public void incrementSuccessGetTransactionStatusCounter() {
+        successGetTransactionStatusCounter.increment();
+    }
+
+    public void incrementFailGetTransactionStatusCounter() {
+        failGetTransactionStatusCounter.increment();
+    }
+
+    public void incrementSuccessDoTransactionCounter() {
+        successDoTransactionCounter.increment();
+    }
+
+    public void incrementFailDoTransactionCounter() {
+        failDoTransactionCounter.increment();
     }
 
     public void evaluateRequestLatency(long start, long end) {

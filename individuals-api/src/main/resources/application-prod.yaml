@@ -25,10 +25,7 @@ management:
 application:
   person-service:
     uri: ${PERSON_SERVICE_URI}
-    endpoints:
-      create-person: ${PERSON_SERVICE_CREATE_PERSON_ENDPOINT}
-      delete-person-by-keycloak-id: ${PERSON_SERVICE_DELETE_PERSON_ENDPOINT}
-      undo-delete-person-by-keycloak-id: ${PERSON_SERVICE_UNDO_DELETE_PERSON_ENDPOINT}
-      update-person: ${PERSON_SERVICE_UPDATE_PERSON_ENDPOINT}
-      undo-update-person: ${PERSON_SERVICE_UNDO_UPDATE_PERSON_ENDPOINT}
-      get-person-info-by-keycloak-id: ${PERSON_SERVICE_GET_PERSON_INFO_ENDPOINT}
+  wallet-service:
+    uri: ${WALLET_SERVICE_URI}
+  transaction-service:
+    uri: ${TRANSACTION_SERVICE_URI}

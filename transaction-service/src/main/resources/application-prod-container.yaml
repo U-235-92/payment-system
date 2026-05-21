@@ -1,0 +1,19 @@
+spring:
+  kafka:
+    bootstrapServers: ${CONTAINER_KAFKA_BOOTSTRAP_SERVERS}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_CONTAINER_JWT_ISSUER_URI}
+          jwk-set-uri: ${OAUTH2_CONTAINER_JWT_JWK_SET_URI}
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_CONTAINER_ISSUER_URI}
+            token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_CONTAINER_TOKEN_URI}
+service:
+  individuals-api:
+    uri: ${INDIVIDUALS_API_SERVICE_CONTAINER_URL}
+  wallet-service:
+    uri: ${WALLET_SERVICE_CONTAINER_URL}

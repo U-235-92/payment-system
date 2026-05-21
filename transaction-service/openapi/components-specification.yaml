@@ -1,0 +1,60 @@
+openapi: 3.1.0
+
+info:
+  title: Common DTO specifications
+  description: Спецификация DTO
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8084
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TransactionRequestDTO:
+      type: object
+      required: [ operationType, amount, currency, timestamp, properties ]
+      properties:
+        operationType:
+          $ref: "#/components/schemas/OperationType"
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currency:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        timestamp:
+          type: long
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+
+    ErrorDTO:
+      type: object
+      required: [ http_status, message ]
+      properties:
+        http_status:
+          type: int
+        message:
+          type: string
+
+    OperationType:
+      enum: [ "DEPOSIT", "WITHDRAW", "TRANSFER" ]
+
+    TransactionStatus:
+      enum: [ "PENDING", "COMPLETED", "FAILED" ]
+
+    AmountDefinition:
+      type: string
+      pattern: '^([1-9][0-9]*|[0]+)\.[0-9][0-9]$'
+      description: "Описание шаблона денежных средств в формате: 0.XX или Х.ХХ"
+
+    CurrencyCodeDefinition:
+      type: string
+      pattern: '^[A-Z]{3}$'
+      minLength: 3
+      maxLength: 3

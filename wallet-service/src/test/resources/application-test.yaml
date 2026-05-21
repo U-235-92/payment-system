@@ -1,0 +1,33 @@
+spring:
+  kafka:
+    listener:
+      ack-mode: RECORD
+    producer:
+      acks: all
+      retries: 5
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      group-id: test-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+  sql:
+    init:
+      mode: ALWAYS
+      schema-locations:
+        - 'classpath:db/schema.sql'
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+logging:
+  level:
+    org.hibernate: info
+
+

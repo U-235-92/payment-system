@@ -1,0 +1,91 @@
+# DATA SOURCES
+dataSources:
+  datasource_0:
+    dataSourceClassName: $${DATASOURCE_CLASS_NAME::}
+    driverClassName: $${DB_DRIVER_CLASS_NAME::}
+    jdbcUrl: $${CONTAINER_SHARD0_DB_URL::}
+    username: $${SHARD0_DB_USERNAME::}
+    password: $${SHARD0_DB_PASSWORD::}
+  datasource_1:
+    dataSourceClassName: $${DATASOURCE_CLASS_NAME::}
+    driverClassName: $${DB_DRIVER_CLASS_NAME::}
+    jdbcUrl: $${CONTAINER_SHARD1_DB_URL::}
+    username: $${SHARD1_DB_USERNAME::}
+    password: $${SHARD1_DB_PASSWORD::}
+
+# SHARDING RULES
+rules:
+#     BROADCAST table stores its full copy of data on each shard
+  - !BROADCAST
+    tables:
+      - revinfo
+  - !SHARDING
+    tables:
+#      WALLETS table
+      wallets:
+        actualDataNodes: datasource_${0..1}.wallets
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: pk_shard_alg_by_hash_wallet_id
+#      WALLET_DETAILS table
+      wallet_details:
+        actualDataNodes: datasource_${0..1}.wallet_details
+        databaseStrategy:
+          standard:
+            shardingColumn: wallet_id
+            shardingAlgorithmName: fk_shard_alg_by_hash_wallet_id
+#      CREDIT_CARDS table
+      credit_cards:
+        actualDataNodes: datasource_${0..1}.credit_cards
+        databaseStrategy:
+          standard:
+            shardingColumn: wallet_id
+            shardingAlgorithmName: fk_shard_alg_by_hash_wallet_id
+#      OUTBOX_EVENT table
+      outbox_events:
+        actualDataNodes: datasource_${0..1}.outbox_events
+        databaseStrategy:
+          standard:
+            shardingColumn: transaction_id
+            shardingAlgorithmName: pk_shard_alg_by_hash_transaction_id
+#      CREDIT_CARDS_AUD table
+      credit_cards_aud:
+        actualDataNodes: datasource_${0..1}.credit_cards_aud
+        databaseStrategy:
+          standard:
+            shardingColumn: wallet_id
+            shardingAlgorithmName: fk_shard_alg_by_hash_wallet_id
+#      WALLET_DETAILS_AUD table
+      wallet_details_aud:
+        actualDataNodes: datasource_${0..1}.wallet_details_aud
+        databaseStrategy:
+          standard:
+            shardingColumn: wallet_id
+            shardingAlgorithmName: fk_shard_alg_by_hash_wallet_id
+#      WALLETS_AUD table
+      wallets_aud:
+        actualDataNodes: datasource_${0..1}.wallets_aud
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: pk_shard_alg_by_hash_wallet_id
+#      UTILS
+    shardingAlgorithms:
+      pk_shard_alg_by_hash_wallet_id:
+        type: INLINE
+        props:
+          algorithm-expression: datasource_${Math.abs(id.hashCode()) % 2}
+      fk_shard_alg_by_hash_wallet_id:
+        type: INLINE
+        props:
+          algorithm-expression: datasource_${Math.abs(wallet_id.hashCode()) % 2}
+      pk_shard_alg_by_hash_transaction_id:
+        type: INLINE
+        props:
+          algorithm-expression: datasource_${Math.abs(transaction_id.hashCode()) % 2}
+    bindingTables: [ wallets, wallet_details, credit_cards, credit_cards_aud, wallet_details_aud, wallets_aud ]
+# TRANSACTIONS
+transaction:
+  defaultType: LOCAL
+  providerType: Atomikos

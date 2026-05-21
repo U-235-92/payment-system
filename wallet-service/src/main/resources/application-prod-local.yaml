@@ -1,0 +1,30 @@
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${LOCAL_OTEL_COLLECTOR_URI}
+spring:
+  kafka:
+    bootstrapServers: ${LOCAL_KAFKA_BOOTSTRAP_SERVERS}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${LOCAL_JWT_ISSUER_URI}
+          jwk-set-uri: ${LOCAL_JWT_JWK_SET_URI}
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:local-sharding.yaml?placeholder-type=environment
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    database-platform: ${DB_DIALECT}
+    hibernate:
+      ddl-auto: validate
+
+

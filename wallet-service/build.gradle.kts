@@ -1,3 +1,5 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
 	java
 	id("org.openapi.generator") version "7.18.0"
@@ -28,12 +30,7 @@ val dependencyVersionMap = mapOf(
 	"wiremock-spring-boot" to "4.0.9",
 
 //	OpenApi
-	"feign-core" to "13.6",
-	"feign-jackson" to "13.6",
-	"feign-slf4j" to "13.6",
-	"feign-form-spring" to "3.8.0",
-	"jakarta-annotation" to "3.0.0",
-	"jakarta-validation" to "3.1.1",
+	"springdoc-openapi" to "3.0.2",
 
 //	Sharding
 	"shardingsphere" to "5.5.1",
@@ -62,6 +59,10 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("com.h2database:h2")
 
+//	Flyway
+	implementation("org.flywaydb:flyway-database-postgresql")
+	implementation("org.springframework.boot:spring-boot-starter-flyway")
+
 //	Spring security
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -82,6 +83,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.testcontainers:testcontainers:${dependencyVersionMap.getValue("testcontainers")}")
 	testImplementation("org.testcontainers:testcontainers-grafana")
@@ -105,16 +107,11 @@ dependencies {
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
 //	OpenApi
-	implementation("com.fasterxml.jackson.core:jackson-databind")
-	implementation("com.fasterxml.jackson.core:jackson-core")
+	implementation("tools.jackson.core:jackson-core")
+	implementation("tools.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.core:jackson-annotations")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-	implementation("io.github.openfeign:feign-core:${dependencyVersionMap.getValue("feign-core")}")
-	implementation("io.github.openfeign:feign-jackson:${dependencyVersionMap.getValue("feign-jackson")}")
-	implementation("io.github.openfeign:feign-slf4j:${dependencyVersionMap.getValue("feign-slf4j")}")
-	implementation("io.github.openfeign.form:feign-form-spring:${dependencyVersionMap.getValue("feign-form-spring")}")
-	implementation("jakarta.annotation:jakarta.annotation-api:${dependencyVersionMap.getValue("jakarta-annotation")}")
-	implementation("jakarta.validation:jakarta.validation-api:${dependencyVersionMap.getValue("jakarta-validation")}")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${dependencyVersionMap.getValue("springdoc-openapi")}")
 
 //	Sharding. Basic
 	implementation("org.apache.shardingsphere:shardingsphere-jdbc:${dependencyVersionMap.getValue("shardingsphere")}")
@@ -131,8 +128,10 @@ dependencies {
 sourceSets { // Источники исходников для проекта
 	main {
 		java {
-			srcDirs("${rootDir}/src/main/java",
-				"${rootDir}/build/generated/openapi/src/main/java")
+			srcDirs(
+				"${rootDir}/src/main/java",
+				"${rootDir}/build/generated/openapi/controller-contracts/src/main/java"
+			)
 		}
 	}
 }
@@ -151,14 +150,22 @@ springBoot {
 	mainClass = "aq.project.WalletServiceApplication"
 }
 
-openApiGenerate {
+tasks.withType<Test> {
+	useJUnitPlatform()
+}
+
+tasks.named("compileJava") {
+	dependsOn("generateControllerContracts")
+}
+
+tasks.register<GenerateTask>("generateControllerContracts") {
 	inputSpec.set("$rootDir/openapi/components-specification.yaml") // Источник спецификации
-	outputDir.set("$rootDir/build/generated/openapi") // Путь куда генерировать исходники
-	ignoreFileOverride.set("$rootDir/openapi/openapi-generator-java-sources.ignore") // Источник, в котором указано, какие файлы следует игнорировать в процессе генерации исходников
-	generatorName.set("java") // Использовать генератор Java для создания исходников на этом языке
-	library.set("feign") // Без явного указания библиотеки генератор Java (выше) настроен на работу с okhttp-gson, по этой причине инструкция serializationLibrary работать не будет (игнорируется) и все DTO начинают использовать библиотеку gson для JSON! Эта инструкция явно указывает использование нужной библиотеки API, которая использует Jackson для JSON
+	outputDir.set("$rootDir/build/generated/openapi/controller-contracts") // Путь куда генерировать исходники
+	generatorName.set("spring") // Использовать генератор Java для создания исходников на этом языке
+	library.set("spring-boot") // Без явного указания библиотеки генератор Java (выше) настроен на работу с okhttp-gson, по этой причине инструкция serializationLibrary работать не будет (игнорируется) и все DTO начинают использовать библиотеку gson для JSON! Эта инструкция явно указывает использование нужной библиотеки API, которая использует Jackson для JSON
 	modelPackage.set("aq.project.dto") // Название пакета модели
-//	apiPackage.set("aq.project.api") // Закомментировано, чтобы исключить генерацию API/Контроллеров
+	apiPackage.set("aq.project.controller") // Название пакета api/controllers
+	apiNameSuffix.set("RestControllerApi") // Заменяет суффикс (по умолчанию Api) на указанный для сгенерированных интерфейсов контроллеров
 	configOptions.set(mapOf(
 		"useBeanValidation" to "true", // Использовать JSR валидацию
 		"useJakartaEe" to "true", // Использовать Jakarta EE в Spring
@@ -168,15 +175,7 @@ openApiGenerate {
 		"dateLibrary" to "java8", // Использовать современную модель даты и времени в Java
 		"generateApiTests" to "false", // Не генерировать тесты для API
 		"generateApiDocumentation" to "false", // Не генерировать документацию для API
-		"serializationLibrary" to "jackson", // Библиотека сериализации для JSON
-		"additionalModelTypeAnnotations" to "@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)" // Добавить ко всем классам сгенерированных моделей аннотацию jackson @JsonIgnoreProperties(ignoreUnknown = true)
+		"interfaceOnly" to "true", // Генерация только интерфейсов контроллеров по спецификации в .yaml файле
+		"useTags" to "true"
 	))
-}
-
-tasks.withType<Test> {
-	useJUnitPlatform()
-}
-
-tasks.named("compileJava") {
-	dependsOn("openApiGenerate")
 }

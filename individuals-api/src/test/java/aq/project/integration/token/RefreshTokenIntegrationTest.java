@@ -4,27 +4,26 @@ import aq.project.controllers.UserRestController;
 import aq.project.dto.LoginUserDTO;
 import aq.project.dto.RefreshTokenDTO;
 import aq.project.dto.ResponseTokenDTO;
+import aq.project.services.TokenService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
-import org.apache.http.HttpHeaders;
+import jakarta.validation.ConstraintViolationException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import reactor.core.publisher.Mono;
 
 import static aq.project.util.TestDtoRepository.getLoginUserDTO;
-import static aq.project.util.TestUtils.*;
 
 @Testcontainers
 @DirtiesContext
@@ -37,7 +36,7 @@ public class RefreshTokenIntegrationTest {
     private int port;
 
     @Autowired
-    private WebTestClient webTestClient;
+    private TokenService tokenService;
 
     @Autowired
     private UserRestController authController;
@@ -54,60 +53,20 @@ public class RefreshTokenIntegrationTest {
     @Test
     public void successRefreshTokenTest() {
         LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
-
-        String accessToken = getUserAccessToken(loginUserDTO);
-
-        ResponseTokenDTO responseTokenDTO = authController.loginUser(loginUserDTO).block().getBody();
+        ResponseTokenDTO responseTokenDTO = authController.loginUser(Mono.just(loginUserDTO), null).block().getBody();
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken(responseTokenDTO.getRefreshToken());
-
-        webTestClient.post()
-                .uri("/api/token/refresh-token")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(refreshTokenDTO)
-                .exchange()
-                .expectStatus()
-                .isOk();
+        Assertions.assertDoesNotThrow(() -> tokenService.refreshToken(refreshTokenDTO));
     }
 
     @Test
     public void failRefreshNullTokenTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
-
-        String accessToken = getUserAccessToken(loginUserDTO);
-
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken(null);
-
-        webTestClient.post()
-                .uri("/api/token/refresh-token")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(refreshTokenDTO)
-                .exchange()
-                .expectStatus()
-                .isBadRequest();
+        Assertions.assertThrows(ConstraintViolationException.class, () -> tokenService.refreshToken(refreshTokenDTO));
     }
 
     @Test
     public void failRefreshWrongTokenTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
-
-        String accessToken = getUserAccessToken(loginUserDTO);
-
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken("wrong-token");
-
-        webTestClient.post()
-                .uri("/api/token/refresh-token")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(refreshTokenDTO)
-                .exchange()
-                .expectStatus()
-                .isBadRequest();
-    }
-
-    private String getUserAccessToken(LoginUserDTO loginUserDTO) {
-        WebClient webClient = getWebClient(port);
-        return loginUserMono(loginUserDTO, webClient).block().getBody().getAccessToken();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tokenService.refreshToken(refreshTokenDTO));
     }
 }

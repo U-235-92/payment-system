@@ -1,12 +1,99 @@
 openapi: 3.1.0
 
 info:
-  title: Common DTO specifications
-  description: Спецификация DTO
+  title: wallet-service-api-specification
+  description: Common wallet-service API specification. It describes all REST endpoints and DTO objects
   version: 1.0.0
 
 servers:
   - url: http://localhost:8083
+  - url: http://wallet-service:8083
+
+paths:
+  /wallet/create:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: createWallet
+      tags:
+        - Wallet
+      summary: Create a new wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWalletRequestDTO"
+              description: Represents data for creating a new wallet
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns ID of created wallet
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /wallet/info/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getWalletInfo
+      tags:
+        - Wallet
+      summary: Get wallet info by given wallet ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a wallet ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletInfoResponseDTO"
+          description: Returns DTO which describes the information about wallet by given ID
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /transaction/status/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getTransactionStatus
+      tags:
+        - Transaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a transaction ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+tags:
+  - name: Wallet
+    description: Describes operations with wallets
+  - name: Transaction
+    description: Describes operations with transactions
 
 components:
   securitySchemes:
@@ -14,6 +101,20 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  responses:
+    BadRequestResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if parameter of request is not valid or requested data is absent
+    InternalServerErrorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if something went wrong during request handling on service side
 
   schemas:
     CreateWalletRequestDTO:
@@ -142,7 +243,8 @@ components:
       required: [ http_status, message ]
       properties:
         http_status:
-          type: int
+          type: integer
+          format: int32
         message:
           type: string
 

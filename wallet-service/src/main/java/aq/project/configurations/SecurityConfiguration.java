@@ -15,6 +15,9 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static aq.project.controller.WalletRestControllerApi.*;
+import static aq.project.controller.TransactionRestControllerApi.*;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class SecurityConfiguration {
     @Profile("dev")
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/h2-console/**", "/api/wallets/**", "/api/transactions/**")
+                .securityMatcher("/h2-console/**", "/api/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
@@ -36,16 +39,16 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    @Profile(value = { "prod-local", "prod-container" })
+    @Profile(value = { "dev-shard", "prod" })
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/api/wallets/**", "/api/transactions/**")
+                .securityMatcher("/api/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, "/api/wallets/create").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/wallets/info/*").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/transactions/status/*").authenticated())
+                        .requestMatchers(HttpMethod.POST, "/api" + PATH_CREATE_WALLET).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api" + PATH_GET_WALLET_INFO.replace("{id}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api" + PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
                 .build();
     }
 

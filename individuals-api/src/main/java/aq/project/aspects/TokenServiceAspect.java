@@ -12,14 +12,16 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class TokenRestControllerAspect {
+public class TokenServiceAspect {
 
     @Value("${spring.application.name}")
     private String tracerName;
@@ -31,8 +33,8 @@ public class TokenRestControllerAspect {
     protected final ApplicationMetricsRegistry applicationMetricsRegistry;
 
     @Timed(value = "individuals_api.refresh_token_time")
-    @Around("execution(* aq.project.controllers.TokenRestController.refreshToken(..)) && args(refreshTokenDTO)")
-    public Mono<ResponseEntity<ResponseTokenDTO>> refreshToken(ProceedingJoinPoint pjp, RefreshTokenDTO refreshTokenDTO) throws Throwable {
+    @Around("execution(* aq.project.services.TokenService.refreshToken(..)) && args(refreshTokenDTO)")
+    public Mono<ResponseTokenDTO> refreshToken(ProceedingJoinPoint pjp, RefreshTokenDTO refreshTokenDTO) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {
@@ -48,6 +50,16 @@ public class TokenRestControllerAspect {
             protected String getAfterSuccessMainLogicCallMessage() {
                 return "Handle of refresh token dto completed successfully";
             }
+
+            @Override
+            protected void handleCustomViolations() {
+                String refreshToken = refreshTokenDTO.getRefreshToken();
+                Pattern pattern = getJwtPattern();
+                Matcher matcher = pattern.matcher(refreshToken);
+                if(!matcher.find())
+                    throw new IllegalArgumentException(String.format("Invalid refresh token received: %s",
+                            refreshToken));
+            }
         };
         String spanName = "refresh_token";
         return handler.handleAspect(
@@ -57,5 +69,9 @@ public class TokenRestControllerAspect {
                 spanName,
                 ApplicationMetricsRegistry::incrementSuccessRefreshTokenCounter,
                 ApplicationMetricsRegistry::incrementFailRefreshTokenCounter);
+    }
+
+    private Pattern getJwtPattern() {
+        return Pattern.compile("^[eyJ][a-zA-Z0-9-_]+\\.[eyJ][a-zA-Z0-9-_]+\\.[a-zA-Z0-9-_]+$");
     }
 }

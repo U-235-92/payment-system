@@ -1,7 +1,7 @@
 package aq.project.controllers.handlers;
 
 import aq.project.dto.ErrorDTO;
-import aq.project.exceptions.OutboxEventException;
+import aq.project.exceptions.TransactionException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequiredArgsConstructor
 public class TransactionRestControllerExceptionHandler {
 
-    private final ExceptionLogger exceptionLogger;
-
 //    Project's exception handlers [aq.project.exceptions.*]
-    @ExceptionHandler(OutboxEventException.class)
-    public ResponseEntity<ErrorDTO> onOutboxEventException(OutboxEventException e) {
+    @ExceptionHandler(TransactionException.class)
+    public ResponseEntity<ErrorDTO> onTransactionException(TransactionException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
     }

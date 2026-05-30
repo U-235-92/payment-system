@@ -1,12 +1,162 @@
 openapi: 3.1.0
 
 info:
-  title: Common DTO specifications
-  description: Спецификация DTO
+  title: person-service-api-specification
+  description: Common person-service API specification. It describes all REST endpoints and DTO objects
   version: 1.0.0
 
 servers:
   - url: http://localhost:8082
+  - url: http://person-service:8082
+
+
+paths:
+  /person/create-person:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: createPerson
+      tags:
+        - Person
+      summary: Create a new person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIndividualDataDTO"
+              description: Represents data for creating a new person
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns an ID of created person
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        409:
+          $ref: "#/components/responses/ConflictErrorResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /person/delete-person-by-keycloak-id/{keycloakId}:
+    delete:
+      security:
+        - BearerAuth: []
+      operationId: deletePersonByKeycloakId
+      tags:
+        - Person
+      summary: Delete a person by given ID
+      parameters:
+        - name: keycloakId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a person ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          description: Returns OK status code if operation was successful
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /person/undo-delete-person-by-keycloak-id:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: undoDeletePerson
+      tags:
+        - Person
+      summary: Undo delete of a person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UndoOperationDTO"
+              description: Represents data of undo operation
+      responses:
+        200:
+          description: Returns OK status code if operation was successful
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /person/update-person:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updatePerson
+      tags:
+        - Person
+      summary: Update of a person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateIndividualDataDTO"
+              description: Represents data for updating a person
+      responses:
+        200:
+          description: Returns OK status code if operation was successful
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /person/undo-update-person:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: undoUpdatePerson
+      tags:
+        - Person
+      summary: Undo update of a person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UndoOperationDTO"
+              description: Represents data of undo operation
+      responses:
+        200:
+          description: Returns OK status code if operation was successful
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /person/get-person-by-keycloak-id/{keycloakId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getPersonByKeycloakId
+      tags:
+        - Person
+      summary: Get person info by given ID
+      parameters:
+        - name: keycloakId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a person ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseIndividualDataDTO"
+          description: Returns current info of person by given ID
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+tags:
+  - name: Person
+    description: Describes operations with persons
 
 components:
   securitySchemes:
@@ -14,6 +164,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  responses:
+    ConflictErrorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if person already exists
+    BadRequestResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if parameter of request is not valid or requested data is absent
+    InternalServerErrorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if something went wrong during request handling on service side
 
   schemas:
     ResponseIndividualDataDTO:
@@ -132,3 +302,7 @@ components:
           type: int
         message:
           type: string
+
+    UuidDefinition:
+      type: string
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'

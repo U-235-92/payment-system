@@ -25,6 +25,8 @@ spring:
     generate-ddl: false
     database-platform: ${DB_DIALECT}
     hibernate:
-      ddl-auto: validate
-
-
+      ddl-auto: none
+application:
+  datasource:
+    - ${LOCAL_SHARD0_DB_URL},${SHARD0_DB_USERNAME},${SHARD0_DB_PASSWORD}
+    - ${LOCAL_SHARD1_DB_URL},${SHARD1_DB_USERNAME},${SHARD1_DB_PASSWORD}

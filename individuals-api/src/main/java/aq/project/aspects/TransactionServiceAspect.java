@@ -13,7 +13,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +20,7 @@ import reactor.core.publisher.Mono;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class TransactionRestControllerAspect {
+public class TransactionServiceAspect {
 
     @Value("${spring.application.name}")
     private String tracerName;
@@ -33,8 +32,8 @@ public class TransactionRestControllerAspect {
     private final ApplicationMetricsRegistry applicationMetricsRegistry;
 
     @Timed(value = "individuals_api.get_transaction_status_time")
-    @Around("execution(* aq.project.controllers.TransactionRestController.getTransactionStatus(..)) && args(transactionId)")
-    public Mono<ResponseEntity<TransactionStatus>> getTransactionStatus(ProceedingJoinPoint pjp, String transactionId) throws Throwable {
+    @Around("execution(* aq.project.services.TransactionService.getTransactionStatus(..)) && args(transactionId)")
+    public Mono<TransactionStatus> getTransactionStatus(ProceedingJoinPoint pjp, String transactionId) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {
@@ -65,8 +64,8 @@ public class TransactionRestControllerAspect {
     }
 
     @Timed(value = "individuals_api.do_transaction_time")
-    @Around("execution(* aq.project.controllers.TransactionRestController.doTransaction(..)) && args(dto)")
-    public Mono<ResponseEntity<String>> doTransaction(ProceedingJoinPoint pjp, TransactionRequestDTO dto) throws Throwable {
+    @Around("execution(* aq.project.services.TransactionService.doTransaction(..)) && args(dto)")
+    public Mono<String> doTransaction(ProceedingJoinPoint pjp, TransactionRequestDTO dto) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {

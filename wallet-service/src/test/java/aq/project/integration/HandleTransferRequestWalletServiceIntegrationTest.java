@@ -7,7 +7,7 @@ import aq.project.exceptions.NoSuchWalletException;
 import aq.project.exceptions.WalletConstrainsException;
 import aq.project.messages.TransactionRequest;
 import aq.project.mocks.*;
-import aq.project.repositories.OutboxEventRepository;
+import aq.project.repositories.TransactionRepository;
 import aq.project.repositories.WalletRepository;
 import aq.project.services.TransactionService;
 import aq.project.utils.Containers;
@@ -54,7 +54,7 @@ public class HandleTransferRequestWalletServiceIntegrationTest {
     private WalletRepository walletRepository;
 
     @Autowired
-    private OutboxEventRepository outboxEventRepository;
+    private TransactionRepository transactionRepository;
 
     @DynamicPropertySource
     static void configDynamicPropertySource(DynamicPropertyRegistry registry) {
@@ -104,11 +104,11 @@ public class HandleTransferRequestWalletServiceIntegrationTest {
         String walletId = getPropertyFromHeader(headers, RECIPIENT_WALLET_ID);
         Wallet wallet = TestWalletMocks.getValidWalletMock(walletId);
         walletRepository.save(wallet);
-        String transactionId = outboxEventRepository.save(TestTransactionEventMocks.getValidDepositTransactionEvent())
+        String transactionId = transactionRepository.save(TestTransactionEventMocks.getValidDepositTransactionEvent())
                 .getTransactionId();
         Assertions.assertDoesNotThrow(() -> transactionService
                 .handleTransactionRequest(TestTransferTransactionRequestMocks.getValidTransferConsumerRecord()));
-        outboxEventRepository.deleteById(transactionId);
+        transactionRepository.deleteById(transactionId);
         walletRepository.deleteById(wallet.getId());
     }
 

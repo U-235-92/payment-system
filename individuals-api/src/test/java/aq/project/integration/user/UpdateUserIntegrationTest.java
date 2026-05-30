@@ -35,7 +35,7 @@ import static aq.project.util.TestUtils.*;
 @DirtiesContext
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@EnableWireMock(@ConfigureWireMock(name = "person-service-mock"))
+@EnableWireMock(@ConfigureWireMock(name = "person-service", port = 8082))
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UpdateUserIntegrationTest {
 
@@ -60,7 +60,7 @@ public class UpdateUserIntegrationTest {
     @Container
     private static final KeycloakContainer KEYCLOAK_CONTAINER = TestContainers.Keycloak.KEYCLOAK_CONTAINER;
 
-    @InjectWireMock("person-service-mock")
+    @InjectWireMock("person-service")
     private WireMockServer personServiceMockServer;
 
     @DynamicPropertySource

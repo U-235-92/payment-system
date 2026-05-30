@@ -13,7 +13,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +20,7 @@ import reactor.core.publisher.Mono;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class WalletRestControllerAspect {
+public class WalletServiceAspect {
 
     @Value("${spring.application.name}")
     private String tracerName;
@@ -33,8 +32,8 @@ public class WalletRestControllerAspect {
     private final ApplicationMetricsRegistry applicationMetricsRegistry;
 
     @Timed(value = "individuals_api.create_wallet_time")
-    @Around("execution(* aq.project.controllers.WalletRestController.createWallet(..)) && args(createWalletRequestDTO)")
-    public Mono<ResponseEntity<String>> createWallet(ProceedingJoinPoint pjp, CreateWalletRequestDTO createWalletRequestDTO) throws Throwable {
+    @Around("execution(* aq.project.services.WalletService.createWallet(..)) && args(createWalletRequestDTO)")
+    public Mono<String> createWallet(ProceedingJoinPoint pjp, CreateWalletRequestDTO createWalletRequestDTO) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {
@@ -63,8 +62,8 @@ public class WalletRestControllerAspect {
     }
 
     @Timed(value = "individuals_api.get_wallet_info_time")
-    @Around("execution(* aq.project.controllers.WalletRestController.getWalletInfo(..)) && args(walletId)")
-    public Mono<ResponseEntity<WalletInfoResponseDTO>> getWalletInfo(ProceedingJoinPoint pjp, String walletId) throws Throwable {
+    @Around("execution(* aq.project.services.WalletService.getWalletInfo(..)) && args(walletId)")
+    public Mono<WalletInfoResponseDTO> getWalletInfo(ProceedingJoinPoint pjp, String walletId) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {

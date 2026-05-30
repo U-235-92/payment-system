@@ -2,10 +2,10 @@ package aq.project.aspects;
 
 import aq.project.dto.OperationType;
 import aq.project.dto.TransactionStatus;
-import aq.project.exceptions.OutboxEventException;
+import aq.project.exceptions.TransactionException;
 import aq.project.messages.TransactionRequest;
 import aq.project.metrics.ApplicationMeterRegistry;
-import aq.project.repositories.OutboxEventRepository;
+import aq.project.repositories.TransactionRepository;
 import io.micrometer.core.annotation.Timed;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
@@ -47,7 +47,7 @@ public class TransactionServiceAspect {
 
     private final OpenTelemetry openTelemetry;
 
-    private final OutboxEventRepository outboxEventRepository;
+    private final TransactionRepository transactionRepository;
 
     private final ApplicationMeterRegistry applicationMeterRegistry;
 
@@ -87,7 +87,7 @@ public class TransactionServiceAspect {
 //            Telemetry
             String operationType = transactionRequest.getOperationType().name().toLowerCase();
             log.info(String.format("[%s-%s]: Received %s message request with transactionId [%s]", traceId, spanId, operationType, transactionRequest.getTransactionId()));
-            if(outboxEventRepository.findById(transactionRequest.getTransactionId()).isEmpty()) {
+            if(transactionRepository.findById(transactionRequest.getTransactionId()).isEmpty()) {
                 log.info(String.format("[%s-%s]: Attempt to handle %s message request with transactionId [%s]", traceId, spanId, operationType, transactionRequest.getTransactionId()));
 //                Main logic
                 pjp.proceed(pjp.getArgs());
@@ -190,10 +190,10 @@ public class TransactionServiceAspect {
             }
 //            Telemetry
             log.info(String.format("[%s-%s]: Received get transaction status request for transaction with id [%s]", traceId, spanId, transactionId));
-            if(outboxEventRepository.findById(transactionId).isEmpty()) {
+            if(transactionRepository.findById(transactionId).isEmpty()) {
                 applicationMeterRegistry.incrementFailGetTransactionStatusCounter();
                 String msg = String.format("Transaction with id [%s] not found", transactionId);
-                OutboxEventException exc = new OutboxEventException(msg);
+                TransactionException exc = new TransactionException(msg);
                 log.warn(String.format("[%s-%s]: %s", traceId, spanId, exc.getMessage()));
                 throw exc;
             }

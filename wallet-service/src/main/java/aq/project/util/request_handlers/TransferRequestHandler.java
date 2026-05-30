@@ -18,7 +18,7 @@ import static aq.project.util.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 import static aq.project.util.RequestPropertyKeys.SENDER_WALLET_ID;
 
 @Component
-public class TransferRequestHandler extends OperationRequestHandler {
+public class TransferRequestHandler extends AbstractRequestHandler {
 
     private static final String DEPOSIT_OPERATION = "deposit";
     private static final String WITHDRAW_OPERATION = "withdraw";
@@ -32,7 +32,7 @@ public class TransferRequestHandler extends OperationRequestHandler {
 
     @Override
     @Transactional
-    protected void checkRequestMessagePropertyConstrains(TransactionRequest transactionRequest) throws WalletConstrainsException, CreditCardConstrainsException, NoSuchWalletException {
+    protected void checkTransactionRequestPropertyConstrains(TransactionRequest transactionRequest) throws WalletConstrainsException, CreditCardConstrainsException, NoSuchWalletException {
         String senderWalletId = transactionRequest.getProperty(SENDER_WALLET_ID, String.class);
         String recipientWalletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class);
         checkRecipientWalletConstrains(recipientWalletId);
@@ -45,7 +45,7 @@ public class TransferRequestHandler extends OperationRequestHandler {
 
     private void checkSenderWalletConstrains(TransactionRequest transactionRequest, String walletId) throws WalletConstrainsException, NoSuchWalletException, CreditCardConstrainsException {
         checkCommonWalletConstrains(walletId);
-        Wallet wallet = walletRepository.findById(walletId).get();
+        Wallet wallet = walletRepository.findByIdForUpdate(walletId).get();
         if(wallet.getCreditCard().getBalance().compareTo(transactionRequest.getAmount()) < 0)
             throw new CreditCardConstrainsException(String
                     .format("Credit card with number: [%s] has not enough money. Current balance: %s. Requested: %s",
@@ -55,7 +55,7 @@ public class TransferRequestHandler extends OperationRequestHandler {
     }
 
     private void checkCommonWalletConstrains(String walletId) throws WalletConstrainsException, NoSuchWalletException, CreditCardConstrainsException {
-        Wallet wallet = walletRepository.findById(walletId)
+        Wallet wallet = walletRepository.findByIdForUpdate(walletId)
                 .orElseThrow(() -> new NoSuchWalletException(walletId));
         if(wallet.getWalletDetails().getWalletStatus().equals(WalletStatus.BLOCKED))
             throw new WalletConstrainsException(String
@@ -69,13 +69,12 @@ public class TransferRequestHandler extends OperationRequestHandler {
     }
 
     @Override
-    @Transactional
-    protected void handleRequestMessageOperation(TransactionRequest transactionRequest) {
+    protected void handleTransactionRequestOperation(TransactionRequest transactionRequest) {
 //        Prepare data
         String recipientWalletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class);
-        Wallet recipientWallet = walletRepository.findById(recipientWalletId).get();
+        Wallet recipientWallet = walletRepository.findByIdForUpdate(recipientWalletId).get();
         String senderWalletId = transactionRequest.getProperty(SENDER_WALLET_ID, String.class);
-        Wallet senderWallet = walletRepository.findById(senderWalletId).get();
+        Wallet senderWallet = walletRepository.findByIdForUpdate(senderWalletId).get();
 //        Execute operation
         doRequestMessageOperation(senderWallet, transactionRequest.getAmount(), WITHDRAW_OPERATION);
         doRequestMessageOperation(recipientWallet, transactionRequest.getAmount(), DEPOSIT_OPERATION);

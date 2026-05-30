@@ -44,23 +44,23 @@ CREATE TABLE IF NOT EXISTS public.wallets (
     CONSTRAINT fk_credit_cards FOREIGN KEY (credit_card_id) REFERENCES public.credit_cards(id)
 );
 
--- 4. Таблица событий аутбокса (outbox_events)
-CREATE TABLE IF NOT EXISTS public.outbox_events (
-    transaction_id VARCHAR(36) NOT NULL,
+-- 4. Таблица транзакций (transactions)
+CREATE TABLE IF NOT EXISTS public.transactions (
+    id VARCHAR(36) NOT NULL,
     type VARCHAR(255) NOT NULL,                -- Enum как строка (EventType)
     status VARCHAR(255) NOT NULL,              -- Enum как строка (TransactionStatus)
     timestamp BIGINT NOT NULL,
     processed BOOLEAN NOT NULL,
-    CONSTRAINT pk_outbox_events PRIMARY KEY (transaction_id)
+    CONSTRAINT pk_transaction PRIMARY KEY (id)
 );
 
--- 5. Дополнительная таблица свойств для ElementCollection из OutboxEvent
-CREATE TABLE IF NOT EXISTS public.outbox_event_properties (
-    outbox_event_transaction_id VARCHAR(36) NOT NULL, -- Ссылка на id основной сущности
+-- 5. Дополнительная таблица свойств для ElementCollection из Transaction
+CREATE TABLE IF NOT EXISTS public.transaction_properties (
+    transaction_id VARCHAR(36) NOT NULL,               -- Ссылка на id основной сущности
     property_key VARCHAR(255) NOT NULL,                -- Ключ карты Map (key)
     property_value TEXT,                               -- Значение карты Map (value)
-    CONSTRAINT pk_outbox_event_properties PRIMARY KEY (outbox_event_transaction_id, property_key),
-    CONSTRAINT fk_outbox_event_properties FOREIGN KEY (outbox_event_transaction_id) REFERENCES public.outbox_events(transaction_id)
+    CONSTRAINT pk_transaction_properties PRIMARY KEY (transaction_id, property_key),
+    CONSTRAINT fk_transaction_properties FOREIGN KEY (transaction_id) REFERENCES public.transactions(id)
 );
 
 -- 1. Главная служебная таблица ревизий (Генерируется Envers по умолчанию)

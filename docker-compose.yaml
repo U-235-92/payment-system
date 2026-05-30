@@ -107,10 +107,6 @@ services:
         condition: service_healthy
       wallet-service-db-shard-1:
         condition: service_healthy
-      database-migration-service-shard-0:
-        condition: service_completed_successfully
-      database-migration-service-shard-1:
-        condition: service_completed_successfully
     logging:
       driver: loki
       options:
@@ -161,44 +157,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-
-  database-migration-service-shard-0:
-    container_name: database-migration-service-shard-0
-    build:
-      context: .
-      dockerfile: ./database-migration-service/Dockerfile
-    image: u23592/database-migration-service-shard-0:1.0.0
-    environment:
-      DB_HOST: wallet-service-db-shard-0
-      DB_PORT: 5432
-    env_file:
-      - ./database-migration-service/.env
-    ports:
-      - "18581:18581"
-    networks:
-      - app-network
-    depends_on:
-      wallet-service-db-shard-0:
-        condition: service_healthy
-
-  database-migration-service-shard-1:
-    container_name: database-migration-service-shard-1
-    build:
-      context: .
-      dockerfile: ./database-migration-service/Dockerfile
-    image: u23592/database-migration-service-shard-1:1.0.0
-    environment:
-      DB_HOST: wallet-service-db-shard-1
-      DB_PORT: 5432
-    env_file:
-      - ./database-migration-service/.env
-    ports:
-      - "28582:28582"
-    networks:
-      - app-network
-    depends_on:
-      wallet-service-db-shard-1:
-        condition: service_healthy
 
   keycloak-db:
     image: postgres:18.3

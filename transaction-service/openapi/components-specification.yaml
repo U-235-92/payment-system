@@ -1,12 +1,71 @@
 openapi: 3.1.0
 
 info:
-  title: Common DTO specifications
-  description: Спецификация DTO
+  title: transaction-service-api-specification
+  description: Common transaction-service API specification. It describes all REST endpoints and DTO objects
   version: 1.0.0
 
 servers:
   - url: http://localhost:8084
+  - url: http://transaction-service:8084
+
+paths:
+  /transaction/send:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: sendTransactionRequest
+      tags:
+        - Transaction
+      summary: Handle incoming transaction request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequestDTO"
+              description: Represents data of transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns ID of requested transaction
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /transaction/status/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getTransactionStatus
+      tags:
+        - Transaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+tags:
+  - name: Transaction
+    description: Describes operations with transactions
 
 components:
   securitySchemes:
@@ -14,6 +73,20 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  responses:
+    BadRequestResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if parameter of request is not valid or requested data is absent
+    InternalServerErrorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if something went wrong during request handling on service side
 
   schemas:
     TransactionRequestDTO:
@@ -27,7 +100,8 @@ components:
         currency:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
         timestamp:
-          type: long
+          type: integer
+          format: int64
         properties:
           type: object
           additionalProperties:
@@ -38,7 +112,8 @@ components:
       required: [ http_status, message ]
       properties:
         http_status:
-          type: int
+          type: integer
+          format: int32
         message:
           type: string
 
@@ -58,3 +133,7 @@ components:
       pattern: '^[A-Z]{3}$'
       minLength: 3
       maxLength: 3
+
+    UuidDefinition:
+      type: string
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'

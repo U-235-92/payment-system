@@ -1,36 +1,37 @@
 package aq.project.controllers;
 
+import aq.project.controller.TransactionRestControllerApi;
 import aq.project.dto.TransactionRequestDTO;
 import aq.project.dto.TransactionStatus;
 import aq.project.mappers.TransactionRequestMapper;
 import aq.project.messages.TransactionRequest;
 import aq.project.services.TransactionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/transactions")
-public class TransactionRestController {
+@RequestMapping("/api")
+public class TransactionRestController implements TransactionRestControllerApi {
 
     private final TransactionService transactionService;
 
     private final TransactionRequestMapper transactionRequestMapper;
 
-    @PostMapping("/send")
-    public String sendTransactionRequest(@RequestBody TransactionRequestDTO dto) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> sendTransactionRequest(TransactionRequestDTO dto) {
         TransactionRequest transactionRequest = transactionRequestMapper.toTransactionRequest(dto);
         String transactionId = UUID.randomUUID().toString();
         transactionRequest.setTransactionId(transactionId);
         transactionRequest.setTransactionStatus(TransactionStatus.PENDING);
-        return transactionService.sendTransactionRequest(transactionRequest);
+        return ResponseEntity.ok(transactionService.sendTransactionRequest(transactionRequest));
     }
 
-    @GetMapping("/status/{transactionId}")
-    public TransactionStatus getTransactionStatus(@PathVariable String transactionId) {
-        return transactionService.getTransactionStatus(transactionId);
+    public ResponseEntity<TransactionStatus> getTransactionStatus(@PathVariable String transactionId) {
+        return ResponseEntity.ok(transactionService.getTransactionStatus(transactionId));
     }
 }

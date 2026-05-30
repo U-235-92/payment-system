@@ -2,7 +2,7 @@ package aq.project.entities;
 
 import aq.project.dto.OperationType;
 import aq.project.dto.TransactionStatus;
-import aq.project.exceptions.UnknownOutboxEventPropertyException;
+import aq.project.exceptions.UnknownTransactionPropertyException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -18,13 +18,13 @@ import java.util.Map;
 @Entity
 @ToString
 @NoArgsConstructor
-@Table(name = "outbox_events", schema = "public")
-public class OutboxEvent {
+@Table(name = "transactions", schema = "public")
+public class Transaction {
 
     @Id
     @NotNull
     @Getter @Setter
-    @Column(name = "transaction_id", nullable = false)
+    @Column(name = "id", nullable = false)
     @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
     private String transactionId;
 
@@ -52,10 +52,10 @@ public class OutboxEvent {
     @Column(name = "property_value")
     @MapKeyColumn(name = "property_key")
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "outbox_event_properties", joinColumns = @JoinColumn(name = "outbox_event_transaction_id"))
+    @CollectionTable(name = "transaction_properties", joinColumns = @JoinColumn(name = "transaction_id"))
     private final Map<String, String> properties = new HashMap<>();;
 
-    public OutboxEvent(String transactionId, OperationType operationType, TransactionStatus transactionStatus, Long timestamp, boolean isProcessed) {
+    public Transaction(String transactionId, OperationType operationType, TransactionStatus transactionStatus, Long timestamp, boolean isProcessed) {
         this.transactionId = transactionId;
         this.operationType = operationType;
         this.transactionStatus = transactionStatus;
@@ -63,10 +63,10 @@ public class OutboxEvent {
         this.isProcessed = isProcessed;
     }
 
-    public String getProperty(String key) throws UnknownOutboxEventPropertyException {
+    public String getProperty(String key) throws UnknownTransactionPropertyException {
         if(!isPropertyNull(key))
             return properties.get(key);
-        throw new UnknownOutboxEventPropertyException("Unknown outbox event property: " + key);
+        throw new UnknownTransactionPropertyException("Unknown transaction property: " + key);
     }
 
     public void putProperty(String key, String value) {

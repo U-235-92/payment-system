@@ -6,11 +6,10 @@ import aq.project.exceptions.CreditCardConstrainsException;
 import aq.project.exceptions.NoSuchWalletException;
 import aq.project.exceptions.WalletConstrainsException;
 import aq.project.messages.TransactionRequest;
-import aq.project.mocks.TestDepositTransactionRequestMocks;
 import aq.project.mocks.TestTransactionEventMocks;
 import aq.project.mocks.TestWalletMocks;
 import aq.project.mocks.TestWithdrawTransactionRequestMocks;
-import aq.project.repositories.OutboxEventRepository;
+import aq.project.repositories.TransactionRepository;
 import aq.project.repositories.WalletRepository;
 import aq.project.services.TransactionService;
 import aq.project.utils.Containers;
@@ -57,7 +56,7 @@ public class HandleWithdrawRequestWalletServiceIntegrationTest {
     private WalletRepository walletRepository;
 
     @Autowired
-    private OutboxEventRepository outboxEventRepository;
+    private TransactionRepository transactionRepository;
 
     @DynamicPropertySource
     static void configDynamicPropertySource(DynamicPropertyRegistry registry) {
@@ -100,12 +99,12 @@ public class HandleWithdrawRequestWalletServiceIntegrationTest {
         String walletId = getPropertyFromHeader(headers, RECIPIENT_WALLET_ID);
         Wallet wallet = TestWalletMocks.getValidWalletMock(walletId);
         walletRepository.save(wallet);
-        String transactionId = outboxEventRepository.save(TestTransactionEventMocks
+        String transactionId = transactionRepository.save(TestTransactionEventMocks
                 .getValidDepositTransactionEvent()).getTransactionId();
         Assertions.assertDoesNotThrow(() -> transactionService
                 .handleTransactionRequest(TestWithdrawTransactionRequestMocks
                         .getValidWithdrawConsumerRecord()));
-        outboxEventRepository.deleteById(transactionId);
+        transactionRepository.deleteById(transactionId);
         walletRepository.deleteById(wallet.getId());
     }
 

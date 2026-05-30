@@ -1,12 +1,251 @@
 openapi: 3.1.0
 
 info:
-  title: Common DTO specifications
-  description: Спецификация DTO
+  title: individuals-service-api-specification
+  description: Common individuals-api-service API specification. It describes all REST endpoints and DTO objects
   version: 1.0.0
 
 servers:
   - url: http://localhost:8081
+  - url: http://individuals-api:8081
+
+paths:
+  /token/refresh-token:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: refreshToken
+      tags:
+        - Token
+      summary: Handle incoming refresh token request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenDTO"
+              description: Represents data of refresh token
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseTokenDTO"
+          description: Returns updated pair of access & refresh tokens
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /transactions/status/{transactionId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getTransactionStatus
+      tags:
+        - Transaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /transactions/do-transaction:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: doTransaction
+      tags:
+        - Transaction
+      summary: Handle incoming transaction request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequestDTO"
+              description: Represents data of transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns ID of requested transaction
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /user/create-user:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: createUser
+      tags:
+        - User
+      summary: Handle incoming create user request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserDTO"
+              description: Represents data of create user request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseTokenDTO"
+          description: Returns pairs of access & refresh tokens which are represented created user
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /user/login-user:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: loginUser
+      tags:
+        - User
+      summary: Handle incoming login user request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUserDTO"
+              description: Represents data of login user request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseTokenDTO"
+          description: Returns pairs of access & refresh tokens which are represented login user
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /user/update-user:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updateUser
+      tags:
+        - User
+      summary: Handle incoming update user request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserDTO"
+              description: Represents data of update user request
+      responses:
+        200:
+          description: Returns OK status code if operation was successful
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /user/delete-user-by-keycloak-id/{keycloakId}:
+    delete:
+      security:
+        - BearerAuth: []
+      operationId: deleteUserByKeycloakId
+      tags:
+        - User
+      summary: Delete a user by given ID
+      parameters:
+        - name: keycloakId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a user ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          description: Returns OK status code if operation was successful
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /wallets/create:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: createWallet
+      tags:
+        - Wallet
+      summary: Create a new wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWalletRequestDTO"
+              description: Represents data for creating a new wallet
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns ID of created wallet
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+  /wallets/info/{walletId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getWalletInfo
+      tags:
+        - Wallet
+      summary: Get wallet info by given wallet ID
+      parameters:
+        - name: walletId
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a wallet ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletInfoResponseDTO"
+          description: Returns DTO which describes the information about wallet by given ID
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
+
+tags:
+  - name: Token
+    description: Describes operations with tokens
+  - name: Transaction
+    description: Describes operations with transactions
+  - name: User
+    description: Describes operations with users
+  - name: Wallet
+    description: Describes operations with wallets
 
 components:
   securitySchemes:
@@ -14,6 +253,20 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  responses:
+    BadRequestResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if parameter of request is not valid or requested data is absent
+    InternalServerErrorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDTO"
+      description: Return DTO in case if something went wrong during request handling on service side
 
   schemas:
     UserInfoResponseDTO:

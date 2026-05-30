@@ -19,6 +19,8 @@ rules:
   - !BROADCAST
     tables:
       - revinfo
+      - transactions
+      - transaction_properties
   - !SHARDING
     tables:
 #      WALLETS table
@@ -42,13 +44,6 @@ rules:
           standard:
             shardingColumn: wallet_id
             shardingAlgorithmName: fk_shard_alg_by_hash_wallet_id
-#      OUTBOX_EVENT table
-      outbox_events:
-        actualDataNodes: datasource_${0..1}.outbox_events
-        databaseStrategy:
-          standard:
-            shardingColumn: transaction_id
-            shardingAlgorithmName: pk_shard_alg_by_hash_transaction_id
 #      CREDIT_CARDS_AUD table
       credit_cards_aud:
         actualDataNodes: datasource_${0..1}.credit_cards_aud
@@ -63,14 +58,14 @@ rules:
           standard:
             shardingColumn: wallet_id
             shardingAlgorithmName: fk_shard_alg_by_hash_wallet_id
-#      WALLETS_AUD table
+#       WALLETS_AUD table
       wallets_aud:
         actualDataNodes: datasource_${0..1}.wallets_aud
         databaseStrategy:
           standard:
             shardingColumn: id
             shardingAlgorithmName: pk_shard_alg_by_hash_wallet_id
-#      UTILS
+#       UTILS
     shardingAlgorithms:
       pk_shard_alg_by_hash_wallet_id:
         type: INLINE
@@ -80,11 +75,8 @@ rules:
         type: INLINE
         props:
           algorithm-expression: datasource_${Math.abs(wallet_id.hashCode()) % 2}
-      pk_shard_alg_by_hash_transaction_id:
-        type: INLINE
-        props:
-          algorithm-expression: datasource_${Math.abs(transaction_id.hashCode()) % 2}
-    bindingTables: [ wallets, wallet_details, credit_cards, credit_cards_aud, wallet_details_aud, wallets_aud ]
+    bindingTables:
+      - wallets,wallet_details,credit_cards,credit_cards_aud,wallet_details_aud,wallets_aud
 # TRANSACTIONS
 transaction:
   defaultType: LOCAL

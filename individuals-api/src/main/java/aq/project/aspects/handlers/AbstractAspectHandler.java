@@ -36,7 +36,7 @@ public abstract class AbstractAspectHandler {
     protected abstract String getAfterSuccessMainLogicCallMessage();
 
     @SuppressWarnings("unchecked")
-    public final <A, R> Mono<ResponseEntity<R>> handleAspect(
+    public final <A, R> Mono<R> handleAspect(
             ProceedingJoinPoint pjp,
             A arg,
             String tracerName,
@@ -86,7 +86,7 @@ public abstract class AbstractAspectHandler {
                 throw e;
             }
             log.info(String.format("[%s-%s]: %s", traceId, spanId, getPreMainLogicCallMethodMessage()));
-            return ((Mono<ResponseEntity<R>>) pjp.proceed())
+            return ((Mono<R>) pjp.proceed())
                     .doOnError(e -> {
                         logException(e, traceId, spanId);
                         onException.accept(applicationMetricsRegistry);

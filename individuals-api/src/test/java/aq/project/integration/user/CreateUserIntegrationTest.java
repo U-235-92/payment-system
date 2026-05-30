@@ -32,7 +32,7 @@ import static aq.project.util.TestDtoRepository.*;
 @DirtiesContext
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@EnableWireMock(@ConfigureWireMock(name = "person-service-mock"))
+@EnableWireMock(@ConfigureWireMock(name = "person-service", port = 8082))
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CreateUserIntegrationTest {
 
@@ -45,7 +45,7 @@ public class CreateUserIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @InjectWireMock("person-service-mock")
+    @InjectWireMock("person-service")
     private WireMockServer personServiceMockServer;
 
     @Container

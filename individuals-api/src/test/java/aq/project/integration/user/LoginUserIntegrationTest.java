@@ -39,7 +39,7 @@ public class LoginUserIntegrationTest {
     @Test
     public void successLoginUserTest() {
         webTestClient.post()
-                .uri("/gateway/api/user/login-user")
+                .uri("/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new LoginUserDTO().email("alice@post.aq").password("123"))
                 .exchange()
@@ -50,7 +50,7 @@ public class LoginUserIntegrationTest {
     @Test
     public void failLoginUserTest() {
         webTestClient.post()
-                .uri("/gateway/api/user/login-user")
+                .uri("/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new LoginUserDTO().email("novalid@post.aq").password("123"))
                 .exchange()
@@ -61,7 +61,7 @@ public class LoginUserIntegrationTest {
     @Test
     public void failLoginUserWithNullRequestDataTest() {
         webTestClient.post()
-                .uri("/gateway/api/user/login-user")
+                .uri("/api/user/login-user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new LoginUserDTO().email(null).password("123"))
                 .exchange()

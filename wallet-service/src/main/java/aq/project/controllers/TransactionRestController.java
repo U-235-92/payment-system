@@ -1,23 +1,21 @@
 package aq.project.controllers;
 
+import aq.project.controller.TransactionRestControllerApi;
 import aq.project.dto.TransactionStatus;
-import aq.project.exceptions.OutboxEventException;
 import aq.project.services.TransactionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/transactions")
-public class TransactionRestController {
+@RequestMapping("/api")
+public class TransactionRestController implements TransactionRestControllerApi {
 
     private final TransactionService transactionService;
 
-    @GetMapping("/status/{transactionId}")
-    public TransactionStatus getTransactionStatus(@PathVariable String transactionId) throws OutboxEventException {
-        return transactionService.getTransactionStatus(transactionId);
+    public ResponseEntity<TransactionStatus> getTransactionStatus(String id) {
+        return ResponseEntity.ok(transactionService.getTransactionStatus(id));
     }
 }

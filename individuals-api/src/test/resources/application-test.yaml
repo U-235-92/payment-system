@@ -26,12 +26,12 @@ application:
       get-person-info-by-keycloak-id: ${PERSON_SERVICE_GET_PERSON_INFO_ENDPOINT}
   individuals-api:
     endpoints:
-      create-user: /gateway/api/user/create-user
-      login-user: /gateway/api/user/login-user
-      update-user: /gateway/api/user/update-user
-      delete-user-by-keycloak-id: /gateway/api/user/delete-user-by-keycloak-id/
-      get-user-info: /gateway/api/user/get-user-info
-      refresh-token: /gateway/api/user/refresh-token
+      create-user: /api/user/create-user
+      login-user: /api/user/login-user
+      update-user: /api/user/update-user
+      delete-user-by-keycloak-id: /api/user/delete-user-by-keycloak-id/
+      get-user-info: /api/user/get-user-info
+      refresh-token: /api/user/refresh-token
     test:
       actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)
       unknown-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407

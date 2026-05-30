@@ -1,9 +1,9 @@
 package aq.project.integration;
 
 import aq.project.configs.ContainersConfigurer;
-import aq.project.exceptions.OutboxEventException;
-import aq.project.mocks.TestOutboxEventMocks;
-import aq.project.repositories.OutboxEventRepository;
+import aq.project.exceptions.TransactionException;
+import aq.project.mocks.TestTransactionMocks;
+import aq.project.repositories.TransactionRepository;
 import aq.project.services.TransactionService;
 import aq.project.utils.Containers;
 import jakarta.validation.ConstraintViolationException;
@@ -32,7 +32,7 @@ public class GetTransactionStatusIntegrationTest {
     private TransactionService transactionService;
 
     @MockitoBean
-    private OutboxEventRepository outboxEventRepository;
+    private TransactionRepository transactionRepository;
 
     @Container
     private static final PostgreSQLContainer POSTGRESQL_CONTAINER = Containers.POSTGRESQL_CONTAINER;
@@ -45,7 +45,7 @@ public class GetTransactionStatusIntegrationTest {
     @Test
     public void successGetTransactionStatusUnitTest() {
         String id = UUID.randomUUID().toString();
-        Mockito.when(outboxEventRepository.findById(id)).thenReturn(Optional.of(TestOutboxEventMocks.getValidOutboxEvent()));
+        Mockito.when(transactionRepository.findById(id)).thenReturn(Optional.of(TestTransactionMocks.getValidTransaction()));
         Assertions.assertDoesNotThrow(() -> transactionService.getTransactionStatus(id));
     }
 
@@ -53,8 +53,8 @@ public class GetTransactionStatusIntegrationTest {
     public void failGetTransactionStatusWithUnknownTransactionIdUnitTest() {
         String knownOutboxEventId = UUID.randomUUID().toString();
         String unknownOutboxEventId = UUID.randomUUID().toString();
-        Mockito.when(outboxEventRepository.findById(knownOutboxEventId)).thenReturn(Optional.of(TestOutboxEventMocks.getValidOutboxEvent()));
-        Assertions.assertThrows(OutboxEventException.class, () -> transactionService.getTransactionStatus(unknownOutboxEventId));
+        Mockito.when(transactionRepository.findById(knownOutboxEventId)).thenReturn(Optional.of(TestTransactionMocks.getValidTransaction()));
+        Assertions.assertThrows(TransactionException.class, () -> transactionService.getTransactionStatus(unknownOutboxEventId));
     }
 
     @Test

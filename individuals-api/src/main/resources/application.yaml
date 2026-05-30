@@ -26,12 +26,12 @@ management:
 application:
   individuals-api:
     endpoints:
-      create-user: /gateway/api/user/create-user
-      login-user: /gateway/api/user/login-user
-      update-user: /gateway/api/user/update-user
-      delete-user-by-keycloak-id: /gateway/api/user/delete-user-by-keycloak-id/
-      get-user-info: /gateway/api/user/get-user-info
-      refresh-token: /gateway/api/user/refresh-token
+      create-user: /api/user/create-user
+      login-user: /api/user/login-user
+      update-user: /api/user/update-user
+      delete-user-by-keycloak-id: /api/user/delete-user-by-keycloak-id/
+      get-user-info: /api/user/get-user-info
+      refresh-token: /api/user/refresh-token
   person-service:
     name: person-service
     uri: http://localhost:8082

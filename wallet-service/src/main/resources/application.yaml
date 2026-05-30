@@ -1,7 +1,8 @@
 logging:
   level:
-    org.apache.shardingsphere: debug
-    org.springframework.security: trace
+    root: info
+    org.apache.shardingsphere: info
+    org.springframework.security: info
 server:
   port: ${SERVICE_PORT}
 spring:
@@ -9,7 +10,7 @@ spring:
     name: ${SERVICE_NAME}
   profiles:
     active:
-      - prod-local
+      - dev-shard
   kafka:
     listener:
       ack-mode: RECORD
@@ -18,7 +19,6 @@ spring:
       retries: 5
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
-    #      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer # Old version
     consumer:
       enable-auto-commit: false
       auto-offset-reset: latest
@@ -30,7 +30,15 @@ spring:
           json:
             trusted:
               packages: "aq.project.messages"
-  #      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer # Old version
+  flyway:
+    enabled: false
+    driver-class-name:
+    default-schema: public
+    baseline-version: ${FLYWAY_DB_BASELINE_VERSION}
+    baseline-on-migrate: true
+    create-schemas: true
+    locations: ${FLYWAY_MIGRATION_SCRIPT_PATH}
+    clean-disabled: false
 management:
   otlp:
     metrics:

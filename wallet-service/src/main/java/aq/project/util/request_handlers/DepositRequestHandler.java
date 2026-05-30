@@ -8,7 +8,6 @@ import aq.project.exceptions.WalletConstrainsException;
 import aq.project.messages.TransactionRequest;
 import aq.project.repositories.WalletRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,7 +16,7 @@ import java.time.YearMonth;
 import static aq.project.util.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 
 @Component
-public class DepositRequestHandler extends OperationRequestHandler {
+public class DepositRequestHandler extends AbstractRequestHandler {
 
     private final WalletRepository walletRepository;
 
@@ -27,10 +26,9 @@ public class DepositRequestHandler extends OperationRequestHandler {
     }
 
     @Override
-    @Transactional
-    protected void checkRequestMessagePropertyConstrains(TransactionRequest transactionRequest) throws WalletConstrainsException, CreditCardConstrainsException, NoSuchWalletException {
+    protected void checkTransactionRequestPropertyConstrains(TransactionRequest transactionRequest) throws WalletConstrainsException, CreditCardConstrainsException, NoSuchWalletException {
         String walletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class);
-        Wallet wallet = walletRepository.findById(walletId)
+        Wallet wallet = walletRepository.findByIdForUpdate(walletId)
                 .orElseThrow(() -> new NoSuchWalletException(walletId));
         if(wallet.getWalletDetails().getWalletStatus().equals(WalletStatus.BLOCKED))
             throw new WalletConstrainsException(String
@@ -43,11 +41,10 @@ public class DepositRequestHandler extends OperationRequestHandler {
     }
 
     @Override
-    @Transactional
-    protected void handleRequestMessageOperation(TransactionRequest transactionRequest) {
+    protected void handleTransactionRequestOperation(TransactionRequest transactionRequest) {
 //        Prepare data
         String walletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class);
-        Wallet wallet = walletRepository.findById(walletId).get();
+        Wallet wallet = walletRepository.findByIdForUpdate(walletId).get();
 //        Execute operation
         BigDecimal currentBalance = wallet.getCreditCard().getBalance();
         BigDecimal updatedBalance = currentBalance.add(transactionRequest.getAmount());

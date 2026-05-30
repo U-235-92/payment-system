@@ -12,7 +12,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,7 @@ import java.time.Instant;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class UserRestControllerAspect {
+public class UserServiceAspect {
 
     @Value("${spring.application.name}")
     private String tracerName;
@@ -36,8 +35,8 @@ public class UserRestControllerAspect {
     private final ApplicationMetricsRegistry applicationMetricsRegistry;
 
     @Timed(value = "individuals_api.create_user_time")
-    @Around("execution(* aq.project.controllers.UserRestController.createUser(..)) && args(createUserDTO)")
-    public Mono<ResponseEntity<ResponseTokenDTO>> createUser(ProceedingJoinPoint pjp, CreateUserDTO createUserDTO) throws Throwable {
+    @Around("execution(* aq.project.services.UserService.createUser(..)) && args(createUserDTO)")
+    public Mono<ResponseTokenDTO> createUser(ProceedingJoinPoint pjp, CreateUserDTO createUserDTO) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {
@@ -86,8 +85,8 @@ public class UserRestControllerAspect {
     }
 
     @Timed(value = "individuals_api.login_user_time")
-    @Around("execution(* aq.project.controllers.UserRestController.loginUser(..)) && args(loginUserDTO)")
-    public Mono<ResponseEntity<ResponseTokenDTO>> loginUser(ProceedingJoinPoint pjp, LoginUserDTO loginUserDTO) throws Throwable {
+    @Around("execution(* aq.project.services.UserService.loginUser(..)) && args(loginUserDTO)")
+    public Mono<ResponseTokenDTO> loginUser(ProceedingJoinPoint pjp, LoginUserDTO loginUserDTO) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {
@@ -116,8 +115,8 @@ public class UserRestControllerAspect {
     }
 
     @Timed(value = "individuals_api.update_user_time")
-    @Around("execution(* aq.project.controllers.UserRestController.updateUser(..)) && args(updateUserDTO)")
-    public Mono<ResponseEntity<Void>> updateUser(ProceedingJoinPoint pjp, UpdateUserDTO updateUserDTO) throws Throwable {
+    @Around("execution(* aq.project.services.UserService.updateUser(..)) && args(updateUserDTO)")
+    public Mono<Void> updateUser(ProceedingJoinPoint pjp, UpdateUserDTO updateUserDTO) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {
@@ -148,8 +147,8 @@ public class UserRestControllerAspect {
     }
 
     @Timed(value = "individuals_api.delete_user_time")
-    @Around("execution(* aq.project.controllers.UserRestController.deleteUserByKeycloakId(..)) && args(keycloakId)")
-    public Mono<ResponseEntity<Void>> deleteUserByKeycloakId(ProceedingJoinPoint pjp, String keycloakId) throws Throwable {
+    @Around("execution(* aq.project.services.UserService.deleteUserByKeycloakId(..)) && args(keycloakId)")
+    public Mono<Void> deleteUserByKeycloakId(ProceedingJoinPoint pjp, String keycloakId) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {
@@ -178,8 +177,8 @@ public class UserRestControllerAspect {
     }
 
     @Timed(value = "individuals_api.get_user_info_time")
-    @Around("execution(* aq.project.controllers.UserRestController.getUserInfo(..)) && args(authentication)")
-    public Mono<ResponseEntity<UserInfoResponseDTO>> getUserInfo(ProceedingJoinPoint pjp, Authentication authentication) throws Throwable {
+    @Around("execution(* aq.project.services.UserService.getUserInfoResponseDTO(..)) && args(authentication)")
+    public Mono<UserInfoResponseDTO> getUserInfo(ProceedingJoinPoint pjp, Authentication authentication) throws Throwable {
         AbstractAspectHandler handler = new AbstractAspectHandler(validator, openTelemetry, applicationMetricsRegistry) {
             @Override
             protected String getNullArgumentExceptionMessage() {

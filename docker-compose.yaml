@@ -158,6 +158,41 @@ services:
       timeout: 5s
       retries: 3
 
+  currency-rate-service:
+    container_name: currency-rate-service
+    build:
+      context: .
+      dockerfile: ./currency-rate-service/Dockerfile
+    image: u23592/currency-rate-service:1.0.0
+    env_file:
+      - ./currency-rate-service/.env
+    ports:
+      - "8085:8085"
+    networks:
+      - app-network
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+      otel-collector:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+      currency-rate-service-db:
+        condition: service_healthy
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: container=currency-rate-service
+
   keycloak-db:
     image: postgres:18.3
     container_name: keycloak_db
@@ -216,6 +251,27 @@ services:
       PGDATA: /var/lib/postgresql/17/docker
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U root -d wallets_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  currency-rate-service-db:
+    image: postgres:18.3
+    container_name: currency-rate-service-db
+    ports:
+      - "5465:5432"
+    networks:
+      - app-network
+    volumes:
+      - currency_rate_service_data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: currency_rate_service_db
+      PGDATA: /var/lib/postgresql/17/docker
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d currency_rate_service_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -451,4 +507,6 @@ volumes:
   kafka_broker_2_data:
     driver: local
   kafka_broker_3_data:
+    driver: local
+  currency_rate_service_data:
     driver: local

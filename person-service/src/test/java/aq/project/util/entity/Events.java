@@ -1,9 +1,8 @@
 package aq.project.util.entity;
 
 import aq.project.entities.UndoOperation;
-import aq.project.util.constants.Operations;
-
 import java.util.UUID;
+import static aq.project.util.constants.CustomConstants.*;
 
 public abstract class Events {
 
@@ -18,7 +17,7 @@ public abstract class Events {
     public static UndoOperation getValidUndoOperation() {
         UndoOperation undoOperation = new UndoOperation();
         undoOperation.setPersonKeycloakId(UUID.randomUUID());
-        undoOperation.setOperation(Operations.UNDO_UPDATE_PERSON_OP);
+        undoOperation.setOperation(UNDO_UPDATE_PERSON_OP);
         undoOperation.setTimestamp(System.currentTimeMillis());
         return undoOperation;
     }

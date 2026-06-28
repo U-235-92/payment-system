@@ -18,6 +18,13 @@ paths:
       tags:
         - Wallet
       summary: Create a new wallet
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       requestBody:
         required: true
         content:
@@ -51,6 +58,12 @@ paths:
           description: Parameter is represented an valid UUID that describes a wallet ID
           schema:
             $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       responses:
         200:
           content:
@@ -77,6 +90,12 @@ paths:
           description: Parameter is represented an valid UUID that describes a transaction ID
           schema:
             $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       responses:
         200:
           content:
@@ -237,6 +256,25 @@ components:
           $ref: "#/components/schemas/CardType"
         cardExpirationDate:
           $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    RateResponse:
+      type: object
+      properties:
+        sourceCode:
+          type: string
+          description: Код исходной валюты (например, "USD")
+        destinationCode:
+          type: string
+          description: Код целевой валюты (например, "EUR")
+        rate:
+          type: number
+          description: Курс обмена sourceCode→destinationCode
+        rateDate:
+          type: string
+          description: Время, на которое действует курс
+        providerCode:
+          type: string
+          description: Код провайдера курса
 
     ErrorDTO:
       type: object

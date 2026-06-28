@@ -3,6 +3,7 @@ package aq.project.integration;
 import aq.project.configs.ContainersConfigurer;
 import aq.project.mocks.TestDepositTransactionRequestMocks;
 import aq.project.services.TransactionService;
+import aq.project.util.telemetry.TraceContext;
 import aq.project.utils.Containers;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -36,6 +37,9 @@ public class SendDepositTransactionRequestIntegrationTest {
     @Autowired
     private TransactionService transactionService;
 
+    @Autowired
+    private TraceContext traceContext;
+
     @DynamicPropertySource
     static void configDynamicPropertySource(DynamicPropertyRegistry registry) {
         ContainersConfigurer.configureKafkaProperties(registry, KAFKA_CONTAINER);
@@ -59,6 +63,7 @@ public class SendDepositTransactionRequestIntegrationTest {
 
     @Test
     public void successSendDepositTransactionRequestTest() {
+        traceContext.setTraceId("4bf92f3577b34da6a3ce929d0e0e4736");
         Assertions.assertDoesNotThrow(() -> transactionService
                 .sendTransactionRequest(TestDepositTransactionRequestMocks.getValidDepositMessageRequest()));
     }

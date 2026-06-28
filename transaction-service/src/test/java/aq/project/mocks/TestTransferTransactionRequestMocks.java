@@ -7,7 +7,7 @@ import aq.project.messages.TransactionRequest;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static aq.project.util.RequestPropertyKeys.*;
+import static aq.project.util.constants.RequestPropertyKeys.*;
 import static aq.project.utils.UuidConstants.*;
 
 public class TestTransferTransactionRequestMocks {

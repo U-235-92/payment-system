@@ -3,6 +3,7 @@ package aq.project.controllers.handlers;
 import aq.project.controllers.UserRestController;
 import aq.project.dto.ErrorDTO;
 import aq.project.exceptions.*;
+import aq.project.util.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,66 +18,108 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RestControllerAdvice(basePackageClasses = UserRestController.class)
 public class UserRestControllerExceptionHandler {
-    
+
+    private final ControllerExceptionLogger controllerExceptionLogger;
+
 //    Project specific exceptions
     @ExceptionHandler(value = IncorrectUserCredentialsException.class)
     public Mono<ResponseEntity<ErrorDTO>> onIncorrectUserCredentialsException(IncorrectUserCredentialsException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.UNAUTHORIZED);
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = UserExistsException.class)
     public Mono<ResponseEntity<ErrorDTO>> onUserExistsException(UserExistsException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.CONFLICT);
+        HttpStatus status = HttpStatus.CONFLICT;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = InvalidTokenException.class)
     public Mono<ResponseEntity<ErrorDTO>> onTokenExpirationException(InvalidTokenException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.BAD_REQUEST);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = ServiceException.class)
     public Mono<ResponseEntity<ErrorDTO>> onServiceException(ServiceException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.INTERNAL_SERVER_ERROR);
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = InvalidPasswordConfirmException.class)
     public Mono<ResponseEntity<ErrorDTO>> onInvalidPasswordConfirmException(InvalidPasswordConfirmException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.BAD_REQUEST);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = InvalidAccessTokenException.class)
     public Mono<ResponseEntity<ErrorDTO>> onInvalidAccessTokenException(InvalidAccessTokenException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.UNAUTHORIZED);
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = InvalidUserRegistrationEventException.class)
     public Mono<ResponseEntity<ErrorDTO>> onInvalidUserRegistrationEventException(InvalidUserRegistrationEventException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.BAD_REQUEST);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = InvalidIndividualsDataException.class)
     public Mono<ResponseEntity<ErrorDTO>> onInvalidIndividualsDataException(InvalidIndividualsDataException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.BAD_REQUEST);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = ExternalServiceException.class)
     public Mono<ResponseEntity<ErrorDTO>> onExternalServiceCallException(ExternalServiceException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.INTERNAL_SERVER_ERROR);
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
 //    Non-project specific exceptions
     @ExceptionHandler(value = ConstraintViolationException.class)
     public Mono<ResponseEntity<ErrorDTO>> onConstraintViolationException(ConstraintViolationException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.BAD_REQUEST);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Mono<ResponseEntity<ErrorDTO>> onHttpMessageNotReadableException(HttpMessageNotReadableException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.BAD_REQUEST);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public Mono<ResponseEntity<ErrorDTO>> onIllegalArgumentException(IllegalArgumentException exc) {
-        return ExceptionHandlerUtil.getErrorResponse(exc, HttpStatus.BAD_REQUEST);
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
+    }
+
+    private ErrorDTO getErrorDTO(HttpStatus httpStatus, String message) {
+        return new ErrorDTO().httpStatus(httpStatus.value()).message(message);
     }
 }

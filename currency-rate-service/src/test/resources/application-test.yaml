@@ -1,0 +1,38 @@
+logging:
+  level:
+    root: info
+    aq.project.service: info
+    aq.project.mappers.rate: info
+    org.hibernate.orm.results: info
+    org.hibernate.SQL: info
+    org.hibernate.type.descriptor.sql: info
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+  flyway:
+    enabled: false
+  datasource:
+    username: root
+    password:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:currency_rate_service_test_db
+  jpa:
+    show-sql: false
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+  sql:
+    init:
+      schema-locations:
+        - 'classpath:schema-test.sql'

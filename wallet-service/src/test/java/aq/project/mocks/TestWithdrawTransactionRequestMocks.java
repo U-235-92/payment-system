@@ -6,10 +6,12 @@ import aq.project.messages.TransactionRequest;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.UUID;
 
-import static aq.project.util.RequestPropertyKeys.RECIPIENT_PERSON_ID;
-import static aq.project.util.RequestPropertyKeys.RECIPIENT_WALLET_ID;
+import static aq.project.util.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_PERSON_ID;
+import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 import static aq.project.utils.UuidConstants.*;
 
 public class TestWithdrawTransactionRequestMocks {
@@ -108,11 +110,26 @@ public class TestWithdrawTransactionRequestMocks {
                 request);
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
 
     public static ConsumerRecord<String, TransactionRequest> getValidWithdrawConsumerRecord() {
         TransactionRequest request = getValidWithdrawMessageRequest();
+        ConsumerRecord<String, TransactionRequest> consumerRecord = new ConsumerRecord<>(
+                "wallet_operation_request",
+                0,
+                0L,
+                null,
+                request);
+        consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
+        consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
+        return consumerRecord;
+    }
+
+    public static ConsumerRecord<String, TransactionRequest> getInvalidWithdrawConsumerRecordWithNoTraceIdHeader(String walletId, String personId) {
+        TransactionRequest request = getValidWithdrawMessageRequest(walletId, personId);
         ConsumerRecord<String, TransactionRequest> consumerRecord = new ConsumerRecord<>(
                 "wallet_operation_request",
                 0,
@@ -147,6 +164,7 @@ public class TestWithdrawTransactionRequestMocks {
                 request);
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
 
@@ -173,10 +191,22 @@ public class TestWithdrawTransactionRequestMocks {
                 request);
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
 
     private static byte[] getPropertyBytes(TransactionRequest transactionRequest, String key) {
         return transactionRequest.getProperty(key, String.class).getBytes();
+    }
+
+    private static String getDefaultTraceId() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[16];
+        random.nextBytes(bytes);
+        StringBuilder traceId = new StringBuilder();
+        for(byte b : bytes) {
+            traceId.append(String.format("%02x", b));
+        }
+        return traceId.toString();
     }
 }

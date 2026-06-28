@@ -1,0 +1,60 @@
+server:
+  port: ${SERVICE_PORT}
+spring:
+  profiles:
+    active:
+      - dev
+  application:
+    name: ${SERVICE_NAME}
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: ${SERVICE_NAME}
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+resilience4j:
+  retry:
+    instances:
+      update-currency-rates:
+        max-attempts: 3
+        wait-duration: 1500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+  circuitbreaker:
+    instances:
+      update-currency-rates:
+        sliding-window-type: TIME_BASED
+        sliding-window-size: 86400
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 30s
+        slow-call-rate-threshold: 50
+application:
+  client:
+    frankfurter:
+      base-url: 'https://api.frankfurter.dev/v2'
+      endpoint:
+        rate: '/rate/{base}/{quote}'
+        rates: '/rates'
+        providers: '/providers'
+        provider: '/provider/{code}'
+        currencies: '/currencies'
+        currency: '/currency/{code}'
+
+  schedlock:
+    update-rate-shedlock:
+      name: updateRatesSchedLock
+      lock-at-least-for: 30s
+      lock-at-most-for: 3600s
+  scheduler:
+    update-rate-scheduler:
+      fixed-rate: 3600

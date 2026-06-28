@@ -18,6 +18,13 @@ paths:
       tags:
         - Transaction
       summary: Handle incoming transaction request
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       requestBody:
         required: true
         content:
@@ -51,6 +58,12 @@ paths:
           description: Parameter is represented a valid UUID that describes a transaction ID
           schema:
             $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       responses:
         200:
           content:

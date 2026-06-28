@@ -2,7 +2,7 @@ package aq.project.services;
 
 import aq.project.dto.RefreshTokenDTO;
 import aq.project.dto.ResponseTokenDTO;
-import aq.project.proxies.KeycloakClient;
+import aq.project.clients.KeycloakClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

@@ -121,10 +121,10 @@ tasks.withType<Test> {
 }
 
 tasks.named("compileJava") {
-	dependsOn("generateContracts")
+	dependsOn("generateOpenApiContracts")
 }
 
-tasks.register("generateContracts") {
+tasks.register("generateOpenApiContracts") {
 	dependsOn("generateClientContracts")
 	dependsOn("generateControllerContracts")
 }

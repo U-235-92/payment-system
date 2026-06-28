@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.java
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
@@ -40,6 +41,7 @@ val dependencyVersionMap = mapOf(
 dependencies {
 //	Spring web
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
 //	Spring kafka
 	implementation("org.springframework.boot:spring-boot-starter-kafka")
@@ -150,15 +152,23 @@ springBoot {
 	mainClass = "aq.project.WalletServiceApplication"
 }
 
+extra["springCloudVersion"] = "2025.1.2"
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
 tasks.named("compileJava") {
-	dependsOn("generateControllerContracts")
+	dependsOn("generateOpenApiContracts")
 }
 
-tasks.register<GenerateTask>("generateControllerContracts") {
+tasks.register<GenerateTask>("generateOpenApiContracts") {
 	inputSpec.set("$rootDir/openapi/components-specification.yaml") // Источник спецификации
 	outputDir.set("$rootDir/build/generated/openapi/controller-contracts") // Путь куда генерировать исходники
 	generatorName.set("spring") // Использовать генератор Java для создания исходников на этом языке

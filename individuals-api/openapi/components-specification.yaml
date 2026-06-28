@@ -237,6 +237,157 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerErrorResponse"
 
+  /rate:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить курс между двумя валютами на указанную дату/время
+      operationId: getRate
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "USD"
+          description: Код исходной валюты (например, "USD")
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "EUR"
+          description: Код целевой валюты (например, "EUR")
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Идентификатор конкретного поставщика данных. Если параметр опущен, возвращается смешанное (усредненное) значение по всем доступным провайдерам.
+      responses:
+        '200':
+          description: Курс найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateResponse'
+        '404':
+          description: Курс не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+
+  /currencies:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Rate
+      summary: Получить список поддерживаемых валют
+      operationId: getCurrencies
+      responses:
+        '200':
+          description: Список валют
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyResponse'
+
+  /rate-providers:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить список провайдеров курсов валют
+      operationId: getRateProviders
+      responses:
+        '200':
+          description: Провайдеры
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RateProviderResponse'
+
+  /currency:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить информацию по указанной валюте
+      operationId: getCurrencyInfo
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Трехбуквенный код валюты
+          example: USD
+      responses:
+        '200':
+          description: Информация по валюте
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyResponse'
+
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+
+  /rate-provider:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить информацию по указанному поставщику курсов валют
+      operationId: getRateProviderInfo
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Код поставщика валют
+          example: AMCM
+      responses:
+        '200':
+          description: Информация по поставщику валют
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateProviderResponse'
+
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+
 tags:
   - name: Token
     description: Describes operations with tokens
@@ -246,6 +397,8 @@ tags:
     description: Describes operations with users
   - name: Wallet
     description: Describes operations with wallets
+  - name: Rate
+    description: Describes operations with currencies and its rates
 
 components:
   securitySchemes:
@@ -274,7 +427,7 @@ components:
       required: [ keycloak_user_id, email, roles, created, individual_data ]
       properties:
         keycloak_user_id:
-          type: string
+          $ref: "#/components/schemas/UuidDefinition"
         email:
           type: string
         roles:
@@ -370,7 +523,7 @@ components:
       required: [ keycloak_user_id, password, confirm_password, individual_data ]
       properties:
         keycloak_user_id:
-          type: string
+          $ref: "#/components/schemas/UuidDefinition"
         password:
           type: string
         confirm_password:
@@ -383,7 +536,7 @@ components:
       required: [ keycloak_user_id, first_name, last_name, phone_number, passport_number, address ]
       properties:
         keycloak_user_id:
-          type: string
+          $ref: "#/components/schemas/UuidDefinition"
         first_name:
           type: string
         last_name:
@@ -420,7 +573,7 @@ components:
       required: [ keycloak_user_id, access_token, refresh_token, expires_in, token_type ]
       properties:
         keycloak_user_id:
-          type: string
+          $ref: "#/components/schemas/UuidDefinition"
         access_token:
           type: string
         refresh_token:
@@ -521,6 +674,56 @@ components:
           $ref: "#/components/schemas/CardType"
         cardExpirationDate:
           $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    RateProviderResponse:
+      type: object
+      properties:
+        providerCode:
+          type: string
+        providerName:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+        active:
+          type: boolean
+
+    CurrencyResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Трёхбуквенный код валюты (ISO 4217)
+        isoCode:
+          type: integer
+          description: Числовой ISO-код валюты
+        description:
+          type: string
+        active:
+          type: boolean
+        symbol:
+          type: string
+          description: Символ валюты (например, $ или €)
+
+    RateResponse:
+      type: object
+      properties:
+        sourceCode:
+          type: string
+          description: Код исходной валюты (например, "USD")
+        destinationCode:
+          type: string
+          description: Код целевой валюты (например, "EUR")
+        rate:
+          type: number
+          description: Курс обмена sourceCode→destinationCode
+        rateDate:
+          type: string
+          description: Время, на которое действует курс
+        providerCode:
+          type: string
+          description: Код провайдера курса
 
     WalletStatus:
       enum: [ "ACTIVE", "BLOCKED" ]

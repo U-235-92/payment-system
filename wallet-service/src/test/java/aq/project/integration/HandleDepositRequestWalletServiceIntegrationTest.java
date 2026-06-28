@@ -1,8 +1,10 @@
 package aq.project.integration;
 
 import aq.project.configs.ContainersConfigurer;
+import aq.project.dto.RateResponse;
 import aq.project.entities.Wallet;
 import aq.project.exceptions.CreditCardConstrainsException;
+import aq.project.exceptions.DuplicateTransactionException;
 import aq.project.exceptions.NoSuchWalletException;
 import aq.project.exceptions.WalletConstrainsException;
 import aq.project.messages.TransactionRequest;
@@ -13,6 +15,9 @@ import aq.project.repositories.TransactionRepository;
 import aq.project.repositories.WalletRepository;
 import aq.project.services.TransactionService;
 import aq.project.utils.Containers;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -21,6 +26,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Headers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -29,19 +35,27 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.wiremock.spring.ConfigureWireMock;
+import org.wiremock.spring.EnableWireMock;
+import org.wiremock.spring.InjectWireMock;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
-import static aq.project.util.RequestPropertyKeys.RECIPIENT_WALLET_ID;
+import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 
 @Testcontainers
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@EnableWireMock(value = @ConfigureWireMock(name = "currency-service-mock"))
 public class HandleDepositRequestWalletServiceIntegrationTest {
 
     private static AdminClient adminClient;
+
+    @Value("${application.services.currency-rate-service.endpoint.rate}")
+    private String currencyRateServiceGetRateEndpoint;
 
     @Container
     private static final KafkaContainer KAFKA_CONTAINER = Containers.KAFKA_CONTAINER;
@@ -58,10 +72,14 @@ public class HandleDepositRequestWalletServiceIntegrationTest {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @InjectWireMock("currency-service-mock")
+    private WireMockServer currencyServiceMock;
+
     @DynamicPropertySource
     static void configDynamicPropertySource(DynamicPropertyRegistry registry) {
         ContainersConfigurer.configureKafkaProperties(registry, KAFKA_CONTAINER);
         ContainersConfigurer.configurePostgreSqlProperties(registry, POSTGRESQL_CONTAINER);
+        registry.add("application.services.currency-rate-service.base-url", () -> "http://localhost:${wiremock.server.port}");
     }
 
     @BeforeAll
@@ -84,11 +102,28 @@ public class HandleDepositRequestWalletServiceIntegrationTest {
 
     @Test
     public void successfulHandleDepositRequestIntegrationTest() {
+        final String RUB = "RUB";
+
+        RateResponse rateResponse = new RateResponse();
+        rateResponse.setRateDate("2026-06-23");
+        rateResponse.setRate(BigDecimal.valueOf(1.00));
+        rateResponse.setProviderCode(null);
+        rateResponse.setSourceCode(RUB);
+        rateResponse.setDestinationCode(RUB);
+
+        String request = String.format("%s?base=%s&quote=%s", currencyRateServiceGetRateEndpoint, RUB, RUB);
+
+        currencyServiceMock.stubFor(WireMock.get(request)
+                .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
         Wallet wallet = walletRepository.save(TestWalletMocks.getValidWalletMock());
+
         Assertions.assertDoesNotThrow(() -> transactionService
                 .handleTransactionRequest(TestDepositTransactionRequestMocks
                         .getValidDepositConsumerRecord(wallet.getId(), wallet.getPersonId())));
+
         walletRepository.deleteById(wallet.getId());
+        transactionRepository.deleteAll();
     }
 
     @Test
@@ -100,9 +135,11 @@ public class HandleDepositRequestWalletServiceIntegrationTest {
         walletRepository.save(wallet);
         String transactionId = transactionRepository.save(TestTransactionEventMocks.getValidDepositTransactionEvent())
                 .getTransactionId();
-        Assertions.assertDoesNotThrow(() -> transactionService
+
+        Assertions.assertThrows(DuplicateTransactionException.class, () -> transactionService
                     .handleTransactionRequest(record));
-        transactionRepository.deleteById(transactionId);
+
+        transactionRepository.deleteAll();
         walletRepository.deleteById(wallet.getId());
     }
 
@@ -153,5 +190,12 @@ public class HandleDepositRequestWalletServiceIntegrationTest {
         Assertions.assertThrows(ConstraintViolationException.class, () -> transactionService
                 .handleTransactionRequest(TestDepositTransactionRequestMocks.getDepositConsumerRecordWithNegativeAmount()));
         walletRepository.deleteById(wallet.getId());
+    }
+
+    @Test
+    public void failHandleDepositRequestMessageWithNoTraceIdHeaderIntegrationTest() {
+        Wallet wallet = walletRepository.save(TestWalletMocks.getExpiredCardValidWalletMock());
+        Assertions.assertThrows(IllegalStateException.class, () -> transactionService
+                .handleTransactionRequest(TestDepositTransactionRequestMocks.getInvalidDepositConsumerRecordWithNoTraceIdHeader(wallet.getId(), wallet.getPersonId())));
     }
 }

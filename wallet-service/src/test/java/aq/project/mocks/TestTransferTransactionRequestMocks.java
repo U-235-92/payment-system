@@ -6,9 +6,11 @@ import aq.project.messages.TransactionRequest;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.UUID;
 
-import static aq.project.util.RequestPropertyKeys.*;
+import static aq.project.util.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+import static aq.project.util.constants.RequestPropertyKeys.*;
 import static aq.project.utils.UuidConstants.*;
 
 public class TestTransferTransactionRequestMocks {
@@ -32,6 +34,22 @@ public class TestTransferTransactionRequestMocks {
     public static TransactionRequest getValidTransferMessageRequest(String recipientWalletId, String recipientPersonId, String senderWalletId, String senderPersonId) {
         TransactionRequest transactionRequest = new TransactionRequest(
                 STR_TRANSACTION_ID,
+                OperationType.TRANSFER,
+                new BigDecimal("15.58"),
+                "RUB",
+                TransactionStatus.PENDING,
+                Long.valueOf(System.currentTimeMillis())
+        );
+        transactionRequest.putProperty(RECIPIENT_PERSON_ID, recipientPersonId);
+        transactionRequest.putProperty(RECIPIENT_WALLET_ID, recipientWalletId);
+        transactionRequest.putProperty(SENDER_PERSON_ID, senderPersonId);
+        transactionRequest.putProperty(SENDER_WALLET_ID, senderWalletId);
+        return transactionRequest;
+    }
+
+    public static TransactionRequest getValidTransferMessageRequestWithRandomTransactionId(String recipientWalletId, String recipientPersonId, String senderWalletId, String senderPersonId) {
+        TransactionRequest transactionRequest = new TransactionRequest(
+                UUID.randomUUID().toString(),
                 OperationType.TRANSFER,
                 new BigDecimal("15.58"),
                 "RUB",
@@ -110,7 +128,7 @@ public class TestTransferTransactionRequestMocks {
     }
 
     public static ConsumerRecord<String, TransactionRequest> getValidTransferConsumerRecord(String recipientWalletId, String recipientPersonId, String senderWalletId, String senderPersonId) {
-        TransactionRequest request = getValidTransferMessageRequest(recipientWalletId, recipientPersonId, senderWalletId, senderPersonId);
+        TransactionRequest request = getValidTransferMessageRequestWithRandomTransactionId(recipientWalletId, recipientPersonId, senderWalletId, senderPersonId);
         ConsumerRecord<String, TransactionRequest> consumerRecord = new ConsumerRecord<>(
                 "wallet_operation_request",
                 0,
@@ -121,6 +139,7 @@ public class TestTransferTransactionRequestMocks {
         consumerRecord.headers().add(SENDER_PERSON_ID, getPropertyBytes(request, SENDER_PERSON_ID));
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
 
@@ -136,6 +155,7 @@ public class TestTransferTransactionRequestMocks {
         consumerRecord.headers().add(SENDER_PERSON_ID, getPropertyBytes(request, SENDER_PERSON_ID));
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
 
@@ -166,6 +186,7 @@ public class TestTransferTransactionRequestMocks {
         consumerRecord.headers().add(SENDER_PERSON_ID, getPropertyBytes(request, SENDER_PERSON_ID));
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
 
@@ -181,6 +202,7 @@ public class TestTransferTransactionRequestMocks {
         consumerRecord.headers().add(SENDER_PERSON_ID, getPropertyBytes(request, SENDER_PERSON_ID));
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
 
@@ -196,10 +218,22 @@ public class TestTransferTransactionRequestMocks {
         consumerRecord.headers().add(SENDER_PERSON_ID, getPropertyBytes(request, SENDER_PERSON_ID));
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
 
     private static byte[] getPropertyBytes(TransactionRequest transactionRequest, String key) {
         return transactionRequest.getProperty(key, String.class).getBytes();
+    }
+
+    private static String getDefaultTraceId() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[16];
+        random.nextBytes(bytes);
+        StringBuilder traceId = new StringBuilder();
+        for(byte b : bytes) {
+            traceId.append(String.format("%02x", b));
+        }
+        return traceId.toString();
     }
 }

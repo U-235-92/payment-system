@@ -2,9 +2,8 @@ package aq.project.services;
 
 import aq.project.dto.CreateWalletRequestDTO;
 import aq.project.dto.WalletInfoResponseDTO;
-import aq.project.proxies.WalletClient;
+import aq.project.clients.WalletClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

@@ -1,6 +1,6 @@
 package aq.project.integration.token;
 
-import aq.project.proxies.JwtClient;
+import aq.project.clients.JwtClient;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;

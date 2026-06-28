@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS public.transactions (
     status VARCHAR(255) NOT NULL,              -- Enum как строка (TransactionStatus)
     timestamp BIGINT NOT NULL,
     processed BOOLEAN NOT NULL,
+    trace_id VARCHAR(255) NOT NULL,
     CONSTRAINT pk_transaction PRIMARY KEY (id)
 );
 

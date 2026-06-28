@@ -49,6 +49,11 @@ public class Transaction {
     @Column(name = "processed", nullable = false)
     private boolean isProcessed;
 
+    @NotNull
+    @Getter @Setter
+    @Column(name = "trace_id", nullable = false)
+    private String traceId;
+
     @Column(name = "property_value")
     @MapKeyColumn(name = "property_key")
     @ElementCollection(fetch = FetchType.EAGER)

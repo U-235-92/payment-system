@@ -2,7 +2,7 @@ package aq.project.services;
 
 import aq.project.dto.TransactionRequestDTO;
 import aq.project.dto.TransactionStatus;
-import aq.project.proxies.TransactionClient;
+import aq.project.clients.TransactionClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.java
 import org.gradle.kotlin.dsl.register
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
@@ -128,10 +130,10 @@ tasks.withType<Test> {
 }
 
 tasks.named("compileJava") {
-	dependsOn("generateContracts")
+	dependsOn("generateOpenApiContracts")
 }
 
-tasks.register("generateContracts") {
+tasks.register("generateOpenApiContracts") {
 	dependsOn("generateClientContracts")
 	dependsOn("generateControllerContracts")
 }

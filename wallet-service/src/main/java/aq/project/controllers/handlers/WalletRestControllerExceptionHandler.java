@@ -2,6 +2,7 @@ package aq.project.controllers.handlers;
 
 import aq.project.dto.ErrorDTO;
 import aq.project.exceptions.NoSuchWalletException;
+import aq.project.util.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +17,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequiredArgsConstructor
 public class WalletRestControllerExceptionHandler {
 
-    private final ExceptionLogger exceptionLogger;
+    private final ControllerExceptionLogger controllerExceptionLogger;
 
 //    Project's exception handlers [aq.project.exceptions.*]
     @ExceptionHandler(NoSuchWalletException.class)
     public ResponseEntity<ErrorDTO> onIllegalArgumentException(NoSuchWalletException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(e, status);
         return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
     }
 
@@ -29,24 +31,28 @@ public class WalletRestControllerExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDTO> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(e, status);
         return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDTO> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(e, status);
         return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorDTO> onIllegalArgumentException(IllegalArgumentException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(e, status);
         return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDTO> onException(Exception e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        controllerExceptionLogger.logException(e, status);
         return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
     }
 

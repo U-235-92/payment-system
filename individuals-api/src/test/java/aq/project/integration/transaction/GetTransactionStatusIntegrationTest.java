@@ -1,7 +1,7 @@
 package aq.project.integration.transaction;
 
 import aq.project.dto.ErrorDTO;
-import aq.project.proxies.JwtClient;
+import aq.project.clients.JwtClient;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;

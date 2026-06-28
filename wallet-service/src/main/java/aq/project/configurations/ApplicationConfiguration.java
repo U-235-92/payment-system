@@ -2,6 +2,7 @@ package aq.project.configurations;
 
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -11,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @EnableScheduling
 @EnableAspectJAutoProxy
+@EnableFeignClients(basePackages = "aq.project.clients")
 @EnableJpaRepositories(basePackages = "aq.project.repositories")
 public class ApplicationConfiguration {
 

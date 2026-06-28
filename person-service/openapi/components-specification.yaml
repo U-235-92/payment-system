@@ -19,6 +19,13 @@ paths:
       tags:
         - Person
       summary: Create a new person
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       requestBody:
         required: true
         content:
@@ -54,6 +61,12 @@ paths:
           description: Parameter is represented a valid UUID that describes a person ID
           schema:
             $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       responses:
         200:
           description: Returns OK status code if operation was successful
@@ -69,6 +82,13 @@ paths:
       tags:
         - Person
       summary: Undo delete of a person
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       requestBody:
         required: true
         content:
@@ -91,6 +111,13 @@ paths:
       tags:
         - Person
       summary: Update of a person
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       requestBody:
         required: true
         content:
@@ -113,6 +140,13 @@ paths:
       tags:
         - Person
       summary: Undo update of a person
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       requestBody:
         required: true
         content:
@@ -142,6 +176,12 @@ paths:
           description: Parameter is represented a valid UUID that describes a person ID
           schema:
             $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
       responses:
         200:
           content:

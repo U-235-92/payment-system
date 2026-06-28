@@ -38,7 +38,7 @@ import static aq.project.util.TestUtils.loginUserMono;
 @DirtiesContext
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@EnableWireMock(@ConfigureWireMock(name = "person-service", port = 8082))
+@EnableWireMock(@ConfigureWireMock(name = "person-service"))
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GetUserInfoIntegrationTest {
 

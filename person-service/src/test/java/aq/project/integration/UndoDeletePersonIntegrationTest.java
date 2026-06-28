@@ -29,12 +29,15 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Testcontainers
 @DirtiesContext
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UndoDeletePersonIntegrationTest {
+
+    private static final String TRACE_ID = "4bf92f3577b34da6a3ce929d0e0e4736";
 
     @Container
     private static final PostgreSQLContainer POSTGRESQL = Containers.POSTGRESQL;
@@ -58,7 +61,7 @@ public class UndoDeletePersonIntegrationTest {
     @BeforeEach
     public void setUp() throws UserExistsException, CountryNotExistsException {
         countryRepository.save(Countries.getValidTestCountry());
-        personRestController.createPerson(DTO.getValidCreateIndividualDataDTO());
+        personRestController.createPerson(TRACE_ID, DTO.getValidCreateIndividualDataDTO());
     }
 
     @AfterEach
@@ -69,8 +72,8 @@ public class UndoDeletePersonIntegrationTest {
 
     @Test
     public void successUndoDeletePersonTest() throws Exception {
-        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
-        personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO());
+        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID, TRACE_ID);
+        personRestController.undoDeletePerson(TRACE_ID, DTO.getValidUndoDeleteOperationDTO());
         Optional<Person> person = personRepository.findByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
         Assertions.assertNotNull(person.get());
         Assertions.assertEquals(Constants.CORRECT_PERSON_KEYCLOAK_ID, person.get().getKeycloakId());
@@ -78,25 +81,25 @@ public class UndoDeletePersonIntegrationTest {
 
     @Test
     public void failCallUndoDeletePersonAfterCallUndoDeletePersonTest() throws Exception {
-        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
+        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID, TRACE_ID);
 //        First [undo-delete] call
-        personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO());
+        personRestController.undoDeletePerson(TRACE_ID, DTO.getValidUndoDeleteOperationDTO());
 //        Second [undo-delete] call
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoDeletePerson(TRACE_ID, DTO.getValidUndoDeleteOperationDTO()));
     }
 
     @Test
     public void failCallUndoDeletePersonWhenPreviousCallWasNotDeleteTest() throws Exception {
-        personRestController.updatePerson(DTO.getUpdateIndividualDataDTO());
+        personRestController.updatePerson(TRACE_ID, DTO.getUpdateIndividualDataDTO());
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoDeletePerson(TRACE_ID, DTO.getValidUndoDeleteOperationDTO()));
     }
 
     @Test
     public void failCallUndoDeletePersonWhenPreviousCallWasCreatePersonTest() {
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoDeletePerson(TRACE_ID, DTO.getValidUndoDeleteOperationDTO()));
     }
 
     @Test
@@ -110,6 +113,6 @@ public class UndoDeletePersonIntegrationTest {
     @Disabled("To use this test you have to disable @BeforeEach because before run this one database MUST be clean")
     public void failCallUndoDeletePersonWhenDatabaseEmptyTest() {
         Assertions.assertThrows(NotFoundUndoOperationCallException.class,
-                () -> personRestController.undoDeletePerson(DTO.getValidUndoDeleteOperationDTO()));
+                () -> personRestController.undoDeletePerson(TRACE_ID, DTO.getValidUndoDeleteOperationDTO()));
     }
 }

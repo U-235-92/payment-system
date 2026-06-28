@@ -7,12 +7,13 @@ import aq.project.exceptions.CreditCardConstrainsException;
 import aq.project.exceptions.NoSuchWalletException;
 import aq.project.exceptions.TransactionException;
 import aq.project.exceptions.WalletConstrainsException;
-import aq.project.mappers.TransactionMapper;
 import aq.project.messages.TransactionRequest;
+import aq.project.messages.TransactionResponse;
 import aq.project.repositories.TransactionRepository;
-import aq.project.util.request_handlers.DepositRequestHandler;
-import aq.project.util.request_handlers.TransferRequestHandler;
-import aq.project.util.request_handlers.WithdrawRequestHandler;
+import aq.project.util.mappers.TransactionMapper;
+import aq.project.util.handlers.DepositRequestHandler;
+import aq.project.util.handlers.TransferRequestHandler;
+import aq.project.util.handlers.WithdrawRequestHandler;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -20,6 +21,7 @@ import io.opentelemetry.context.Scope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Headers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -30,11 +32,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import static aq.project.util.RequestPropertyKeys.*;
+import static aq.project.util.constants.CustomHttpHeaders.*;
+import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
+import static aq.project.util.constants.RequestPropertyKeys.SENDER_WALLET_ID;
 
 @Slf4j
 @Service
@@ -130,14 +132,20 @@ public class TransactionService {
 
     private void handleIncomingTransaction(Transaction transaction, OperationType operationType, String partition, Span span) {
         String spanId = span.getSpanContext().getSpanId();
-        String traceId = span.getSpanContext().getTraceId();
+        String traceId = transaction.getTraceId();
         try {
-            log.info(String.format("[%s-%s]: Attempt to handle %s transaction event with transactionId [%s]", traceId, spanId, operationType.name().toLowerCase(), transaction.getTransactionId()));
-            kafkaTemplate.send(walletOperationResponseTopicName, partition, transactionMapper.toTransactionResponse(transaction)).get();
+            log.info("[{}-{}]: Attempt to handle {} transaction event with transactionId [{}]", traceId, spanId, operationType.name().toLowerCase(), transaction.getTransactionId());
+            ProducerRecord<String, TransactionResponse> record = new ProducerRecord<>(
+                    walletOperationResponseTopicName,
+                    partition,
+                    transactionMapper.toTransactionResponse(transaction));
+            Headers headers = record.headers();
+            headers.add(X_TRACE_ID_HEADER, traceId.getBytes());
+            kafkaTemplate.send((ProducerRecord) record).get();
             transaction.setProcessed(true);
-            log.info(String.format("[%s-%s]: Handle of %s transaction event with transactionId [%s] completed", traceId, spanId, operationType.name(), transaction.getTransactionId()));
+            log.info("[{}-{}]: Handle of {} transaction event with transactionId [{}] completed", traceId, spanId, operationType.name(), transaction.getTransactionId());
         } catch (InterruptedException | ExecutionException exc) {
-            log.warn(String.format("[%s-%s]: Handle of %s transaction event with transactionId [%s] failed", traceId, spanId, operationType.name(), transaction.getTransactionId()));
+            log.warn("[{}-{}]: Handle of {} transaction event with transactionId [{}] failed", traceId, spanId, operationType.name(), transaction.getTransactionId());
             throw new RuntimeException(exc);
         }
     }

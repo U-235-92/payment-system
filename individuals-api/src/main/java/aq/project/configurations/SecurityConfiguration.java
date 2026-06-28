@@ -24,7 +24,8 @@ public class SecurityConfiguration {
                         "/api/user/**",
                         "/api/token/**",
                         "/api/transaction/**",
-                        "/api/wallet/**"))
+                        "/api/wallet/**",
+                        "/api/currency-rates/**"))
                 .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
@@ -41,7 +42,8 @@ public class SecurityConfiguration {
                         "/api/user/**",
                         "/api/token/**",
                         "/api/transaction/**",
-                        "/api/wallet/**"))
+                        "/api/wallet/**",
+                        "/api/currency-rates/**"))
                 .authorizeExchange(customizer -> customizer
                         .pathMatchers(HttpMethod.POST, "/api/user/create-user").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/user/login-user").permitAll()
@@ -52,7 +54,12 @@ public class SecurityConfiguration {
                         .pathMatchers(HttpMethod.GET, "/api/transaction/status/*").authenticated()
                         .pathMatchers(HttpMethod.POST, "/api/transaction/do-transaction").authenticated()
                         .pathMatchers(HttpMethod.POST, "/api/wallet/create").authenticated()
-                        .pathMatchers(HttpMethod.GET, "/api/wallet/info/*").authenticated())
+                        .pathMatchers(HttpMethod.GET, "/api/wallet/info/*").authenticated()
+                        .pathMatchers(HttpMethod.GET, "/api/currency-rates/rate").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/currency-rates/currencies").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/currency-rates/rate-providers").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/currency-rates/currency/*").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/currency-rates/rate-provider/*").permitAll())
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .oauth2Client(Customizer.withDefaults())

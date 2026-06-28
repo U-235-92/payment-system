@@ -3,9 +3,10 @@ package aq.project.mocks;
 import aq.project.dto.OperationType;
 import aq.project.dto.TransactionStatus;
 import aq.project.entities.Transaction;
-import aq.project.util.RequestPropertyKeys;
+import aq.project.util.constants.RequestPropertyKeys;
 import aq.project.utils.UuidConstants;
 
+import java.security.SecureRandom;
 import java.util.UUID;
 
 public class TestTransactionEventMocks {
@@ -20,6 +21,7 @@ public class TestTransactionEventMocks {
         );
         transaction.putProperty(RequestPropertyKeys.RECIPIENT_PERSON_ID, UuidConstants.STR_PERSON_ID);
         transaction.putProperty(RequestPropertyKeys.RECIPIENT_WALLET_ID, UuidConstants.STR_WALLET_ID);
+        transaction.setTraceId(getDefaultTraceId());
         return transaction;
     }
 
@@ -47,5 +49,16 @@ public class TestTransactionEventMocks {
         transaction.putProperty(RequestPropertyKeys.RECIPIENT_PERSON_ID, UUID.randomUUID().toString());
         transaction.putProperty(RequestPropertyKeys.RECIPIENT_WALLET_ID, UUID.randomUUID().toString());
         return transaction;
+    }
+
+    private static String getDefaultTraceId() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[16];
+        random.nextBytes(bytes);
+        StringBuilder traceId = new StringBuilder();
+        for(byte b : bytes) {
+            traceId.append(String.format("%02x", b));
+        }
+        return traceId.toString();
     }
 }

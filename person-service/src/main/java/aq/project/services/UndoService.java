@@ -9,14 +9,12 @@ import aq.project.exceptions.NotFoundUndoOperationCallException;
 import aq.project.repositories.PersonRepository;
 import aq.project.repositories.ServiceOperationRepository;
 import aq.project.repositories.UndoOperationRepository;
-import aq.project.util.constants.Operations;
-import aq.project.util.constants.Statuses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.UUID;
+import static aq.project.util.constants.CustomConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,29 +57,37 @@ public class UndoService {
     }
 
     public void checkUndoUpdate(UndoOperation undoOperation) throws NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
-        ServiceOperation serviceOperation = serviceOperationRepository.findLastServiceOperation(Statuses.COMPLETE_STATUS)
+        ServiceOperation serviceOperation = serviceOperationRepository.findLastServiceOperation(COMPLETE_STATUS)
                 .orElseThrow(() -> new NotFoundUndoOperationCallException(getOnNotFoundUndoOperationCallExceptionMessage()));
+
         String lastCompleteOperation = serviceOperation.getOperation();
         String currentOperation = undoOperation.getOperation();
-        if(lastCompleteOperation.equals(Operations.CREATE_PERSON_OP))
+
+        if(lastCompleteOperation.equals(CREATE_PERSON_OP))
             throw new NotExpectedUndoOperationCallException(getOnMismatchOperationCallExceptionMessage(lastCompleteOperation, currentOperation));
+
         if(lastCompleteOperation.equals(currentOperation))
             throw new NotExpectedUndoOperationCallException(getOnUndoUndoOperationCallExceptionMessage(currentOperation));
-        if(!lastCompleteOperation.equals(Operations.UPDATE_PERSON_OP) || !currentOperation.equals(Operations.UNDO_UPDATE_PERSON_OP))
-            throw new NotExpectedUndoOperationCallException(getOnNotExpectedUndoOperationCallExceptionMessage(lastCompleteOperation, Operations.UNDO_UPDATE_PERSON_OP, currentOperation));
+
+        if(!lastCompleteOperation.equals(UPDATE_PERSON_OP) || !currentOperation.equals(UNDO_UPDATE_PERSON_OP))
+            throw new NotExpectedUndoOperationCallException(getOnNotExpectedUndoOperationCallExceptionMessage(lastCompleteOperation, UNDO_UPDATE_PERSON_OP, currentOperation));
     }
 
     public void checkUndoDelete(UndoOperation undoOperation) throws NotExpectedUndoOperationCallException, NotFoundUndoOperationCallException {
-        ServiceOperation serviceOperation = serviceOperationRepository.findLastServiceOperation(Statuses.COMPLETE_STATUS)
+        ServiceOperation serviceOperation = serviceOperationRepository.findLastServiceOperation(COMPLETE_STATUS)
                 .orElseThrow(() -> new NotFoundUndoOperationCallException(getOnNotFoundUndoOperationCallExceptionMessage()));
+
         String lastCompleteOperation = serviceOperation.getOperation();
         String currentOperation = undoOperation.getOperation();
-        if(lastCompleteOperation.equals(Operations.CREATE_PERSON_OP))
+
+        if(lastCompleteOperation.equals(CREATE_PERSON_OP))
             throw new NotExpectedUndoOperationCallException(getOnMismatchOperationCallExceptionMessage(lastCompleteOperation, currentOperation));
+
         if(lastCompleteOperation.equals(currentOperation))
             throw new NotExpectedUndoOperationCallException(getOnUndoUndoOperationCallExceptionMessage(currentOperation));
-        if(!lastCompleteOperation.equals(Operations.DELETE_PERSON_OP) || !currentOperation.equals(Operations.UNDO_DELETE_PERSON_OP))
-            throw new NotExpectedUndoOperationCallException(getOnNotExpectedUndoOperationCallExceptionMessage(lastCompleteOperation, Operations.UNDO_UPDATE_PERSON_OP, currentOperation));
+
+        if(!lastCompleteOperation.equals(DELETE_PERSON_OP) || !currentOperation.equals(UNDO_DELETE_PERSON_OP))
+            throw new NotExpectedUndoOperationCallException(getOnNotExpectedUndoOperationCallExceptionMessage(lastCompleteOperation, UNDO_UPDATE_PERSON_OP, currentOperation));
     }
 
     private String getOnMismatchOperationCallExceptionMessage(String lastOperation, String currentOperation) {

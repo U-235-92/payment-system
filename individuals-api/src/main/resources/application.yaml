@@ -54,3 +54,12 @@ application:
     endpoints:
       get-transaction-status: ${TRANSACTION_SERVICE_GET_TRANSACTION_STATUS}
       send-transaction-request: ${TRANSACTION_SERVICE_SEND_TRANSACTION_REQUEST}
+  currency-rate-service:
+    name: currency-rate-service
+    uri: http://localhost:8085
+    endpoints:
+      get-rate: ${CURRENCY_RATE_SERVICE_GET_RATE_ENDPOINT}
+      get-rate-providers: ${CURRENCY_RATE_SERVICE_GET_RATE_PROVIDERS_ENDPOINT}
+      get-rate-provider: ${CURRENCY_RATE_SERVICE_GET_RATE_PROVIDER_ENDPOINT}
+      get-currencies: ${CURRENCY_RATE_SERVICE_GET_CURRENCIES_ENDPOINT}
+      get-currency: ${CURRENCY_RATE_SERVICE_GET_CURRENCY_ENDPOINT}

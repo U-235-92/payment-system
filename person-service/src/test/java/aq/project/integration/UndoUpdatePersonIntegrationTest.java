@@ -36,6 +36,8 @@ import java.util.Optional;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UndoUpdatePersonIntegrationTest {
 
+    private static final String TRACE_ID = "4bf92f3577b34da6a3ce929d0e0e4736";
+
     @Container
     private static final PostgreSQLContainer POSTGRESQL = Containers.POSTGRESQL;
 
@@ -58,7 +60,7 @@ public class UndoUpdatePersonIntegrationTest {
     @BeforeEach
     public void setUp() throws UserExistsException, CountryNotExistsException {
         countryRepository.save(Countries.getValidTestCountry());
-        personRestController.createPerson(DTO.getValidCreateIndividualDataDTO());
+        personRestController.createPerson(TRACE_ID, DTO.getValidCreateIndividualDataDTO());
     }
 
     @AfterEach
@@ -69,8 +71,8 @@ public class UndoUpdatePersonIntegrationTest {
 
     @Test
     public void successUndoUpdatePersonTest() throws Exception {
-        personRestController.updatePerson(DTO.getUpdateIndividualDataDTO());
-        personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO());
+        personRestController.updatePerson(TRACE_ID, DTO.getUpdateIndividualDataDTO());
+        personRestController.undoUpdatePerson(TRACE_ID, DTO.getValidUndoUpdateOperationDTO());
         Optional<Person> person = personRepository.findByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
         Assertions.assertNotNull(person.get());
         Assertions.assertEquals(DTO.getValidCreateIndividualDataDTO().getKeycloakUserId(), person.get().getKeycloakId());
@@ -80,25 +82,25 @@ public class UndoUpdatePersonIntegrationTest {
 
     @Test
     public void failCallUndoUpdatePersonAfterCallUndoUpdatePersonTest() throws Exception {
-        personRestController.updatePerson(DTO.getUpdateIndividualDataDTO());
+        personRestController.updatePerson(TRACE_ID, DTO.getUpdateIndividualDataDTO());
 //        First [undo-update] call
-        personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO());
+        personRestController.undoUpdatePerson(TRACE_ID, DTO.getValidUndoUpdateOperationDTO());
 //        Second [undo-update] call
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO()));
+                () -> personRestController.undoUpdatePerson(TRACE_ID, DTO.getValidUndoUpdateOperationDTO()));
     }
 
     @Test
     public void failCallUndoUpdatePersonWhenPreviousCallWasNotUpdateTest() throws Exception {
-        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
+        personRestController.deletePersonByKeycloakId(Constants.CORRECT_PERSON_KEYCLOAK_ID, TRACE_ID);
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO()));
+                () -> personRestController.undoUpdatePerson(TRACE_ID, DTO.getValidUndoUpdateOperationDTO()));
     }
 
     @Test
     public void failCallUndoUpdatePersonWhenPreviousCallWasCreatePersonTest() {
         Assertions.assertThrows(NotExpectedUndoOperationCallException.class,
-                () -> personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO()));
+                () -> personRestController.undoUpdatePerson(TRACE_ID, DTO.getValidUndoUpdateOperationDTO()));
     }
 
     @Test
@@ -112,6 +114,6 @@ public class UndoUpdatePersonIntegrationTest {
     @Disabled("To use this test you have to disable @BeforeEach because before run this one database MUST be clean")
     public void failCallUndoUpdatePersonWhenDatabaseEmptyTest() {
         Assertions.assertThrows(NotFoundUndoOperationCallException.class,
-                () -> personRestController.undoUpdatePerson(DTO.getValidUndoUpdateOperationDTO()));
+                () -> personRestController.undoUpdatePerson(TRACE_ID, DTO.getValidUndoUpdateOperationDTO()));
     }
 }

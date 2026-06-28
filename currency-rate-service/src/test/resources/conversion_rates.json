@@ -1,0 +1,10032 @@
+[
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "AED",
+    "rate": 0.04997,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.05034,
+        "excluded": true
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.04994,
+        "excluded": true
+      },
+      {
+        "key": "BCP",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "BCT",
+        "rate": 0.04989,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "BI",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "BNA",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "BNM",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "BNR",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "BOM",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "BSP",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "CBA",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "CBE",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "CBG",
+        "rate": 0.05048,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "CBK",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "CBN",
+        "rate": 0.05046,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "DAB",
+        "rate": 0.05163,
+        "excluded": true
+      },
+      {
+        "key": "FBIL",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "IMF",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "MAS",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "NBE",
+        "rate": 0.04972,
+        "excluded": true
+      },
+      {
+        "key": "NBG",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "NBK",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "NBM",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.05084,
+        "excluded": true
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "NBT",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "NBU",
+        "rate": 0.04998,
+        "excluded": true
+      },
+      {
+        "key": "NRB",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "RBM",
+        "rate": 0.04997,
+        "excluded": true
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.04997,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "AFN",
+    "rate": 0.8827,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.87679
+      },
+      {
+        "key": "CBU",
+        "rate": 0.87626
+      },
+      {
+        "key": "DAB",
+        "rate": 0.9004
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.87677
+      },
+      {
+        "key": "NBP",
+        "rate": 0.89115
+      },
+      {
+        "key": "NBT",
+        "rate": 0.87816
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "ALL",
+    "rate": 1.122,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.1226
+      },
+      {
+        "key": "BNA",
+        "rate": 1.1145
+      },
+      {
+        "key": "NBM",
+        "rate": 1.1229
+      },
+      {
+        "key": "NBP",
+        "rate": 1.1318
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "AMD",
+    "rate": 5.0131,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 5.0108
+      },
+      {
+        "key": "CBA",
+        "rate": 5.0091
+      },
+      {
+        "key": "CBR",
+        "rate": 5.0097
+      },
+      {
+        "key": "CBU",
+        "rate": 5.0134
+      },
+      {
+        "key": "NBG",
+        "rate": 5.0147
+      },
+      {
+        "key": "NBK",
+        "rate": 4.9784
+      },
+      {
+        "key": "NBKR",
+        "rate": 5.0098
+      },
+      {
+        "key": "NBM",
+        "rate": 5.0131
+      },
+      {
+        "key": "NBP",
+        "rate": 5.1018
+      },
+      {
+        "key": "NBRB",
+        "rate": 5.0079
+      },
+      {
+        "key": "NBT",
+        "rate": 5.0098
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "ANG",
+    "rate": 0.02436
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "AOA",
+    "rate": 12.5433,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 12.5474
+      },
+      {
+        "key": "BNA",
+        "rate": 12.4241
+      },
+      {
+        "key": "NBP",
+        "rate": 12.7332
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "ARS",
+    "rate": 19.7815,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 19.8772
+      },
+      {
+        "key": "BCP",
+        "rate": 19.8355
+      },
+      {
+        "key": "BCRA",
+        "rate": 19.8788
+      },
+      {
+        "key": "BDI",
+        "rate": 19.7439
+      },
+      {
+        "key": "BNA",
+        "rate": 19.7352
+      },
+      {
+        "key": "BSP",
+        "rate": 19.7568
+      },
+      {
+        "key": "CBU",
+        "rate": 19.6228
+      },
+      {
+        "key": "NBP",
+        "rate": 19.8913
+      },
+      {
+        "key": "RBM",
+        "rate": 19.7352
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "AUD",
+    "rate": 0.01941,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.01937
+      },
+      {
+        "key": "BAM",
+        "rate": 0.01941
+      },
+      {
+        "key": "BCB",
+        "rate": 0.01941
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.01953
+      },
+      {
+        "key": "BCC",
+        "rate": 0.01941
+      },
+      {
+        "key": "BCCH",
+        "rate": 0.01939
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.0194
+      },
+      {
+        "key": "BCP",
+        "rate": 0.01941
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.0194
+      },
+      {
+        "key": "BDI",
+        "rate": 0.0194
+      },
+      {
+        "key": "BI",
+        "rate": 0.01934
+      },
+      {
+        "key": "BNA",
+        "rate": 0.0194
+      },
+      {
+        "key": "BNM",
+        "rate": 0.0194
+      },
+      {
+        "key": "BNR",
+        "rate": 0.01939
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.01946
+      },
+      {
+        "key": "BOC",
+        "rate": 0.01941
+      },
+      {
+        "key": "BOE",
+        "rate": 0.01934
+      },
+      {
+        "key": "BOI",
+        "rate": 0.01939
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.02015
+      },
+      {
+        "key": "BOM",
+        "rate": 0.0194
+      },
+      {
+        "key": "BOT",
+        "rate": 0.01942
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.01939
+      },
+      {
+        "key": "BRB",
+        "rate": 0.01945
+      },
+      {
+        "key": "BSP",
+        "rate": 0.0194
+      },
+      {
+        "key": "CBA",
+        "rate": 0.0194
+      },
+      {
+        "key": "CBE",
+        "rate": 0.01928
+      },
+      {
+        "key": "CBG",
+        "rate": 0.01938
+      },
+      {
+        "key": "CBI",
+        "rate": 0.01928
+      },
+      {
+        "key": "CBK",
+        "rate": 0.01937
+      },
+      {
+        "key": "CBM",
+        "rate": 0.01941
+      },
+      {
+        "key": "CBR",
+        "rate": 0.01935
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.01941
+      },
+      {
+        "key": "CBU",
+        "rate": 0.01939
+      },
+      {
+        "key": "CNB",
+        "rate": 0.0194
+      },
+      {
+        "key": "DNB",
+        "rate": 0.01942
+      },
+      {
+        "key": "ECB",
+        "rate": 0.0194
+      },
+      {
+        "key": "FRED",
+        "rate": 0.01931
+      },
+      {
+        "key": "HNB",
+        "rate": 0.0194
+      },
+      {
+        "key": "IMF",
+        "rate": 0.01935
+      },
+      {
+        "key": "LB",
+        "rate": 0.0194
+      },
+      {
+        "key": "MAS",
+        "rate": 0.01944
+      },
+      {
+        "key": "MNB",
+        "rate": 0.01938
+      },
+      {
+        "key": "NB",
+        "rate": 0.0194
+      },
+      {
+        "key": "NBE",
+        "rate": 0.0193
+      },
+      {
+        "key": "NBG",
+        "rate": 0.0194
+      },
+      {
+        "key": "NBK",
+        "rate": 0.01943
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.01938
+      },
+      {
+        "key": "NBM",
+        "rate": 0.01942
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01938
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.01939
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.0194
+      },
+      {
+        "key": "NBT",
+        "rate": 0.0194
+      },
+      {
+        "key": "NBU",
+        "rate": 0.01943
+      },
+      {
+        "key": "NRB",
+        "rate": 0.0194
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.01946
+      },
+      {
+        "key": "RB",
+        "rate": 0.01942
+      },
+      {
+        "key": "RBA",
+        "rate": 0.01942
+      },
+      {
+        "key": "RBF",
+        "rate": 0.01925
+      },
+      {
+        "key": "RBM",
+        "rate": 0.01941
+      },
+      {
+        "key": "SARB",
+        "rate": 0.01939
+      },
+      {
+        "key": "SBI",
+        "rate": 0.0194
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.01939
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "AWG",
+    "rate": 0.02452,
+    "providers": [
+      {
+        "key": "BCRA",
+        "rate": 0.02436
+      },
+      {
+        "key": "BDI",
+        "rate": 0.02436
+      },
+      {
+        "key": "NBP",
+        "rate": 0.02506
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "AZN",
+    "rate": 0.02315,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.02313
+      },
+      {
+        "key": "CBR",
+        "rate": 0.02313
+      },
+      {
+        "key": "CBU",
+        "rate": 0.02313
+      },
+      {
+        "key": "NBG",
+        "rate": 0.02313
+      },
+      {
+        "key": "NBK",
+        "rate": 0.02306
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.02313
+      },
+      {
+        "key": "NBM",
+        "rate": 0.02312
+      },
+      {
+        "key": "NBP",
+        "rate": 0.02354
+      },
+      {
+        "key": "NBT",
+        "rate": 0.02313
+      },
+      {
+        "key": "NBU",
+        "rate": 0.02313
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.02313
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "BAM",
+    "rate": 0.02318,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.02321,
+        "excluded": true
+      },
+      {
+        "key": "HNB",
+        "rate": 0.02321,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.02339,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "BBD",
+    "rate": 0.02781,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.02721
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.02835
+      },
+      {
+        "key": "NBP",
+        "rate": 0.02788
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "BDT",
+    "rate": 1.6732,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.6702
+      },
+      {
+        "key": "CBM",
+        "rate": 1.67
+      },
+      {
+        "key": "CBR",
+        "rate": 1.6722
+      },
+      {
+        "key": "CBSL",
+        "rate": 1.6733
+      },
+      {
+        "key": "CBU",
+        "rate": 1.6701
+      },
+      {
+        "key": "NB",
+        "rate": 1.67
+      },
+      {
+        "key": "NBP",
+        "rate": 1.6994
+      },
+      {
+        "key": "NBU",
+        "rate": 1.6705
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "BHD",
+    "rate": 0.00512,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.00513,
+        "excluded": true
+      },
+      {
+        "key": "BCT",
+        "rate": 0.00512,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 0.00511,
+        "excluded": true
+      },
+      {
+        "key": "BSP",
+        "rate": 0.00513,
+        "excluded": true
+      },
+      {
+        "key": "CBE",
+        "rate": 0.00513,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 0.00512,
+        "excluded": true
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.00513,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 0.00513,
+        "excluded": true
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.00513,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.00522,
+        "excluded": true
+      },
+      {
+        "key": "NRB",
+        "rate": 0.00513,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "BIF",
+    "rate": 40.748,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 40.739
+      },
+      {
+        "key": "BNRRW",
+        "rate": 40.555
+      },
+      {
+        "key": "BOTA",
+        "rate": 40.736
+      },
+      {
+        "key": "BRB",
+        "rate": 40.739
+      },
+      {
+        "key": "CBK",
+        "rate": 40.57
+      },
+      {
+        "key": "NBP",
+        "rate": 41.412
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "BMD",
+    "rate": 0.01361,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.01361,
+        "excluded": true
+      },
+      {
+        "key": "BNA",
+        "rate": 0.01361,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "BND",
+    "rate": 0.01757,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.01757,
+        "excluded": true
+      },
+      {
+        "key": "BI",
+        "rate": 0.01752,
+        "excluded": true
+      },
+      {
+        "key": "BNM",
+        "rate": 0.01755,
+        "excluded": true
+      },
+      {
+        "key": "BOT",
+        "rate": 0.01756,
+        "excluded": true
+      },
+      {
+        "key": "BSP",
+        "rate": 0.01762,
+        "excluded": true
+      },
+      {
+        "key": "CBM",
+        "rate": 0.01759,
+        "excluded": true
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.01756,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 0.01755,
+        "excluded": true
+      },
+      {
+        "key": "IMF",
+        "rate": 0.01751,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01775,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "BOB",
+    "rate": 0.0939,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.09402
+      },
+      {
+        "key": "BCP",
+        "rate": 0.09327
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.09357
+      },
+      {
+        "key": "BDI",
+        "rate": 0.09402
+      },
+      {
+        "key": "BNA",
+        "rate": 0.09327
+      },
+      {
+        "key": "CBR",
+        "rate": 0.09402
+      },
+      {
+        "key": "NBP",
+        "rate": 0.09587
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "BRL",
+    "rate": 0.07011,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.07028
+      },
+      {
+        "key": "BCB",
+        "rate": 0.06999
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.07086
+      },
+      {
+        "key": "BCCH",
+        "rate": 0.07039
+      },
+      {
+        "key": "BCP",
+        "rate": 0.06992
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.06994
+      },
+      {
+        "key": "BCU",
+        "rate": 0.07037
+      },
+      {
+        "key": "BDI",
+        "rate": 0.07021
+      },
+      {
+        "key": "BNA",
+        "rate": 0.07021
+      },
+      {
+        "key": "BNR",
+        "rate": 0.07018
+      },
+      {
+        "key": "BOC",
+        "rate": 0.07001
+      },
+      {
+        "key": "BSP",
+        "rate": 0.07021
+      },
+      {
+        "key": "CBA",
+        "rate": 0.07028
+      },
+      {
+        "key": "CBG",
+        "rate": 0.07033
+      },
+      {
+        "key": "CBM",
+        "rate": 0.07018
+      },
+      {
+        "key": "CBR",
+        "rate": 0.0689
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.07028
+      },
+      {
+        "key": "CBU",
+        "rate": 0.06947
+      },
+      {
+        "key": "CNB",
+        "rate": 0.07026
+      },
+      {
+        "key": "DNB",
+        "rate": 0.07003
+      },
+      {
+        "key": "ECB",
+        "rate": 0.07021
+      },
+      {
+        "key": "FRED",
+        "rate": 0.06902
+      },
+      {
+        "key": "IMF",
+        "rate": 0.07022
+      },
+      {
+        "key": "LB",
+        "rate": 0.07021
+      },
+      {
+        "key": "MNB",
+        "rate": 0.07019
+      },
+      {
+        "key": "NB",
+        "rate": 0.07021
+      },
+      {
+        "key": "NBG",
+        "rate": 0.07029
+      },
+      {
+        "key": "NBK",
+        "rate": 0.06946
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.07018
+      },
+      {
+        "key": "NBP",
+        "rate": 0.07019
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.06956
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.07021
+      },
+      {
+        "key": "RB",
+        "rate": 0.07003
+      },
+      {
+        "key": "SARB",
+        "rate": 0.07017
+      },
+      {
+        "key": "SBI",
+        "rate": 0.07021
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "BSD",
+    "rate": 0.0138,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.01361
+      },
+      {
+        "key": "BNA",
+        "rate": 0.01361
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.01418
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01384
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "BTN",
+    "rate": 1.2841,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.2835,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "BWP",
+    "rate": 0.18424,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.18924
+      },
+      {
+        "key": "BNA",
+        "rate": 0.18826
+      },
+      {
+        "key": "BOB",
+        "rate": 0.18022
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.17444
+      },
+      {
+        "key": "IMF",
+        "rate": 0.17903
+      },
+      {
+        "key": "NBP",
+        "rate": 0.1861
+      },
+      {
+        "key": "RBM",
+        "rate": 0.193
+      },
+      {
+        "key": "SARB",
+        "rate": 0.18436
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "BYN",
+    "rate": 0.03785,
+    "providers": [
+      {
+        "key": "CBA",
+        "rate": 0.03791
+      },
+      {
+        "key": "CBR",
+        "rate": 0.03791
+      },
+      {
+        "key": "CBU",
+        "rate": 0.03767
+      },
+      {
+        "key": "NB",
+        "rate": 0.03791
+      },
+      {
+        "key": "NBG",
+        "rate": 0.03775
+      },
+      {
+        "key": "NBK",
+        "rate": 0.03748
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.03791
+      },
+      {
+        "key": "NBM",
+        "rate": 0.03797
+      },
+      {
+        "key": "NBP",
+        "rate": 0.03833
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.03791
+      },
+      {
+        "key": "NBT",
+        "rate": 0.03783
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "BZD",
+    "rate": 0.0278,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.02721
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.02835
+      },
+      {
+        "key": "NBP",
+        "rate": 0.02784
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "CAD",
+    "rate": 0.01923,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.01918
+      },
+      {
+        "key": "BAM",
+        "rate": 0.01925
+      },
+      {
+        "key": "BANXICO",
+        "rate": 0.01928
+      },
+      {
+        "key": "BCB",
+        "rate": 0.01929
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.01937
+      },
+      {
+        "key": "BCC",
+        "rate": 0.01928
+      },
+      {
+        "key": "BCCH",
+        "rate": 0.01924
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.01926
+      },
+      {
+        "key": "BCP",
+        "rate": 0.01929
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.01929
+      },
+      {
+        "key": "BCT",
+        "rate": 0.01918
+      },
+      {
+        "key": "BCU",
+        "rate": 0.01924
+      },
+      {
+        "key": "BDI",
+        "rate": 0.01926
+      },
+      {
+        "key": "BI",
+        "rate": 0.01919
+      },
+      {
+        "key": "BNA",
+        "rate": 0.01925
+      },
+      {
+        "key": "BNM",
+        "rate": 0.01924
+      },
+      {
+        "key": "BNR",
+        "rate": 0.01924
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.01926
+      },
+      {
+        "key": "BOC",
+        "rate": 0.01928
+      },
+      {
+        "key": "BOE",
+        "rate": 0.01921
+      },
+      {
+        "key": "BOI",
+        "rate": 0.01924
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.01903
+      },
+      {
+        "key": "BOM",
+        "rate": 0.01924
+      },
+      {
+        "key": "BOT",
+        "rate": 0.01924
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.01922
+      },
+      {
+        "key": "BRB",
+        "rate": 0.01926
+      },
+      {
+        "key": "BSP",
+        "rate": 0.01923
+      },
+      {
+        "key": "CBA",
+        "rate": 0.01925
+      },
+      {
+        "key": "CBE",
+        "rate": 0.01906
+      },
+      {
+        "key": "CBG",
+        "rate": 0.01924
+      },
+      {
+        "key": "CBI",
+        "rate": 0.01918
+      },
+      {
+        "key": "CBK",
+        "rate": 0.01922
+      },
+      {
+        "key": "CBM",
+        "rate": 0.01925
+      },
+      {
+        "key": "CBR",
+        "rate": 0.0191
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.01924
+      },
+      {
+        "key": "CBU",
+        "rate": 0.01922
+      },
+      {
+        "key": "CNB",
+        "rate": 0.01925
+      },
+      {
+        "key": "DNB",
+        "rate": 0.01922
+      },
+      {
+        "key": "ECB",
+        "rate": 0.01926
+      },
+      {
+        "key": "FRED",
+        "rate": 0.01901
+      },
+      {
+        "key": "HNB",
+        "rate": 0.01926
+      },
+      {
+        "key": "IMF",
+        "rate": 0.01904
+      },
+      {
+        "key": "LB",
+        "rate": 0.01926
+      },
+      {
+        "key": "MAS",
+        "rate": 0.01925
+      },
+      {
+        "key": "MNB",
+        "rate": 0.01923
+      },
+      {
+        "key": "NB",
+        "rate": 0.01926
+      },
+      {
+        "key": "NBE",
+        "rate": 0.01912
+      },
+      {
+        "key": "NBG",
+        "rate": 0.01925
+      },
+      {
+        "key": "NBK",
+        "rate": 0.01921
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.01923
+      },
+      {
+        "key": "NBM",
+        "rate": 0.01922
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01923
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.01922
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.01926
+      },
+      {
+        "key": "NBT",
+        "rate": 0.01925
+      },
+      {
+        "key": "NBU",
+        "rate": 0.01923
+      },
+      {
+        "key": "NRB",
+        "rate": 0.01925
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.01921
+      },
+      {
+        "key": "RB",
+        "rate": 0.01922
+      },
+      {
+        "key": "RBA",
+        "rate": 0.01925
+      },
+      {
+        "key": "RBM",
+        "rate": 0.01923
+      },
+      {
+        "key": "SARB",
+        "rate": 0.01924
+      },
+      {
+        "key": "SBI",
+        "rate": 0.01925
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.01921
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "CDF",
+    "rate": 31.21,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 30.934
+      },
+      {
+        "key": "BNA",
+        "rate": 30.944
+      },
+      {
+        "key": "NBP",
+        "rate": 32.104
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "CHF",
+    "rate": 0.01096,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.01087
+      },
+      {
+        "key": "BAM",
+        "rate": 0.01098
+      },
+      {
+        "key": "BCB",
+        "rate": 0.01099
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.01102
+      },
+      {
+        "key": "BCC",
+        "rate": 0.01099
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.01097
+      },
+      {
+        "key": "BCP",
+        "rate": 0.01099
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.01098
+      },
+      {
+        "key": "BCT",
+        "rate": 0.01091
+      },
+      {
+        "key": "BCU",
+        "rate": 0.01095
+      },
+      {
+        "key": "BDI",
+        "rate": 0.01097
+      },
+      {
+        "key": "BI",
+        "rate": 0.01088
+      },
+      {
+        "key": "BNA",
+        "rate": 0.01098
+      },
+      {
+        "key": "BNM",
+        "rate": 0.01095
+      },
+      {
+        "key": "BNR",
+        "rate": 0.01096
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.011
+      },
+      {
+        "key": "BOC",
+        "rate": 0.01098
+      },
+      {
+        "key": "BOE",
+        "rate": 0.01092
+      },
+      {
+        "key": "BOI",
+        "rate": 0.01097
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.01137
+      },
+      {
+        "key": "BOM",
+        "rate": 0.01098
+      },
+      {
+        "key": "BOT",
+        "rate": 0.01096
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.01095
+      },
+      {
+        "key": "BRB",
+        "rate": 0.011
+      },
+      {
+        "key": "BSP",
+        "rate": 0.01095
+      },
+      {
+        "key": "CBA",
+        "rate": 0.01097
+      },
+      {
+        "key": "CBE",
+        "rate": 0.01078
+      },
+      {
+        "key": "CBG",
+        "rate": 0.0111
+      },
+      {
+        "key": "CBI",
+        "rate": 0.01078
+      },
+      {
+        "key": "CBK",
+        "rate": 0.01093
+      },
+      {
+        "key": "CBM",
+        "rate": 0.01099
+      },
+      {
+        "key": "CBN",
+        "rate": 0.01097
+      },
+      {
+        "key": "CBR",
+        "rate": 0.01092
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.01096
+      },
+      {
+        "key": "CBU",
+        "rate": 0.01092
+      },
+      {
+        "key": "CNB",
+        "rate": 0.01097
+      },
+      {
+        "key": "DAB",
+        "rate": 0.01108
+      },
+      {
+        "key": "DNB",
+        "rate": 0.01094
+      },
+      {
+        "key": "ECB",
+        "rate": 0.01097
+      },
+      {
+        "key": "FRED",
+        "rate": 0.01084
+      },
+      {
+        "key": "HNB",
+        "rate": 0.01097
+      },
+      {
+        "key": "IMF",
+        "rate": 0.01093
+      },
+      {
+        "key": "LB",
+        "rate": 0.01097
+      },
+      {
+        "key": "MAS",
+        "rate": 0.01098
+      },
+      {
+        "key": "MNB",
+        "rate": 0.01096
+      },
+      {
+        "key": "NB",
+        "rate": 0.01097
+      },
+      {
+        "key": "NBE",
+        "rate": 0.01088
+      },
+      {
+        "key": "NBG",
+        "rate": 0.01097
+      },
+      {
+        "key": "NBK",
+        "rate": 0.01093
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.01096
+      },
+      {
+        "key": "NBM",
+        "rate": 0.01093
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01096
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.01092
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.01097
+      },
+      {
+        "key": "NBT",
+        "rate": 0.01097
+      },
+      {
+        "key": "NBU",
+        "rate": 0.01095
+      },
+      {
+        "key": "NRB",
+        "rate": 0.01097
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.01088
+      },
+      {
+        "key": "RB",
+        "rate": 0.01094
+      },
+      {
+        "key": "RBA",
+        "rate": 0.01099
+      },
+      {
+        "key": "RBF",
+        "rate": 0.0108
+      },
+      {
+        "key": "RBM",
+        "rate": 0.01066
+      },
+      {
+        "key": "SARB",
+        "rate": 0.01096
+      },
+      {
+        "key": "SBI",
+        "rate": 0.01097
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.01091
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "CLP",
+    "rate": 12.2351,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 12.3547
+      },
+      {
+        "key": "BCCH",
+        "rate": 12.2074
+      },
+      {
+        "key": "BCP",
+        "rate": 12.247
+      },
+      {
+        "key": "BCRA",
+        "rate": 12.2793
+      },
+      {
+        "key": "BCU",
+        "rate": 12.2578
+      },
+      {
+        "key": "BDI",
+        "rate": 12.2534
+      },
+      {
+        "key": "IMF",
+        "rate": 12.0206
+      },
+      {
+        "key": "NBP",
+        "rate": 12.2608
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "CNH",
+    "rate": 0.09238,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.09289
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.09229
+      },
+      {
+        "key": "BI",
+        "rate": 0.09202
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.09232
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "CNY",
+    "rate": 0.09213,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.09213
+      },
+      {
+        "key": "BAM",
+        "rate": 0.09209
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.09276
+      },
+      {
+        "key": "BCC",
+        "rate": 0.0921
+      },
+      {
+        "key": "BCCH",
+        "rate": 0.09222
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.09211
+      },
+      {
+        "key": "BCP",
+        "rate": 0.09208
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.09209
+      },
+      {
+        "key": "BCT",
+        "rate": 0.09186
+      },
+      {
+        "key": "BCU",
+        "rate": 0.09208
+      },
+      {
+        "key": "BDI",
+        "rate": 0.09211
+      },
+      {
+        "key": "BI",
+        "rate": 0.092
+      },
+      {
+        "key": "BNA",
+        "rate": 0.09208
+      },
+      {
+        "key": "BNM",
+        "rate": 0.0921
+      },
+      {
+        "key": "BNR",
+        "rate": 0.0921
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.09211
+      },
+      {
+        "key": "BOB",
+        "rate": 0.09234
+      },
+      {
+        "key": "BOC",
+        "rate": 0.09212
+      },
+      {
+        "key": "BOE",
+        "rate": 0.09211
+      },
+      {
+        "key": "BOM",
+        "rate": 0.09211
+      },
+      {
+        "key": "BOT",
+        "rate": 0.09228
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.09214
+      },
+      {
+        "key": "BRB",
+        "rate": 0.09212
+      },
+      {
+        "key": "BSP",
+        "rate": 0.09204
+      },
+      {
+        "key": "CBA",
+        "rate": 0.09209
+      },
+      {
+        "key": "CBE",
+        "rate": 0.09195
+      },
+      {
+        "key": "CBG",
+        "rate": 0.09299
+      },
+      {
+        "key": "CBI",
+        "rate": 0.09194
+      },
+      {
+        "key": "CBK",
+        "rate": 0.09213
+      },
+      {
+        "key": "CBM",
+        "rate": 0.09211
+      },
+      {
+        "key": "CBN",
+        "rate": 0.09211
+      },
+      {
+        "key": "CBR",
+        "rate": 0.09218
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.09209
+      },
+      {
+        "key": "CBU",
+        "rate": 0.09208
+      },
+      {
+        "key": "CNB",
+        "rate": 0.0921
+      },
+      {
+        "key": "DAB",
+        "rate": 0.09273
+      },
+      {
+        "key": "DNB",
+        "rate": 0.09214
+      },
+      {
+        "key": "ECB",
+        "rate": 0.09211
+      },
+      {
+        "key": "FRED",
+        "rate": 0.09201
+      },
+      {
+        "key": "IMF",
+        "rate": 0.092
+      },
+      {
+        "key": "LB",
+        "rate": 0.09211
+      },
+      {
+        "key": "MAS",
+        "rate": 0.09211
+      },
+      {
+        "key": "MNB",
+        "rate": 0.0921
+      },
+      {
+        "key": "NB",
+        "rate": 0.09211
+      },
+      {
+        "key": "NBE",
+        "rate": 0.09168
+      },
+      {
+        "key": "NBG",
+        "rate": 0.09209
+      },
+      {
+        "key": "NBK",
+        "rate": 0.09211
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.09211
+      },
+      {
+        "key": "NBM",
+        "rate": 0.09212
+      },
+      {
+        "key": "NBP",
+        "rate": 0.09213
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.09206
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.0921
+      },
+      {
+        "key": "NBT",
+        "rate": 0.09239
+      },
+      {
+        "key": "NBU",
+        "rate": 0.09213
+      },
+      {
+        "key": "NRB",
+        "rate": 0.0921
+      },
+      {
+        "key": "RB",
+        "rate": 0.09214
+      },
+      {
+        "key": "RBA",
+        "rate": 0.09209
+      },
+      {
+        "key": "RBM",
+        "rate": 0.0921
+      },
+      {
+        "key": "SARB",
+        "rate": 0.09215
+      },
+      {
+        "key": "SBI",
+        "rate": 0.09211
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.09207
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "COP",
+    "rate": 47.028,
+    "providers": [
+      {
+        "key": "BANREP",
+        "rate": 47.071
+      },
+      {
+        "key": "BCBO",
+        "rate": 47.246
+      },
+      {
+        "key": "BCP",
+        "rate": 46.843
+      },
+      {
+        "key": "BCRA",
+        "rate": 47.065
+      },
+      {
+        "key": "BCU",
+        "rate": 46.798
+      },
+      {
+        "key": "BDI",
+        "rate": 46.869
+      },
+      {
+        "key": "NBP",
+        "rate": 47.478
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "CRC",
+    "rate": 6.1999,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 6.2059
+      },
+      {
+        "key": "BCCR",
+        "rate": 6.2046
+      },
+      {
+        "key": "BDI",
+        "rate": 6.1687
+      },
+      {
+        "key": "BNA",
+        "rate": 6.1669
+      },
+      {
+        "key": "NBP",
+        "rate": 6.2882
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "CUP",
+    "rate": 0.32655,
+    "providers": [
+      {
+        "key": "BCC",
+        "rate": 7.6875,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 0.32655
+      },
+      {
+        "key": "BNA",
+        "rate": 0.32655
+      },
+      {
+        "key": "CBR",
+        "rate": 0.32655
+      },
+      {
+        "key": "CBU",
+        "rate": 0.32655
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01384,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "CVE",
+    "rate": 1.3071,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.3084,
+        "excluded": true
+      },
+      {
+        "key": "BNA",
+        "rate": 1.3077,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 1.3202,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "CZK",
+    "rate": 0.28733,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.28952
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.28703
+      },
+      {
+        "key": "BDI",
+        "rate": 0.28747
+      },
+      {
+        "key": "BNA",
+        "rate": 0.28745
+      },
+      {
+        "key": "BNR",
+        "rate": 0.28754
+      },
+      {
+        "key": "BOE",
+        "rate": 0.2865
+      },
+      {
+        "key": "BOM",
+        "rate": 0.28768
+      },
+      {
+        "key": "CBA",
+        "rate": 0.28755
+      },
+      {
+        "key": "CBM",
+        "rate": 0.28777
+      },
+      {
+        "key": "CBR",
+        "rate": 0.28679
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.28759
+      },
+      {
+        "key": "CBU",
+        "rate": 0.28652
+      },
+      {
+        "key": "CNB",
+        "rate": 0.28745
+      },
+      {
+        "key": "DNB",
+        "rate": 0.28709
+      },
+      {
+        "key": "ECB",
+        "rate": 0.28747
+      },
+      {
+        "key": "HNB",
+        "rate": 0.28747
+      },
+      {
+        "key": "IMF",
+        "rate": 0.28679
+      },
+      {
+        "key": "LB",
+        "rate": 0.28747
+      },
+      {
+        "key": "MNB",
+        "rate": 0.28724
+      },
+      {
+        "key": "NB",
+        "rate": 0.28747
+      },
+      {
+        "key": "NBG",
+        "rate": 0.28766
+      },
+      {
+        "key": "NBK",
+        "rate": 0.28703
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.28734
+      },
+      {
+        "key": "NBM",
+        "rate": 0.28713
+      },
+      {
+        "key": "NBP",
+        "rate": 0.28729
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.28651
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.28746
+      },
+      {
+        "key": "NBU",
+        "rate": 0.28719
+      },
+      {
+        "key": "RB",
+        "rate": 0.28707
+      },
+      {
+        "key": "SBI",
+        "rate": 0.28746
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "DJF",
+    "rate": 2.4197,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 2.4181
+      },
+      {
+        "key": "NBE",
+        "rate": 2.3934
+      },
+      {
+        "key": "NBP",
+        "rate": 2.4654
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "DKK",
+    "rate": 0.08866,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.08831
+      },
+      {
+        "key": "BAM",
+        "rate": 0.08879
+      },
+      {
+        "key": "BCB",
+        "rate": 0.08871
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.08936
+      },
+      {
+        "key": "BCC",
+        "rate": 0.08872
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.08869
+      },
+      {
+        "key": "BCP",
+        "rate": 0.08867
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.08863
+      },
+      {
+        "key": "BCT",
+        "rate": 0.0885
+      },
+      {
+        "key": "BCU",
+        "rate": 0.08874
+      },
+      {
+        "key": "BDI",
+        "rate": 0.08869
+      },
+      {
+        "key": "BI",
+        "rate": 0.08834
+      },
+      {
+        "key": "BNA",
+        "rate": 0.08869
+      },
+      {
+        "key": "BNR",
+        "rate": 0.08873
+      },
+      {
+        "key": "BOE",
+        "rate": 0.08854
+      },
+      {
+        "key": "BOI",
+        "rate": 0.08876
+      },
+      {
+        "key": "BOM",
+        "rate": 0.0888
+      },
+      {
+        "key": "BOT",
+        "rate": 0.0888
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.08872
+      },
+      {
+        "key": "BRB",
+        "rate": 0.08902
+      },
+      {
+        "key": "BSP",
+        "rate": 0.08875
+      },
+      {
+        "key": "CBE",
+        "rate": 0.0877
+      },
+      {
+        "key": "CBG",
+        "rate": 0.98387,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 0.08775
+      },
+      {
+        "key": "CBK",
+        "rate": 0.08866
+      },
+      {
+        "key": "CBM",
+        "rate": 0.08881
+      },
+      {
+        "key": "CBN",
+        "rate": 0.08871
+      },
+      {
+        "key": "CBR",
+        "rate": 0.08775
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.08876
+      },
+      {
+        "key": "CBU",
+        "rate": 0.08862
+      },
+      {
+        "key": "CNB",
+        "rate": 0.08869
+      },
+      {
+        "key": "DNB",
+        "rate": 0.08874
+      },
+      {
+        "key": "ECB",
+        "rate": 0.08869
+      },
+      {
+        "key": "FRED",
+        "rate": 0.08787
+      },
+      {
+        "key": "HNB",
+        "rate": 0.08869
+      },
+      {
+        "key": "IMF",
+        "rate": 0.08874
+      },
+      {
+        "key": "LB",
+        "rate": 0.08869
+      },
+      {
+        "key": "MNB",
+        "rate": 0.08871
+      },
+      {
+        "key": "NB",
+        "rate": 0.08869
+      },
+      {
+        "key": "NBE",
+        "rate": 0.08823
+      },
+      {
+        "key": "NBG",
+        "rate": 0.08874
+      },
+      {
+        "key": "NBK",
+        "rate": 0.08872
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.08871
+      },
+      {
+        "key": "NBM",
+        "rate": 0.08873
+      },
+      {
+        "key": "NBP",
+        "rate": 0.08871
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.0886
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.08869
+      },
+      {
+        "key": "NBT",
+        "rate": 0.08871
+      },
+      {
+        "key": "NBU",
+        "rate": 0.08877
+      },
+      {
+        "key": "NRB",
+        "rate": 0.08872
+      },
+      {
+        "key": "RB",
+        "rate": 0.08874
+      },
+      {
+        "key": "RBM",
+        "rate": 0.08893
+      },
+      {
+        "key": "SARB",
+        "rate": 0.08876
+      },
+      {
+        "key": "SBI",
+        "rate": 0.08869
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.08855
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "DOP",
+    "rate": 0.80925,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.80221
+      },
+      {
+        "key": "BDI",
+        "rate": 0.79509
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.82978
+      },
+      {
+        "key": "NBP",
+        "rate": 0.81031
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "DZD",
+    "rate": 1.8192,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 1.8141
+      },
+      {
+        "key": "BCBO",
+        "rate": 1.8281
+      },
+      {
+        "key": "BCT",
+        "rate": 1.8123
+      },
+      {
+        "key": "BDI",
+        "rate": 1.8158
+      },
+      {
+        "key": "BOTA",
+        "rate": 1.8256
+      },
+      {
+        "key": "CBR",
+        "rate": 1.8144
+      },
+      {
+        "key": "CBU",
+        "rate": 1.8182
+      },
+      {
+        "key": "IMF",
+        "rate": 1.8144
+      },
+      {
+        "key": "NBP",
+        "rate": 1.8417
+      },
+      {
+        "key": "NBU",
+        "rate": 1.816
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "EGP",
+    "rate": 0.67968,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.67929
+      },
+      {
+        "key": "BDI",
+        "rate": 0.67923
+      },
+      {
+        "key": "BNA",
+        "rate": 0.67877
+      },
+      {
+        "key": "BNM",
+        "rate": 0.67899
+      },
+      {
+        "key": "BNR",
+        "rate": 0.67898
+      },
+      {
+        "key": "BOI",
+        "rate": 0.67962
+      },
+      {
+        "key": "BOM",
+        "rate": 0.67924
+      },
+      {
+        "key": "CBE",
+        "rate": 0.6792
+      },
+      {
+        "key": "CBG",
+        "rate": 0.67853
+      },
+      {
+        "key": "CBM",
+        "rate": 0.67918
+      },
+      {
+        "key": "CBR",
+        "rate": 0.67919
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.67924
+      },
+      {
+        "key": "CBU",
+        "rate": 0.67922
+      },
+      {
+        "key": "NBG",
+        "rate": 0.67929
+      },
+      {
+        "key": "NBP",
+        "rate": 0.69265
+      },
+      {
+        "key": "NBU",
+        "rate": 0.67914
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "ERN",
+    "rate": 0.20904,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.20926
+      },
+      {
+        "key": "NBP",
+        "rate": 0.20868
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "ETB",
+    "rate": 2.1561,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 2.1611
+      },
+      {
+        "key": "BNA",
+        "rate": 2.1501
+      },
+      {
+        "key": "CBR",
+        "rate": 2.1551
+      },
+      {
+        "key": "NBE",
+        "rate": 2.1617
+      },
+      {
+        "key": "NBP",
+        "rate": 2.1889
+      },
+      {
+        "key": "RBM",
+        "rate": 2.1323
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "EUR",
+    "rate": 0.01185,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.01182
+      },
+      {
+        "key": "BAM",
+        "rate": 0.01188
+      },
+      {
+        "key": "BANXICO",
+        "rate": 0.01186
+      },
+      {
+        "key": "BCB",
+        "rate": 0.01187
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.01196
+      },
+      {
+        "key": "BCC",
+        "rate": 0.01187
+      },
+      {
+        "key": "BCCH",
+        "rate": 0.01187
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.01187
+      },
+      {
+        "key": "BCP",
+        "rate": 0.01186
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.01186
+      },
+      {
+        "key": "BCT",
+        "rate": 0.01184
+      },
+      {
+        "key": "BCU",
+        "rate": 0.01187
+      },
+      {
+        "key": "BDI",
+        "rate": 0.01187
+      },
+      {
+        "key": "BI",
+        "rate": 0.01182
+      },
+      {
+        "key": "BNA",
+        "rate": 0.01187
+      },
+      {
+        "key": "BNM",
+        "rate": 0.01187
+      },
+      {
+        "key": "BNR",
+        "rate": 0.01187
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.0119
+      },
+      {
+        "key": "BOB",
+        "rate": 0.01189
+      },
+      {
+        "key": "BOC",
+        "rate": 0.01186
+      },
+      {
+        "key": "BOE",
+        "rate": 0.01184
+      },
+      {
+        "key": "BOI",
+        "rate": 0.01187
+      },
+      {
+        "key": "BOJ",
+        "rate": 0.01172
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.01179
+      },
+      {
+        "key": "BOM",
+        "rate": 0.01188
+      },
+      {
+        "key": "BOT",
+        "rate": 0.01189
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.01187
+      },
+      {
+        "key": "BRB",
+        "rate": 0.01191
+      },
+      {
+        "key": "BSP",
+        "rate": 0.01187
+      },
+      {
+        "key": "CBA",
+        "rate": 0.01187
+      },
+      {
+        "key": "CBE",
+        "rate": 0.01173
+      },
+      {
+        "key": "CBG",
+        "rate": 0.01149
+      },
+      {
+        "key": "CBI",
+        "rate": 0.01174
+      },
+      {
+        "key": "CBK",
+        "rate": 0.01186
+      },
+      {
+        "key": "CBM",
+        "rate": 0.01188
+      },
+      {
+        "key": "CBN",
+        "rate": 0.01187
+      },
+      {
+        "key": "CBR",
+        "rate": 0.01174
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.01188
+      },
+      {
+        "key": "CBU",
+        "rate": 0.01186
+      },
+      {
+        "key": "CNB",
+        "rate": 0.01187
+      },
+      {
+        "key": "DAB",
+        "rate": 0.01217
+      },
+      {
+        "key": "DNB",
+        "rate": 0.01187
+      },
+      {
+        "key": "ECB",
+        "rate": 0.01187
+      },
+      {
+        "key": "FBIL",
+        "rate": 0.01176
+      },
+      {
+        "key": "FRED",
+        "rate": 0.01176
+      },
+      {
+        "key": "HNB",
+        "rate": 0.01187
+      },
+      {
+        "key": "IMF",
+        "rate": 0.01187
+      },
+      {
+        "key": "LB",
+        "rate": 0.01187
+      },
+      {
+        "key": "MAS",
+        "rate": 0.01189
+      },
+      {
+        "key": "MNB",
+        "rate": 0.01187
+      },
+      {
+        "key": "NB",
+        "rate": 0.01187
+      },
+      {
+        "key": "NBE",
+        "rate": 0.0118
+      },
+      {
+        "key": "NBG",
+        "rate": 0.01187
+      },
+      {
+        "key": "NBK",
+        "rate": 0.01187
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.01187
+      },
+      {
+        "key": "NBM",
+        "rate": 0.01187
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01187
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.01185
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.01187
+      },
+      {
+        "key": "NBT",
+        "rate": 0.01187
+      },
+      {
+        "key": "NBU",
+        "rate": 0.01188
+      },
+      {
+        "key": "NRB",
+        "rate": 0.01187
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.01183
+      },
+      {
+        "key": "RB",
+        "rate": 0.01187
+      },
+      {
+        "key": "RBA",
+        "rate": 0.0119
+      },
+      {
+        "key": "RBF",
+        "rate": 0.01172
+      },
+      {
+        "key": "RBM",
+        "rate": 0.01155
+      },
+      {
+        "key": "SARB",
+        "rate": 0.01187
+      },
+      {
+        "key": "SBI",
+        "rate": 0.01187
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.01185
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "FJD",
+    "rate": 0.03046,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.03056
+      },
+      {
+        "key": "NBP",
+        "rate": 0.03094
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.03012
+      },
+      {
+        "key": "RBF",
+        "rate": 0.03039
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "FKP",
+    "rate": 0.01028,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.01028,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "GBP",
+    "rate": 0.01028,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.01022
+      },
+      {
+        "key": "BAM",
+        "rate": 0.0103
+      },
+      {
+        "key": "BANXICO",
+        "rate": 0.01028
+      },
+      {
+        "key": "BCB",
+        "rate": 0.01029
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.01038
+      },
+      {
+        "key": "BCC",
+        "rate": 0.01029
+      },
+      {
+        "key": "BCCH",
+        "rate": 0.0103
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.01028
+      },
+      {
+        "key": "BCP",
+        "rate": 0.01029
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.01028
+      },
+      {
+        "key": "BCT",
+        "rate": 0.01026
+      },
+      {
+        "key": "BCU",
+        "rate": 0.01031
+      },
+      {
+        "key": "BDI",
+        "rate": 0.01028
+      },
+      {
+        "key": "BI",
+        "rate": 0.01023
+      },
+      {
+        "key": "BNA",
+        "rate": 0.01028
+      },
+      {
+        "key": "BNM",
+        "rate": 0.0103
+      },
+      {
+        "key": "BNR",
+        "rate": 0.01028
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.01033
+      },
+      {
+        "key": "BOB",
+        "rate": 0.01031
+      },
+      {
+        "key": "BOC",
+        "rate": 0.01029
+      },
+      {
+        "key": "BOE",
+        "rate": 0.01027
+      },
+      {
+        "key": "BOI",
+        "rate": 0.01029
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.01026
+      },
+      {
+        "key": "BOM",
+        "rate": 0.01031
+      },
+      {
+        "key": "BOT",
+        "rate": 0.01031
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.01028
+      },
+      {
+        "key": "BRB",
+        "rate": 0.01033
+      },
+      {
+        "key": "BSP",
+        "rate": 0.0103
+      },
+      {
+        "key": "CBA",
+        "rate": 0.01028
+      },
+      {
+        "key": "CBE",
+        "rate": 0.01014
+      },
+      {
+        "key": "CBG",
+        "rate": 0.01007
+      },
+      {
+        "key": "CBI",
+        "rate": 0.01014
+      },
+      {
+        "key": "CBK",
+        "rate": 0.01028
+      },
+      {
+        "key": "CBM",
+        "rate": 0.01031
+      },
+      {
+        "key": "CBN",
+        "rate": 0.01028
+      },
+      {
+        "key": "CBR",
+        "rate": 0.01016
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.0103
+      },
+      {
+        "key": "CBU",
+        "rate": 0.01028
+      },
+      {
+        "key": "CNB",
+        "rate": 0.01028
+      },
+      {
+        "key": "DAB",
+        "rate": 0.01053
+      },
+      {
+        "key": "DNB",
+        "rate": 0.01029
+      },
+      {
+        "key": "ECB",
+        "rate": 0.01028
+      },
+      {
+        "key": "FBIL",
+        "rate": 0.01015
+      },
+      {
+        "key": "FRED",
+        "rate": 0.01014
+      },
+      {
+        "key": "HNB",
+        "rate": 0.01028
+      },
+      {
+        "key": "IMF",
+        "rate": 0.01029
+      },
+      {
+        "key": "LB",
+        "rate": 0.01028
+      },
+      {
+        "key": "MAS",
+        "rate": 0.01032
+      },
+      {
+        "key": "MNB",
+        "rate": 0.01028
+      },
+      {
+        "key": "NB",
+        "rate": 0.01028
+      },
+      {
+        "key": "NBE",
+        "rate": 0.01023
+      },
+      {
+        "key": "NBG",
+        "rate": 0.01029
+      },
+      {
+        "key": "NBK",
+        "rate": 0.01029
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.01028
+      },
+      {
+        "key": "NBM",
+        "rate": 0.01029
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01028
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.01027
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.01028
+      },
+      {
+        "key": "NBT",
+        "rate": 0.01028
+      },
+      {
+        "key": "NBU",
+        "rate": 0.0103
+      },
+      {
+        "key": "NRB",
+        "rate": 0.01028
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.01026
+      },
+      {
+        "key": "RB",
+        "rate": 0.01029
+      },
+      {
+        "key": "RBA",
+        "rate": 0.01031
+      },
+      {
+        "key": "RBF",
+        "rate": 0.01014
+      },
+      {
+        "key": "RBM",
+        "rate": 0.01001
+      },
+      {
+        "key": "SARB",
+        "rate": 0.01029
+      },
+      {
+        "key": "SBI",
+        "rate": 0.01028
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.01026
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "GEL",
+    "rate": 0.03609,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.03608
+      },
+      {
+        "key": "CBA",
+        "rate": 0.03606
+      },
+      {
+        "key": "CBR",
+        "rate": 0.03612
+      },
+      {
+        "key": "CBU",
+        "rate": 0.03611
+      },
+      {
+        "key": "NBG",
+        "rate": 0.03606
+      },
+      {
+        "key": "NBK",
+        "rate": 0.0357
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.03609
+      },
+      {
+        "key": "NBM",
+        "rate": 0.03609
+      },
+      {
+        "key": "NBP",
+        "rate": 0.03674
+      },
+      {
+        "key": "NBT",
+        "rate": 0.03609
+      },
+      {
+        "key": "NBU",
+        "rate": 0.03606
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "GGP",
+    "rate": 0.01028
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "GHS",
+    "rate": 0.15288,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.15239
+      },
+      {
+        "key": "CBG",
+        "rate": 0.15254
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.1524
+      },
+      {
+        "key": "NBP",
+        "rate": 0.15506
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "GIP",
+    "rate": 0.01041,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.0103
+      },
+      {
+        "key": "BDI",
+        "rate": 0.01028
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.0107
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01031
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "GMD",
+    "rate": 0.99408,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.98389
+      },
+      {
+        "key": "CBG",
+        "rate": 0.98387
+      },
+      {
+        "key": "NBP",
+        "rate": 1.0277
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "GNF",
+    "rate": 111.49,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 118.68
+      },
+      {
+        "key": "CBG",
+        "rate": 98.39
+      },
+      {
+        "key": "NBP",
+        "rate": 121.26
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "GTQ",
+    "rate": 0.10441,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.10374
+      },
+      {
+        "key": "NBP",
+        "rate": 0.10552
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "GYD",
+    "rate": 2.8947,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 2.8467
+      },
+      {
+        "key": "BOJA",
+        "rate": 2.9416
+      },
+      {
+        "key": "NBP",
+        "rate": 2.8965
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "HKD",
+    "rate": 0.10678,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.10662
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.10742
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.10665
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.10663
+      },
+      {
+        "key": "BCU",
+        "rate": 0.10664
+      },
+      {
+        "key": "BDI",
+        "rate": 0.10666
+      },
+      {
+        "key": "BI",
+        "rate": 0.10663
+      },
+      {
+        "key": "BNA",
+        "rate": 0.10666
+      },
+      {
+        "key": "BNM",
+        "rate": 0.10664
+      },
+      {
+        "key": "BNR",
+        "rate": 0.10666
+      },
+      {
+        "key": "BOC",
+        "rate": 0.10665
+      },
+      {
+        "key": "BOE",
+        "rate": 0.10664
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.11112
+      },
+      {
+        "key": "BOM",
+        "rate": 0.10665
+      },
+      {
+        "key": "BOT",
+        "rate": 0.1066
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.10664
+      },
+      {
+        "key": "BSP",
+        "rate": 0.10666
+      },
+      {
+        "key": "CBA",
+        "rate": 0.10665
+      },
+      {
+        "key": "CBG",
+        "rate": 0.10764
+      },
+      {
+        "key": "CBK",
+        "rate": 0.10663
+      },
+      {
+        "key": "CBM",
+        "rate": 0.10666
+      },
+      {
+        "key": "CBR",
+        "rate": 0.10666
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.10664
+      },
+      {
+        "key": "CBU",
+        "rate": 0.10664
+      },
+      {
+        "key": "CNB",
+        "rate": 0.10666
+      },
+      {
+        "key": "DNB",
+        "rate": 0.10664
+      },
+      {
+        "key": "ECB",
+        "rate": 0.10666
+      },
+      {
+        "key": "FRED",
+        "rate": 0.10662
+      },
+      {
+        "key": "LB",
+        "rate": 0.10666
+      },
+      {
+        "key": "MAS",
+        "rate": 0.10663
+      },
+      {
+        "key": "MNB",
+        "rate": 0.10665
+      },
+      {
+        "key": "NB",
+        "rate": 0.10666
+      },
+      {
+        "key": "NBG",
+        "rate": 0.10666
+      },
+      {
+        "key": "NBK",
+        "rate": 0.10664
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.10665
+      },
+      {
+        "key": "NBM",
+        "rate": 0.10664
+      },
+      {
+        "key": "NBP",
+        "rate": 0.10665
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.10666
+      },
+      {
+        "key": "NBU",
+        "rate": 0.10664
+      },
+      {
+        "key": "NRB",
+        "rate": 0.10667
+      },
+      {
+        "key": "RB",
+        "rate": 0.10664
+      },
+      {
+        "key": "RBA",
+        "rate": 0.10665
+      },
+      {
+        "key": "RBM",
+        "rate": 0.10664
+      },
+      {
+        "key": "SARB",
+        "rate": 0.10665
+      },
+      {
+        "key": "SBI",
+        "rate": 0.10666
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "HNL",
+    "rate": 0.36624,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.36386
+      },
+      {
+        "key": "NBP",
+        "rate": 0.37016
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "HTG",
+    "rate": 1.7887,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 1.7908
+      },
+      {
+        "key": "BDI",
+        "rate": 1.7761
+      },
+      {
+        "key": "NBP",
+        "rate": 1.8058
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "HUF",
+    "rate": 4.1853,
+    "providers": [
+      {
+        "key": "BCEAO",
+        "rate": 4.1846
+      },
+      {
+        "key": "BCU",
+        "rate": 4.1882
+      },
+      {
+        "key": "BDI",
+        "rate": 4.1848
+      },
+      {
+        "key": "BNA",
+        "rate": 4.1823
+      },
+      {
+        "key": "BNR",
+        "rate": 4.1876
+      },
+      {
+        "key": "BOE",
+        "rate": 4.1716
+      },
+      {
+        "key": "BOM",
+        "rate": 4.1985
+      },
+      {
+        "key": "CBR",
+        "rate": 4.1722
+      },
+      {
+        "key": "CBSL",
+        "rate": 4.1882
+      },
+      {
+        "key": "CBU",
+        "rate": 4.1704
+      },
+      {
+        "key": "CNB",
+        "rate": 4.1841
+      },
+      {
+        "key": "DNB",
+        "rate": 4.1878
+      },
+      {
+        "key": "ECB",
+        "rate": 4.1848
+      },
+      {
+        "key": "HNB",
+        "rate": 4.1848
+      },
+      {
+        "key": "LB",
+        "rate": 4.1848
+      },
+      {
+        "key": "MNB",
+        "rate": 4.188
+      },
+      {
+        "key": "NB",
+        "rate": 4.1848
+      },
+      {
+        "key": "NBG",
+        "rate": 4.1895
+      },
+      {
+        "key": "NBK",
+        "rate": 4.1869
+      },
+      {
+        "key": "NBKR",
+        "rate": 4.1885
+      },
+      {
+        "key": "NBM",
+        "rate": 4.1889
+      },
+      {
+        "key": "NBP",
+        "rate": 4.1885
+      },
+      {
+        "key": "NBRM",
+        "rate": 4.1837
+      },
+      {
+        "key": "NBU",
+        "rate": 4.1911
+      },
+      {
+        "key": "RB",
+        "rate": 4.1877
+      },
+      {
+        "key": "SBI",
+        "rate": 4.1849
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "IDR",
+    "rate": 242.04,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 241.08
+      },
+      {
+        "key": "BDI",
+        "rate": 242.3
+      },
+      {
+        "key": "BI",
+        "rate": 242.55
+      },
+      {
+        "key": "BNA",
+        "rate": 242.19
+      },
+      {
+        "key": "BNM",
+        "rate": 240.42
+      },
+      {
+        "key": "BNR",
+        "rate": 242.0
+      },
+      {
+        "key": "BOC",
+        "rate": 241.02
+      },
+      {
+        "key": "BOM",
+        "rate": 243.3
+      },
+      {
+        "key": "BOT",
+        "rate": 240.45
+      },
+      {
+        "key": "BSP",
+        "rate": 242.31
+      },
+      {
+        "key": "CBM",
+        "rate": 2.4194,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 241.55
+      },
+      {
+        "key": "CBSL",
+        "rate": 241.93
+      },
+      {
+        "key": "CBU",
+        "rate": 240.76
+      },
+      {
+        "key": "CNB",
+        "rate": 241.96
+      },
+      {
+        "key": "DNB",
+        "rate": 243.12
+      },
+      {
+        "key": "ECB",
+        "rate": 242.3
+      },
+      {
+        "key": "FBIL",
+        "rate": 242.95
+      },
+      {
+        "key": "LB",
+        "rate": 242.3
+      },
+      {
+        "key": "MAS",
+        "rate": 242.5
+      },
+      {
+        "key": "MNB",
+        "rate": 242.08
+      },
+      {
+        "key": "NB",
+        "rate": 242.3
+      },
+      {
+        "key": "NBKR",
+        "rate": 241.84
+      },
+      {
+        "key": "NBP",
+        "rate": 241.92
+      },
+      {
+        "key": "NBRM",
+        "rate": 243.77
+      },
+      {
+        "key": "NBU",
+        "rate": 242.14
+      },
+      {
+        "key": "RB",
+        "rate": 241.49
+      },
+      {
+        "key": "RBA",
+        "rate": 242.8
+      },
+      {
+        "key": "RBM",
+        "rate": 242.73
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "ILS",
+    "rate": 0.04022,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.0404
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.04031
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.04034
+      },
+      {
+        "key": "BDI",
+        "rate": 0.04031
+      },
+      {
+        "key": "BNA",
+        "rate": 0.04029
+      },
+      {
+        "key": "BNR",
+        "rate": 0.04021
+      },
+      {
+        "key": "BOE",
+        "rate": 0.03999
+      },
+      {
+        "key": "BOI",
+        "rate": 0.04023
+      },
+      {
+        "key": "CBM",
+        "rate": 0.04024
+      },
+      {
+        "key": "CBU",
+        "rate": 0.04004
+      },
+      {
+        "key": "CNB",
+        "rate": 0.04032
+      },
+      {
+        "key": "DNB",
+        "rate": 0.04005
+      },
+      {
+        "key": "ECB",
+        "rate": 0.04031
+      },
+      {
+        "key": "IMF",
+        "rate": 0.04006
+      },
+      {
+        "key": "LB",
+        "rate": 0.04031
+      },
+      {
+        "key": "MNB",
+        "rate": 0.04023
+      },
+      {
+        "key": "NB",
+        "rate": 0.04031
+      },
+      {
+        "key": "NBG",
+        "rate": 0.0403
+      },
+      {
+        "key": "NBM",
+        "rate": 0.04007
+      },
+      {
+        "key": "NBP",
+        "rate": 0.04024
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.04031
+      },
+      {
+        "key": "NBU",
+        "rate": 0.0401
+      },
+      {
+        "key": "RB",
+        "rate": 0.04005
+      },
+      {
+        "key": "SARB",
+        "rate": 0.04024
+      },
+      {
+        "key": "SBI",
+        "rate": 0.04031
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "IMP",
+    "rate": 0.01028
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "INR",
+    "rate": 1.2841,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 1.2849
+      },
+      {
+        "key": "BCBO",
+        "rate": 1.2929
+      },
+      {
+        "key": "BCEAO",
+        "rate": 1.2844
+      },
+      {
+        "key": "BCRA",
+        "rate": 1.2835
+      },
+      {
+        "key": "BCU",
+        "rate": 1.2832
+      },
+      {
+        "key": "BDI",
+        "rate": 1.2835
+      },
+      {
+        "key": "BNA",
+        "rate": 1.2834
+      },
+      {
+        "key": "BNM",
+        "rate": 1.2836
+      },
+      {
+        "key": "BNR",
+        "rate": 1.2824
+      },
+      {
+        "key": "BNRRW",
+        "rate": 1.2837
+      },
+      {
+        "key": "BOC",
+        "rate": 1.2837
+      },
+      {
+        "key": "BOE",
+        "rate": 1.2835
+      },
+      {
+        "key": "BOM",
+        "rate": 1.2853
+      },
+      {
+        "key": "BOT",
+        "rate": 1.2847
+      },
+      {
+        "key": "BOTA",
+        "rate": 1.2836
+      },
+      {
+        "key": "BSP",
+        "rate": 1.2839
+      },
+      {
+        "key": "CBA",
+        "rate": 1.2854
+      },
+      {
+        "key": "CBG",
+        "rate": 1.2946
+      },
+      {
+        "key": "CBI",
+        "rate": 1.2841
+      },
+      {
+        "key": "CBK",
+        "rate": 1.2858
+      },
+      {
+        "key": "CBM",
+        "rate": 1.2853
+      },
+      {
+        "key": "CBR",
+        "rate": 1.2828
+      },
+      {
+        "key": "CBSL",
+        "rate": 1.2836
+      },
+      {
+        "key": "CBU",
+        "rate": 1.2836
+      },
+      {
+        "key": "CNB",
+        "rate": 1.2834
+      },
+      {
+        "key": "DAB",
+        "rate": 1.2089,
+        "excluded": true
+      },
+      {
+        "key": "DNB",
+        "rate": 1.2842
+      },
+      {
+        "key": "ECB",
+        "rate": 1.2835
+      },
+      {
+        "key": "FBIL",
+        "rate": 1.2978
+      },
+      {
+        "key": "FRED",
+        "rate": 1.2941
+      },
+      {
+        "key": "IMF",
+        "rate": 1.2828
+      },
+      {
+        "key": "LB",
+        "rate": 1.2835
+      },
+      {
+        "key": "MAS",
+        "rate": 1.2829
+      },
+      {
+        "key": "MNB",
+        "rate": 1.2847
+      },
+      {
+        "key": "NB",
+        "rate": 1.2835
+      },
+      {
+        "key": "NBE",
+        "rate": 1.2773
+      },
+      {
+        "key": "NBG",
+        "rate": 1.2835
+      },
+      {
+        "key": "NBK",
+        "rate": 1.2836
+      },
+      {
+        "key": "NBKR",
+        "rate": 1.2847
+      },
+      {
+        "key": "NBM",
+        "rate": 1.2834
+      },
+      {
+        "key": "NBP",
+        "rate": 1.2846
+      },
+      {
+        "key": "NBRB",
+        "rate": 1.2845
+      },
+      {
+        "key": "NBRM",
+        "rate": 1.2834
+      },
+      {
+        "key": "NBT",
+        "rate": 1.2834
+      },
+      {
+        "key": "NBU",
+        "rate": 1.2835
+      },
+      {
+        "key": "NRB",
+        "rate": 1.2828
+      },
+      {
+        "key": "RB",
+        "rate": 1.2835
+      },
+      {
+        "key": "RBA",
+        "rate": 1.2851
+      },
+      {
+        "key": "RBM",
+        "rate": 1.2854
+      },
+      {
+        "key": "SARB",
+        "rate": 1.2856
+      },
+      {
+        "key": "SBI",
+        "rate": 1.2835
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "IQD",
+    "rate": 17.8523,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 17.8242
+      },
+      {
+        "key": "BNA",
+        "rate": 17.8241
+      },
+      {
+        "key": "BOTA",
+        "rate": 17.8314
+      },
+      {
+        "key": "CBI",
+        "rate": 17.7562
+      },
+      {
+        "key": "CBU",
+        "rate": 17.8158
+      },
+      {
+        "key": "NBP",
+        "rate": 18.1362
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "IRR",
+    "rate": 18805,
+    "providers": [
+      {
+        "key": "BOTA",
+        "rate": 18841
+      },
+      {
+        "key": "CBA",
+        "rate": 18707
+      },
+      {
+        "key": "CBR",
+        "rate": 19721
+      },
+      {
+        "key": "CBU",
+        "rate": 18271
+      },
+      {
+        "key": "DAB",
+        "rate": 15007,
+        "excluded": true
+      },
+      {
+        "key": "NBG",
+        "rate": 18686
+      },
+      {
+        "key": "NBK",
+        "rate": 18961
+      },
+      {
+        "key": "NBKR",
+        "rate": 18592
+      },
+      {
+        "key": "NBP",
+        "rate": 19009
+      },
+      {
+        "key": "NBRB",
+        "rate": 18713
+      },
+      {
+        "key": "NBT",
+        "rate": 18633
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "ISK",
+    "rate": 1.7102,
+    "providers": [
+      {
+        "key": "BCU",
+        "rate": 1.7095
+      },
+      {
+        "key": "BDI",
+        "rate": 1.7086
+      },
+      {
+        "key": "BNR",
+        "rate": 1.7094
+      },
+      {
+        "key": "CBU",
+        "rate": 1.712
+      },
+      {
+        "key": "CNB",
+        "rate": 1.7086
+      },
+      {
+        "key": "DNB",
+        "rate": 1.7144
+      },
+      {
+        "key": "ECB",
+        "rate": 1.7086
+      },
+      {
+        "key": "LB",
+        "rate": 1.7086
+      },
+      {
+        "key": "MNB",
+        "rate": 1.7094
+      },
+      {
+        "key": "NB",
+        "rate": 1.709
+      },
+      {
+        "key": "NBG",
+        "rate": 1.7071
+      },
+      {
+        "key": "NBM",
+        "rate": 1.7141
+      },
+      {
+        "key": "NBP",
+        "rate": 1.7114
+      },
+      {
+        "key": "NBRB",
+        "rate": 1.711
+      },
+      {
+        "key": "NBT",
+        "rate": 1.7087
+      },
+      {
+        "key": "RB",
+        "rate": 1.7143
+      },
+      {
+        "key": "SBI",
+        "rate": 1.7087
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "JEP",
+    "rate": 0.01028
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "JMD",
+    "rate": 2.1349,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 2.1467
+      },
+      {
+        "key": "BNA",
+        "rate": 2.1419
+      },
+      {
+        "key": "BOJA",
+        "rate": 2.0831
+      },
+      {
+        "key": "NBP",
+        "rate": 2.1889
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "JOD",
+    "rate": 0.00965,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.00964,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 0.00965,
+        "excluded": true
+      },
+      {
+        "key": "BOI",
+        "rate": 0.00965,
+        "excluded": true
+      },
+      {
+        "key": "CBE",
+        "rate": 0.00965,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 0.00963,
+        "excluded": true
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.00964,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 0.00965,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.00982,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "JPY",
+    "rate": 2.1937,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 2.1865
+      },
+      {
+        "key": "BAM",
+        "rate": 2.1947
+      },
+      {
+        "key": "BANXICO",
+        "rate": 2.1928
+      },
+      {
+        "key": "BCB",
+        "rate": 2.1948
+      },
+      {
+        "key": "BCBO",
+        "rate": 2.2117
+      },
+      {
+        "key": "BCC",
+        "rate": 26.93,
+        "excluded": true
+      },
+      {
+        "key": "BCCH",
+        "rate": 2.1995
+      },
+      {
+        "key": "BCEAO",
+        "rate": 2.1937
+      },
+      {
+        "key": "BCP",
+        "rate": 2.194
+      },
+      {
+        "key": "BCRA",
+        "rate": 2.1941
+      },
+      {
+        "key": "BCT",
+        "rate": 2.1852
+      },
+      {
+        "key": "BCU",
+        "rate": 2.2003
+      },
+      {
+        "key": "BDI",
+        "rate": 2.1937
+      },
+      {
+        "key": "BI",
+        "rate": 0.02185,
+        "excluded": true
+      },
+      {
+        "key": "BNA",
+        "rate": 2.1937
+      },
+      {
+        "key": "BNM",
+        "rate": 2.192
+      },
+      {
+        "key": "BNR",
+        "rate": 2.1941
+      },
+      {
+        "key": "BNRRW",
+        "rate": 2.1956
+      },
+      {
+        "key": "BOB",
+        "rate": 2.1932
+      },
+      {
+        "key": "BOC",
+        "rate": 2.1936
+      },
+      {
+        "key": "BOE",
+        "rate": 2.1886
+      },
+      {
+        "key": "BOI",
+        "rate": 2.1951
+      },
+      {
+        "key": "BOJ",
+        "rate": 2.1796
+      },
+      {
+        "key": "BOJA",
+        "rate": 2.2747
+      },
+      {
+        "key": "BOM",
+        "rate": 2.1939
+      },
+      {
+        "key": "BOT",
+        "rate": 2.1926
+      },
+      {
+        "key": "BOTA",
+        "rate": 2.1894
+      },
+      {
+        "key": "BRB",
+        "rate": 2.196
+      },
+      {
+        "key": "BSP",
+        "rate": 2.1952
+      },
+      {
+        "key": "CBA",
+        "rate": 2.1944
+      },
+      {
+        "key": "CBE",
+        "rate": 2.1802
+      },
+      {
+        "key": "CBG",
+        "rate": 0.02202,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 2.1823
+      },
+      {
+        "key": "CBK",
+        "rate": 2.1891
+      },
+      {
+        "key": "CBM",
+        "rate": 0.02195,
+        "excluded": true
+      },
+      {
+        "key": "CBN",
+        "rate": 2.1946
+      },
+      {
+        "key": "CBR",
+        "rate": 2.1867
+      },
+      {
+        "key": "CBSL",
+        "rate": 2.193
+      },
+      {
+        "key": "CBU",
+        "rate": 2.1879
+      },
+      {
+        "key": "CNB",
+        "rate": 2.1936
+      },
+      {
+        "key": "DNB",
+        "rate": 2.1897
+      },
+      {
+        "key": "ECB",
+        "rate": 2.1937
+      },
+      {
+        "key": "FBIL",
+        "rate": 2.1812
+      },
+      {
+        "key": "FRED",
+        "rate": 2.1803
+      },
+      {
+        "key": "HNB",
+        "rate": 2.1937
+      },
+      {
+        "key": "IMF",
+        "rate": 2.1867
+      },
+      {
+        "key": "LB",
+        "rate": 2.1937
+      },
+      {
+        "key": "MAS",
+        "rate": 2.1955
+      },
+      {
+        "key": "MNB",
+        "rate": 2.1945
+      },
+      {
+        "key": "NB",
+        "rate": 2.1937
+      },
+      {
+        "key": "NBE",
+        "rate": 2.1783
+      },
+      {
+        "key": "NBG",
+        "rate": 2.1946
+      },
+      {
+        "key": "NBK",
+        "rate": 2.1902
+      },
+      {
+        "key": "NBKR",
+        "rate": 2.1946
+      },
+      {
+        "key": "NBM",
+        "rate": 2.1898
+      },
+      {
+        "key": "NBP",
+        "rate": 2.1945
+      },
+      {
+        "key": "NBRB",
+        "rate": 2.1878
+      },
+      {
+        "key": "NBRM",
+        "rate": 2.1935
+      },
+      {
+        "key": "NBT",
+        "rate": 2.1947
+      },
+      {
+        "key": "NBU",
+        "rate": 2.1897
+      },
+      {
+        "key": "NRB",
+        "rate": 2.1939
+      },
+      {
+        "key": "NRBT",
+        "rate": 2.1921
+      },
+      {
+        "key": "RB",
+        "rate": 2.1895
+      },
+      {
+        "key": "RBA",
+        "rate": 2.1953
+      },
+      {
+        "key": "RBF",
+        "rate": 2.1833
+      },
+      {
+        "key": "RBM",
+        "rate": 2.1952
+      },
+      {
+        "key": "SARB",
+        "rate": 2.1946
+      },
+      {
+        "key": "SBI",
+        "rate": 2.1937
+      },
+      {
+        "key": "TCMB",
+        "rate": 2.1876
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "KES",
+    "rate": 1.7609,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.7614
+      },
+      {
+        "key": "BNA",
+        "rate": 1.7593
+      },
+      {
+        "key": "BNRRW",
+        "rate": 1.7613
+      },
+      {
+        "key": "BOTA",
+        "rate": 1.7627
+      },
+      {
+        "key": "BRB",
+        "rate": 1.7615
+      },
+      {
+        "key": "CBK",
+        "rate": 1.7616
+      },
+      {
+        "key": "CBM",
+        "rate": 1.7616
+      },
+      {
+        "key": "CBSL",
+        "rate": 1.7619
+      },
+      {
+        "key": "NBE",
+        "rate": 1.7373
+      },
+      {
+        "key": "NBP",
+        "rate": 1.7943
+      },
+      {
+        "key": "RBM",
+        "rate": 1.7593
+      },
+      {
+        "key": "SARB",
+        "rate": 1.7613
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "KGS",
+    "rate": 1.191,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.1899
+      },
+      {
+        "key": "CBA",
+        "rate": 1.1899
+      },
+      {
+        "key": "CBR",
+        "rate": 1.1899
+      },
+      {
+        "key": "CBU",
+        "rate": 1.1902
+      },
+      {
+        "key": "NBG",
+        "rate": 1.1899
+      },
+      {
+        "key": "NBK",
+        "rate": 1.1893
+      },
+      {
+        "key": "NBKR",
+        "rate": 1.1899
+      },
+      {
+        "key": "NBM",
+        "rate": 1.1897
+      },
+      {
+        "key": "NBP",
+        "rate": 1.2097
+      },
+      {
+        "key": "NBRB",
+        "rate": 1.1899
+      },
+      {
+        "key": "NBT",
+        "rate": 1.1899
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "KHR",
+    "rate": 54.929,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 54.723
+      },
+      {
+        "key": "BNM",
+        "rate": 54.865
+      },
+      {
+        "key": "CBM",
+        "rate": 0.54591,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 54.813
+      },
+      {
+        "key": "NBP",
+        "rate": 55.564
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "KMF",
+    "rate": 5.8554,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 5.8375
+      },
+      {
+        "key": "NBP",
+        "rate": 5.885
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "KPW",
+    "rate": 1.7688,
+    "providers": [
+      {
+        "key": "BOM",
+        "rate": 1.7688
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "KRW",
+    "rate": 20.855,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 20.72
+      },
+      {
+        "key": "BCBO",
+        "rate": 21.128
+      },
+      {
+        "key": "BCU",
+        "rate": 20.928
+      },
+      {
+        "key": "BDI",
+        "rate": 20.849
+      },
+      {
+        "key": "BI",
+        "rate": 20.819
+      },
+      {
+        "key": "BNA",
+        "rate": 20.805
+      },
+      {
+        "key": "BNM",
+        "rate": 20.941
+      },
+      {
+        "key": "BNR",
+        "rate": 20.801
+      },
+      {
+        "key": "BOC",
+        "rate": 20.845
+      },
+      {
+        "key": "BOE",
+        "rate": 20.872
+      },
+      {
+        "key": "BOM",
+        "rate": 20.795
+      },
+      {
+        "key": "BOTA",
+        "rate": 20.925
+      },
+      {
+        "key": "BSP",
+        "rate": 20.963
+      },
+      {
+        "key": "CBM",
+        "rate": 0.20841,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 20.584
+      },
+      {
+        "key": "CBSL",
+        "rate": 20.931
+      },
+      {
+        "key": "CBU",
+        "rate": 20.894
+      },
+      {
+        "key": "CNB",
+        "rate": 20.814
+      },
+      {
+        "key": "DNB",
+        "rate": 20.939
+      },
+      {
+        "key": "ECB",
+        "rate": 20.849
+      },
+      {
+        "key": "FRED",
+        "rate": 20.666
+      },
+      {
+        "key": "IMF",
+        "rate": 20.584
+      },
+      {
+        "key": "LB",
+        "rate": 20.849
+      },
+      {
+        "key": "MAS",
+        "rate": 20.933
+      },
+      {
+        "key": "MNB",
+        "rate": 20.805
+      },
+      {
+        "key": "NB",
+        "rate": 20.848
+      },
+      {
+        "key": "NBG",
+        "rate": 20.817
+      },
+      {
+        "key": "NBK",
+        "rate": 20.954
+      },
+      {
+        "key": "NBKR",
+        "rate": 20.802
+      },
+      {
+        "key": "NBM",
+        "rate": 20.952
+      },
+      {
+        "key": "NBP",
+        "rate": 20.808
+      },
+      {
+        "key": "NBRM",
+        "rate": 20.835
+      },
+      {
+        "key": "NBT",
+        "rate": 20.822
+      },
+      {
+        "key": "NBU",
+        "rate": 20.936
+      },
+      {
+        "key": "NRB",
+        "rate": 20.826
+      },
+      {
+        "key": "RB",
+        "rate": 20.932
+      },
+      {
+        "key": "RBA",
+        "rate": 20.912
+      },
+      {
+        "key": "RBM",
+        "rate": 20.855
+      },
+      {
+        "key": "SARB",
+        "rate": 20.807
+      },
+      {
+        "key": "SBI",
+        "rate": 20.838
+      },
+      {
+        "key": "TCMB",
+        "rate": 20.854
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "KWD",
+    "rate": 0.00419,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.00419
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.00418
+      },
+      {
+        "key": "BCT",
+        "rate": 0.00417
+      },
+      {
+        "key": "BDI",
+        "rate": 0.00419
+      },
+      {
+        "key": "BI",
+        "rate": 0.00418
+      },
+      {
+        "key": "BNA",
+        "rate": 0.00419
+      },
+      {
+        "key": "BOM",
+        "rate": 0.00418
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.00418
+      },
+      {
+        "key": "BRB",
+        "rate": 0.00419
+      },
+      {
+        "key": "CBE",
+        "rate": 0.00418
+      },
+      {
+        "key": "CBG",
+        "rate": 0.00424
+      },
+      {
+        "key": "CBM",
+        "rate": 0.00418
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.00419
+      },
+      {
+        "key": "CBU",
+        "rate": 0.00418
+      },
+      {
+        "key": "IMF",
+        "rate": 0.00418
+      },
+      {
+        "key": "NBE",
+        "rate": 0.00416
+      },
+      {
+        "key": "NBG",
+        "rate": 0.00419
+      },
+      {
+        "key": "NBK",
+        "rate": 0.00418
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.00418
+      },
+      {
+        "key": "NBM",
+        "rate": 0.00419
+      },
+      {
+        "key": "NBP",
+        "rate": 0.00425
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.00419
+      },
+      {
+        "key": "NBT",
+        "rate": 0.00418
+      },
+      {
+        "key": "NRB",
+        "rate": 0.00418
+      },
+      {
+        "key": "RBM",
+        "rate": 0.00418
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.00418
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "KYD",
+    "rate": 0.01139,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.01116
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.01162
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "KZT",
+    "rate": 6.6455,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 6.639
+      },
+      {
+        "key": "BNA",
+        "rate": 6.6332
+      },
+      {
+        "key": "BOM",
+        "rate": 6.6386
+      },
+      {
+        "key": "CBA",
+        "rate": 6.636
+      },
+      {
+        "key": "CBR",
+        "rate": 6.6588
+      },
+      {
+        "key": "CBU",
+        "rate": 6.6413
+      },
+      {
+        "key": "NBG",
+        "rate": 6.6391
+      },
+      {
+        "key": "NBK",
+        "rate": 6.6362
+      },
+      {
+        "key": "NBKR",
+        "rate": 6.6473
+      },
+      {
+        "key": "NBM",
+        "rate": 6.6384
+      },
+      {
+        "key": "NBP",
+        "rate": 6.7707
+      },
+      {
+        "key": "NBRB",
+        "rate": 6.6421
+      },
+      {
+        "key": "NBT",
+        "rate": 6.644
+      },
+      {
+        "key": "NBU",
+        "rate": 6.6311
+      },
+      {
+        "key": "TCMB",
+        "rate": 6.6365
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "LAK",
+    "rate": 300.27,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 299.77
+      },
+      {
+        "key": "BI",
+        "rate": 299.44
+      },
+      {
+        "key": "CBM",
+        "rate": 3.0045,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 298.98
+      },
+      {
+        "key": "NBP",
+        "rate": 304.6
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "LBP",
+    "rate": 1250.26,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1217.76
+      },
+      {
+        "key": "BNA",
+        "rate": 1218.05
+      },
+      {
+        "key": "BOI",
+        "rate": 1341.13
+      },
+      {
+        "key": "CBU",
+        "rate": 1264.92
+      },
+      {
+        "key": "NBP",
+        "rate": 1233.26
+      },
+      {
+        "key": "NBU",
+        "rate": 1219.74
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "LKR",
+    "rate": 4.5429,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 4.5414
+      },
+      {
+        "key": "BNA",
+        "rate": 4.5387
+      },
+      {
+        "key": "CBG",
+        "rate": 4.4721
+      },
+      {
+        "key": "CBM",
+        "rate": 4.5354
+      },
+      {
+        "key": "CBSL",
+        "rate": 4.5483
+      },
+      {
+        "key": "FRED",
+        "rate": 4.5513
+      },
+      {
+        "key": "NBP",
+        "rate": 4.6173
+      },
+      {
+        "key": "RBM",
+        "rate": 4.5309
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "LRD",
+    "rate": 2.4869,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 2.478
+      },
+      {
+        "key": "CBLLR",
+        "rate": 2.4783
+      },
+      {
+        "key": "NBP",
+        "rate": 2.5156
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "LSL",
+    "rate": 0.22424,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.22415
+      },
+      {
+        "key": "BNA",
+        "rate": 0.22409
+      },
+      {
+        "key": "NBP",
+        "rate": 0.22463
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "LYD",
+    "rate": 0.08696,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.06664,
+        "excluded": true
+      },
+      {
+        "key": "BCT",
+        "rate": 0.08667
+      },
+      {
+        "key": "BDI",
+        "rate": 0.08672
+      },
+      {
+        "key": "CBU",
+        "rate": 0.08681
+      },
+      {
+        "key": "NBP",
+        "rate": 0.08806
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "MAD",
+    "rate": 0.12679,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.12682
+      },
+      {
+        "key": "BCT",
+        "rate": 0.12627
+      },
+      {
+        "key": "BDI",
+        "rate": 0.12676
+      },
+      {
+        "key": "BNA",
+        "rate": 0.12666
+      },
+      {
+        "key": "CBU",
+        "rate": 0.12671
+      },
+      {
+        "key": "NBP",
+        "rate": 0.12798
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "MDL",
+    "rate": 0.23844,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.23779
+      },
+      {
+        "key": "BNR",
+        "rate": 0.23995
+      },
+      {
+        "key": "CBR",
+        "rate": 0.23703
+      },
+      {
+        "key": "CBU",
+        "rate": 0.23818
+      },
+      {
+        "key": "NBG",
+        "rate": 0.23994
+      },
+      {
+        "key": "NBK",
+        "rate": 0.23541
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.23704
+      },
+      {
+        "key": "NBM",
+        "rate": 0.23998
+      },
+      {
+        "key": "NBP",
+        "rate": 0.24112
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.23817
+      },
+      {
+        "key": "NBT",
+        "rate": 0.23997
+      },
+      {
+        "key": "NBU",
+        "rate": 0.23777
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "MGA",
+    "rate": 57.514,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 57.503
+      },
+      {
+        "key": "NBP",
+        "rate": 57.919
+      },
+      {
+        "key": "RBM",
+        "rate": 57.28
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "MKD",
+    "rate": 0.72897,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.72833
+      },
+      {
+        "key": "NBM",
+        "rate": 0.72337
+      },
+      {
+        "key": "NBP",
+        "rate": 0.73539
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.7313
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "MMK",
+    "rate": 28.604,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 28.574
+      },
+      {
+        "key": "BNM",
+        "rate": 28.493
+      },
+      {
+        "key": "CBM",
+        "rate": 28.573
+      },
+      {
+        "key": "CBR",
+        "rate": 28.573
+      },
+      {
+        "key": "CBSL",
+        "rate": 28.606
+      },
+      {
+        "key": "CBU",
+        "rate": 28.549
+      },
+      {
+        "key": "NB",
+        "rate": 28.576
+      },
+      {
+        "key": "NBP",
+        "rate": 29.076
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "MNT",
+    "rate": 48.777,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 48.661
+      },
+      {
+        "key": "BOM",
+        "rate": 48.661
+      },
+      {
+        "key": "CBR",
+        "rate": 48.665
+      },
+      {
+        "key": "CBU",
+        "rate": 48.651
+      },
+      {
+        "key": "NBKR",
+        "rate": 48.765
+      },
+      {
+        "key": "NBP",
+        "rate": 49.572
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "MOP",
+    "rate": 0.10998,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.10981,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 0.10986,
+        "excluded": true
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.10984,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.11177,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "MRO",
+    "rate": 0.53841,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.53841
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "MRU",
+    "rate": 0.54497,
+    "providers": [
+      {
+        "key": "BCT",
+        "rate": 0.54228
+      },
+      {
+        "key": "BDI",
+        "rate": 0.54303
+      },
+      {
+        "key": "NBP",
+        "rate": 0.55261
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "MUR",
+    "rate": 0.64708,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.64783
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.64637
+      },
+      {
+        "key": "IMF",
+        "rate": 0.64381
+      },
+      {
+        "key": "NBP",
+        "rate": 0.65243
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "MVR",
+    "rate": 0.20981,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.20981
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.20722
+      },
+      {
+        "key": "MMA",
+        "rate": 0.20981
+      },
+      {
+        "key": "NBP",
+        "rate": 0.21407
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "MWK",
+    "rate": 23.696,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 23.593
+      },
+      {
+        "key": "BOTA",
+        "rate": 23.815
+      },
+      {
+        "key": "NBP",
+        "rate": 24.009
+      },
+      {
+        "key": "RBM",
+        "rate": 23.593
+      },
+      {
+        "key": "SARB",
+        "rate": 23.593
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "MXN",
+    "rate": 0.23608,
+    "providers": [
+      {
+        "key": "BANXICO",
+        "rate": 0.23572
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.23781
+      },
+      {
+        "key": "BCC",
+        "rate": 0.23573
+      },
+      {
+        "key": "BCP",
+        "rate": 0.23557
+      },
+      {
+        "key": "BCU",
+        "rate": 0.23635
+      },
+      {
+        "key": "BDI",
+        "rate": 0.23588
+      },
+      {
+        "key": "BNA",
+        "rate": 0.23586
+      },
+      {
+        "key": "BNR",
+        "rate": 0.23603
+      },
+      {
+        "key": "BOC",
+        "rate": 0.23574
+      },
+      {
+        "key": "BSP",
+        "rate": 0.23626
+      },
+      {
+        "key": "CBU",
+        "rate": 0.23582
+      },
+      {
+        "key": "CNB",
+        "rate": 0.2358
+      },
+      {
+        "key": "DNB",
+        "rate": 0.23664
+      },
+      {
+        "key": "ECB",
+        "rate": 0.23588
+      },
+      {
+        "key": "FRED",
+        "rate": 0.23414
+      },
+      {
+        "key": "IMF",
+        "rate": 0.23632
+      },
+      {
+        "key": "LB",
+        "rate": 0.23588
+      },
+      {
+        "key": "MNB",
+        "rate": 0.23594
+      },
+      {
+        "key": "NB",
+        "rate": 0.23588
+      },
+      {
+        "key": "NBK",
+        "rate": 0.23608
+      },
+      {
+        "key": "NBP",
+        "rate": 0.23595
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.23588
+      },
+      {
+        "key": "NBU",
+        "rate": 0.23658
+      },
+      {
+        "key": "RB",
+        "rate": 0.23663
+      },
+      {
+        "key": "SBI",
+        "rate": 0.23587
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "MYR",
+    "rate": 0.05615,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.05562
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.05643
+      },
+      {
+        "key": "BCU",
+        "rate": 0.05597
+      },
+      {
+        "key": "BDI",
+        "rate": 0.05629
+      },
+      {
+        "key": "BI",
+        "rate": 0.05587
+      },
+      {
+        "key": "BNA",
+        "rate": 0.05625
+      },
+      {
+        "key": "BNM",
+        "rate": 0.05602
+      },
+      {
+        "key": "BNR",
+        "rate": 0.05626
+      },
+      {
+        "key": "BOC",
+        "rate": 0.0563
+      },
+      {
+        "key": "BOE",
+        "rate": 0.05602
+      },
+      {
+        "key": "BOM",
+        "rate": 0.05638
+      },
+      {
+        "key": "BOT",
+        "rate": 0.05611
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.05606
+      },
+      {
+        "key": "BSP",
+        "rate": 0.056
+      },
+      {
+        "key": "CBM",
+        "rate": 0.05638
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.05614
+      },
+      {
+        "key": "CBU",
+        "rate": 0.05602
+      },
+      {
+        "key": "CNB",
+        "rate": 0.05628
+      },
+      {
+        "key": "DNB",
+        "rate": 0.05603
+      },
+      {
+        "key": "ECB",
+        "rate": 0.05629
+      },
+      {
+        "key": "FRED",
+        "rate": 0.05517
+      },
+      {
+        "key": "IMF",
+        "rate": 0.05566
+      },
+      {
+        "key": "LB",
+        "rate": 0.05629
+      },
+      {
+        "key": "MAS",
+        "rate": 0.05628
+      },
+      {
+        "key": "MNB",
+        "rate": 0.05621
+      },
+      {
+        "key": "NB",
+        "rate": 0.05629
+      },
+      {
+        "key": "NBK",
+        "rate": 0.05599
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.05621
+      },
+      {
+        "key": "NBM",
+        "rate": 0.05602
+      },
+      {
+        "key": "NBP",
+        "rate": 0.05621
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.05629
+      },
+      {
+        "key": "NBT",
+        "rate": 0.05633
+      },
+      {
+        "key": "NBU",
+        "rate": 0.05602
+      },
+      {
+        "key": "NRB",
+        "rate": 0.05629
+      },
+      {
+        "key": "RB",
+        "rate": 0.05602
+      },
+      {
+        "key": "RBA",
+        "rate": 0.05632
+      },
+      {
+        "key": "RBM",
+        "rate": 0.05628
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "MZN",
+    "rate": 0.8666,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.86714
+      },
+      {
+        "key": "BNA",
+        "rate": 0.8606
+      },
+      {
+        "key": "NBP",
+        "rate": 0.88553
+      },
+      {
+        "key": "RBM",
+        "rate": 0.8606
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "NAD",
+    "rate": 0.224,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.22415
+      },
+      {
+        "key": "BNA",
+        "rate": 0.22409
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.2234
+      },
+      {
+        "key": "NBP",
+        "rate": 0.22463
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "NGN",
+    "rate": 18.571,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 18.5494
+      },
+      {
+        "key": "BNA",
+        "rate": 18.559
+      },
+      {
+        "key": "BOTA",
+        "rate": 18.5072
+      },
+      {
+        "key": "CBG",
+        "rate": 19.6774,
+        "excluded": true
+      },
+      {
+        "key": "CBN",
+        "rate": 18.64
+      },
+      {
+        "key": "CBR",
+        "rate": 18.5055
+      },
+      {
+        "key": "CBSL",
+        "rate": 18.5193
+      },
+      {
+        "key": "NBP",
+        "rate": 18.8109
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "NIO",
+    "rate": 0.50175,
+    "providers": [
+      {
+        "key": "BCN",
+        "rate": 0.49832
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.50105
+      },
+      {
+        "key": "BDI",
+        "rate": 0.50104
+      },
+      {
+        "key": "NBP",
+        "rate": 0.50971
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "NOK",
+    "rate": 0.13179,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.13064
+      },
+      {
+        "key": "BAM",
+        "rate": 0.13222
+      },
+      {
+        "key": "BCB",
+        "rate": 0.13186
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.13329
+      },
+      {
+        "key": "BCC",
+        "rate": 0.13197
+      },
+      {
+        "key": "BCP",
+        "rate": 0.13178
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.13178
+      },
+      {
+        "key": "BCT",
+        "rate": 0.13186
+      },
+      {
+        "key": "BCU",
+        "rate": 0.13245
+      },
+      {
+        "key": "BDI",
+        "rate": 0.13176
+      },
+      {
+        "key": "BI",
+        "rate": 0.13065
+      },
+      {
+        "key": "BNA",
+        "rate": 0.13176
+      },
+      {
+        "key": "BNR",
+        "rate": 0.13191
+      },
+      {
+        "key": "BOC",
+        "rate": 0.13179
+      },
+      {
+        "key": "BOE",
+        "rate": 0.13195
+      },
+      {
+        "key": "BOI",
+        "rate": 0.13209
+      },
+      {
+        "key": "BOM",
+        "rate": 0.13237
+      },
+      {
+        "key": "BOT",
+        "rate": 0.13251
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.13202
+      },
+      {
+        "key": "BRB",
+        "rate": 0.13293
+      },
+      {
+        "key": "BSP",
+        "rate": 0.13216
+      },
+      {
+        "key": "CBA",
+        "rate": 0.13191
+      },
+      {
+        "key": "CBE",
+        "rate": 0.12906
+      },
+      {
+        "key": "CBG",
+        "rate": 0.00132,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 0.12922
+      },
+      {
+        "key": "CBK",
+        "rate": 0.13215
+      },
+      {
+        "key": "CBM",
+        "rate": 0.13239
+      },
+      {
+        "key": "CBR",
+        "rate": 0.12922
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.13255
+      },
+      {
+        "key": "CBU",
+        "rate": 0.13143
+      },
+      {
+        "key": "CNB",
+        "rate": 0.1318
+      },
+      {
+        "key": "DNB",
+        "rate": 0.13184
+      },
+      {
+        "key": "ECB",
+        "rate": 0.13176
+      },
+      {
+        "key": "FRED",
+        "rate": 0.12927
+      },
+      {
+        "key": "HNB",
+        "rate": 0.13176
+      },
+      {
+        "key": "IMF",
+        "rate": 0.13184
+      },
+      {
+        "key": "LB",
+        "rate": 0.13176
+      },
+      {
+        "key": "MNB",
+        "rate": 0.13203
+      },
+      {
+        "key": "NB",
+        "rate": 0.13176
+      },
+      {
+        "key": "NBE",
+        "rate": 0.1311
+      },
+      {
+        "key": "NBG",
+        "rate": 0.13196
+      },
+      {
+        "key": "NBK",
+        "rate": 0.13162
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.13205
+      },
+      {
+        "key": "NBM",
+        "rate": 0.13168
+      },
+      {
+        "key": "NBP",
+        "rate": 0.13205
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.13144
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.13176
+      },
+      {
+        "key": "NBT",
+        "rate": 0.13191
+      },
+      {
+        "key": "NBU",
+        "rate": 0.13179
+      },
+      {
+        "key": "RB",
+        "rate": 0.13184
+      },
+      {
+        "key": "RBM",
+        "rate": 0.13268
+      },
+      {
+        "key": "SARB",
+        "rate": 0.13221
+      },
+      {
+        "key": "SBI",
+        "rate": 0.13176
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.13123
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "NPR",
+    "rate": 2.0582,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 2.0536
+      },
+      {
+        "key": "BNM",
+        "rate": 2.0537
+      },
+      {
+        "key": "BOM",
+        "rate": 2.0567
+      },
+      {
+        "key": "CBM",
+        "rate": 2.0571
+      },
+      {
+        "key": "CBSL",
+        "rate": 2.0556
+      },
+      {
+        "key": "NBP",
+        "rate": 2.0893
+      },
+      {
+        "key": "NRB",
+        "rate": 2.0535
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "NZD",
+    "rate": 0.02365,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.02355
+      },
+      {
+        "key": "BCP",
+        "rate": 0.02371
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.0237
+      },
+      {
+        "key": "BCU",
+        "rate": 0.02365
+      },
+      {
+        "key": "BDI",
+        "rate": 0.02369
+      },
+      {
+        "key": "BI",
+        "rate": 0.02352
+      },
+      {
+        "key": "BNA",
+        "rate": 0.02369
+      },
+      {
+        "key": "BNM",
+        "rate": 0.02362
+      },
+      {
+        "key": "BNR",
+        "rate": 0.02369
+      },
+      {
+        "key": "BOC",
+        "rate": 0.02371
+      },
+      {
+        "key": "BOE",
+        "rate": 0.02356
+      },
+      {
+        "key": "BOM",
+        "rate": 0.02371
+      },
+      {
+        "key": "BOT",
+        "rate": 0.02358
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.02359
+      },
+      {
+        "key": "BSP",
+        "rate": 0.02366
+      },
+      {
+        "key": "CBA",
+        "rate": 0.0237
+      },
+      {
+        "key": "CBG",
+        "rate": 0.02355
+      },
+      {
+        "key": "CBM",
+        "rate": 0.02372
+      },
+      {
+        "key": "CBR",
+        "rate": 0.0235
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.02365
+      },
+      {
+        "key": "CBU",
+        "rate": 0.02359
+      },
+      {
+        "key": "CNB",
+        "rate": 0.02369
+      },
+      {
+        "key": "DNB",
+        "rate": 0.02361
+      },
+      {
+        "key": "ECB",
+        "rate": 0.02369
+      },
+      {
+        "key": "FRED",
+        "rate": 0.02334
+      },
+      {
+        "key": "IMF",
+        "rate": 0.0235
+      },
+      {
+        "key": "LB",
+        "rate": 0.02369
+      },
+      {
+        "key": "MAS",
+        "rate": 0.02372
+      },
+      {
+        "key": "MNB",
+        "rate": 0.02369
+      },
+      {
+        "key": "NB",
+        "rate": 0.02369
+      },
+      {
+        "key": "NBG",
+        "rate": 0.0237
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.02369
+      },
+      {
+        "key": "NBM",
+        "rate": 0.02363
+      },
+      {
+        "key": "NBP",
+        "rate": 0.02369
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.02359
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.02369
+      },
+      {
+        "key": "NBU",
+        "rate": 0.02363
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.02355
+      },
+      {
+        "key": "RB",
+        "rate": 0.02361
+      },
+      {
+        "key": "RBA",
+        "rate": 0.02375
+      },
+      {
+        "key": "RBF",
+        "rate": 0.02333
+      },
+      {
+        "key": "RBM",
+        "rate": 0.02372
+      },
+      {
+        "key": "SARB",
+        "rate": 0.02372
+      },
+      {
+        "key": "SBI",
+        "rate": 0.02369
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "OMR",
+    "rate": 0.00523,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.00524,
+        "excluded": true
+      },
+      {
+        "key": "BCT",
+        "rate": 0.00523,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 0.00523,
+        "excluded": true
+      },
+      {
+        "key": "CBE",
+        "rate": 0.00524,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 0.00523,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 0.00523,
+        "excluded": true
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.00524,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 0.00524,
+        "excluded": true
+      },
+      {
+        "key": "IMF",
+        "rate": 0.00523,
+        "excluded": true
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.00524,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.00533,
+        "excluded": true
+      },
+      {
+        "key": "NRB",
+        "rate": 0.00524,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "PAB",
+    "rate": 0.0137,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.01371
+      },
+      {
+        "key": "BDI",
+        "rate": 0.01361
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01384
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "PEN",
+    "rate": 0.04614,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.04637
+      },
+      {
+        "key": "BCP",
+        "rate": 0.04597
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.04603
+      },
+      {
+        "key": "BCU",
+        "rate": 0.04602
+      },
+      {
+        "key": "BDI",
+        "rate": 0.04604
+      },
+      {
+        "key": "BNA",
+        "rate": 0.04602
+      },
+      {
+        "key": "BOC",
+        "rate": 0.04602
+      },
+      {
+        "key": "IMF",
+        "rate": 0.04596
+      },
+      {
+        "key": "NBP",
+        "rate": 0.04724
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "PGK",
+    "rate": 0.05967,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.05949
+      },
+      {
+        "key": "BI",
+        "rate": 0.05954
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.05947
+      },
+      {
+        "key": "NBP",
+        "rate": 0.06067
+      },
+      {
+        "key": "RBA",
+        "rate": 0.05957
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "PHP",
+    "rate": 0.82593,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.83041
+      },
+      {
+        "key": "BDI",
+        "rate": 0.82638
+      },
+      {
+        "key": "BI",
+        "rate": 0.82449
+      },
+      {
+        "key": "BNM",
+        "rate": 0.8252
+      },
+      {
+        "key": "BNR",
+        "rate": 0.82705
+      },
+      {
+        "key": "BOT",
+        "rate": 0.82693
+      },
+      {
+        "key": "BSP",
+        "rate": 0.82386
+      },
+      {
+        "key": "CBG",
+        "rate": 0.82678
+      },
+      {
+        "key": "CBM",
+        "rate": 0.82701
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.8254
+      },
+      {
+        "key": "CBU",
+        "rate": 0.82442
+      },
+      {
+        "key": "CNB",
+        "rate": 0.82637
+      },
+      {
+        "key": "DNB",
+        "rate": 0.82471
+      },
+      {
+        "key": "ECB",
+        "rate": 0.82638
+      },
+      {
+        "key": "IMF",
+        "rate": 0.82084
+      },
+      {
+        "key": "LB",
+        "rate": 0.82638
+      },
+      {
+        "key": "MAS",
+        "rate": 0.82636
+      },
+      {
+        "key": "MNB",
+        "rate": 0.82604
+      },
+      {
+        "key": "NB",
+        "rate": 0.8264
+      },
+      {
+        "key": "NBP",
+        "rate": 0.8262
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.82642
+      },
+      {
+        "key": "RB",
+        "rate": 0.82499
+      },
+      {
+        "key": "RBA",
+        "rate": 0.82706
+      },
+      {
+        "key": "RBM",
+        "rate": 0.82683
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "PKR",
+    "rate": 3.788,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 3.7858
+      },
+      {
+        "key": "BNA",
+        "rate": 3.7785
+      },
+      {
+        "key": "BNM",
+        "rate": 3.7852
+      },
+      {
+        "key": "BOTA",
+        "rate": 3.7866
+      },
+      {
+        "key": "BSP",
+        "rate": 3.7844
+      },
+      {
+        "key": "CBM",
+        "rate": 3.7845
+      },
+      {
+        "key": "CBSL",
+        "rate": 3.7859
+      },
+      {
+        "key": "CBU",
+        "rate": 3.7846
+      },
+      {
+        "key": "DAB",
+        "rate": 4.034,
+        "excluded": true
+      },
+      {
+        "key": "NB",
+        "rate": 3.7852
+      },
+      {
+        "key": "NBKR",
+        "rate": 3.7846
+      },
+      {
+        "key": "NBP",
+        "rate": 3.8598
+      },
+      {
+        "key": "NBT",
+        "rate": 3.7867
+      },
+      {
+        "key": "RBM",
+        "rate": 3.7832
+      },
+      {
+        "key": "TCMB",
+        "rate": 3.7849
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "PLN",
+    "rate": 0.05055,
+    "providers": [
+      {
+        "key": "BCEAO",
+        "rate": 0.05056
+      },
+      {
+        "key": "BDI",
+        "rate": 0.05057
+      },
+      {
+        "key": "BNA",
+        "rate": 0.05056
+      },
+      {
+        "key": "BNR",
+        "rate": 0.05058
+      },
+      {
+        "key": "BOC",
+        "rate": 0.05053
+      },
+      {
+        "key": "BOE",
+        "rate": 0.05043
+      },
+      {
+        "key": "BOM",
+        "rate": 0.05064
+      },
+      {
+        "key": "CBA",
+        "rate": 0.05058
+      },
+      {
+        "key": "CBR",
+        "rate": 0.05044
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.0506
+      },
+      {
+        "key": "CBU",
+        "rate": 0.05047
+      },
+      {
+        "key": "CNB",
+        "rate": 0.05056
+      },
+      {
+        "key": "DNB",
+        "rate": 0.05055
+      },
+      {
+        "key": "ECB",
+        "rate": 0.05057
+      },
+      {
+        "key": "HNB",
+        "rate": 0.05057
+      },
+      {
+        "key": "IMF",
+        "rate": 0.05044
+      },
+      {
+        "key": "LB",
+        "rate": 0.05057
+      },
+      {
+        "key": "MNB",
+        "rate": 0.05057
+      },
+      {
+        "key": "NB",
+        "rate": 0.05056
+      },
+      {
+        "key": "NBG",
+        "rate": 0.05059
+      },
+      {
+        "key": "NBK",
+        "rate": 0.05055
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.05057
+      },
+      {
+        "key": "NBM",
+        "rate": 0.05055
+      },
+      {
+        "key": "NBP",
+        "rate": 0.05056
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.05046
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.05057
+      },
+      {
+        "key": "NBT",
+        "rate": 0.05059
+      },
+      {
+        "key": "NBU",
+        "rate": 0.05058
+      },
+      {
+        "key": "RB",
+        "rate": 0.05055
+      },
+      {
+        "key": "SBI",
+        "rate": 0.05057
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "PYG",
+    "rate": 83.49,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 83.95
+      },
+      {
+        "key": "BCP",
+        "rate": 82.91
+      },
+      {
+        "key": "BCRA",
+        "rate": 83.11
+      },
+      {
+        "key": "BCU",
+        "rate": 83.27
+      },
+      {
+        "key": "BDI",
+        "rate": 83.51
+      },
+      {
+        "key": "NBP",
+        "rate": 84.7
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "QAR",
+    "rate": 0.04953,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.04961,
+        "excluded": true
+      },
+      {
+        "key": "BCT",
+        "rate": 0.04951,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 0.04953,
+        "excluded": true
+      },
+      {
+        "key": "BNA",
+        "rate": 0.0496,
+        "excluded": true
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.0496,
+        "excluded": true
+      },
+      {
+        "key": "CBE",
+        "rate": 0.0496,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 0.04953,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 0.04953,
+        "excluded": true
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.0496,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 0.0496,
+        "excluded": true
+      },
+      {
+        "key": "IMF",
+        "rate": 0.04953,
+        "excluded": true
+      },
+      {
+        "key": "MAS",
+        "rate": 0.04956,
+        "excluded": true
+      },
+      {
+        "key": "NBG",
+        "rate": 0.04961,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.05047,
+        "excluded": true
+      },
+      {
+        "key": "NRB",
+        "rate": 0.04956,
+        "excluded": true
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.0496,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "RON",
+    "rate": 0.06215,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.06217
+      },
+      {
+        "key": "BNA",
+        "rate": 0.06215
+      },
+      {
+        "key": "BNR",
+        "rate": 0.06219
+      },
+      {
+        "key": "BOE",
+        "rate": 0.06206
+      },
+      {
+        "key": "CBR",
+        "rate": 0.06202
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.06219
+      },
+      {
+        "key": "CBU",
+        "rate": 0.06205
+      },
+      {
+        "key": "CNB",
+        "rate": 0.06218
+      },
+      {
+        "key": "DNB",
+        "rate": 0.0622
+      },
+      {
+        "key": "ECB",
+        "rate": 0.06217
+      },
+      {
+        "key": "LB",
+        "rate": 0.06217
+      },
+      {
+        "key": "MNB",
+        "rate": 0.06217
+      },
+      {
+        "key": "NB",
+        "rate": 0.06217
+      },
+      {
+        "key": "NBG",
+        "rate": 0.0622
+      },
+      {
+        "key": "NBM",
+        "rate": 0.06216
+      },
+      {
+        "key": "NBP",
+        "rate": 0.06219
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.06217
+      },
+      {
+        "key": "NBU",
+        "rate": 0.06222
+      },
+      {
+        "key": "RB",
+        "rate": 0.0622
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.06202
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "RSD",
+    "rate": 1.393,
+    "providers": [
+      {
+        "key": "BCRA",
+        "rate": 1.392
+      },
+      {
+        "key": "BDI",
+        "rate": 1.3939
+      },
+      {
+        "key": "BNR",
+        "rate": 1.3945
+      },
+      {
+        "key": "CBM",
+        "rate": 1.3945
+      },
+      {
+        "key": "CBR",
+        "rate": 1.3859
+      },
+      {
+        "key": "CBU",
+        "rate": 1.3924
+      },
+      {
+        "key": "MNB",
+        "rate": 1.3914
+      },
+      {
+        "key": "NBG",
+        "rate": 1.3936
+      },
+      {
+        "key": "NBM",
+        "rate": 1.3935
+      },
+      {
+        "key": "NBP",
+        "rate": 1.4007
+      },
+      {
+        "key": "NBRM",
+        "rate": 1.393
+      },
+      {
+        "key": "NBU",
+        "rate": 1.3941
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "RWF",
+    "rate": 20.006,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 19.9341
+      },
+      {
+        "key": "BNRRW",
+        "rate": 19.9341
+      },
+      {
+        "key": "BOTA",
+        "rate": 20.001
+      },
+      {
+        "key": "BRB",
+        "rate": 20.069
+      },
+      {
+        "key": "CBK",
+        "rate": 19.9237
+      },
+      {
+        "key": "NBP",
+        "rate": 20.282
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "SAR",
+    "rate": 0.05102,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.05144,
+        "excluded": true
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.051,
+        "excluded": true
+      },
+      {
+        "key": "BCT",
+        "rate": 0.05098,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 0.05102,
+        "excluded": true
+      },
+      {
+        "key": "BI",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "BNA",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "BNM",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "BOE",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "BRB",
+        "rate": 0.05102,
+        "excluded": true
+      },
+      {
+        "key": "BSP",
+        "rate": 0.05108,
+        "excluded": true
+      },
+      {
+        "key": "CBE",
+        "rate": 0.05106,
+        "excluded": true
+      },
+      {
+        "key": "CBG",
+        "rate": 0.05154,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 0.05102,
+        "excluded": true
+      },
+      {
+        "key": "CBK",
+        "rate": 0.05108,
+        "excluded": true
+      },
+      {
+        "key": "CBM",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "CBN",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 0.05102,
+        "excluded": true
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "DAB",
+        "rate": 0.05338,
+        "excluded": true
+      },
+      {
+        "key": "IMF",
+        "rate": 0.05102,
+        "excluded": true
+      },
+      {
+        "key": "MAS",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "NBE",
+        "rate": 0.05082,
+        "excluded": true
+      },
+      {
+        "key": "NBK",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.05196,
+        "excluded": true
+      },
+      {
+        "key": "NBT",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "NBU",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "NRB",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "RBM",
+        "rate": 0.05107,
+        "excluded": true
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.05107,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SBD",
+    "rate": 0.10984,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.10964
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.10964
+      },
+      {
+        "key": "NBP",
+        "rate": 0.1105
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SCR",
+    "rate": 0.19079,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.2006
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.18286
+      },
+      {
+        "key": "NBP",
+        "rate": 0.18769
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SDG",
+    "rate": 8.1992,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 8.1668
+      },
+      {
+        "key": "CBU",
+        "rate": 8.1648
+      },
+      {
+        "key": "NBP",
+        "rate": 8.3096
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "SEK",
+    "rate": 0.13016,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.12916
+      },
+      {
+        "key": "BAM",
+        "rate": 0.13049
+      },
+      {
+        "key": "BCB",
+        "rate": 0.13039
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.13122
+      },
+      {
+        "key": "BCC",
+        "rate": 0.13041
+      },
+      {
+        "key": "BCP",
+        "rate": 0.13028
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.13029
+      },
+      {
+        "key": "BCT",
+        "rate": 0.12977
+      },
+      {
+        "key": "BCU",
+        "rate": 0.13043
+      },
+      {
+        "key": "BDI",
+        "rate": 0.13021
+      },
+      {
+        "key": "BI",
+        "rate": 0.12925
+      },
+      {
+        "key": "BNA",
+        "rate": 0.13021
+      },
+      {
+        "key": "BNR",
+        "rate": 0.13022
+      },
+      {
+        "key": "BOC",
+        "rate": 0.13028
+      },
+      {
+        "key": "BOE",
+        "rate": 0.12982
+      },
+      {
+        "key": "BOI",
+        "rate": 0.13038
+      },
+      {
+        "key": "BOM",
+        "rate": 0.13058
+      },
+      {
+        "key": "BOT",
+        "rate": 0.13049
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.13032
+      },
+      {
+        "key": "BRB",
+        "rate": 0.131
+      },
+      {
+        "key": "BSP",
+        "rate": 0.13023
+      },
+      {
+        "key": "CBA",
+        "rate": 0.13032
+      },
+      {
+        "key": "CBE",
+        "rate": 0.1277
+      },
+      {
+        "key": "CBG",
+        "rate": 0.0013,
+        "excluded": true
+      },
+      {
+        "key": "CBI",
+        "rate": 0.12785
+      },
+      {
+        "key": "CBK",
+        "rate": 0.13001
+      },
+      {
+        "key": "CBM",
+        "rate": 0.13061
+      },
+      {
+        "key": "CBR",
+        "rate": 0.12785
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.13051
+      },
+      {
+        "key": "CBU",
+        "rate": 0.12988
+      },
+      {
+        "key": "CNB",
+        "rate": 0.13024
+      },
+      {
+        "key": "DNB",
+        "rate": 0.1304
+      },
+      {
+        "key": "ECB",
+        "rate": 0.13021
+      },
+      {
+        "key": "FRED",
+        "rate": 0.12809
+      },
+      {
+        "key": "HNB",
+        "rate": 0.13021
+      },
+      {
+        "key": "IMF",
+        "rate": 0.13041
+      },
+      {
+        "key": "LB",
+        "rate": 0.13021
+      },
+      {
+        "key": "MNB",
+        "rate": 0.13031
+      },
+      {
+        "key": "NB",
+        "rate": 0.13021
+      },
+      {
+        "key": "NBE",
+        "rate": 0.12966
+      },
+      {
+        "key": "NBG",
+        "rate": 0.13033
+      },
+      {
+        "key": "NBK",
+        "rate": 0.13038
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.13031
+      },
+      {
+        "key": "NBM",
+        "rate": 0.13034
+      },
+      {
+        "key": "NBP",
+        "rate": 0.13029
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.12987
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.13021
+      },
+      {
+        "key": "NBT",
+        "rate": 0.13031
+      },
+      {
+        "key": "NBU",
+        "rate": 0.13048
+      },
+      {
+        "key": "NRB",
+        "rate": 0.1303
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.13028
+      },
+      {
+        "key": "RB",
+        "rate": 0.13041
+      },
+      {
+        "key": "RBM",
+        "rate": 0.13069
+      },
+      {
+        "key": "SARB",
+        "rate": 0.13042
+      },
+      {
+        "key": "SBI",
+        "rate": 0.13021
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.12983
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "SGD",
+    "rate": 0.01757,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.01752
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.01769
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.01757
+      },
+      {
+        "key": "BCP",
+        "rate": 0.01758
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.01757
+      },
+      {
+        "key": "BDI",
+        "rate": 0.01757
+      },
+      {
+        "key": "BI",
+        "rate": 0.01752
+      },
+      {
+        "key": "BNA",
+        "rate": 0.01757
+      },
+      {
+        "key": "BNM",
+        "rate": 0.01755
+      },
+      {
+        "key": "BNR",
+        "rate": 0.01757
+      },
+      {
+        "key": "BOC",
+        "rate": 0.01757
+      },
+      {
+        "key": "BOE",
+        "rate": 0.01753
+      },
+      {
+        "key": "BOM",
+        "rate": 0.01758
+      },
+      {
+        "key": "BOT",
+        "rate": 0.01756
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.01756
+      },
+      {
+        "key": "BSP",
+        "rate": 0.01755
+      },
+      {
+        "key": "CBA",
+        "rate": 0.01757
+      },
+      {
+        "key": "CBG",
+        "rate": 0.01762
+      },
+      {
+        "key": "CBK",
+        "rate": 0.01754
+      },
+      {
+        "key": "CBM",
+        "rate": 0.01759
+      },
+      {
+        "key": "CBR",
+        "rate": 0.01751
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.01756
+      },
+      {
+        "key": "CBU",
+        "rate": 0.01755
+      },
+      {
+        "key": "CNB",
+        "rate": 0.01757
+      },
+      {
+        "key": "DNB",
+        "rate": 0.01756
+      },
+      {
+        "key": "ECB",
+        "rate": 0.01757
+      },
+      {
+        "key": "FRED",
+        "rate": 0.01746
+      },
+      {
+        "key": "IMF",
+        "rate": 0.01751
+      },
+      {
+        "key": "LB",
+        "rate": 0.01757
+      },
+      {
+        "key": "MAS",
+        "rate": 0.01758
+      },
+      {
+        "key": "MNB",
+        "rate": 0.01757
+      },
+      {
+        "key": "NB",
+        "rate": 0.01757
+      },
+      {
+        "key": "NBG",
+        "rate": 0.01757
+      },
+      {
+        "key": "NBK",
+        "rate": 0.01756
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.01757
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01757
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.01755
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.01757
+      },
+      {
+        "key": "NBT",
+        "rate": 0.01757
+      },
+      {
+        "key": "NBU",
+        "rate": 0.01757
+      },
+      {
+        "key": "NRB",
+        "rate": 0.01757
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.01766
+      },
+      {
+        "key": "RB",
+        "rate": 0.01756
+      },
+      {
+        "key": "RBA",
+        "rate": 0.01759
+      },
+      {
+        "key": "RBM",
+        "rate": 0.01758
+      },
+      {
+        "key": "SBI",
+        "rate": 0.01757
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SHP",
+    "rate": 0.01028,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.01028,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SLE",
+    "rate": 0.33571,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.33155
+      },
+      {
+        "key": "NBP",
+        "rate": 0.34257
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SOS",
+    "rate": 7.8277,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 7.776
+      },
+      {
+        "key": "NBP",
+        "rate": 7.9129
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SRD",
+    "rate": 0.51225,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.50903
+      },
+      {
+        "key": "NBP",
+        "rate": 0.51754
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SSP",
+    "rate": 64.456,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 64.081
+      },
+      {
+        "key": "NBP",
+        "rate": 65.075
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "STN",
+    "rate": 0.29239,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.29071
+      },
+      {
+        "key": "NBP",
+        "rate": 0.29518
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SVC",
+    "rate": 0.11986,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.11905
+      },
+      {
+        "key": "NBP",
+        "rate": 0.1212
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SYP",
+    "rate": 1.5479,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.5375
+      },
+      {
+        "key": "BSP",
+        "rate": 1.5037
+      },
+      {
+        "key": "CBU",
+        "rate": 1.5715
+      },
+      {
+        "key": "NBP",
+        "rate": 1.5991
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "SZL",
+    "rate": 0.22429,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.22415
+      },
+      {
+        "key": "NBP",
+        "rate": 0.22453
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "THB",
+    "rate": 0.4467,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.44938
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.44706
+      },
+      {
+        "key": "BDI",
+        "rate": 0.44711
+      },
+      {
+        "key": "BI",
+        "rate": 0.44506
+      },
+      {
+        "key": "BNA",
+        "rate": 0.44721
+      },
+      {
+        "key": "BNM",
+        "rate": 0.44588
+      },
+      {
+        "key": "BNR",
+        "rate": 0.44648
+      },
+      {
+        "key": "BOC",
+        "rate": 0.44789
+      },
+      {
+        "key": "BOE",
+        "rate": 0.44545
+      },
+      {
+        "key": "BOM",
+        "rate": 0.44705
+      },
+      {
+        "key": "BOT",
+        "rate": 0.44671
+      },
+      {
+        "key": "BSP",
+        "rate": 0.44557
+      },
+      {
+        "key": "CBG",
+        "rate": 0.44721
+      },
+      {
+        "key": "CBM",
+        "rate": 0.44715
+      },
+      {
+        "key": "CBR",
+        "rate": 0.44454
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.4463
+      },
+      {
+        "key": "CBU",
+        "rate": 0.44567
+      },
+      {
+        "key": "CNB",
+        "rate": 0.44715
+      },
+      {
+        "key": "DNB",
+        "rate": 0.44615
+      },
+      {
+        "key": "ECB",
+        "rate": 0.44711
+      },
+      {
+        "key": "FRED",
+        "rate": 0.44547
+      },
+      {
+        "key": "IMF",
+        "rate": 0.44454
+      },
+      {
+        "key": "LB",
+        "rate": 0.44711
+      },
+      {
+        "key": "MAS",
+        "rate": 0.4476
+      },
+      {
+        "key": "MNB",
+        "rate": 0.44696
+      },
+      {
+        "key": "NB",
+        "rate": 0.4471
+      },
+      {
+        "key": "NBK",
+        "rate": 0.44598
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.44676
+      },
+      {
+        "key": "NBP",
+        "rate": 0.44668
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.44712
+      },
+      {
+        "key": "NBT",
+        "rate": 0.44771
+      },
+      {
+        "key": "NBU",
+        "rate": 0.44624
+      },
+      {
+        "key": "NRB",
+        "rate": 0.44738
+      },
+      {
+        "key": "RB",
+        "rate": 0.44615
+      },
+      {
+        "key": "RBA",
+        "rate": 0.44772
+      },
+      {
+        "key": "RBM",
+        "rate": 0.44737
+      },
+      {
+        "key": "SARB",
+        "rate": 0.44676
+      },
+      {
+        "key": "SBI",
+        "rate": 0.44711
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "TJS",
+    "rate": 0.12653,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.1267
+      },
+      {
+        "key": "CBA",
+        "rate": 0.12669
+      },
+      {
+        "key": "CBR",
+        "rate": 0.12669
+      },
+      {
+        "key": "CBU",
+        "rate": 0.12627
+      },
+      {
+        "key": "NBG",
+        "rate": 0.1261
+      },
+      {
+        "key": "NBK",
+        "rate": 0.12585
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.12669
+      },
+      {
+        "key": "NBM",
+        "rate": 0.12597
+      },
+      {
+        "key": "NBP",
+        "rate": 0.12833
+      },
+      {
+        "key": "NBT",
+        "rate": 0.1267
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "TMT",
+    "rate": 0.04762,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.04762,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 0.04762,
+        "excluded": true
+      },
+      {
+        "key": "CBU",
+        "rate": 0.04762,
+        "excluded": true
+      },
+      {
+        "key": "NBG",
+        "rate": 0.04762,
+        "excluded": true
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.04762,
+        "excluded": true
+      },
+      {
+        "key": "NBM",
+        "rate": 0.04762,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 0.04848,
+        "excluded": true
+      },
+      {
+        "key": "NBT",
+        "rate": 0.04762,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "TND",
+    "rate": 0.04013,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.0401
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.04034
+      },
+      {
+        "key": "BCT",
+        "rate": 0.04007
+      },
+      {
+        "key": "BDI",
+        "rate": 0.04012
+      },
+      {
+        "key": "CBU",
+        "rate": 0.03993
+      },
+      {
+        "key": "NBP",
+        "rate": 0.0403
+      },
+      {
+        "key": "NBU",
+        "rate": 0.04009
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "TOP",
+    "rate": 0.03234,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.03202
+      },
+      {
+        "key": "NBP",
+        "rate": 0.03268
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.03244
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "TRY",
+    "rate": 0.63179,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.6319
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.63656
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.63176
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.63186
+      },
+      {
+        "key": "BCU",
+        "rate": 0.63186
+      },
+      {
+        "key": "BDI",
+        "rate": 0.63195
+      },
+      {
+        "key": "BNR",
+        "rate": 0.63013
+      },
+      {
+        "key": "BOC",
+        "rate": 0.63218
+      },
+      {
+        "key": "BOE",
+        "rate": 0.63191
+      },
+      {
+        "key": "BOM",
+        "rate": 0.63196
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.63202
+      },
+      {
+        "key": "CBG",
+        "rate": 0.63069
+      },
+      {
+        "key": "CBI",
+        "rate": 0.6305
+      },
+      {
+        "key": "CBR",
+        "rate": 0.62959
+      },
+      {
+        "key": "CBU",
+        "rate": 0.63195
+      },
+      {
+        "key": "CNB",
+        "rate": 0.63194
+      },
+      {
+        "key": "DNB",
+        "rate": 0.63204
+      },
+      {
+        "key": "ECB",
+        "rate": 0.63195
+      },
+      {
+        "key": "LB",
+        "rate": 0.63195
+      },
+      {
+        "key": "MNB",
+        "rate": 0.63168
+      },
+      {
+        "key": "NB",
+        "rate": 0.63195
+      },
+      {
+        "key": "NBG",
+        "rate": 0.63158
+      },
+      {
+        "key": "NBK",
+        "rate": 0.63202
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.63016
+      },
+      {
+        "key": "NBM",
+        "rate": 0.63202
+      },
+      {
+        "key": "NBP",
+        "rate": 0.63205
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.63198
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.63196
+      },
+      {
+        "key": "NBT",
+        "rate": 0.63193
+      },
+      {
+        "key": "NBU",
+        "rate": 0.63195
+      },
+      {
+        "key": "RB",
+        "rate": 0.63196
+      },
+      {
+        "key": "RBM",
+        "rate": 0.63187
+      },
+      {
+        "key": "SBI",
+        "rate": 0.63284
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.6298
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "TTD",
+    "rate": 0.09236,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.09199
+      },
+      {
+        "key": "BNA",
+        "rate": 0.09174
+      },
+      {
+        "key": "IMF",
+        "rate": 0.09198
+      },
+      {
+        "key": "NBP",
+        "rate": 0.09402
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "TWD",
+    "rate": 0.43071,
+    "providers": [
+      {
+        "key": "AMCM",
+        "rate": 0.43098
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.43289
+      },
+      {
+        "key": "BCP",
+        "rate": 0.42971
+      },
+      {
+        "key": "BDI",
+        "rate": 0.43012
+      },
+      {
+        "key": "BNA",
+        "rate": 0.42971
+      },
+      {
+        "key": "BNM",
+        "rate": 0.43016
+      },
+      {
+        "key": "BOC",
+        "rate": 0.43039
+      },
+      {
+        "key": "BOE",
+        "rate": 0.42963
+      },
+      {
+        "key": "BOM",
+        "rate": 0.43078
+      },
+      {
+        "key": "BSP",
+        "rate": 0.43089
+      },
+      {
+        "key": "CBG",
+        "rate": 0.43342
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.42975
+      },
+      {
+        "key": "FRED",
+        "rate": 0.43037
+      },
+      {
+        "key": "MAS",
+        "rate": 0.43071
+      },
+      {
+        "key": "NB",
+        "rate": 0.43009
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.43041
+      },
+      {
+        "key": "NBP",
+        "rate": 0.43702
+      },
+      {
+        "key": "RBA",
+        "rate": 0.42985
+      },
+      {
+        "key": "SARB",
+        "rate": 0.43053
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "TZS",
+    "rate": 35.764,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 35.755
+      },
+      {
+        "key": "BNA",
+        "rate": 35.539
+      },
+      {
+        "key": "BNRRW",
+        "rate": 35.759
+      },
+      {
+        "key": "BOTA",
+        "rate": 35.798
+      },
+      {
+        "key": "BRB",
+        "rate": 35.78
+      },
+      {
+        "key": "CBK",
+        "rate": 35.778
+      },
+      {
+        "key": "NBP",
+        "rate": 36.351
+      },
+      {
+        "key": "RBM",
+        "rate": 35.581
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "UAH",
+    "rate": 0.61103,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.61064
+      },
+      {
+        "key": "BNA",
+        "rate": 0.6097
+      },
+      {
+        "key": "BNR",
+        "rate": 0.61095
+      },
+      {
+        "key": "BOM",
+        "rate": 0.61109
+      },
+      {
+        "key": "CBA",
+        "rate": 0.61126
+      },
+      {
+        "key": "CBR",
+        "rate": 0.61109
+      },
+      {
+        "key": "CBU",
+        "rate": 0.61137
+      },
+      {
+        "key": "MNB",
+        "rate": 0.61139
+      },
+      {
+        "key": "NBG",
+        "rate": 0.61114
+      },
+      {
+        "key": "NBK",
+        "rate": 0.61163
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.6111
+      },
+      {
+        "key": "NBM",
+        "rate": 0.61126
+      },
+      {
+        "key": "NBP",
+        "rate": 0.61067
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.61088
+      },
+      {
+        "key": "NBT",
+        "rate": 0.6112
+      },
+      {
+        "key": "NBU",
+        "rate": 0.61109
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "UGX",
+    "rate": 49.773,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 49.643
+      },
+      {
+        "key": "BNRRW",
+        "rate": 49.658
+      },
+      {
+        "key": "BOTA",
+        "rate": 49.761
+      },
+      {
+        "key": "BRB",
+        "rate": 49.675
+      },
+      {
+        "key": "CBK",
+        "rate": 49.677
+      },
+      {
+        "key": "NBP",
+        "rate": 50.513
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "USD",
+    "rate": 0.01361,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.01365
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.01354
+      },
+      {
+        "key": "BCC",
+        "rate": 0.01352
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.01366
+      },
+      {
+        "key": "BCU",
+        "rate": 0.01354
+      },
+      {
+        "key": "BNA",
+        "rate": 0.01373
+      },
+      {
+        "key": "BNR",
+        "rate": 0.01361
+      },
+      {
+        "key": "BOM",
+        "rate": 0.01355
+      },
+      {
+        "key": "CBA",
+        "rate": 0.01361
+      },
+      {
+        "key": "CBM",
+        "rate": 0.01355
+      },
+      {
+        "key": "CBR",
+        "rate": 0.01363
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.01364
+      },
+      {
+        "key": "CBU",
+        "rate": 0.01361
+      },
+      {
+        "key": "MNB",
+        "rate": 0.01355
+      },
+      {
+        "key": "NBG",
+        "rate": 0.01367
+      },
+      {
+        "key": "NBK",
+        "rate": 0.01359
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.01363
+      },
+      {
+        "key": "NBM",
+        "rate": 0.01365
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01348
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.01364
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.01364
+      },
+      {
+        "key": "NBT",
+        "rate": 0.01362
+      },
+      {
+        "key": "TCMB",
+        "rate": 0.0136
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "UYU",
+    "rate": 0.54742,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.54985
+      },
+      {
+        "key": "BCP",
+        "rate": 0.5454
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.5451
+      },
+      {
+        "key": "BCU",
+        "rate": 0.54557
+      },
+      {
+        "key": "BDI",
+        "rate": 0.54491
+      },
+      {
+        "key": "CBU",
+        "rate": 0.54676
+      },
+      {
+        "key": "IMF",
+        "rate": 0.54905
+      },
+      {
+        "key": "NBP",
+        "rate": 0.55871
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "UZS",
+    "rate": 164.46,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 164.27
+      },
+      {
+        "key": "CBA",
+        "rate": 164.19
+      },
+      {
+        "key": "CBR",
+        "rate": 164.44
+      },
+      {
+        "key": "CBU",
+        "rate": 164.44
+      },
+      {
+        "key": "NBG",
+        "rate": 164.22
+      },
+      {
+        "key": "NBK",
+        "rate": 164.26
+      },
+      {
+        "key": "NBKR",
+        "rate": 164.35
+      },
+      {
+        "key": "NBM",
+        "rate": 164.37
+      },
+      {
+        "key": "NBP",
+        "rate": 166.88
+      },
+      {
+        "key": "NBT",
+        "rate": 164.12
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "VES",
+    "rate": 8.1888,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 8.0085
+      },
+      {
+        "key": "BDI",
+        "rate": 8.254
+      },
+      {
+        "key": "BSP",
+        "rate": 8.2468
+      },
+      {
+        "key": "CBU",
+        "rate": 8.1851
+      },
+      {
+        "key": "NBP",
+        "rate": 8.2891
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "VND",
+    "rate": 357.18,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 361.61
+      },
+      {
+        "key": "BCRA",
+        "rate": 358.13
+      },
+      {
+        "key": "BDI",
+        "rate": 358.26
+      },
+      {
+        "key": "BI",
+        "rate": 359.33
+      },
+      {
+        "key": "BNA",
+        "rate": 358.04
+      },
+      {
+        "key": "BNM",
+        "rate": 359.08
+      },
+      {
+        "key": "BOM",
+        "rate": 347.58
+      },
+      {
+        "key": "CBM",
+        "rate": 3.5851,
+        "excluded": true
+      },
+      {
+        "key": "CBR",
+        "rate": 342.51
+      },
+      {
+        "key": "CBSL",
+        "rate": 358.14
+      },
+      {
+        "key": "CBU",
+        "rate": 358.26
+      },
+      {
+        "key": "MAS",
+        "rate": 358.26
+      },
+      {
+        "key": "NB",
+        "rate": 358.05
+      },
+      {
+        "key": "NBKR",
+        "rate": 358.39
+      },
+      {
+        "key": "NBP",
+        "rate": 364.48
+      },
+      {
+        "key": "NBRB",
+        "rate": 358.21
+      },
+      {
+        "key": "NBU",
+        "rate": 358.18
+      },
+      {
+        "key": "RBA",
+        "rate": 358.42
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "VUV",
+    "rate": 1.6103,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.6054
+      },
+      {
+        "key": "NBP",
+        "rate": 1.6184
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "WST",
+    "rate": 0.03732,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.03722
+      },
+      {
+        "key": "NBP",
+        "rate": 0.03751
+      },
+      {
+        "key": "NRBT",
+        "rate": 0.0373
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "XAF",
+    "rate": 7.7757,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 7.7833,
+        "excluded": true
+      },
+      {
+        "key": "BNA",
+        "rate": 7.7834,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 7.964,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "XAG",
+    "rate": 0.0002,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.00021
+      },
+      {
+        "key": "BOM",
+        "rate": 0.00021
+      },
+      {
+        "key": "BSP",
+        "rate": 0.00021
+      },
+      {
+        "key": "CBA",
+        "rate": 0.0002
+      },
+      {
+        "key": "CBR",
+        "rate": 0.00019
+      },
+      {
+        "key": "NBM",
+        "rate": 0.0002
+      },
+      {
+        "key": "NBU",
+        "rate": 0.0002
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "XAU",
+    "rate": 0.0000030,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.0000030
+      },
+      {
+        "key": "BCP",
+        "rate": 0.0000030
+      },
+      {
+        "key": "BNA",
+        "rate": 0.00295,
+        "excluded": true
+      },
+      {
+        "key": "BNR",
+        "rate": 0.0000030
+      },
+      {
+        "key": "BOM",
+        "rate": 0.0000030
+      },
+      {
+        "key": "BSP",
+        "rate": 0.0000030
+      },
+      {
+        "key": "CBA",
+        "rate": 0.0000030
+      },
+      {
+        "key": "CBR",
+        "rate": 0.0000030
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.0000030
+      },
+      {
+        "key": "NBM",
+        "rate": 0.0000030
+      },
+      {
+        "key": "NBP",
+        "rate": 0.0000030
+      },
+      {
+        "key": "NBU",
+        "rate": 0.0000030
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "XCD",
+    "rate": 0.03749,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.03674
+      },
+      {
+        "key": "BOJA",
+        "rate": 0.03828
+      },
+      {
+        "key": "NBP",
+        "rate": 0.03745
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "XCG",
+    "rate": 0.02458,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.02436
+      },
+      {
+        "key": "NBP",
+        "rate": 0.02495
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "XDR",
+    "rate": 0.00999,
+    "providers": [
+      {
+        "key": "BCBO",
+        "rate": 0.01001
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.01001
+      },
+      {
+        "key": "BDI",
+        "rate": 0.01
+      },
+      {
+        "key": "BNR",
+        "rate": 0.01001
+      },
+      {
+        "key": "BOM",
+        "rate": 0.01001
+      },
+      {
+        "key": "BRB",
+        "rate": 0.01001
+      },
+      {
+        "key": "BSP",
+        "rate": 0.01001
+      },
+      {
+        "key": "CBA",
+        "rate": 0.01001
+      },
+      {
+        "key": "CBG",
+        "rate": 0.00996
+      },
+      {
+        "key": "CBI",
+        "rate": 0.00996
+      },
+      {
+        "key": "CBN",
+        "rate": 0.00991
+      },
+      {
+        "key": "CBR",
+        "rate": 0.00996
+      },
+      {
+        "key": "CBU",
+        "rate": 0.00996
+      },
+      {
+        "key": "CNB",
+        "rate": 0.01001
+      },
+      {
+        "key": "IMF",
+        "rate": 0.01001
+      },
+      {
+        "key": "NB",
+        "rate": 0.01001
+      },
+      {
+        "key": "NBE",
+        "rate": 0.00991
+      },
+      {
+        "key": "NBK",
+        "rate": 0.00996
+      },
+      {
+        "key": "NBKR",
+        "rate": 0.01001
+      },
+      {
+        "key": "NBM",
+        "rate": 0.01001
+      },
+      {
+        "key": "NBP",
+        "rate": 0.01001
+      },
+      {
+        "key": "NBRB",
+        "rate": 0.00996
+      },
+      {
+        "key": "NBU",
+        "rate": 0.01001
+      },
+      {
+        "key": "RBF",
+        "rate": 0.00995
+      },
+      {
+        "key": "RBM",
+        "rate": 0.01001
+      },
+      {
+        "key": "SBI",
+        "rate": 0.01001
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "XOF",
+    "rate": 7.7757,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 7.792,
+        "excluded": true
+      },
+      {
+        "key": "BCEAO",
+        "rate": 7.7833,
+        "excluded": true
+      },
+      {
+        "key": "BDI",
+        "rate": 7.7833,
+        "excluded": true
+      },
+      {
+        "key": "CBG",
+        "rate": 0.00153,
+        "excluded": true
+      },
+      {
+        "key": "CBN",
+        "rate": 7.8613,
+        "excluded": true
+      },
+      {
+        "key": "NBP",
+        "rate": 7.8333,
+        "excluded": true
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "XPD",
+    "rate": 0.000010,
+    "providers": [
+      {
+        "key": "CBR",
+        "rate": 0.000010
+      },
+      {
+        "key": "NBU",
+        "rate": 0.000011
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "XPF",
+    "rate": 1.4187,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 1.4159
+      },
+      {
+        "key": "NBP",
+        "rate": 1.4232
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "XPT",
+    "rate": 0.0000080,
+    "providers": [
+      {
+        "key": "CBR",
+        "rate": 0.0000080
+      },
+      {
+        "key": "NBU",
+        "rate": 0.0000080
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "YER",
+    "rate": 3.2589,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 3.2452
+      },
+      {
+        "key": "CBU",
+        "rate": 3.2459
+      },
+      {
+        "key": "NBP",
+        "rate": 3.3027
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "base": "RUB",
+    "quote": "ZAR",
+    "rate": 0.2238,
+    "providers": [
+      {
+        "key": "BAM",
+        "rate": 0.22446
+      },
+      {
+        "key": "BCBO",
+        "rate": 0.22524
+      },
+      {
+        "key": "BCEAO",
+        "rate": 0.22415
+      },
+      {
+        "key": "BCP",
+        "rate": 0.224
+      },
+      {
+        "key": "BCRA",
+        "rate": 0.22376
+      },
+      {
+        "key": "BCU",
+        "rate": 0.22389
+      },
+      {
+        "key": "BDI",
+        "rate": 0.22415
+      },
+      {
+        "key": "BNA",
+        "rate": 0.22418
+      },
+      {
+        "key": "BNR",
+        "rate": 0.2242
+      },
+      {
+        "key": "BNRRW",
+        "rate": 0.22485
+      },
+      {
+        "key": "BOB",
+        "rate": 0.22419
+      },
+      {
+        "key": "BOC",
+        "rate": 0.22394
+      },
+      {
+        "key": "BOE",
+        "rate": 0.22315
+      },
+      {
+        "key": "BOI",
+        "rate": 0.22414
+      },
+      {
+        "key": "BOM",
+        "rate": 0.22424
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.22342
+      },
+      {
+        "key": "BRB",
+        "rate": 0.22477
+      },
+      {
+        "key": "BSP",
+        "rate": 0.2233
+      },
+      {
+        "key": "CBG",
+        "rate": 0.22361
+      },
+      {
+        "key": "CBK",
+        "rate": 0.22327
+      },
+      {
+        "key": "CBM",
+        "rate": 0.22435
+      },
+      {
+        "key": "CBN",
+        "rate": 0.22437
+      },
+      {
+        "key": "CBR",
+        "rate": 0.22285
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.22384
+      },
+      {
+        "key": "CBU",
+        "rate": 0.22334
+      },
+      {
+        "key": "CNB",
+        "rate": 0.22404
+      },
+      {
+        "key": "DNB",
+        "rate": 0.22358
+      },
+      {
+        "key": "ECB",
+        "rate": 0.22415
+      },
+      {
+        "key": "FRED",
+        "rate": 0.22187
+      },
+      {
+        "key": "LB",
+        "rate": 0.22415
+      },
+      {
+        "key": "MNB",
+        "rate": 0.22408
+      },
+      {
+        "key": "NB",
+        "rate": 0.22416
+      },
+      {
+        "key": "NBE",
+        "rate": 0.22216
+      },
+      {
+        "key": "NBG",
+        "rate": 0.22436
+      },
+      {
+        "key": "NBK",
+        "rate": 0.22374
+      },
+      {
+        "key": "NBP",
+        "rate": 0.22403
+      },
+      {
+        "key": "NBRM",
+        "rate": 0.22415
+      },
+      {
+        "key": "NBU",
+        "rate": 0.22377
+      },
+      {
+        "key": "RB",
+        "rate": 0.22356
+      },
+      {
+        "key": "RBM",
+        "rate": 0.21787
+      },
+      {
+        "key": "SARB",
+        "rate": 0.2242
+      },
+      {
+        "key": "SBI",
+        "rate": 0.22415
+      }
+    ]
+  },
+  {
+    "date": "2026-06-20",
+    "base": "RUB",
+    "quote": "ZMW",
+    "rate": 0.24394,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.24387
+      },
+      {
+        "key": "BOTA",
+        "rate": 0.24423
+      },
+      {
+        "key": "CBSL",
+        "rate": 0.24349
+      },
+      {
+        "key": "NBP",
+        "rate": 0.24569
+      },
+      {
+        "key": "RBM",
+        "rate": 0.24315
+      },
+      {
+        "key": "SARB",
+        "rate": 0.2439
+      }
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "base": "RUB",
+    "quote": "ZWG",
+    "rate": 0.36669,
+    "providers": [
+      {
+        "key": "BDI",
+        "rate": 0.36426
+      },
+      {
+        "key": "NBP",
+        "rate": 0.3707
+      }
+    ]
+  }
+]

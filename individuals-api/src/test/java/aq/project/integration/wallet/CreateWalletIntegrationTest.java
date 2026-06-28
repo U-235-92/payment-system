@@ -4,7 +4,7 @@ import aq.project.dto.CardType;
 import aq.project.dto.CreateWalletRequestDTO;
 import aq.project.dto.ErrorDTO;
 import aq.project.dto.WalletStatus;
-import aq.project.proxies.JwtClient;
+import aq.project.clients.JwtClient;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -18,7 +18,6 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;

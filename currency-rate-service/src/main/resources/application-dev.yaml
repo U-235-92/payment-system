@@ -6,19 +6,7 @@ logging:
     org.hibernate.orm.results: info
     org.hibernate.SQL: info
     org.hibernate.type.descriptor.sql: info
-management:
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: http://localhost:4318/v1/traces
 spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080/realms/payment-system
-          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
   flyway:
     enabled: false
   datasource:

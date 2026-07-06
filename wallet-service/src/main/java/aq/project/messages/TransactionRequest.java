@@ -3,6 +3,7 @@ package aq.project.messages;
 import aq.project.dto.OperationType;
 import aq.project.dto.TransactionStatus;
 import aq.project.exceptions.UnknownMessagePropertyException;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -43,7 +44,8 @@ public class TransactionRequest {
     @Getter @Setter
     private Long timestamp;
 
-    private final Map<String, Object> properties = new HashMap<>();;;
+    @JsonProperty("properties")
+    private Map<String, String> properties = new HashMap<>();
 
     public TransactionRequest(String transactionId, OperationType operationType, BigDecimal amount, String currency, TransactionStatus transactionStatus, Long timestamp) {
         super();
@@ -55,20 +57,18 @@ public class TransactionRequest {
         this.timestamp = timestamp;
     }
 
-    public <T> T getProperty(String key, Class<T> type) {
+    public String getProperty(String key) {
         if(isPropertyNull(key))
             throw new UnknownMessagePropertyException("Unknown message property: " + key);
-        if(!type.isInstance(properties.get(key)))
-            throw new ClassCastException(String.format("Message property type [%s] is not of type [%s]", properties.get(key).getClass().getName(), type.getName()));
-        return (T) properties.get(key);
-    }
-
-    public void putProperty(String key, Object value) {
-        if(value != null && key != null)
-            properties.put(key, value);
+        return properties.get(key);
     }
 
     public boolean isPropertyNull(String key) {
         return properties.get(key) == null;
+    }
+
+    public void putProperty(String key, String value) {
+        if(value != null && key != null)
+            properties.put(key, value);
     }
 }

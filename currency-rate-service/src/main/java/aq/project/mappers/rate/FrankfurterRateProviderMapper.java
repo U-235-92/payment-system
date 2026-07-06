@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -17,13 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 import static aq.project.mappers.rate.FrankfurterRateProviderMapper.FrankfurterRateProviderProperties.*;
+import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component(value = "frankfurter")
 public class FrankfurterRateProviderMapper implements AbstractRateProviderMapper {
-
-    private static final String ISO_DATE_FORMAT = "yyyy-MM-dd";
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(ISO_DATE_FORMAT);
 
@@ -92,14 +92,21 @@ public class FrankfurterRateProviderMapper implements AbstractRateProviderMapper
     }
 
     @Override
-    public List<ConversionRate> getConversionRateList(String rateClientResponse, Map<String, Currency> currenciesMap) throws Exception {
+    public List<ConversionRate> getConversionRateList(
+            String rateClientResponse,
+            Map<String, Currency> currenciesMap
+    ) throws Exception {
         List<ConversionRate> conversionRates = new ArrayList<>();
         JsonNode root = objectMapper.readTree(rateClientResponse);
-        root.forEach(node ->  conversionRates.add(getConversionRate(node, currenciesMap)));
+        root.forEach(node ->  conversionRates
+                .add(getConversionRate(node, currenciesMap)));
         return conversionRates;
     }
 
-    private ConversionRate getConversionRate(JsonNode node, Map<String, Currency> currenciesMap) {
+    private ConversionRate getConversionRate(
+            JsonNode node,
+            Map<String, Currency> currenciesMap
+    ) {
         if(currenciesMap == null || currenciesMap.isEmpty())
             throw new IllegalArgumentException("Currencies map is null or empty");
         if(isIllegalConversionRateJsonNode(node))
@@ -109,14 +116,16 @@ public class FrankfurterRateProviderMapper implements AbstractRateProviderMapper
         Currency sourceCurrency = currenciesMap.computeIfPresent(sourceCurrencyCode, (k, v) -> v);
         Currency destinationCurrency = currenciesMap.computeIfPresent(destinationCurrencyCode, (k, v) -> v);
         LocalDate rateDate = getJsonNodeLocalDateFieldValue(node, DATE);
-        double rate = node.get(RATE).asDouble();
+        BigDecimal rate = BigDecimal.valueOf(node.get(RATE).asDouble());
         JsonNode providersArrayNode = node.get(PROVIDERS);
-        Map<String, Double> providerRateMap = new HashMap<>();
+        Map<String, BigDecimal> providerRateMap = new HashMap<>();
         if(providersArrayNode != null) {
             providersArrayNode.forEach(providerNode -> {
                 if(isIllegalProviderJsonNode(providerNode))
                     throw new IllegalArgumentException("Illegal provider JSON node");
-                providerRateMap.put(providerNode.get(KEY).asText(), providerNode.get(RATE).asDouble());
+                String providerCode = providerNode.get(KEY).asText();
+                BigDecimal providerRate = BigDecimal.valueOf(providerNode.get(RATE).asDouble());
+                providerRateMap.put(providerCode, providerRate);
             });
         }
         return new ConversionRate(sourceCurrency, destinationCurrency, rateDate, rate, providerRateMap);

@@ -61,7 +61,7 @@ public class GetWalletInfoIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.get()
-                .uri("/api/wallets/info/" + walletId)
+                .uri("/api/v1/wallet/info/" + walletId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .exchange()
                 .expectStatus()
@@ -78,7 +78,7 @@ public class GetWalletInfoIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.get()
-                .uri("/api/wallets/info/" + walletId)
+                .uri("/api/v1/wallet/info/" + walletId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .exchange()
                 .expectStatus()

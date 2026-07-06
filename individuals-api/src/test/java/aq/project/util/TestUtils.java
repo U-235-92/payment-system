@@ -10,7 +10,7 @@ public abstract class TestUtils {
 
     public static Mono<ResponseEntity<ResponseTokenDTO>> loginUserMono(LoginUserDTO loginUserDTO, WebClient webClient) {
         return webClient.post()
-                .uri("/gateway/api/user/login-user")
+                .uri("/api/v1/user/login-user")
                 .bodyValue(loginUserDTO)
                 .exchangeToMono(response -> response.bodyToMono(ResponseTokenDTO.class))
                 .map(response -> ResponseEntity.ok().body(response));

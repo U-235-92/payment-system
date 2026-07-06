@@ -1,21 +1,25 @@
 package aq.project.integration.transaction;
 
+import aq.project.clients.JwtClient;
 import aq.project.dto.ErrorDTO;
 import aq.project.dto.OperationType;
+import aq.project.dto.RateResponse;
 import aq.project.dto.TransactionRequestDTO;
-import aq.project.clients.JwtClient;
-import aq.project.util.constants.RequestPropertyKeys;
+import aq.project.services.TransactionService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -25,26 +29,49 @@ import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
+import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
+
 @Testcontainers
+@ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@EnableWireMock(@ConfigureWireMock(name = "transaction-service", port = 8083))
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@EnableWireMock(value = {
+        @ConfigureWireMock(name = "transaction-service", port = 18085),
+        @ConfigureWireMock(name = "wallet-service", port = 18086),
+        @ConfigureWireMock(name = "currency-rate-service", port = 18087)
+    }
+)
 public class DoDepositTransactionIntegrationTest {
 
     @Value("${application.transaction-service.endpoints.send-transaction-request}")
     private String sendTransactionRequestUri;
+    @Value("${application.wallet-service.endpoints.get-wallet-currency}")
+    private String walletServiceGetWalletCurrencyEndpoint;
+    @Value("${application.currency-rate-service.endpoints.get-rate}")
+    private String getRateEndpoint;
 
     @Autowired
     private JwtClient jwtClient;
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private TransactionService transactionService;
+
     @InjectWireMock("transaction-service")
     private WireMockServer transactionServiceMock;
+    @InjectWireMock("wallet-service")
+    private WireMockServer walletServiceMock;
+    @InjectWireMock("currency-rate-service")
+    private WireMockServer currencyRateServiceMock;
 
     @Container
     private static final KeycloakContainer KEYCLOAK_CONTAINER = TestContainers.Keycloak.KEYCLOAK_CONTAINER;
@@ -52,37 +79,56 @@ public class DoDepositTransactionIntegrationTest {
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
         TestApplicationProperties.KeycloakProperties.registerApplicationContextContainerProperties(registry);
-        registry.add("server.port", () -> "8585");
-        registry.add("application.transaction-service.uri", () -> "http://localhost:${wiremock.server.port}");
+        registry.add("application.transaction-service.uri", () -> "http://localhost:18085");
+        registry.add("application.wallet-service.uri", () -> "http://localhost:18086");
+        registry.add("application.currency-rate-service.uri", () -> "http://localhost:18087");
     }
 
     @Test
     public void successDoTransactionRequestDtoTest() {
+//        Prepare constants
+        String RUB = "RUB";
+//        Prepare DTO
+        TransactionRequestDTO transactionRequestDTO = getValidDepositTransactionRequestDto();
+        RateResponse rateResponse = getValidRateResponse();
+//        Prepare URL
+        String getWalletCurrencyUrl = String.format("%s/%s",
+                walletServiceGetWalletCurrencyEndpoint, transactionRequestDTO.getProperties().get(RECIPIENT_WALLET_ID));
+        String getRateUrl = String.format("%s?from=%s&to=%s", getRateEndpoint, RUB, RUB);
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.ok()));
-//        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        walletServiceMock.stubFor(WireMock.get(getWalletCurrencyUrl)
+                .willReturn(WireMock.ok(RUB)));
+        currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
+                .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 //        Test call
-        webTestClient.post()
-                .uri("/api/transactions/do-transaction")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
-                .bodyValue(getValidDepositTransactionRequestDto())
-                .exchange()
-                .expectStatus()
-                .isOk();
+        Assertions.assertDoesNotThrow(() -> transactionService.doTransaction(transactionRequestDTO).block());
     }
 
     @Test
     public void failOn5xxStatusTransactionServiceResponseTest() {
+//        Prepare constants
+        String RUB = "RUB";
+//        Prepare DTO
+        TransactionRequestDTO transactionRequestDTO = getValidDepositTransactionRequestDto();
+        RateResponse rateResponse = getValidRateResponse();
+//        Prepare URL
+        String getWalletCurrencyUrl = String.format("%s/%s",
+                walletServiceGetWalletCurrencyEndpoint, transactionRequestDTO.getProperties().get(RECIPIENT_WALLET_ID));
+        String getRateUrl = String.format("%s?from=%s&to=%s", getRateEndpoint, RUB, RUB);
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.status(500)));
+        walletServiceMock.stubFor(WireMock.get(getWalletCurrencyUrl)
+                .willReturn(WireMock.ok(RUB)));
+        currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
+                .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 //        Prepare test resources
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/transactions/do-transaction")
+                .uri("/api/v1/transaction/do-transaction")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .bodyValue(getValidDepositTransactionRequestDto())
                 .exchange()
@@ -93,16 +139,29 @@ public class DoDepositTransactionIntegrationTest {
 
     @Test
     public void failOn4xxStatusTransactionServiceResponseTest() {
+//        Prepare constants
+        String RUB = "RUB";
+//        Prepare DTO
+        TransactionRequestDTO transactionRequestDTO = getValidDepositTransactionRequestDto();
+        RateResponse rateResponse = getValidRateResponse();
+//        Prepare URL
+        String getWalletCurrencyUrl = String.format("%s/%s",
+                walletServiceGetWalletCurrencyEndpoint, transactionRequestDTO.getProperties().get(RECIPIENT_WALLET_ID));
+        String getRateUrl = String.format("%s?from=%s&to=%s", getRateEndpoint, RUB, RUB);
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.status(400)));
+        walletServiceMock.stubFor(WireMock.get(getWalletCurrencyUrl)
+                .willReturn(WireMock.ok(RUB)));
+        currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
+                .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 //        Prepare test resources
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/transactions/do-transaction")
+                .uri("/api/v1/transaction/do-transaction")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
-                .bodyValue(getValidDepositTransactionRequestDto())
+                .bodyValue(transactionRequestDTO)
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
@@ -118,7 +177,7 @@ public class DoDepositTransactionIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/transactions/do-transaction")
+                .uri("/api/v1/transaction/do-transaction")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .bodyValue(getInvalidDepositTransactionRequestDto())
                 .exchange()
@@ -129,7 +188,7 @@ public class DoDepositTransactionIntegrationTest {
 
     private TransactionRequestDTO getValidDepositTransactionRequestDto() {
         Map<String, String> properties = new HashMap<>();
-        properties.put(RequestPropertyKeys.RECIPIENT_WALLET_ID, UUID.randomUUID().toString());
+        properties.put(RECIPIENT_WALLET_ID, UUID.randomUUID().toString());
         return new TransactionRequestDTO()
                 .operationType(OperationType.DEPOSIT)
                 .amount("85.58")
@@ -140,12 +199,23 @@ public class DoDepositTransactionIntegrationTest {
 
     private TransactionRequestDTO getInvalidDepositTransactionRequestDto() {
         Map<String, String> properties = new HashMap<>();
-        properties.put(RequestPropertyKeys.RECIPIENT_WALLET_ID, "invalid-id");
+        properties.put(RECIPIENT_WALLET_ID, "invalid-id");
         return new TransactionRequestDTO()
                 .operationType(OperationType.DEPOSIT)
                 .amount("-85.58")
                 .currency("HELLO")
                 .timestamp(-System.currentTimeMillis())
                 .properties(properties);
+    }
+
+    private RateResponse getValidRateResponse() {
+        final String RUB = "RUB";
+        RateResponse rateResponse = new RateResponse();
+        rateResponse.setRate(BigDecimal.valueOf(1.00));
+        rateResponse.setProviderCode("CBR");
+        rateResponse.setSourceCode(RUB);
+        rateResponse.setDestinationCode(RUB);
+        rateResponse.setRateDate(LocalDate.now().format(DateTimeFormatter.ofPattern(ISO_DATE_FORMAT)));
+        return rateResponse;
     }
 }

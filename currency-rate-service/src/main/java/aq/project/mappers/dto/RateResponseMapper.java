@@ -5,9 +5,11 @@ import aq.project.entity.ConversionRate;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import static aq.project.util.constants.CustomConstants.*;
+
+import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class RateResponseMapper {
@@ -34,8 +36,8 @@ public abstract class RateResponseMapper {
 
     protected BigDecimal toRate(ConversionRate conversionRate, String provider) {
         if(provider == null || provider.isEmpty() || conversionRate.getProviderRateMap().get(provider) == null)
-            return BigDecimal.valueOf(conversionRate.getRate());
-        return BigDecimal.valueOf(conversionRate.getProviderRateMap().get(provider));
+            return conversionRate.getRate();
+        return conversionRate.getProviderRateMap().get(provider);
 
     }
 

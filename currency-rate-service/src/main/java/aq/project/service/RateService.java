@@ -4,6 +4,7 @@ import aq.project.client.FrankfurterRateProviderClient;
 import aq.project.dto.CurrencyResponse;
 import aq.project.dto.RateProviderResponse;
 import aq.project.dto.RateResponse;
+import aq.project.entity.AdjustmentFactor;
 import aq.project.entity.ConversionRate;
 import aq.project.entity.Currency;
 import aq.project.entity.RateProvider;
@@ -11,6 +12,7 @@ import aq.project.mappers.dto.CurrencyResponseMapper;
 import aq.project.mappers.dto.RateProviderResponseMapper;
 import aq.project.mappers.dto.RateResponseMapper;
 import aq.project.mappers.rate.AbstractRateProviderMapper;
+import aq.project.repository.AdjustmentFactorRepository;
 import aq.project.repository.ConversionRateRepository;
 import aq.project.repository.CurrencyRepository;
 import aq.project.repository.RateProviderRepository;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -36,8 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import static aq.project.util.constants.CustomConstants.*;
-import static aq.project.service.RateService.RateServiceDefaultCurrencies.DEFAULT_CURRENCY_CODE_LIST;
+
+import static aq.project.util.constants.CustomConstants.EQUAL_CURRENCY_RATE;
+import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
 
 @Slf4j
 @Service
@@ -46,9 +50,13 @@ public class RateService {
     @Value("${spring.application.name}")
     private String tracerName;
 
+    @Value("${application.rates.provider.default.code}")
+    private String defaultRateProviderCode;
+
     private final CurrencyRepository currencyRepository;
     private final RateProviderRepository rateProviderRepository;
     private final ConversionRateRepository conversionRateRepository;
+    private final AdjustmentFactorRepository adjustmentFactorRepository;
 
     private final FrankfurterRateProviderClient frankfurterRateProviderClient;
 
@@ -66,6 +74,7 @@ public class RateService {
             CurrencyRepository currencyRepository,
             RateProviderRepository rateProviderRepository,
             ConversionRateRepository conversionRateRepository,
+            AdjustmentFactorRepository adjustmentFactorRepository,
             FrankfurterRateProviderClient frankfurterRateProviderClient,
             @Qualifier("frankfurter") AbstractRateProviderMapper rateProviderMapper,
             OpenTelemetry openTelemetry,
@@ -76,6 +85,7 @@ public class RateService {
         this.currencyRepository = currencyRepository;
         this.rateProviderRepository = rateProviderRepository;
         this.conversionRateRepository = conversionRateRepository;
+        this.adjustmentFactorRepository = adjustmentFactorRepository;
         this.frankfurterRateProviderClient = frankfurterRateProviderClient;
         this.rateProviderMapper = rateProviderMapper;
         this.openTelemetry = openTelemetry;
@@ -85,25 +95,45 @@ public class RateService {
         this.rateProviderResponseMapper = rateProviderResponseMapper;
     }
 
-    public RateResponse getRate(String from, String to, String provider) {
+    public RateResponse getRate(String from, String to, String provider, LocalDate date) {
         RateResponse rateResponse;
         if(from.equals(to)) {
             rateResponse = new RateResponse();
             rateResponse.setSourceCode(from);
             rateResponse.setDestinationCode(to);
-            rateResponse.setProviderCode(null);
-            rateResponse.setRateDate(LocalDate.now().format(DateTimeFormatter.ofPattern(ISO_DATE_FORMAT)));
-            rateResponse.setRate(BigDecimal.valueOf(1.0));
+            rateResponse.setProviderCode(provider);
+            String rateDate = (date == null)
+                ? DateTimeFormatter.ofPattern(ISO_DATE_FORMAT).format(LocalDate.now())
+                : DateTimeFormatter.ofPattern(ISO_DATE_FORMAT).format(date);
+            rateResponse.setRateDate(rateDate);
+            rateResponse.setRate(BigDecimal.valueOf(EQUAL_CURRENCY_RATE));
         } else {
+            LocalDate rateDate = (date == null)
+                    ? LocalDate.now()
+                    : date;
             Optional<ConversionRate> conversionRateOptional = conversionRateRepository
-                    .findConversionRateBySourceCurrencyAndDestinationCurrency(from, to);
+                    .findConversionRateBySourceCurrencyAndDestinationCurrency(from, to, rateDate);
             ConversionRate conversionRate = conversionRateOptional.orElseThrow(
-                    () -> new IllegalArgumentException(String.format("Conversion rate not found for: [%s -> %s]",
-                            from, to))
+                    () -> new IllegalArgumentException(String.format("Conversion rate not found for: [%s -> %s] on date: %s",
+                            from, to, DateTimeFormatter.ofPattern(ISO_DATE_FORMAT).format(rateDate)))
             );
             rateResponse = rateResponseMapper.toRateResponse(conversionRate, provider);
         }
+        AdjustmentFactor adjustmentFactor = (provider == null)
+                ? adjustmentFactorRepository.findByRateProviderCode(defaultRateProviderCode)
+                    .orElseThrow(() -> new IllegalStateException(
+                        "No default adjustment factor found for case when no provider was assigned"))
+                : adjustmentFactorRepository.findByRateProviderCode(provider)
+                    .orElseThrow(() -> new IllegalArgumentException(String
+                        .format("No adjustment factor found for rate provider with code: %s", provider)));
+        rateResponse.setRate(calculateAdjustedRate(adjustmentFactor, rateResponse));
         return rateResponse;
+    }
+
+    private BigDecimal calculateAdjustedRate(AdjustmentFactor adjustmentFactor, RateResponse rateResponse) {
+        BigDecimal factor = adjustmentFactor.getFactor();
+        BigDecimal rate = rateResponse.getRate();
+        return rate.multiply(factor);
     }
 
     public List<CurrencyResponse> getCurrencies() {
@@ -148,17 +178,17 @@ public class RateService {
             lockAtMostFor = "${application.schedlock.update-rate-shedlock.lock-at-most-for}"
     )
     public void updateCurrencyRates() throws Exception {
-        Map<String, RateProvider> rateProvidersList = rateProviderMapper.getRateProvidersMap(frankfurterRateProviderClient.getProviders());
+        Map<String, RateProvider> rateProviderMap = rateProviderMapper.getRateProvidersMap(frankfurterRateProviderClient.getProviders());
         Map<String, Currency> currencyMap = rateProviderMapper.getCurrencyMap(frankfurterRateProviderClient.getCurrencies());
         List<List<ConversionRate>> conversionRatesList = getConversionRatesForCurrency(currencyMap);
-        rateProviderRepository.saveAll(rateProvidersList.values());
+        rateProviderRepository.saveAll(rateProviderMap.values());
         currencyRepository.saveAll(currencyMap.values());
         conversionRatesList.forEach(conversionRateRepository::saveAll);
     }
 
     private List<List<ConversionRate>> getConversionRatesForCurrency(Map<String, Currency> currencyMap) throws Exception {
         List<List<ConversionRate>> conversionRatesList = new ArrayList<>();
-        for(String currencyCode : DEFAULT_CURRENCY_CODE_LIST) {
+        for(String currencyCode : currencyMap.keySet()) {
             String ratesJsonResponse = frankfurterRateProviderClient.getRates(currencyCode, "providers");
             conversionRatesList.add(rateProviderMapper.getConversionRateList(ratesJsonResponse, currencyMap));
         }
@@ -178,9 +208,5 @@ public class RateService {
             span.end();
             traceContext.clean();
         }
-    }
-
-    interface RateServiceDefaultCurrencies {
-        List<String> DEFAULT_CURRENCY_CODE_LIST = List.of("RUB", "USD", "EUR");
     }
 }

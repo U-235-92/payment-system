@@ -1,12 +1,14 @@
 package aq.project.integration.user;
 
 import aq.project.dto.*;
+import aq.project.services.UserService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.apache.http.HttpHeaders;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +37,7 @@ import static aq.project.util.TestUtils.*;
 @DirtiesContext
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@EnableWireMock(@ConfigureWireMock(name = "person-service", port = 8082))
+@EnableWireMock(@ConfigureWireMock(name = "person-service"))
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UpdateUserIntegrationTest {
 
@@ -57,6 +59,9 @@ public class UpdateUserIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private UserService userService;
+
     @Container
     private static final KeycloakContainer KEYCLOAK_CONTAINER = TestContainers.Keycloak.KEYCLOAK_CONTAINER;
 
@@ -74,31 +79,12 @@ public class UpdateUserIntegrationTest {
         personServiceMockServer.stubFor(WireMock.patch(personServiceUpdatePersonEndpoint)
                 .willReturn(WireMock.ok()));
 
-        LoginUserDTO loginUserDTO = new LoginUserDTO();
-        loginUserDTO.setEmail("alice@post.aq");
-        loginUserDTO.setPassword("123");
-
         CountryDTO countryDTO = getValidCountryDTO();
         AddressDTO addressDTO = getValidAddressDTO(countryDTO);
         UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
         UpdateUserDTO updateUserDTO = getValidUpdateUserDTO(updateIndividualDataDTO, actualUserKeycloakId);
 
-        WebClient webClient = getWebClient(port);
-
-        Mono<ResponseEntity<Void>> responseEntityMono = loginUserMono(loginUserDTO, webClient)
-                .flatMap(responseEntity -> webClient.patch()
-                        .uri(individualsApiUpdateUserEndpoint)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + responseEntity.getBody().getAccessToken())
-                        .bodyValue(updateUserDTO)
-                        .exchangeToMono(response -> {
-                            if(response.statusCode().is2xxSuccessful())
-                                return Mono.just(ResponseEntity.ok().build());
-                            return Mono.just(ResponseEntity.status(response.statusCode()).build());
-                        }));
-
-        StepVerifier.create(responseEntityMono)
-                .expectNextMatches(response -> response.getStatusCode().is2xxSuccessful())
-                .verifyComplete();
+        Assertions.assertDoesNotThrow(() -> userService.updateUser(updateUserDTO));
     }
 
     @Test

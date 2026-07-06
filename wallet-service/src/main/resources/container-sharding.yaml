@@ -3,13 +3,13 @@ dataSources:
   datasource_0:
     dataSourceClassName: $${DATASOURCE_CLASS_NAME::}
     driverClassName: $${DB_DRIVER_CLASS_NAME::}
-    jdbcUrl: $${CONTAINER_SHARD0_DB_URL::}
+    jdbcUrl: $${SHARD0_DB_URL::}
     username: $${SHARD0_DB_USERNAME::}
     password: $${SHARD0_DB_PASSWORD::}
   datasource_1:
     dataSourceClassName: $${DATASOURCE_CLASS_NAME::}
     driverClassName: $${DB_DRIVER_CLASS_NAME::}
-    jdbcUrl: $${CONTAINER_SHARD1_DB_URL::}
+    jdbcUrl: $${SHARD1_DB_URL::}
     username: $${SHARD1_DB_USERNAME::}
     password: $${SHARD1_DB_PASSWORD::}
 

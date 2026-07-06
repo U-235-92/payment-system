@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class TransactionRestController implements TransactionRestControllerApi {
 
     private final TransactionService transactionService;
@@ -27,6 +27,6 @@ public class TransactionRestController implements TransactionRestControllerApi {
     @Override
     public Mono<ResponseEntity<String>> doTransaction(Mono<TransactionRequestDTO> transactionRequestDTO, ServerWebExchange exchange) {
         return transactionRequestDTO.flatMap(dto -> transactionService.doTransaction(dto)
-                .flatMap(id -> Mono.just(ResponseEntity.accepted().body(id))));
+                .flatMap(transactionId -> Mono.just(ResponseEntity.accepted().body(transactionId))));
     }
 }

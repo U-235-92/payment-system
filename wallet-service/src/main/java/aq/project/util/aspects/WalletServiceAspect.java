@@ -106,4 +106,34 @@ public class WalletServiceAspect {
                 null
         );
     }
+
+    @Around("execution(* aq.project.services.WalletService.getWalletCurrency(..)) && args(id)")
+    public String aspectGetWalletCurrency(
+            ProceedingJoinPoint pjp,
+            @NotBlank @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String id
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "get-wallet-currency";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+        String preMainLogicLogMessage = String.format("Received request to get wallet currency with id: %s",
+                id);
+        String postSuccessMainLogicCallLogMessage = String.format("Success handle of request to get wallet currency with id: %s",
+                id);
+        String postFailureMainLogicCallLogMessage = String.format("Error occurred during getting wallet currency with id: %s",
+                id);
+//        Handler logic call
+        return serviceAspectHandler.handle(
+                String.class,
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                preMainLogicLogMessage,
+                postSuccessMainLogicCallLogMessage,
+                postFailureMainLogicCallLogMessage,
+                null,
+                null,
+                null
+        );
+    }
 }

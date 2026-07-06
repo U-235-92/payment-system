@@ -19,16 +19,16 @@ public abstract class TransactionMapper {
     @AfterMapping
     protected void toTransactionProperties(@MappingTarget Transaction transaction, TransactionRequest transactionRequest) {
         if(!transactionRequest.isPropertyNull(RECIPIENT_WALLET_ID))
-            transaction.putProperty(RECIPIENT_WALLET_ID, transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class));
+            transaction.putProperty(RECIPIENT_WALLET_ID, transactionRequest.getProperty(RECIPIENT_WALLET_ID));
 
         if(!transactionRequest.isPropertyNull(RECIPIENT_PERSON_ID))
-            transaction.putProperty(RECIPIENT_PERSON_ID, transactionRequest.getProperty(RECIPIENT_PERSON_ID, String.class));
+            transaction.putProperty(RECIPIENT_PERSON_ID, transactionRequest.getProperty(RECIPIENT_PERSON_ID));
 
         if(!transactionRequest.isPropertyNull(SENDER_WALLET_ID))
-            transaction.putProperty(SENDER_WALLET_ID, transactionRequest.getProperty(SENDER_WALLET_ID, String.class));
+            transaction.putProperty(SENDER_WALLET_ID, transactionRequest.getProperty(SENDER_WALLET_ID));
 
         if(!transactionRequest.isPropertyNull(SENDER_PERSON_ID))
-            transaction.putProperty(SENDER_PERSON_ID, transactionRequest.getProperty(SENDER_PERSON_ID, String.class));
+            transaction.putProperty(SENDER_PERSON_ID, transactionRequest.getProperty(SENDER_PERSON_ID));
     }
 
     @Mapping(target = "transactionId", source = "transactionId")

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -39,21 +40,21 @@ public class ConversionRate {
     private LocalDate rateDate;
 
     @Column(name = "rate", nullable = false)
-    private double rate;
+    private BigDecimal rate;
 
     @NotNull
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "provider_rate", nullable = false)
     @MapKeyColumn(name = "provider_code", length = 10)
     @CollectionTable(name = "conversion_providers_rates")
-    private Map<String, Double> providerRateMap;
+    private Map<String, BigDecimal> providerRateMap;
 
     public ConversionRate(
             Currency sourceCurrency,
             Currency destinationCurrency,
             LocalDate rateDate,
-            double rate,
-            Map<String, Double> providerRateMap) {
+            BigDecimal rate,
+            Map<String, BigDecimal> providerRateMap) {
         this.sourceCurrency = sourceCurrency;
         this.destinationCurrency = destinationCurrency;
         this.rateDate = rateDate;

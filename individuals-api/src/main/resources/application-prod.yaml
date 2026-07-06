@@ -3,19 +3,19 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${JWT_ISSUER_URI}
-          jwk-set-uri: ${JWT_JWK_SET_URI}
+          issuer-uri: ${OAUTH2_JWT_ISSUER_URI}
+          jwk-set-uri: ${OAUTH2_JWT_JWK_SET_URI}
       client:
         provider:
           keycloak:
-            issuer-uri: ${KEYCLOAK_ISSUER_URI}
-            token-uri: ${KEYCLOAK_TOKEN_URI}
+            issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI}
+            token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI}
         registration:
           keycloak:
-            client-id: ${KEYCLOAK_CLIENT_ID}
-            client-secret: ${KEYCLOAK_CLIENT_SECRET}
-            admin-id: ${KEYCLOAK_ADMIN_ID}
-            admin-secret: ${KEYCLOAK_ADMIN_SECRET}
+            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
+            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
+            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
 management:
   opentelemetry:
     tracing:
@@ -23,9 +23,16 @@ management:
         otlp:
           endpoint: ${OTEL_COLLECTOR_URI} # Connect to OTEL collector
 application:
+  keycloak-service:
+    name: ${KEYCLOAK_SERVICE_NAME}
+    realm: ${KEYCLOAK_REALM}
+    uri: ${KEYCLOAK_SERVICE_URI}
+    admin-uri: ${KEYCLOAK_ADMIN_URI}
   person-service:
     uri: ${PERSON_SERVICE_URI}
   wallet-service:
     uri: ${WALLET_SERVICE_URI}
   transaction-service:
     uri: ${TRANSACTION_SERVICE_URI}
+  currency-rate-service:
+    uri: ${CURRENCY_RATE_SERVICE_URI}

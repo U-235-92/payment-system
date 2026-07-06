@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class TokenRestController implements TokenRestControllerApi {
 
     private final TokenService tokenService;

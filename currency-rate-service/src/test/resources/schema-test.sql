@@ -1,4 +1,4 @@
-CREATE TABLE shedlock (
+CREATE TABLE IF NOT EXISTS shedlock (
     name varchar(64) not null primary key,
     lock_until timestamp not null,
     locked_at timestamp not null,

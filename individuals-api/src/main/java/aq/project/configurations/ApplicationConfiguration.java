@@ -19,8 +19,8 @@ import static aq.project.util.constants.CustomHttpHeaders.*;
 @RequiredArgsConstructor
 public class ApplicationConfiguration {
 
-    @Value("${keycloak.server-uri}")
-    private String keycloakServerURL;
+    @Value("${application.keycloak-service.uri}")
+    private String keycloakServiceURL;
 
     @Value("${application.person-service.uri}")
     private String personServiceURL;
@@ -37,7 +37,7 @@ public class ApplicationConfiguration {
     @Bean(name = "keycloakServiceWebClient")
     public WebClient keycloakWebClient() {
         return WebClient.builder()
-                .baseUrl(keycloakServerURL)
+                .baseUrl(keycloakServiceURL)
                 .build();
     }
 

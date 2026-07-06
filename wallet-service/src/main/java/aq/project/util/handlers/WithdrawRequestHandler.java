@@ -1,6 +1,5 @@
 package aq.project.util.handlers;
 
-import aq.project.clients.CurrencyRateServiceClient;
 import aq.project.dto.WalletStatus;
 import aq.project.entities.Wallet;
 import aq.project.exceptions.CreditCardConstrainsException;
@@ -8,30 +7,28 @@ import aq.project.exceptions.NoSuchWalletException;
 import aq.project.exceptions.WalletConstrainsException;
 import aq.project.messages.TransactionRequest;
 import aq.project.repositories.WalletRepository;
-import aq.project.util.telemetry.TraceContext;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.YearMonth;
 
+import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_CURRENCY_RATE;
 import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 
 @Component
 public class WithdrawRequestHandler extends CommonRequestHandler {
 
     public WithdrawRequestHandler(
-            CurrencyRateServiceClient currencyRateServiceClient,
             WalletRepository walletRepository,
-            TransactionWriter transactionWriter,
-            TraceContext traceContext
+            TransactionWriter transactionWriter
     ) {
-        super(walletRepository, currencyRateServiceClient, transactionWriter, traceContext);
+        super(walletRepository, transactionWriter);
     }
 
     @Override
     protected void checkTransactionRequestPropertyConstrains(TransactionRequest transactionRequest) throws WalletConstrainsException, CreditCardConstrainsException, NoSuchWalletException {
-        String walletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class);
+        String walletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID);
         Wallet wallet = walletRepository.findByIdForUpdate(walletId)
                 .orElseThrow(() -> new NoSuchWalletException(walletId));
         if(wallet.getWalletDetails().getWalletStatus().equals(WalletStatus.BLOCKED))
@@ -54,12 +51,10 @@ public class WithdrawRequestHandler extends CommonRequestHandler {
     @Override
     protected void handleTransactionRequestOperation(TransactionRequest transactionRequest) {
 //        Prepare data
-        String walletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class);
+        String walletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID);
         Wallet wallet = walletRepository.findByIdForUpdate(walletId).get();
 //        Get conversion rate
-        String sourceCurrency = transactionRequest.getCurrency();
-        String destinationCurrency = wallet.getWalletDetails().getCurrencyCode();
-        BigDecimal conversionRate = getConversionRate(sourceCurrency, destinationCurrency);
+        BigDecimal conversionRate = BigDecimal.valueOf(Double.valueOf(transactionRequest.getProperty(RECIPIENT_CURRENCY_RATE)));
 //        Execute operation
         BigDecimal currentBalance = wallet.getCreditCard().getBalance();
         BigDecimal convertedAmount = transactionRequest.getAmount().multiply(conversionRate);

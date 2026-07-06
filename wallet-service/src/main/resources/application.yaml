@@ -10,7 +10,7 @@ spring:
     name: ${SERVICE_NAME}
   profiles:
     active:
-      - dev-shard
+      - ${SERVICE_PROFILE}
   kafka:
     listener:
       ack-mode: RECORD
@@ -87,7 +87,3 @@ application:
         schema: ${DB_AUDIT_SCHEMA_NAME}
         table: ${DB_AUDIT_TABLE}
         column: ${DB_AUDIT_COLUMN}
-    currency-rate-service:
-      base-url: ${CURRENCY_RATE_SERVICE_BASE_URL}
-      endpoint:
-        rate: '/api/v1/rate'

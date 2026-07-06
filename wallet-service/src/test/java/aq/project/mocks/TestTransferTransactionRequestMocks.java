@@ -60,6 +60,8 @@ public class TestTransferTransactionRequestMocks {
         transactionRequest.putProperty(RECIPIENT_WALLET_ID, recipientWalletId);
         transactionRequest.putProperty(SENDER_PERSON_ID, senderPersonId);
         transactionRequest.putProperty(SENDER_WALLET_ID, senderWalletId);
+        transactionRequest.putProperty(RECIPIENT_CURRENCY_RATE, BigDecimal.valueOf(1.0085).toString());
+        transactionRequest.putProperty(SENDER_CURRENCY_RATE, BigDecimal.valueOf(1.0085).toString());
         return transactionRequest;
     }
 
@@ -139,6 +141,8 @@ public class TestTransferTransactionRequestMocks {
         consumerRecord.headers().add(SENDER_PERSON_ID, getPropertyBytes(request, SENDER_PERSON_ID));
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(RECIPIENT_CURRENCY_RATE, getPropertyBytes(request, RECIPIENT_CURRENCY_RATE));
+        consumerRecord.headers().add(SENDER_CURRENCY_RATE, getPropertyBytes(request, SENDER_CURRENCY_RATE));
         consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
@@ -223,7 +227,7 @@ public class TestTransferTransactionRequestMocks {
     }
 
     private static byte[] getPropertyBytes(TransactionRequest transactionRequest, String key) {
-        return transactionRequest.getProperty(key, String.class).getBytes();
+        return transactionRequest.getProperty(key).getBytes();
     }
 
     private static String getDefaultTraceId() {

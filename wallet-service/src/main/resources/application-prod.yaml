@@ -6,16 +6,16 @@ management:
     tracing:
       export:
         otlp:
-          endpoint: ${CONTAINER_OTEL_COLLECTOR_URI}
+          endpoint: ${OTEL_COLLECTOR_URI}
 spring:
   kafka:
-    bootstrapServers: ${CONTAINER_KAFKA_BOOTSTRAP_SERVERS}
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS}
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${CONTAINER_JWT_ISSUER_URI}
-          jwk-set-uri: ${CONTAINER_JWT_JWK_SET_URI}
+          issuer-uri: ${JWT_ISSUER_URI}
+          jwk-set-uri: ${JWT_JWK_SET_URI}
   datasource:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
     url: jdbc:shardingsphere:classpath:container-sharding.yaml?placeholder-type=environment
@@ -27,5 +27,5 @@ spring:
       ddl-auto: validate
 application:
   datasource:
-    - ${CONTAINER_SHARD0_DB_URL},${SHARD0_DB_USERNAME},${SHARD0_DB_PASSWORD}
-    - ${CONTAINER_SHARD1_DB_URL},${SHARD1_DB_USERNAME},${SHARD1_DB_PASSWORD}
+    - ${SHARD0_DB_URL},${SHARD0_DB_USERNAME},${SHARD0_DB_PASSWORD}
+    - ${SHARD1_DB_URL},${SHARD1_DB_USERNAME},${SHARD1_DB_PASSWORD}

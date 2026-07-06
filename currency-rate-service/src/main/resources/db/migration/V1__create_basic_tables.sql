@@ -47,4 +47,14 @@ CREATE TABLE shedlock (
     locked_by varchar(255) not null
 );
 
+CREATE TABLE adjustment_factors (
+    id BIGINT NOT NULL,
+    provider_code VARCHAR(10) NOT NULL,
+    factor DOUBLE PRECISION NOT NULL,
+    created_at DATE NOT NULL,
+    modified_at DATE,
+    CONSTRAINT pk_adjustment_factors_id PRIMARY KEY (id),
+    CONSTRAINT fk_adjustment_factors_provider_code FOREIGN KEY (provider_code) REFERENCES rate_providers (provider_code)
+);
+
 CREATE INDEX idx_conversion_rates_pair ON conversion_rates (source_iso_code, destination_iso_code);

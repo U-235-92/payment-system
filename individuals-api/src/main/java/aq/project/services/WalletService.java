@@ -1,8 +1,8 @@
 package aq.project.services;
 
+import aq.project.clients.WalletClient;
 import aq.project.dto.CreateWalletRequestDTO;
 import aq.project.dto.WalletInfoResponseDTO;
-import aq.project.clients.WalletClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -20,5 +20,9 @@ public class WalletService {
 
     public Mono<WalletInfoResponseDTO> getWalletInfo(String walletId) {
         return walletClient.getWalletInfo(walletId);
+    }
+
+    public Mono<String> getWalletCurrencyCode(String walletId) {
+        return walletClient.getWalletCurrency(walletId);
     }
 }

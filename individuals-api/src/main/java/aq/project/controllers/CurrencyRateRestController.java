@@ -13,10 +13,12 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @RestController
-@RequestMapping("/api/currency-rates")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class RateRestController implements RateRestControllerApi {
+public class CurrencyRateRestController implements RateRestControllerApi {
 
     private final RateService rateService;
 
@@ -33,8 +35,8 @@ public class RateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public Mono<ResponseEntity<RateResponse>> getRate(String from, String to, String provider, ServerWebExchange exchange) {
-        return rateService.getRate(from, to, provider)
+    public Mono<ResponseEntity<RateResponse>> getRate(String from, String to, String provider, LocalDate date, ServerWebExchange exchange) {
+        return rateService.getRate(from, to, provider, date)
                 .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
     }
 

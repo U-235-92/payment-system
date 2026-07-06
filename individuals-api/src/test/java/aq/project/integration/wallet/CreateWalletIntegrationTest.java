@@ -64,7 +64,7 @@ public class CreateWalletIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/wallets/create")
+                .uri("/api/v1/wallet/create")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .bodyValue(getValidCreateWalletRequestDTO())
                 .exchange()
@@ -82,7 +82,7 @@ public class CreateWalletIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/wallets/create")
+                .uri("/api/v1/wallet/create")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .bodyValue(getValidCreateWalletRequestDTO())
                 .exchange()
@@ -137,7 +137,7 @@ public class CreateWalletIntegrationTest {
                 .willReturn(WireMock.status(500)));
 //        Test call
         webTestClient.post()
-                .uri("/api/wallets/create")
+                .uri("/api/v1/wallet/create")
                 .bodyValue(getValidCreateWalletRequestDTO())
                 .exchange()
                 .expectStatus()

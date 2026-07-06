@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static aq.project.controller.PersonRestControllerApi.*;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class SecurityConfiguration {
     @Profile("dev")
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/h2-console/**", "/dev/**", "/api/person/**")
+                .securityMatcher("/h2-console/**", "/api/v1/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
@@ -39,16 +41,16 @@ public class SecurityConfiguration {
     @Profile("prod")
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/api/person/**")
+                .securityMatcher("/api/v1/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, "/api/person/create-person").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/person/delete-person-by-keycloak-id/*").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/person/undo-delete-person-by-keycloak-id").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/api/person/update-person").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/person/undo-update-person").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/person/get-person-by-keycloak-id/*").authenticated())
+                        .requestMatchers(HttpMethod.POST, "/api/v1" + PATH_CREATE_PERSON).authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1" + PATH_DELETE_PERSON_BY_KEYCLOAK_ID.replace("{keycloakId}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1" + PATH_UNDO_DELETE_PERSON).authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1" + PATH_UPDATE_PERSON).authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1" + PATH_UNDO_UPDATE_PERSON).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_PERSON_BY_KEYCLOAK_ID.replace("{keycloakId}", "*")).authenticated())
                 .build();
     }
 

@@ -10,10 +10,11 @@ import aq.project.exceptions.WalletConstrainsException;
 import aq.project.messages.TransactionRequest;
 import aq.project.messages.TransactionResponse;
 import aq.project.repositories.TransactionRepository;
-import aq.project.util.mappers.TransactionMapper;
+import aq.project.util.handlers.CommonRequestHandler;
 import aq.project.util.handlers.DepositRequestHandler;
 import aq.project.util.handlers.TransferRequestHandler;
 import aq.project.util.handlers.WithdrawRequestHandler;
+import aq.project.util.mappers.TransactionMapper;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -32,11 +33,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import static aq.project.util.constants.CustomHttpHeaders.*;
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
-import static aq.project.util.constants.RequestPropertyKeys.SENDER_WALLET_ID;
+
+import static aq.project.dto.OperationType.*;
+import static aq.project.util.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
 
 @Slf4j
 @Service
@@ -73,33 +75,25 @@ public class TransactionService {
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.wallet_operation_request.name}")
     public void handleTransactionRequest(ConsumerRecord<String, TransactionRequest> consumerRecord) throws WalletConstrainsException, NoSuchWalletException, CreditCardConstrainsException {
-        Headers headers = consumerRecord.headers();
         TransactionRequest transactionRequest = consumerRecord.value();
         switch(transactionRequest.getOperationType()) {
-            case OperationType.WITHDRAW:
-                transactionRequest.putProperty(RECIPIENT_WALLET_ID, getPropertyFromKafkaMessageHeader(headers, RECIPIENT_WALLET_ID));
-                withdrawRequestHandler.handleRequestMessage(transactionRequest, transactionMapper, transactionRepository);
-                break;
-            case OperationType.DEPOSIT:
-                transactionRequest.putProperty(RECIPIENT_WALLET_ID, getPropertyFromKafkaMessageHeader(headers, RECIPIENT_WALLET_ID));
-                depositRequestHandler.handleRequestMessage(transactionRequest, transactionMapper, transactionRepository);
-                break;
-            case OperationType.TRANSFER:
-                transactionRequest.putProperty(SENDER_WALLET_ID, getPropertyFromKafkaMessageHeader(headers, SENDER_WALLET_ID));
-                transactionRequest.putProperty(RECIPIENT_WALLET_ID, getPropertyFromKafkaMessageHeader(headers, RECIPIENT_WALLET_ID));
-                transferRequestHandler.handleRequestMessage(transactionRequest, transactionMapper, transactionRepository);
-                break;
+            case WITHDRAW -> handleTransactionRequest(transactionRequest, withdrawRequestHandler);
+            case DEPOSIT -> handleTransactionRequest(transactionRequest, depositRequestHandler);
+            case TRANSFER -> handleTransactionRequest(transactionRequest, transferRequestHandler);
         }
     }
 
-    private String getPropertyFromKafkaMessageHeader(Headers headers, String header) {
-        byte[] bytes = headers.headers(header).iterator().next().value();
-        return new String(bytes);
+    private void handleTransactionRequest(
+            TransactionRequest transactionRequest,
+            CommonRequestHandler commonRequestHandler
+    ) throws WalletConstrainsException, CreditCardConstrainsException {
+        commonRequestHandler.handleRequestMessage(transactionRequest, transactionMapper, transactionRepository);
     }
 
     public TransactionStatus getTransactionStatus(String transactionId) throws TransactionException {
         Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new TransactionException(String.format("Transaction with id [%s] not found", transactionId)));
+                .orElseThrow(() -> new TransactionException(String.format("Transaction with id [%s] not found",
+                        transactionId)));
         return transaction.getTransactionStatus();
     }
 
@@ -112,17 +106,12 @@ public class TransactionService {
             Pageable pageable = PageRequest.of(0, 100, Sort.by("timestamp").descending());
             List<Transaction> transactionEvents = transactionRepository.findAll(pageable).getContent();
             for(Transaction transaction : transactionEvents) {
-                if(transaction.getOperationType() == OperationType.DEPOSIT && !transaction.isProcessed()) {
-                    handleIncomingTransaction(transaction, OperationType.DEPOSIT, depositPartitionName, span);
-                    continue;
-                }
-                if(transaction.getOperationType() == OperationType.WITHDRAW && !transaction.isProcessed()) {
-                    handleIncomingTransaction(transaction, OperationType.WITHDRAW, withdrawPartitionName, span);
-                    continue;
-                }
-                if(transaction.getOperationType() == OperationType.TRANSFER && !transaction.isProcessed()) {
-                    handleIncomingTransaction(transaction, OperationType.TRANSFER, transferPartitionName, span);
-                    continue;
+                if(!transaction.isProcessed()) {
+                    switch (transaction.getOperationType()) {
+                        case DEPOSIT -> handleIncomingTransaction(transaction, DEPOSIT, depositPartitionName, span);
+                        case WITHDRAW -> handleIncomingTransaction(transaction, WITHDRAW, withdrawPartitionName, span);
+                        case TRANSFER -> handleIncomingTransaction(transaction, TRANSFER, transferPartitionName, span);
+                    }
                 }
             }
         } finally {
@@ -134,7 +123,8 @@ public class TransactionService {
         String spanId = span.getSpanContext().getSpanId();
         String traceId = transaction.getTraceId();
         try {
-            log.info("[{}-{}]: Attempt to handle {} transaction event with transactionId [{}]", traceId, spanId, operationType.name().toLowerCase(), transaction.getTransactionId());
+            log.info("[{}-{}]: Attempt to handle {} transaction event with transactionId [{}]",
+                    traceId, spanId, operationType.name().toLowerCase(), transaction.getTransactionId());
             ProducerRecord<String, TransactionResponse> record = new ProducerRecord<>(
                     walletOperationResponseTopicName,
                     partition,
@@ -143,9 +133,11 @@ public class TransactionService {
             headers.add(X_TRACE_ID_HEADER, traceId.getBytes());
             kafkaTemplate.send((ProducerRecord) record).get();
             transaction.setProcessed(true);
-            log.info("[{}-{}]: Handle of {} transaction event with transactionId [{}] completed", traceId, spanId, operationType.name(), transaction.getTransactionId());
+            log.info("[{}-{}]: Handle of {} transaction event with transactionId [{}] completed",
+                    traceId, spanId, operationType.name(), transaction.getTransactionId());
         } catch (InterruptedException | ExecutionException exc) {
-            log.warn("[{}-{}]: Handle of {} transaction event with transactionId [{}] failed", traceId, spanId, operationType.name(), transaction.getTransactionId());
+            log.warn("[{}-{}]: Handle of {} transaction event with transactionId [{}] failed",
+                    traceId, spanId, operationType.name(), transaction.getTransactionId());
             throw new RuntimeException(exc);
         }
     }

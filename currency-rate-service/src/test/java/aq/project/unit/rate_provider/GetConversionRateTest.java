@@ -1,7 +1,9 @@
 package aq.project.unit.rate_provider;
 
+import aq.project.entity.AdjustmentFactor;
 import aq.project.entity.ConversionRate;
 import aq.project.entity.Currency;
+import aq.project.entity.RateProvider;
 import aq.project.mappers.rate.FrankfurterRateProviderMapper;
 import aq.project.util.telemetry.TraceContext;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -17,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +45,17 @@ public class GetConversionRateTest {
                         new FileInputStream("src/test/resources/conversion_rates.json")));
             DataInputStream currenciesRateDis = new DataInputStream(
                     new BufferedInputStream(
-                            new FileInputStream("src/test/resources/currencies.json")))
+                            new FileInputStream("src/test/resources/currencies.json")));
+            DataInputStream rateProviderDis = new DataInputStream(
+                    new BufferedInputStream(
+                            new FileInputStream("src/test/resources/rate_providers.json")))
         ) {
+            String rateProvidersJsonString = new String(rateProviderDis.readAllBytes());
             String conversionRatesJsonString = new String(conversionRateDis.readAllBytes());
             String currenciesJsonString = new String(currenciesRateDis.readAllBytes());
+            Map<String, RateProvider> rateProviderMap = FRANKFURTER_RATE_PROVIDER_MAPPER.getRateProvidersMap(rateProvidersJsonString);
             Map<String, Currency> currencyMap = FRANKFURTER_RATE_PROVIDER_MAPPER.getCurrencyMap(currenciesJsonString);
+            Map<String, AdjustmentFactor> adjustmentFactorMap = getAdjustmentFactors(rateProviderMap);
             Assertions.assertDoesNotThrow(() ->
                     FRANKFURTER_RATE_PROVIDER_MAPPER.getConversionRateList(conversionRatesJsonString, currencyMap));
             List<ConversionRate> conversionRateList = FRANKFURTER_RATE_PROVIDER_MAPPER
@@ -64,9 +74,15 @@ public class GetConversionRateTest {
     public void failGeConversionRateListWithWrongConversionRateJsonStringUnitTest() throws Exception {
         try(DataInputStream currenciesRateDis = new DataInputStream(
                     new BufferedInputStream(
-                            new FileInputStream("src/test/resources/currencies.json")))
+                            new FileInputStream("src/test/resources/currencies.json")));
+            DataInputStream rateProviderDis = new DataInputStream(
+                    new BufferedInputStream(
+                            new FileInputStream("src/test/resources/rate_providers.json")))
         ) {
+            String rateProvidersJsonString = new String(rateProviderDis.readAllBytes());
             String currenciesJsonString = new String(currenciesRateDis.readAllBytes());
+            Map<String, RateProvider> rateProviderMap = FRANKFURTER_RATE_PROVIDER_MAPPER.getRateProvidersMap(rateProvidersJsonString);
+            Map<String, AdjustmentFactor> adjustmentFactorMap = getAdjustmentFactors(rateProviderMap);
             Map<String, Currency> currencyMap = FRANKFURTER_RATE_PROVIDER_MAPPER.getCurrencyMap(currenciesJsonString);
             Assertions.assertThrows(JsonParseException.class, () ->
                     FRANKFURTER_RATE_PROVIDER_MAPPER.getConversionRateList("FooBar", currencyMap));
@@ -77,12 +93,32 @@ public class GetConversionRateTest {
     public void failGetConversionRateListWithAnotherJsonStringUnitTest() throws Exception {
         try(DataInputStream currenciesRateDis = new DataInputStream(
                     new BufferedInputStream(
-                            new FileInputStream("src/test/resources/currencies.json")))
+                            new FileInputStream("src/test/resources/currencies.json")));
+            DataInputStream rateProviderDis = new DataInputStream(
+                    new BufferedInputStream(
+                            new FileInputStream("src/test/resources/rate_providers.json")))
         ) {
+            String rateProvidersJsonString = new String(rateProviderDis.readAllBytes());
             String anotherJsonString = new String(currenciesRateDis.readAllBytes());
+            Map<String, RateProvider> rateProviderMap = FRANKFURTER_RATE_PROVIDER_MAPPER.getRateProvidersMap(rateProvidersJsonString);
+            Map<String, AdjustmentFactor> adjustmentFactorMap = getAdjustmentFactors(rateProviderMap);
             Map<String, Currency> currencyMap = FRANKFURTER_RATE_PROVIDER_MAPPER.getCurrencyMap(anotherJsonString);
             Assertions.assertThrows(IllegalArgumentException.class, () ->
                     FRANKFURTER_RATE_PROVIDER_MAPPER.getConversionRateList(anotherJsonString, currencyMap));
         }
+    }
+
+    private Map<String, AdjustmentFactor> getAdjustmentFactors(Map<String, RateProvider> rateProviderMap) {
+        final BigDecimal FACTOR = BigDecimal.valueOf(1.085);
+        Map<String, AdjustmentFactor> adjustmentFactorMap = new HashMap<>();
+        for(String provider : rateProviderMap.keySet()) {
+            AdjustmentFactor adjustmentFactor = new AdjustmentFactor();
+            adjustmentFactor.setRateProvider(rateProviderMap.get(provider));
+            adjustmentFactor.setFactor(FACTOR);
+            adjustmentFactor.setCreatedAt(System.currentTimeMillis());
+            adjustmentFactor.setModifiedAt(System.currentTimeMillis());
+            adjustmentFactorMap.put(provider, adjustmentFactor);
+        }
+        return adjustmentFactorMap;
     }
 }

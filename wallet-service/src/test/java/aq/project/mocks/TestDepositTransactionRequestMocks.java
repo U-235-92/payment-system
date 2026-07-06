@@ -9,9 +9,8 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.UUID;
 
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_PERSON_ID;
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 import static aq.project.util.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+import static aq.project.util.constants.RequestPropertyKeys.*;
 import static aq.project.utils.UuidConstants.*;
 
 public class TestDepositTransactionRequestMocks {
@@ -41,6 +40,7 @@ public class TestDepositTransactionRequestMocks {
         );
         transactionRequest.putProperty(RECIPIENT_PERSON_ID, personId);
         transactionRequest.putProperty(RECIPIENT_WALLET_ID, walletId);
+        transactionRequest.putProperty(RECIPIENT_CURRENCY_RATE, BigDecimal.valueOf(1.0085).toString());
         return transactionRequest;
     }
 
@@ -96,6 +96,7 @@ public class TestDepositTransactionRequestMocks {
                 request);
         consumerRecord.headers().add(RECIPIENT_WALLET_ID, getPropertyBytes(request, RECIPIENT_WALLET_ID));
         consumerRecord.headers().add(RECIPIENT_PERSON_ID, getPropertyBytes(request, RECIPIENT_PERSON_ID));
+        consumerRecord.headers().add(RECIPIENT_CURRENCY_RATE, getPropertyBytes(request, RECIPIENT_CURRENCY_RATE));
         consumerRecord.headers().add(X_TRACE_ID_HEADER, getDefaultTraceId().getBytes());
         return consumerRecord;
     }
@@ -167,7 +168,7 @@ public class TestDepositTransactionRequestMocks {
     }
 
     private static byte[] getPropertyBytes(TransactionRequest transactionRequest, String key) {
-        return transactionRequest.getProperty(key, String.class).getBytes();
+        return transactionRequest.getProperty(key).getBytes();
     }
 
     private static String getDefaultTraceId() {

@@ -48,7 +48,7 @@ public class KeycloakClient {
     @Value("${spring.security.oauth2.client.registration.keycloak.client-secret}")
     private String clientSecret;
 
-    @Value("${keycloak.admin-uri}")
+    @Value("${application.keycloak-service.admin-uri}")
     private String adminURI;
 
     @Autowired

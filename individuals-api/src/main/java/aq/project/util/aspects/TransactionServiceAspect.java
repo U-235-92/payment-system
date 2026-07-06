@@ -6,6 +6,7 @@ import aq.project.util.constants.RequestPropertyKeys;
 import aq.project.util.telemetry.ServiceAspectHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -54,16 +55,16 @@ public class TransactionServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.TransactionService.doTransaction(..)) && args(dto)")
+    @Around("execution(* aq.project.services.TransactionService.doTransaction(..)) && args(transactionRequestDTO)")
     public Mono<String> doTransaction(
             ProceedingJoinPoint pjp,
-            @Valid TransactionRequestDTO dto
+            @NotNull @Valid TransactionRequestDTO transactionRequestDTO
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "do-transaction";
         String tracerName = serviceName + "." + actionName + "-tracer";
-        String transactionOperation = dto.getOperationType().toString().toLowerCase();
-        String suffixLogMessage = getSuffixLogMessage(dto);
+        String transactionOperation = transactionRequestDTO.getOperationType().toString().toLowerCase();
+        String suffixLogMessage = getSuffixLogMessage(transactionRequestDTO);
         String preMainLogicLogMessage = String.format("Received request to process [%s] transaction. %s",
                 transactionOperation, suffixLogMessage);
         String postSuccessMainLogicCallLogMessage = String.format("Success handle request to process [%s] transaction. %s",

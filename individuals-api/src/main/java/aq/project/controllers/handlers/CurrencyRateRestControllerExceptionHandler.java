@@ -1,6 +1,6 @@
 package aq.project.controllers.handlers;
 
-import aq.project.controllers.RateRestController;
+import aq.project.controllers.CurrencyRateRestController;
 import aq.project.dto.ErrorDTO;
 import aq.project.util.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-@RestControllerAdvice(basePackageClasses = RateRestController.class)
-public class RateRestControllerExceptionHandler {
+@RestControllerAdvice(basePackageClasses = CurrencyRateRestController.class)
+public class CurrencyRateRestControllerExceptionHandler {
 
     private final ControllerExceptionLogger controllerExceptionLogger;
 

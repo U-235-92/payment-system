@@ -1,5 +1,6 @@
 package aq.project.mappers.rate;
 
+import aq.project.entity.AdjustmentFactor;
 import aq.project.entity.ConversionRate;
 import aq.project.entity.Currency;
 import aq.project.entity.RateProvider;
@@ -17,7 +18,10 @@ public interface AbstractRateProviderMapper {
         throw new UnsupportedOperationException();
     }
 
-    default List<ConversionRate> getConversionRateList(String rateClientResponse, Map<String, Currency> currenciesMap) throws Exception {
+    default List<ConversionRate> getConversionRateList(
+            String rateClientResponse,
+            Map<String, Currency> currenciesMap
+    ) throws Exception {
         throw new UnsupportedOperationException();
     }
 }

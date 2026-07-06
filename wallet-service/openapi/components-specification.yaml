@@ -75,6 +75,38 @@ paths:
           $ref: "#/components/responses/BadRequestResponse"
         500:
           $ref: "#/components/responses/InternalServerErrorResponse"
+  /wallet/currency/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getWalletCurrency
+      tags:
+        - Wallet
+      summary: Get wallet currency by given wallet ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a wallet ID
+          schema:
+            type: string
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Returns valid currency code
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        500:
+          $ref: "#/components/responses/InternalServerErrorResponse"
   /transaction/status/{id}:
     get:
       security:

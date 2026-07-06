@@ -5,10 +5,32 @@ spring:
     name: ${SERVICE_NAME}
   profiles:
     active:
-      - dev
+      - ${SERVICE_PROFILE}
   main:
     web-application-type: reactive
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/payment-system
+            token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
+        registration:
+          keycloak:
+            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
+            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
+            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
 management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
   otlp:
     metrics:
       export:
@@ -24,42 +46,40 @@ management:
           - info
           - health
 application:
-  individuals-api:
-    endpoints:
-      create-user: /api/user/create-user
-      login-user: /api/user/login-user
-      update-user: /api/user/update-user
-      delete-user-by-keycloak-id: /api/user/delete-user-by-keycloak-id/
-      get-user-info: /api/user/get-user-info
-      refresh-token: /api/user/refresh-token
+  keycloak-service:
+    name: ${KEYCLOAK_SERVICE_NAME}
+    realm: ${KEYCLOAK_REALM}
+    uri: http://localhost:8080
+    admin-uri: http://localhost:8080/admin/realms/payment-system/users
   person-service:
-    name: person-service
+    name: ${PERSON_SERVICE_NAME}
     uri: http://localhost:8082
     endpoints:
-      create-person: ${PERSON_SERVICE_CREATE_PERSON_ENDPOINT}
-      delete-person-by-keycloak-id: ${PERSON_SERVICE_DELETE_PERSON_ENDPOINT}
-      undo-delete-person-by-keycloak-id: ${PERSON_SERVICE_UNDO_DELETE_PERSON_ENDPOINT}
-      update-person: ${PERSON_SERVICE_UPDATE_PERSON_ENDPOINT}
-      undo-update-person: ${PERSON_SERVICE_UNDO_UPDATE_PERSON_ENDPOINT}
-      get-person-info-by-keycloak-id: ${PERSON_SERVICE_GET_PERSON_INFO_ENDPOINT}
+      create-person: /api/v1/person/create-person
+      delete-person-by-keycloak-id: /api/v1/person/delete-person-by-keycloak-id/
+      undo-delete-person-by-keycloak-id: /api/v1/person/undo-delete-person-by-keycloak-id/
+      update-person: /api/v1/person/update-person
+      undo-update-person: /api/v1/person/undo-update-person
+      get-person-info-by-keycloak-id: /api/v1/person/get-person-by-keycloak-id/
   wallet-service:
-    name: wallet-service
+    name: ${WALLET_SERVICE_NAME}
     uri: http://localhost:8083
     endpoints:
-      create-wallet: ${WALLET_SERVICE_CREATE_WALLET}
-      get-wallet-info: ${WALLET_SERVICE_GET_WALLET_INFO}
+      create-wallet: /api/v1/wallet/create
+      get-wallet-info: /api/v1/wallet/info/
+      get-wallet-currency: /api/v1/wallet/currency
   transaction-service:
-    name: transaction-service
+    name: ${TRANSACTION_SERVICE_NAME}
     uri: http://localhost:8084
     endpoints:
-      get-transaction-status: ${TRANSACTION_SERVICE_GET_TRANSACTION_STATUS}
-      send-transaction-request: ${TRANSACTION_SERVICE_SEND_TRANSACTION_REQUEST}
+      get-transaction-status: /api/v1/transaction/status/
+      send-transaction-request: /api/v1/transaction/send
   currency-rate-service:
-    name: currency-rate-service
+    name: ${CURRENCY_RATE_SERVICE_NAME}
     uri: http://localhost:8085
     endpoints:
-      get-rate: ${CURRENCY_RATE_SERVICE_GET_RATE_ENDPOINT}
-      get-rate-providers: ${CURRENCY_RATE_SERVICE_GET_RATE_PROVIDERS_ENDPOINT}
-      get-rate-provider: ${CURRENCY_RATE_SERVICE_GET_RATE_PROVIDER_ENDPOINT}
-      get-currencies: ${CURRENCY_RATE_SERVICE_GET_CURRENCIES_ENDPOINT}
-      get-currency: ${CURRENCY_RATE_SERVICE_GET_CURRENCY_ENDPOINT}
+      get-rate: /api/v1/rate
+      get-rate-providers: /api/v1/rate-providers
+      get-rate-provider: /api/v1/rate-provider
+      get-currencies: /api/v1/currencies
+      get-currency: /api/v1/currency

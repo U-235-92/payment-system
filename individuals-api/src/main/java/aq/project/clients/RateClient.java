@@ -1,17 +1,24 @@
 package aq.project.clients;
 
 import aq.project.dto.CurrencyResponse;
+import aq.project.dto.ErrorDTO;
 import aq.project.dto.RateProviderResponse;
 import aq.project.dto.RateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
 import static aq.project.util.constants.CustomHttpHeaders.BEARER;
 
 @Component
@@ -44,36 +51,52 @@ public class RateClient {
                         .bodyToFlux(CurrencyResponse.class));
     }
 
-    public Mono<CurrencyResponse> getCurrencyInfo(String code) {
+    public Mono<?> getCurrencyInfo(String code) {
         String requestUrl = String.format("%s/%s", getCurrencyEndpoint, code);
         return jwtClient.requestAdminToken()
                 .flatMap(adminAccessToken -> currencyRateWebClient.get()
                         .uri(requestUrl)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
-                        .retrieve()
-                        .bodyToMono(CurrencyResponse.class));
+                        .exchangeToMono(response -> (isErrorResponse(response))
+                            ? response.bodyToMono(ErrorDTO.class)
+                            : response.bodyToMono(CurrencyResponse.class)
+                        )
+                );
     }
 
-    public Mono<RateResponse> getRate(String from, String to, String provider) {
-        String requestUrl = (provider == null)
-                ? String.format("%s?from=%s&to=%s", getRateEndpoint, from, to)
-                : String.format("%s?from=%s&to=%s&provider=%s", getRateEndpoint, from, to, provider);
+    public Mono<?> getRate(String from, String to, String provider, LocalDate date) {
         return jwtClient.requestAdminToken()
                 .flatMap(adminAccessToken -> currencyRateWebClient.get()
-                        .uri(requestUrl)
+                        .uri(getRateRequestUrl(from, to, provider, date))
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
-                        .retrieve()
-                        .bodyToMono(RateResponse.class));
+                        .exchangeToMono(response -> (isErrorResponse(response))
+                                ? response.bodyToMono(ErrorDTO.class)
+                                : response.bodyToMono(RateResponse.class)
+                        )
+                );
     }
 
-    public Mono<RateProviderResponse> getRateProviderInfo(String code) {
+    private String getRateRequestUrl(String from, String to, String provider, LocalDate date) {
+        String requestUrl = (provider == null || provider.isBlank())
+                ? String.format("%s?from=%s&to=%s", getRateEndpoint, from, to)
+                : String.format("%s?from=%s&to=%s&provider=%s", getRateEndpoint, from, to, provider);
+        requestUrl = (date == null)
+                ? requestUrl
+                : String.format("%s&date=%s", requestUrl, DateTimeFormatter.ofPattern(ISO_DATE_FORMAT).format(date));
+        return requestUrl;
+    }
+
+    public Mono<?> getRateProviderInfo(String code) {
         String requestUrl = String.format("%s/%s", getRateProviderEndpoint, code);
         return jwtClient.requestAdminToken()
                 .flatMap(adminAccessToken -> currencyRateWebClient.get()
                         .uri(requestUrl)
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
-                        .retrieve()
-                        .bodyToMono(RateProviderResponse.class));
+                        .exchangeToMono(response -> (isErrorResponse(response))
+                                ? response.bodyToMono(ErrorDTO.class)
+                                : response.bodyToMono(RateProviderResponse.class)
+                        )
+                );
     }
 
     public Mono<Flux<RateProviderResponse>> getRateProviders() {
@@ -83,5 +106,9 @@ public class RateClient {
                         .header(HttpHeaders.AUTHORIZATION, BEARER + adminAccessToken)
                         .retrieve()
                         .bodyToFlux(RateProviderResponse.class));
+    }
+
+    private boolean isErrorResponse(ClientResponse response) {
+        return response.statusCode().is4xxClientError() || response.statusCode().is5xxServerError();
     }
 }

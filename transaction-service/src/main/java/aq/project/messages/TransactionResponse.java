@@ -32,17 +32,12 @@ public class TransactionResponse {
     @Getter @Setter
     private Long timestamp;
 
-    private final Map<String, Object> properties = new HashMap<>();;;
+    private Map<String, Object> properties = new HashMap<>();;;
 
     public TransactionResponse(String transactionId, OperationType operationType, TransactionStatus transactionStatus) {
         super();
         this.transactionId = transactionId;
         this.operationType = operationType;
         this.transactionStatus = transactionStatus;
-    }
-
-    public void putProperty(String key, Object value) {
-        if(value != null && key != null)
-            properties.put(key, value);
     }
 }

@@ -26,7 +26,7 @@ public class SecurityConfiguration {
     @Profile("dev")
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/api/transaction/**")
+                .securityMatcher("/api/v1/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
                 .oauth2Client(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
@@ -40,13 +40,13 @@ public class SecurityConfiguration {
     @Profile("prod")
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/api/transaction/**")
+                .securityMatcher("/api/v1/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2Client(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, "/api" + PATH_SEND_TRANSACTION_REQUEST).authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api" + PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
+                        .requestMatchers(HttpMethod.POST, "/api/v1" + PATH_SEND_TRANSACTION_REQUEST).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
                 .build();
     }
 

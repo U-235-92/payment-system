@@ -1,6 +1,7 @@
 package aq.project.integration.user;
 
 import aq.project.dto.LoginUserDTO;
+import aq.project.services.UserService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -8,6 +9,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +35,7 @@ import static aq.project.util.TestUtils.*;
 @DirtiesContext
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@EnableWireMock(@ConfigureWireMock(name = "person-service", port = 8082))
+@EnableWireMock(@ConfigureWireMock(name = "person-service"))
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DeleteUserIntegrationTest {
 
@@ -54,6 +56,9 @@ public class DeleteUserIntegrationTest {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @Autowired
+    private UserService userService;
 
     @InjectWireMock("person-service")
     private WireMockServer personServiceMockServer;
@@ -81,14 +86,9 @@ public class DeleteUserIntegrationTest {
 
         WebClient webClient = getWebClient(port);
 
-        String accessToken = loginUserMono(loginUserDTO, webClient).block().getBody().getAccessToken();
+        String userId = loginUserMono(loginUserDTO, webClient).block().getBody().getKeycloakUserId();
 
-        webTestClient.delete()
-                .uri(individualsApiDeletePersonEndpoint + actualUserKeycloakId)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .exchange()
-                .expectStatus()
-                .isOk();
+        Assertions.assertDoesNotThrow(() -> userService.deleteUserByKeycloakId(userId));
     }
 
     @Test

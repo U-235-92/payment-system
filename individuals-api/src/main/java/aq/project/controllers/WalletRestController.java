@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class WalletRestController implements WalletRestControllerApi {
 
     private final WalletService walletService;

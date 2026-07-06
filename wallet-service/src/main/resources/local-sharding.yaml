@@ -1,17 +1,17 @@
 # DATA SOURCES
 dataSources:
   datasource_0:
-    dataSourceClassName: $${DATASOURCE_CLASS_NAME::}
-    driverClassName: $${DB_DRIVER_CLASS_NAME::}
-    jdbcUrl: $${LOCAL_SHARD0_DB_URL::}
-    username: $${SHARD0_DB_USERNAME::}
-    password: $${SHARD0_DB_PASSWORD::}
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:5445/wallets_db
+    username: root
+    password: root
   datasource_1:
-    dataSourceClassName: $${DATASOURCE_CLASS_NAME::}
-    driverClassName: $${DB_DRIVER_CLASS_NAME::}
-    jdbcUrl: $${LOCAL_SHARD1_DB_URL::}
-    username: $${SHARD1_DB_USERNAME::}
-    password: $${SHARD1_DB_PASSWORD::}
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:5455/wallets_db
+    username: root
+    password: root
 
 # SHARDING RULES
 rules:

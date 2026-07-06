@@ -66,18 +66,18 @@ public class GetRateIntegrationTest {
         currencyRateServiceMockServer.stubFor(WireMock.get(requestUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 
-        Assertions.assertDoesNotThrow(() -> rateService.getRate(RUB, USD, null));
+        Assertions.assertDoesNotThrow(() -> rateService.getRate(RUB, USD, null, null));
         Assertions.assertNotNull(rateResponse);
-        Assertions.assertEquals(RUB, rateService.getRate(RUB, USD, null).block().getSourceCode());
+        Assertions.assertEquals(RUB, rateService.getRate(RUB, USD, null, null).block().getSourceCode());
     }
 
     @Test
     public void failGetCurrencyInfoWithNullCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getRate(null, "EUR", null));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getRate(null, "EUR", null, null));
     }
 
     @Test
     public void failGetCurrencyInfoWithInvalidCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getRate("WRONG", "ME", null));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getRate("WRONG", "ME", null, null));
     }
 }

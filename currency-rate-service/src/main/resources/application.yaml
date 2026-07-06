@@ -3,10 +3,21 @@ server:
 spring:
   profiles:
     active:
-      - dev
+      - ${SERVICE_PROFILE}
   application:
     name: ${SERVICE_NAME}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
 management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces
   otlp:
     metrics:
       export:
@@ -39,6 +50,12 @@ resilience4j:
         slow-call-duration-threshold: 30s
         slow-call-rate-threshold: 50
 application:
+  rates:
+    provider:
+      default:
+        code: ${DEFAULT_RATE_PROVIDER_CODE}
+        name: ${DEFAULT_RATE_PROVIDER_NAME}
+        adjustment-factor: ${DEFAULT_RATE_PROVIDER_ADJUSTMENT_FACTOR}
   client:
     frankfurter:
       base-url: 'https://api.frankfurter.dev/v2'
@@ -49,7 +66,6 @@ application:
         provider: '/provider/{code}'
         currencies: '/currencies'
         currency: '/currency/{code}'
-
   schedlock:
     update-rate-shedlock:
       name: updateRatesSchedLock

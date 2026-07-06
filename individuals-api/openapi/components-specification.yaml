@@ -36,7 +36,7 @@ paths:
           $ref: "#/components/responses/BadRequestResponse"
         500:
           $ref: "#/components/responses/InternalServerErrorResponse"
-  /transactions/status/{transactionId}:
+  /transaction/status/{transactionId}:
     get:
       security:
         - BearerAuth: []
@@ -62,7 +62,7 @@ paths:
           $ref: "#/components/responses/BadRequestResponse"
         500:
           $ref: "#/components/responses/InternalServerErrorResponse"
-  /transactions/do-transaction:
+  /transaction/do-transaction:
     post:
       security:
         - BearerAuth: []
@@ -184,7 +184,7 @@ paths:
           $ref: "#/components/responses/BadRequestResponse"
         500:
           $ref: "#/components/responses/InternalServerErrorResponse"
-  /wallets/create:
+  /wallet/create:
     post:
       security:
         - BearerAuth: []
@@ -210,7 +210,7 @@ paths:
           $ref: "#/components/responses/BadRequestResponse"
         500:
           $ref: "#/components/responses/InternalServerErrorResponse"
-  /wallets/info/{walletId}:
+  /wallet/info/{walletId}:
     get:
       security:
         - BearerAuth: []
@@ -237,7 +237,7 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerErrorResponse"
 
-  /rate:
+  /currency-rate/rate:
     get:
       security:
         - BearerAuth: [ ]
@@ -270,6 +270,14 @@ paths:
           schema:
             type: string
           description: Идентификатор конкретного поставщика данных. Если параметр опущен, возвращается смешанное (усредненное) значение по всем доступным провайдерам.
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Дата курса валюты
+          example: "2025-11-22"
       responses:
         '200':
           description: Курс найден
@@ -290,7 +298,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
 
-  /currencies:
+  /currency-rate/currencies:
     get:
       security:
         - BearerAuth: []
@@ -308,7 +316,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/CurrencyResponse'
 
-  /rate-providers:
+  /currency-rate/rate-providers:
     get:
       security:
         - BearerAuth: [ ]
@@ -326,7 +334,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/RateProviderResponse'
 
-  /currency:
+  /currency-rate/currency/{code}:
     get:
       security:
         - BearerAuth: [ ]
@@ -357,7 +365,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
 
-  /rate-provider:
+  /currency-rate/provider/{code}:
     get:
       security:
         - BearerAuth: [ ]
@@ -637,7 +645,7 @@ components:
 
     TransactionRequestDTO:
       type: object
-      required: [ operationType, amount, currency, timestamp, properties ]
+      required: [ operationType, amount, currency, properties ]
       properties:
         operationType:
           $ref: "#/components/schemas/OperationType"
@@ -645,8 +653,15 @@ components:
           $ref: "#/components/schemas/AmountDefinition"
         currency:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
+        currencyRateDate:
+          type: string
+          format: date
+        rateProvider:
+          type: string
+          pattern: '^[A-Z]{3,10}$'
         timestamp:
-          type: long
+          type: integer
+          format: int64
         properties:
           type: object
           additionalProperties:

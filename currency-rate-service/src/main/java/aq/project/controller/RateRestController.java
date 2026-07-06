@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class RateController implements RatesRestControllerApi {
+public class RateRestController implements RatesRestControllerApi {
 
     private final RateService rateService;
     private final TraceContext traceContext;
@@ -27,9 +28,9 @@ public class RateController implements RatesRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<RateResponse> getRate(String from, String to, String xTraceId, String provider) {
+    public ResponseEntity<RateResponse> getRate(String from, String to, String xTraceId, String provider, LocalDate date) {
         traceContext.setTraceId(xTraceId);
-        return ResponseEntity.ok(rateService.getRate(from, to, provider));
+        return ResponseEntity.ok(rateService.getRate(from, to, provider, date));
     }
 
     @Override

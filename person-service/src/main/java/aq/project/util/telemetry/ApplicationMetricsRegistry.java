@@ -45,5 +45,6 @@ public class ApplicationMetricsRegistry implements MeterBinder {
                 .tag(ACTION, action)
                 .tag(STATUS, isSuccess ? SUCCESS : FAIL)
                 .register(meterRegistry);
+        counter.increment();
     }
 }

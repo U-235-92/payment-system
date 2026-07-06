@@ -1,19 +1,32 @@
+logging:
+  level:
+    root: info
 spring:
   kafka:
-    bootstrapServers: ${CONTAINER_KAFKA_BOOTSTRAP_SERVERS}
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS}
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${OAUTH2_CONTAINER_JWT_ISSUER_URI}
-          jwk-set-uri: ${OAUTH2_CONTAINER_JWT_JWK_SET_URI}
+          issuer-uri: ${OAUTH2_JWT_ISSUER_URI}
+          jwk-set-uri: ${OAUTH2_JWT_JWK_SET_URI}
       client:
         provider:
           keycloak:
-            issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_CONTAINER_ISSUER_URI}
-            token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_CONTAINER_TOKEN_URI}
+            issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI}
+            token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI}
+        registration:
+          keycloak:
+            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
+            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
+            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_COLLECTOR_URI}
 service:
-  individuals-api:
-    uri: ${INDIVIDUALS_API_SERVICE_CONTAINER_URL}
   wallet-service:
-    uri: ${WALLET_SERVICE_CONTAINER_URL}
+    uri: ${WALLET_SERVICE_URL}

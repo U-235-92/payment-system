@@ -1,6 +1,6 @@
 logging:
   level:
-    org.springframework.security: info
+    root: info
 server:
   port: ${SERVICE_PORT}
 spring:
@@ -8,9 +8,29 @@ spring:
     name: ${SERVICE_NAME}
   profiles:
     active:
-      - dev
+      - ${SERVICE_PROFILE}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/payment-system
+            token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
+        registration:
+          keycloak:
+            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
+            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
+            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
   kafka:
-    bootstrapServers: ${LOCAL_KAFKA_BOOTSTRAP_SERVERS}
+    bootstrapServers:
+      - localhost:29092
+      - localhost:39092
+      - localhost:49092
     listener:
       ack-mode: RECORD
     producer:
@@ -29,24 +49,12 @@ spring:
           json:
             trusted:
               packages: "aq.project.messages"
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${OAUTH2_LOCAL_JWT_ISSUER_URI}
-          jwk-set-uri: ${OAUTH2_LOCAL_JWT_JWK_SET_URI}
-      client:
-        provider:
-          keycloak:
-            issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_LOCAL_ISSUER_URI}
-            token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_LOCAL_TOKEN_URI}
-        registration:
-          keycloak:
-            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
-            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
-            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
-            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
 management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # OTEL collector URI
   otlp:
     metrics:
       export:
@@ -79,13 +87,8 @@ service:
         name: withdraw
       transfer:
         name: transfer
-  individuals-api:
-    name: ${INDIVIDUALS_API_SERVICE_NAME}
-    uri: ${INDIVIDUALS_API_SERVICE_LOCAL_URL}
-    endpoints:
-      handle-transaction-response: ${INDIVIDUALS_API_SERVICE_ENDPOINTS_HANDLE_TRANSACTION_RESPONSE}
   wallet-service:
     name: ${WALLET_SERVICE_NAME}
-    uri: ${WALLET_SERVICE_LOCAL_URL}
+    uri: http://localhost:8083
     endpoints:
-      get-transaction-status: ${WALLET_SERVICE_ENDPOINTS_GET_TRANSACTION_STATUS}
+      get-transaction-status: /api/v1/transaction/status/

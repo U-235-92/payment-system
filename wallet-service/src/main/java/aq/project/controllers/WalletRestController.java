@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class WalletRestController implements WalletRestControllerApi {
 
     private final WalletMapper walletMapper;
@@ -35,5 +35,11 @@ public class WalletRestController implements WalletRestControllerApi {
         traceContext.setTraceId(xTraceId);
         Wallet wallet = walletService.getWalletInfo(id);
         return ResponseEntity.ok(walletMapper.toWalletInfoResponseDto(wallet));
+    }
+
+    @Override
+    public ResponseEntity<String> getWalletCurrency(String id, String xTraceId) {
+        traceContext.setTraceId(xTraceId);
+        return ResponseEntity.ok(walletService.getWalletCurrency(id));
     }
 }

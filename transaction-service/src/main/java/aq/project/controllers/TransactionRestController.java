@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class TransactionRestController implements TransactionRestControllerApi {
 
     private final TransactionService transactionService;

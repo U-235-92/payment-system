@@ -61,7 +61,7 @@ public class GetTransactionStatusIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.get()
-                .uri("/api/transactions/status/" + transactionId)
+                .uri("/api/v1/transaction/status/" + transactionId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .exchange()
                 .expectStatus()
@@ -78,7 +78,7 @@ public class GetTransactionStatusIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.get()
-                .uri("/api/transactions/status/" + transactionId)
+                .uri("/api/v1/transaction/status/" + transactionId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .exchange()
                 .expectStatus()
@@ -96,7 +96,7 @@ public class GetTransactionStatusIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.get()
-                .uri("/api/transactions/status/" + transactionId)
+                .uri("/api/v1/transaction/status/" + transactionId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .exchange()
                 .expectStatus()
@@ -114,7 +114,7 @@ public class GetTransactionStatusIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/transactions/status/" + transactionId)
+                .uri("/api/v1/transaction1/status/" + transactionId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .exchange()
                 .expectStatus()
@@ -132,7 +132,7 @@ public class GetTransactionStatusIntegrationTest {
         String adminAccessToken = jwtClient.requestAdminToken().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/transactions/status/" + transactionId)
+                .uri("/api/v1/transaction/status/" + transactionId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
                 .exchange()
                 .expectStatus()
@@ -148,7 +148,7 @@ public class GetTransactionStatusIntegrationTest {
                 .willReturn(WireMock.unauthorized()));
 //        Test call
         webTestClient.get()
-                .uri("/api/transactions/status/" + transactionId)
+                .uri("/api/v1/transaction/status/" + transactionId)
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()

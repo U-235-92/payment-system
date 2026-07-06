@@ -25,10 +25,10 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(1)
-    @Profile("dev")
+    @Profile(value = { "dev", "dev-shard" })
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/h2-console/**", "/api/**")
+                .securityMatcher("/h2-console/**", "/api/v1/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
@@ -39,16 +39,17 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    @Profile(value = { "dev-shard", "prod" })
+    @Profile(value = { "prod" })
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/api/**")
+                .securityMatcher("/api/v1/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, "/api" + PATH_CREATE_WALLET).authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api" + PATH_GET_WALLET_INFO.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api" + PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
+                        .requestMatchers(HttpMethod.POST, "/api/v1" + PATH_CREATE_WALLET).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_WALLET_INFO.replace("{id}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_WALLET_CURRENCY.replace("{id}", "*")).authenticated())
                 .build();
     }
 

@@ -11,7 +11,6 @@ import aq.project.mappers.IndividualDataDtoMapper;
 import aq.project.mappers.UndoOperationDtoMapper;
 import aq.project.services.PersonService;
 import aq.project.util.telemetry.TraceContext;
-import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class PersonRestController implements PersonRestControllerApi {
 
     private final PersonService personService;
@@ -31,7 +30,6 @@ public class PersonRestController implements PersonRestControllerApi {
     private final TraceContext traceContext;
 
     @Override
-    @Timed(value = "person_service.create_person_time")
     public ResponseEntity<String> createPerson(String xTraceId, CreateIndividualDataDTO createIndividualDataDTO) {
         traceContext.setTraceId(xTraceId);
         Person person = individualDataDtoMapper.toPerson(createIndividualDataDTO);
@@ -40,7 +38,6 @@ public class PersonRestController implements PersonRestControllerApi {
     }
 
     @Override
-    @Timed(value = "person_service.delete_person_by_keycloak_id_time")
     public ResponseEntity<Void> deletePersonByKeycloakId(String keycloakId, String xTraceId)  {
         traceContext.setTraceId(xTraceId);
         personService.deletePersonByKeycloakId(keycloakId);
@@ -48,7 +45,6 @@ public class PersonRestController implements PersonRestControllerApi {
     }
 
     @Override
-    @Timed(value = "person_service.undo_delete_person_by_keycloak_id_time")
     public ResponseEntity<Void> undoDeletePerson(String xTraceId, UndoOperationDTO undoOperationDTO) {
         traceContext.setTraceId(xTraceId);
         UndoOperation undoOperation = undoOperationDtoMapper.toUndoOperation(undoOperationDTO);
@@ -57,7 +53,6 @@ public class PersonRestController implements PersonRestControllerApi {
     }
 
     @Override
-    @Timed(value = "person_service.update_person_time")
     public ResponseEntity<Void> updatePerson(String xTraceId, UpdateIndividualDataDTO updateIndividualDataDTO) {
         traceContext.setTraceId(xTraceId);
         Person person = individualDataDtoMapper.toPerson(updateIndividualDataDTO);
@@ -66,7 +61,6 @@ public class PersonRestController implements PersonRestControllerApi {
     }
 
     @Override
-    @Timed(value = "person_service.undo_update_person_time")
     public ResponseEntity<Void> undoUpdatePerson(String xTraceId, UndoOperationDTO undoOperationDTO) {
         traceContext.setTraceId(xTraceId);
         UndoOperation undoOperation = undoOperationDtoMapper.toUndoOperation(undoOperationDTO);
@@ -75,7 +69,6 @@ public class PersonRestController implements PersonRestControllerApi {
     }
 
     @Override
-    @Timed(value = "person_service.get_person_by_keycloak_id_time")
     public ResponseEntity<ResponseIndividualDataDTO> getPersonByKeycloakId(String keycloakId, String xTraceId) {
         traceContext.setTraceId(xTraceId);
         ResponseIndividualDataDTO response = individualDataDtoMapper.toIndividualResponseDTO(personService.getPersonByKeycloakId(keycloakId));

@@ -3,6 +3,7 @@ package aq.project.messages;
 import aq.project.exceptions.UnknownMessagePropertyException;
 import aq.project.dto.OperationType;
 import aq.project.dto.TransactionStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -47,7 +48,8 @@ public class TransactionRequest {
     @PositiveOrZero
     private Long timestamp;
 
-    private final Map<String, String> properties = new HashMap<>();;;
+    @JsonProperty("properties")
+    private Map<String, String> properties = new HashMap<>();
 
     public TransactionRequest(String transactionId, OperationType operationType, BigDecimal amount, String currency, TransactionStatus transactionStatus, Long timestamp) {
         super();

@@ -43,6 +43,14 @@ paths:
           schema:
             type: string
           description: Идентификатор конкретного поставщика данных. Если параметр опущен, возвращается смешанное (усредненное) значение по всем доступным провайдерам.
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Дата курса валюты
+          example: "2025-11-22"
         - name: x-trace-id
           in: header
           required: true
@@ -119,7 +127,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/RateProviderResponse'
 
-  /currency:
+  /currency/{code}:
     get:
       security:
         - BearerAuth: []
@@ -156,7 +164,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
 
-  /rate-provider:
+  /rate-provider/{code}:
     get:
       security:
         - BearerAuth: []

@@ -1,37 +1,29 @@
 package aq.project.util.handlers;
 
-import aq.project.clients.CurrencyRateServiceClient;
-import aq.project.dto.RateResponse;
 import aq.project.exceptions.CreditCardConstrainsException;
 import aq.project.exceptions.NoSuchWalletException;
 import aq.project.exceptions.WalletConstrainsException;
-import aq.project.util.mappers.TransactionMapper;
 import aq.project.messages.TransactionRequest;
 import aq.project.repositories.TransactionRepository;
 import aq.project.repositories.WalletRepository;
-import aq.project.util.telemetry.TraceContext;
+import aq.project.util.mappers.TransactionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-
 @Component
 @RequiredArgsConstructor
-class CommonRequestHandler {
+public class CommonRequestHandler {
 
     protected final WalletRepository walletRepository;
 
-    private final CurrencyRateServiceClient currencyRateServiceClient;
-
     private final TransactionWriter transactionWriter;
 
-    private final TraceContext traceContext;
-
     @Transactional
-    public void handleRequestMessage(TransactionRequest transactionRequest,
-                                           TransactionMapper transactionMapper,
-                                           TransactionRepository transactionRepository
+    public void handleRequestMessage(
+            TransactionRequest transactionRequest,
+            TransactionMapper transactionMapper,
+            TransactionRepository transactionRepository
     ) throws WalletConstrainsException, CreditCardConstrainsException, NoSuchWalletException {
         try {
             checkTransactionRequestPropertyConstrains(transactionRequest);
@@ -49,11 +41,5 @@ class CommonRequestHandler {
 
     protected void handleTransactionRequestOperation(TransactionRequest transactionRequest) {
         throw new UnsupportedOperationException();
-    }
-
-    protected final BigDecimal getConversionRate(String sourceCurrency, String destinationCurrency) {
-        String traceId = traceContext.getTraceId();
-        RateResponse rateResponse = currencyRateServiceClient.getRates(sourceCurrency, destinationCurrency, traceId);
-        return rateResponse.getRate();
     }
 }

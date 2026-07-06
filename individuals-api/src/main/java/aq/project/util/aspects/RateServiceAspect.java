@@ -4,6 +4,7 @@ import aq.project.dto.CurrencyResponse;
 import aq.project.dto.RateProviderResponse;
 import aq.project.dto.RateResponse;
 import aq.project.util.telemetry.ServiceAspectHandler;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -17,7 +18,12 @@ import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.print.attribute.standard.MediaSize;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+
+import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
 
 @Aspect
 @Component
@@ -80,23 +86,27 @@ public class RateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.RateService.getRate(..)) && args(from, to, provider)")
+    @Around("execution(* aq.project.services.RateService.getRate(..)) && args(from, to, provider, date)")
     public Mono<RateResponse> getRate(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String from,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String to,
-            String provider
+            @Nullable String provider,
+            @Nullable LocalDate date
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "get-rate";
         String tracerName = serviceName + "." + actionName + "-tracer";
         String optProvider = Optional.ofNullable(provider).orElse("[not assigned]");
-        String preMainLogicLogMessage = String.format("Received request to get rate: [%s -> %s], provider: %s",
-                from, to, optProvider);
-        String postSuccessMainLogicCallLogMessage = String.format("Success handle request to get rate: [%s -> %s], provider: %s",
-                from, to, optProvider);
-        String postFailureMainLogicCallLogMessage = String.format("Error occurred during handle request to get rate: [%s -> %s], provider: %s",
-                from, to, optProvider);
+        String optRateDate = Optional.ofNullable(date)
+                .map(d -> DateTimeFormatter.ofPattern(ISO_DATE_FORMAT).format(date))
+                .orElse("[not assigned]");
+        String preMainLogicLogMessage = String.format("Received request to get rate: [%s -> %s], provider: %s, rate date: %s",
+                from, to, optProvider, optRateDate);
+        String postSuccessMainLogicCallLogMessage = String.format("Success handle request to get rate: [%s -> %s], provider: %s, rate date: %s",
+                from, to, optProvider, optRateDate);
+        String postFailureMainLogicCallLogMessage = String.format("Error occurred during handle request to get rate: [%s -> %s], provider: %s, rate date: %s",
+                from, to, optProvider, optRateDate);
 //        Handler logic call
         return serviceAspectHandler.handle(
                 pjp,

@@ -1,7 +1,6 @@
 package aq.project.services;
 
 import aq.project.dto.ErrorDTO;
-import aq.project.dto.OperationType;
 import aq.project.dto.TransactionStatus;
 import aq.project.exceptions.TransactionException;
 import aq.project.messages.TransactionRequest;
@@ -17,18 +16,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import static aq.project.util.constants.CustomHttpHeaders.*;
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
-import static aq.project.util.constants.RequestPropertyKeys.SENDER_WALLET_ID;
+
+import static aq.project.util.constants.CustomHttpHeaders.BEARER;
+import static aq.project.util.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
 
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
-
-    @Value("${service.individuals-api.uri}")
-    private String individualsApiUrl;
-    @Value("${service.individuals-api.endpoints.handle-transaction-response}")
-    private String individualsApiHandleTransactionResponseEndpoint;
 
     @Value("${service.wallet-service.uri}")
     private String walletServiceApiUrl;
@@ -59,57 +53,37 @@ public class TransactionService {
     }
 
     private void sendTransactionRequest0(TransactionRequest transactionRequest) {
-        if(transactionRequest.getOperationType() == OperationType.DEPOSIT) {
-            ProducerRecord<String, TransactionRequest> record = new ProducerRecord<>(
-                    walletOperationRequestTopicName,
-                    depositPartitionName,
-                    transactionRequest);
-            Headers headers = record.headers();
-            headers.add(RECIPIENT_WALLET_ID, getPropertyBytes(transactionRequest, RECIPIENT_WALLET_ID));
-            headers.add(X_TRACE_ID_HEADER, traceContext.getTraceId().getBytes());
-            kafkaTemplate.send(record);
-        } else if(transactionRequest.getOperationType() == OperationType.WITHDRAW) {
-            ProducerRecord<String, TransactionRequest> record = new ProducerRecord<>(
-                    walletOperationRequestTopicName,
-                    withdrawPartitionName,
-                    transactionRequest);
-            Headers headers = record.headers();
-            headers.add(RECIPIENT_WALLET_ID, getPropertyBytes(transactionRequest, RECIPIENT_WALLET_ID));
-            headers.add(X_TRACE_ID_HEADER, traceContext.getTraceId().getBytes());
-            kafkaTemplate.send(record);
-        } else if(transactionRequest.getOperationType() == OperationType.TRANSFER) {
-            ProducerRecord<String, TransactionRequest> record = new ProducerRecord<>(
-                    walletOperationRequestTopicName,
-                    transferPartitionName,
-                    transactionRequest);
-            Headers headers = record.headers();
-            headers.add(SENDER_WALLET_ID, getPropertyBytes(transactionRequest, SENDER_WALLET_ID));
-            headers.add(RECIPIENT_WALLET_ID, getPropertyBytes(transactionRequest, RECIPIENT_WALLET_ID));
-            headers.add(X_TRACE_ID_HEADER, traceContext.getTraceId().getBytes());
-            kafkaTemplate.send(record);
+        ProducerRecord<String, TransactionRequest> record;
+        switch (transactionRequest.getOperationType()) {
+            case DEPOSIT -> record = new ProducerRecord<>(
+                        walletOperationRequestTopicName,
+                        depositPartitionName,
+                        transactionRequest
+                );
+            case WITHDRAW -> record = new ProducerRecord<>(
+                        walletOperationRequestTopicName,
+                        withdrawPartitionName,
+                        transactionRequest
+                );
+            case TRANSFER -> record = new ProducerRecord<>(
+                        walletOperationRequestTopicName,
+                        transferPartitionName,
+                        transactionRequest
+                );
+            default -> throw new IllegalArgumentException(String.format("Unknown transaction operation type %s",
+                    transactionRequest.getOperationType()));
         }
-    }
-
-    private byte[] getPropertyBytes(TransactionRequest transactionRequest, String key) {
-        return transactionRequest.getProperty(key).getBytes();
+        Headers headers = record.headers();
+        headers.add(X_TRACE_ID_HEADER, traceContext.getTraceId().getBytes());
+        kafkaTemplate.send(record);
     }
 
     @KafkaListener(topics = "${service.kafka.topics.wallet_operation_response.name}")
-    public int handleTransactionResponse(ConsumerRecord<String, TransactionResponse> consumerRecord) {
+    public void handleTransactionResponse(ConsumerRecord<String, TransactionResponse> consumerRecord) {
         TransactionResponse transactionResponse = consumerRecord.value();
-        return restClient.post()
-                .uri(individualsApiUrl + individualsApiHandleTransactionResponseEndpoint)
-                .body(transactionResponse)
-                .header(HttpHeaders.AUTHORIZATION, BEARER + tokenService.getAdminAccessToken())
-                .header(X_TRACE_ID_HEADER, traceContext.getTraceId())
-                .exchange((request, response) -> response.getStatusCode().value());
     }
 
     public TransactionStatus getTransactionStatus(String transactionId) {
-        return getTransactionStatus0(transactionId);
-    }
-
-    private TransactionStatus getTransactionStatus0(String transactionId) {
         String uri = walletServiceApiUrl + walletServiceApiGetTransactionStatusEndpoint + transactionId;
         String adminAccessToken = tokenService.getAdminAccessToken();
         return restClient.get()

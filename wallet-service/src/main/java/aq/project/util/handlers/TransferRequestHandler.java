@@ -1,6 +1,5 @@
 package aq.project.util.handlers;
 
-import aq.project.clients.CurrencyRateServiceClient;
 import aq.project.dto.WalletStatus;
 import aq.project.entities.Wallet;
 import aq.project.exceptions.CreditCardConstrainsException;
@@ -8,32 +7,32 @@ import aq.project.exceptions.NoSuchWalletException;
 import aq.project.exceptions.WalletConstrainsException;
 import aq.project.messages.TransactionRequest;
 import aq.project.repositories.WalletRepository;
-import aq.project.util.telemetry.TraceContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.YearMonth;
-import static aq.project.util.constants.CustomConstants.*;
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
-import static aq.project.util.constants.RequestPropertyKeys.SENDER_WALLET_ID;
+
+import static aq.project.util.constants.CustomConstants.DEPOSIT_OPERATION;
+import static aq.project.util.constants.CustomConstants.WITHDRAW_OPERATION;
+import static aq.project.util.constants.RequestPropertyKeys.*;
 
 @Component
 public class TransferRequestHandler extends CommonRequestHandler {
 
     public TransferRequestHandler(
-            CurrencyRateServiceClient currencyRateServiceClient,
             WalletRepository walletRepository,
-            TransactionWriter transactionWriter,
-            TraceContext traceContext) {
-        super(walletRepository, currencyRateServiceClient, transactionWriter, traceContext);
+            TransactionWriter transactionWriter
+    ) {
+        super(walletRepository, transactionWriter);
     }
 
     @Override
     @Transactional
     protected void checkTransactionRequestPropertyConstrains(TransactionRequest transactionRequest) throws WalletConstrainsException, CreditCardConstrainsException, NoSuchWalletException {
-        String senderWalletId = transactionRequest.getProperty(SENDER_WALLET_ID, String.class);
-        String recipientWalletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class);
+        String senderWalletId = transactionRequest.getProperty(SENDER_WALLET_ID);
+        String recipientWalletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID);
         checkRecipientWalletConstrains(recipientWalletId);
         checkSenderWalletConstrains(transactionRequest, senderWalletId);
     }
@@ -70,16 +69,13 @@ public class TransferRequestHandler extends CommonRequestHandler {
     @Override
     protected void handleTransactionRequestOperation(TransactionRequest transactionRequest) {
 //        Prepare data
-        String recipientWalletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID, String.class);
+        String recipientWalletId = transactionRequest.getProperty(RECIPIENT_WALLET_ID);
         Wallet recipientWallet = walletRepository.findByIdForUpdate(recipientWalletId).get();
-        String senderWalletId = transactionRequest.getProperty(SENDER_WALLET_ID, String.class);
+        String senderWalletId = transactionRequest.getProperty(SENDER_WALLET_ID);
         Wallet senderWallet = walletRepository.findByIdForUpdate(senderWalletId).get();
 //        Get conversion rates
-        String recipientCurrency = recipientWallet.getWalletDetails().getCurrencyCode();
-        String senderCurrency = senderWallet.getWalletDetails().getCurrencyCode();
-        String transactionCurrency = transactionRequest.getCurrency();
-        BigDecimal senderConversionRate = getConversionRate(transactionCurrency, senderCurrency);
-        BigDecimal recipientConversionRate = getConversionRate(transactionCurrency, recipientCurrency);
+        BigDecimal senderConversionRate = BigDecimal.valueOf(Double.valueOf(transactionRequest.getProperty(SENDER_CURRENCY_RATE)));
+        BigDecimal recipientConversionRate = BigDecimal.valueOf(Double.valueOf(transactionRequest.getProperty(RECIPIENT_CURRENCY_RATE)));
 //        Sender -> Transaction
         BigDecimal senderConvertedAmount = transactionRequest.getAmount().multiply(senderConversionRate);
 //        Recipient -> Transaction

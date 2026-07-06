@@ -55,4 +55,11 @@ public class WalletService {
         return walletRepository.findById(walletId)
                 .orElseThrow(() -> new NoSuchWalletException(walletId));
     }
+
+    public String getWalletCurrency(String id) throws NoSuchWalletException {
+        return walletRepository.findById(id)
+                .orElseThrow(() -> new NoSuchWalletException(id))
+                .getWalletDetails()
+                .getCurrencyCode();
+    }
 }

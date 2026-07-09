@@ -21,7 +21,7 @@ public class TokenRestController implements TokenRestControllerApi {
 
     @Override
     public Mono<ResponseEntity<ResponseTokenDTO>> refreshToken(Mono<RefreshTokenDTO> refreshTokenDTO, ServerWebExchange exchange) {
-        return refreshTokenDTO.flatMap(dto ->  tokenService.refreshToken(dto)
+        return refreshTokenDTO.flatMap(dto ->  tokenService.refreshUserJwt(dto)
                 .map(token -> ResponseEntity.status(HttpStatus.OK).body(token)));
     }
 }

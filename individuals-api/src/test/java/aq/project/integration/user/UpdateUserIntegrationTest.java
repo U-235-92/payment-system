@@ -113,6 +113,7 @@ public class UpdateUserIntegrationTest {
                                 return Mono.just(ResponseEntity.ok().build());
                             return Mono.just(ResponseEntity.status(response.statusCode()).build());
                         }));
+
         StepVerifier.create(updateUserMono)
                 .expectNextMatches(response -> response.getStatusCode().is4xxClientError());
     }
@@ -140,6 +141,7 @@ public class UpdateUserIntegrationTest {
                                 return Mono.just(ResponseEntity.ok().build());
                             return Mono.just(ResponseEntity.status(response.statusCode()).build());
                         }));
+
         StepVerifier.create(updateUserMono)
                 .expectNextMatches(response -> response.getStatusCode().is4xxClientError());
     }

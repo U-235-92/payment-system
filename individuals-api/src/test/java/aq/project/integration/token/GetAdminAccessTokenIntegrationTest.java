@@ -1,6 +1,6 @@
 package aq.project.integration.token;
 
-import aq.project.clients.JwtClient;
+import aq.project.clients.KeycloakServiceWebClientFacade;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -22,7 +22,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class GetAdminAccessTokenIntegrationTest {
 
     @Autowired
-    private JwtClient jwtClient;
+    private KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
 
     @Container
     private static final KeycloakContainer KEYCLOAK = TestContainers.Keycloak.KEYCLOAK_CONTAINER;
@@ -35,7 +35,7 @@ public class GetAdminAccessTokenIntegrationTest {
 
     @Test
     public void successGetAdminJwtTest() {
-        String jwt = jwtClient.requestAdminToken().block();
+        String jwt = keycloakServiceWebClientFacade.getAdminJwt().block();
         Assertions.assertNotNull(jwt);
     }
 }

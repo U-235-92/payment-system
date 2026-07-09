@@ -1,7 +1,7 @@
 package aq.project.integration.rate;
 
 import aq.project.dto.CurrencyResponse;
-import aq.project.services.RateService;
+import aq.project.services.CurrencyRateService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -42,7 +42,7 @@ public class GetCurrenciesIntegrationTest {
     private WireMockServer currencyRateServiceMockServer;
 
     @Autowired
-    private RateService rateService;
+    private CurrencyRateService currencyRateService;
 
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
@@ -69,9 +69,9 @@ public class GetCurrenciesIntegrationTest {
         currencyRateServiceMockServer.stubFor(WireMock.get(getCurrenciesEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(List.of(rubCurrencyResponse, usdCurrencyResponse))));
 
-        CurrencyResponse currencyResponse = rateService.getCurrencies().block().blockFirst();
+        CurrencyResponse currencyResponse = currencyRateService.getCurrencies().block().blockFirst();
 
-        Assertions.assertDoesNotThrow(() -> rateService.getCurrencies());
+        Assertions.assertDoesNotThrow(() -> currencyRateService.getCurrencies());
         Assertions.assertNotNull(currencyResponse);
         Assertions.assertEquals("RUB", currencyResponse.getCode());
     }

@@ -1,11 +1,9 @@
 package aq.project.services;
 
+import aq.project.clients.KeycloakServiceRestClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -13,6 +11,8 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
+import static aq.project.util.constants.CustomHttpHeaders.BEARER;
 
 @Service
 @RequiredArgsConstructor
@@ -23,25 +23,23 @@ public class TokenService {
     private final Map<String, String> tokenMap = new HashMap<>();
 
     @Value("${spring.security.oauth2.client.registration.keycloak.admin-id}")
-    private String adminClientID;
-
+    private String adminId;
     @Value("${spring.security.oauth2.client.registration.keycloak.admin-secret}")
-    private String adminClientSecret;
+    private String adminSecret;
 
-    @Value("${spring.security.oauth2.client.provider.keycloak.token-uri}")
-    private String tokenURI;
+    private final KeycloakServiceRestClient keycloakServiceRestClient;
 
-    private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
-    public String getAdminAccessToken() {
+    public String getAdminJwt() {
         if(tokenMap.isEmpty()) {
-            String accessToken = requestAdminAccessToken();
+            String accessToken = keycloakServiceRestClient.getAdminJwt(adminId, adminSecret, objectMapper);
             tokenMap.put(ADMIN_ACCESS_TOKEN, accessToken);
             return accessToken;
         } else {
             String accessToken = tokenMap.get(ADMIN_ACCESS_TOKEN);
-            if(isTokenExpired(accessToken)) {
-                accessToken = requestAdminAccessToken();
+            if(isJwtExpired(accessToken)) {
+                accessToken = keycloakServiceRestClient.getAdminJwt(adminId, adminSecret, objectMapper);
                 tokenMap.put(ADMIN_ACCESS_TOKEN, accessToken);
                 return accessToken;
             }
@@ -49,24 +47,11 @@ public class TokenService {
         }
     }
 
-    private String requestAdminAccessToken() {
-        LinkedMultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("client_id", adminClientID);
-        form.add("client_secret", adminClientSecret);
-        form.add("grant_type", "client_credentials");
-        String keycloakResponse = restClient.post()
-                .uri(tokenURI)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(form)
-                .retrieve()
-                .body(String.class);
-        return new ObjectMapper()
-                .readTree(keycloakResponse)
-                .get("access_token")
-                .asString();
+    public String getAdminJwtAsAuthorizationHeaderValue() {
+        return BEARER + getAdminJwt();
     }
 
-    private boolean isTokenExpired(String accessToken) {
+    private boolean isJwtExpired(String accessToken) {
         String payload = accessToken.split("\\.")[1];
         Base64.Decoder decoder = Base64.getDecoder();
         ObjectMapper mapper = new ObjectMapper();

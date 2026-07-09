@@ -45,13 +45,7 @@ public class ServiceAspectHandler {
         Mono<?> publisher = (validation != null) ? validation.get() : Mono.empty();
 //        Validation logic call ---> Main logic call
         return publisher
-                .then(Mono.defer(() -> {
-                    try {
-                        return (Mono<T>) pjp.proceed();
-                    } catch (Throwable t) {
-                        return Mono.error(t);
-                    }
-                }))
+                .then((Mono<T>) pjp.proceed())
                 .doOnError(e -> {
                     applicationMetricsRegistry.countAction(false, actionName);
                     logOnFailure(traceId, spanId, serviceName, actionName, postFailureMainLogicCallLogMessage, e);

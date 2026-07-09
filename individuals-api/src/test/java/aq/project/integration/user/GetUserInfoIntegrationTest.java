@@ -76,7 +76,7 @@ public class GetUserInfoIntegrationTest {
 
     @Test
     public void successGetUserInfoTest() {
-        personServiceMockServer.stubFor(WireMock.get(personServiceGetPersonInfoEndpoint + actualUserKeycloakId)
+        personServiceMockServer.stubFor(WireMock.get(personServiceGetPersonInfoEndpoint + "/" + actualUserKeycloakId)
                 .willReturn(WireMock.ok()));
 
         WebClient webClient = getWebClient(port);

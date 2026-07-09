@@ -1,9 +1,14 @@
 package aq.project.integration;
 
+import aq.project.dto.ErrorDTO;
 import aq.project.exceptions.TransactionException;
 import aq.project.services.TransactionService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -39,7 +44,7 @@ public class GetTransactionStatusIntegrationTest {
     @Test
     public void successGetTransactionStatusUnitTest() {
         String transactionId = UUID.randomUUID().toString();
-        walletServiceMockServer.stubFor(WireMock.get(walletServiceGetTransactionStatusEndpoint + transactionId)
+        walletServiceMockServer.stubFor(WireMock.get(walletServiceGetTransactionStatusEndpoint + "/" + transactionId)
                 .willReturn(WireMock.ok()));
         Assertions.assertDoesNotThrow(() -> transactionService.getTransactionStatus(transactionId));
     }
@@ -47,8 +52,22 @@ public class GetTransactionStatusIntegrationTest {
     @Test
     public void failGetTransactionStatusWithUnknownTransactionIdUnitTest() {
         String unknownTransactionId = UUID.randomUUID().toString();
-        walletServiceMockServer.stubFor(WireMock.get(walletServiceGetTransactionStatusEndpoint + unknownTransactionId)
-                .willReturn(WireMock.status(400)));
+
+        ErrorDTO errorDto = new ErrorDTO();
+        errorDto.setMessage("Unknown transaction ID");
+        errorDto.setHttpStatus(400);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.valueToTree(errorDto);
+
+        ResponseDefinition responseDefinition = ResponseDefinitionBuilder.responseDefinition()
+                .withStatus(400)
+                .withJsonBody(jsonNode)
+                .build();
+
+        walletServiceMockServer.stubFor(WireMock.get(walletServiceGetTransactionStatusEndpoint + "/" + unknownTransactionId)
+                .willReturn(ResponseDefinitionBuilder.like(responseDefinition)));
+
         Assertions.assertThrows(TransactionException.class, () -> transactionService
                 .getTransactionStatus(unknownTransactionId));
     }

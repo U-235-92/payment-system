@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -114,6 +116,22 @@ public class UserRestControllerExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public Mono<ResponseEntity<ErrorDTO>> onIllegalArgumentException(IllegalArgumentException exc) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
+    }
+
+    @ExceptionHandler(value = HttpClientErrorException.class)
+    public Mono<ResponseEntity<ErrorDTO>> onHttpClientErrorException(HttpClientErrorException exc) {
+        HttpStatus status = HttpStatus.valueOf(exc.getStatusCode().value());
+        controllerExceptionLogger.logException(exc, status);
+        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        return Mono.just(ResponseEntity.status(status).body(errorDTO));
+    }
+
+    @ExceptionHandler(value = HttpServerErrorException.class)
+    public Mono<ResponseEntity<ErrorDTO>> onHttpServerErrorException(HttpServerErrorException exc) {
+        HttpStatus status = HttpStatus.valueOf(exc.getStatusCode().value());
         controllerExceptionLogger.logException(exc, status);
         ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
         return Mono.just(ResponseEntity.status(status).body(errorDTO));

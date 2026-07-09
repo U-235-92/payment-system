@@ -1,14 +1,14 @@
 package aq.project.integration.transaction;
 
+import aq.project.clients.KeycloakServiceWebClientFacade;
 import aq.project.dto.ErrorDTO;
 import aq.project.dto.OperationType;
 import aq.project.dto.RateResponse;
 import aq.project.dto.TransactionRequestDTO;
-import aq.project.clients.JwtClient;
 import aq.project.services.TransactionService;
-import aq.project.util.constants.RequestPropertyKeys;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
+import aq.project.util.constants.RequestPropertyKeys;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -58,9 +58,12 @@ public class DoWithdrawTransactionIntegrationTest {
     private String walletServiceGetWalletCurrencyEndpoint;
     @Value("${application.currency-rate-service.endpoints.get-rate}")
     private String getRateEndpoint;
+    @Value("${application.individuals-api.endpoints.do-transaction}")
+    private String individualsApiDoDepositTransactionEndpoint;
 
     @Autowired
-    private JwtClient jwtClient;
+    private KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+
     @Autowired
     private WebTestClient webTestClient;
 
@@ -89,6 +92,7 @@ public class DoWithdrawTransactionIntegrationTest {
     public void successDoTransactionRequestDtoTest() {
 //        Prepare constants
         String RUB = "RUB";
+        String transactionIdResponse = UUID.randomUUID().toString();
 //        Prepare DTO
         TransactionRequestDTO transactionRequestDTO = getValidWithdrawTransactionRequestDto();
         RateResponse rateResponse = getValidRateResponse();
@@ -98,7 +102,7 @@ public class DoWithdrawTransactionIntegrationTest {
         String getRateUrl = String.format("%s?from=%s&to=%s", getRateEndpoint, RUB, RUB);
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
-                .willReturn(WireMock.ok()));
+                .willReturn(WireMock.ok(transactionIdResponse)));
         walletServiceMock.stubFor(WireMock.get(getWalletCurrencyUrl)
                 .willReturn(WireMock.ok(RUB)));
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
@@ -126,11 +130,11 @@ public class DoWithdrawTransactionIntegrationTest {
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/transaction/do-transaction")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiDoDepositTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearer)
                 .bodyValue(transactionRequestDTO)
                 .exchange()
                 .expectStatus()
@@ -157,11 +161,11 @@ public class DoWithdrawTransactionIntegrationTest {
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/transaction/do-transaction")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiDoDepositTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearer)
                 .bodyValue(transactionRequestDTO)
                 .exchange()
                 .expectStatus()
@@ -175,11 +179,11 @@ public class DoWithdrawTransactionIntegrationTest {
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.status(400)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/transaction/do-transaction")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiDoDepositTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearer)
                 .bodyValue(getInvalidWithdrawTransactionRequestDto())
                 .exchange()
                 .expectStatus()

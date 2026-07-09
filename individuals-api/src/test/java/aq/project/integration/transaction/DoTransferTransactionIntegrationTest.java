@@ -1,6 +1,6 @@
 package aq.project.integration.transaction;
 
-import aq.project.clients.JwtClient;
+import aq.project.clients.KeycloakServiceWebClientFacade;
 import aq.project.dto.ErrorDTO;
 import aq.project.dto.OperationType;
 import aq.project.dto.RateResponse;
@@ -58,9 +58,12 @@ public class DoTransferTransactionIntegrationTest {
     private String walletServiceGetWalletCurrencyEndpoint;
     @Value("${application.currency-rate-service.endpoints.get-rate}")
     private String getRateEndpoint;
+    @Value("${application.individuals-api.endpoints.do-transaction}")
+    private String individualsApiDoDepositTransactionEndpoint;
 
     @Autowired
-    private JwtClient jwtClient;
+    private KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+
     @Autowired
     private WebTestClient webTestClient;
 
@@ -90,8 +93,9 @@ public class DoTransferTransactionIntegrationTest {
     public void successDoTransactionRequestDtoTest() {
 //        Prepare constants
         String RUB = "RUB";
+        String transactionIdResponse = UUID.randomUUID().toString();
 //        Prepare DTO
-        TransactionRequestDTO transactionRequestDTO = getValidTraansferTransactionRequestDto();
+        TransactionRequestDTO transactionRequestDTO = getValidTransferTransactionRequestDto();
         RateResponse rateResponse = getValidRateResponse();
 //        Prepare URL
         String getWalletCurrencyUrl = String.format("%s/%s",
@@ -99,7 +103,7 @@ public class DoTransferTransactionIntegrationTest {
         String getRateUrl = String.format("%s?from=%s&to=%s", getRateEndpoint, RUB, RUB);
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
-                .willReturn(WireMock.ok()));
+                .willReturn(WireMock.ok(transactionIdResponse)));
         walletServiceMock.stubFor(WireMock.get(getWalletCurrencyUrl)
                 .willReturn(WireMock.ok(RUB)));
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
@@ -113,7 +117,7 @@ public class DoTransferTransactionIntegrationTest {
 //        Prepare constants
         String RUB = "RUB";
 //        Prepare DTO
-        TransactionRequestDTO transactionRequestDTO = getValidTraansferTransactionRequestDto();
+        TransactionRequestDTO transactionRequestDTO = getValidTransferTransactionRequestDto();
         RateResponse rateResponse = getValidRateResponse();
 //        Prepare URL
         String getWalletCurrencyUrl = String.format("%s/%s",
@@ -127,11 +131,11 @@ public class DoTransferTransactionIntegrationTest {
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/transaction/do-transaction")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiDoDepositTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearer)
                 .bodyValue(transactionRequestDTO)
                 .exchange()
                 .expectStatus()
@@ -144,7 +148,7 @@ public class DoTransferTransactionIntegrationTest {
 //        Prepare constants
         String RUB = "RUB";
 //        Prepare DTO
-        TransactionRequestDTO transactionRequestDTO = getValidTraansferTransactionRequestDto();
+        TransactionRequestDTO transactionRequestDTO = getValidTransferTransactionRequestDto();
         RateResponse rateResponse = getValidRateResponse();
 //        Prepare URL
         String getWalletCurrencyUrl = String.format("%s/%s",
@@ -158,11 +162,11 @@ public class DoTransferTransactionIntegrationTest {
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/transaction/do-transaction")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiDoDepositTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearer)
                 .bodyValue(transactionRequestDTO)
                 .exchange()
                 .expectStatus()
@@ -176,11 +180,11 @@ public class DoTransferTransactionIntegrationTest {
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.status(400)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/transaction/do-transaction")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiDoDepositTransactionEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearer)
                 .bodyValue(getInvalidTransferTransactionRequestDto())
                 .exchange()
                 .expectStatus()
@@ -188,7 +192,7 @@ public class DoTransferTransactionIntegrationTest {
                 .expectBody(ErrorDTO.class);
     }
 
-    private TransactionRequestDTO getValidTraansferTransactionRequestDto() {
+    private TransactionRequestDTO getValidTransferTransactionRequestDto() {
         Map<String, String> properties = new HashMap<>();
         properties.put(RequestPropertyKeys.SENDER_WALLET_ID, UUID.randomUUID().toString());
         properties.put(RequestPropertyKeys.RECIPIENT_WALLET_ID, UUID.randomUUID().toString());

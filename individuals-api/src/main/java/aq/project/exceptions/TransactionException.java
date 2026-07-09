@@ -2,7 +2,7 @@ package aq.project.exceptions;
 
 import lombok.Getter;
 
-public class TransactionException extends Exception {
+public class TransactionException extends RuntimeException {
 
     @Getter
     private final int httpStatusCode;

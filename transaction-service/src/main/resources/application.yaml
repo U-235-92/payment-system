@@ -74,6 +74,10 @@ otel:
     annotations:
       enabled: true
 service:
+  keycloak:
+    uri: http://localhost:8080
+    endpoints:
+      token: /realms/payment-system/protocol/openid-connect/token
   kafka:
     topics:
       wallet_operation_response:
@@ -91,4 +95,4 @@ service:
     name: ${WALLET_SERVICE_NAME}
     uri: http://localhost:8083
     endpoints:
-      get-transaction-status: /api/v1/transaction/status/
+      get-transaction-status: /api/v1/transaction/status

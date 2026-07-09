@@ -60,7 +60,7 @@ application:
     frankfurter:
       base-url: 'https://api.frankfurter.dev/v2'
       endpoint:
-        rate: '/rate/{base}/{quote}'
+        rate: '/rate'
         rates: '/rates'
         providers: '/providers'
         provider: '/provider/{code}'

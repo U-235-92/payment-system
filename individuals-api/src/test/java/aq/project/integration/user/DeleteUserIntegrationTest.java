@@ -79,7 +79,7 @@ public class DeleteUserIntegrationTest {
 
     @Test
     public void successDeleteUserTest() {
-        personServiceMockServer.stubFor(WireMock.delete(personServiceDeletePersonEndpoint + actualUserKeycloakId)
+        personServiceMockServer.stubFor(WireMock.delete(personServiceDeletePersonEndpoint + "/" + actualUserKeycloakId)
                 .willReturn(WireMock.ok()));
 
         LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
@@ -93,7 +93,7 @@ public class DeleteUserIntegrationTest {
 
     @Test
     public void failDeleteUserWithUnknownUserKeycloakIdTest() {
-        personServiceMockServer.stubFor(WireMock.delete(personServiceDeletePersonEndpoint + unknownUserKeycloakId)
+        personServiceMockServer.stubFor(WireMock.delete(personServiceDeletePersonEndpoint + "/" + unknownUserKeycloakId)
                 .willReturn(WireMock.badRequest()));
 
         LoginUserDTO loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
@@ -103,7 +103,7 @@ public class DeleteUserIntegrationTest {
         String accessToken = loginUserMono(loginUserDTO, webClient).block().getBody().getAccessToken();
 
         webTestClient.delete()
-                .uri(individualsApiDeletePersonEndpoint + unknownUserKeycloakId)
+                .uri(individualsApiDeletePersonEndpoint + "/" + unknownUserKeycloakId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .exchange()
                 .expectStatus()
@@ -119,7 +119,7 @@ public class DeleteUserIntegrationTest {
         String accessToken = loginUserMono(loginUserDTO, webClient).block().getBody().getAccessToken();
 
         webTestClient.delete()
-                .uri(individualsApiDeletePersonEndpoint)
+                .uri(individualsApiDeletePersonEndpoint + "/")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .exchange()
                 .expectStatus()
@@ -135,7 +135,7 @@ public class DeleteUserIntegrationTest {
         String accessToken = loginUserMono(loginUserDTO, webClient).block().getBody().getAccessToken();
 
         webTestClient.delete()
-                .uri(individualsApiDeletePersonEndpoint + "no_valid_keycloak_id")
+                .uri(individualsApiDeletePersonEndpoint + "/" + "no_valid_keycloak_id")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .exchange()
                 .expectStatus()

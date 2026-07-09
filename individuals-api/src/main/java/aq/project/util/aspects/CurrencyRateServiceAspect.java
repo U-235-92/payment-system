@@ -18,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.print.attribute.standard.MediaSize;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -29,14 +28,14 @@ import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
 @Component
 @Validated
 @RequiredArgsConstructor
-public class RateServiceAspect {
+public class CurrencyRateServiceAspect {
 
     @Value("${spring.application.name}")
     private String serviceName;
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.RateService.getCurrencies(..)) && args()")
+    @Around("execution(* aq.project.services.CurrencyRateService.getCurrencies(..)) && args()")
     public Mono<Flux<CurrencyResponse>> getCurrencies(
             ProceedingJoinPoint pjp
     ) throws Throwable {
@@ -59,7 +58,7 @@ public class RateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.RateService.getCurrencyInfo(..)) && args(code)")
+    @Around("execution(* aq.project.services.CurrencyRateService.getCurrencyInfo(..)) && args(code)")
     public Mono<CurrencyResponse> getCurrencyInfo(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String code
@@ -86,7 +85,7 @@ public class RateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.RateService.getRate(..)) && args(from, to, provider, date)")
+    @Around("execution(* aq.project.services.CurrencyRateService.getRate(..)) && args(from, to, provider, date)")
     public Mono<RateResponse> getRate(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String from,
@@ -120,7 +119,7 @@ public class RateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.RateService.getRateProviderInfo(..)) && args(code)")
+    @Around("execution(* aq.project.services.CurrencyRateService.getRateProviderInfo(..)) && args(code)")
     public Mono<RateProviderResponse> getRateProviderInfo(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 10) @Pattern(regexp = "^[A-Z]{3,10}$") String code
@@ -147,7 +146,7 @@ public class RateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.RateService.getRateProviders(..)) && args()")
+    @Around("execution(* aq.project.services.CurrencyRateService.getRateProviders(..)) && args()")
     public Mono<Flux<RateProviderResponse>> getRateProviders(
             ProceedingJoinPoint pjp
     ) throws Throwable {

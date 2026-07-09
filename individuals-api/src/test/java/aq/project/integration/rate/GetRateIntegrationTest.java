@@ -1,7 +1,7 @@
 package aq.project.integration.rate;
 
 import aq.project.dto.RateResponse;
-import aq.project.services.RateService;
+import aq.project.services.CurrencyRateService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -43,7 +43,7 @@ public class GetRateIntegrationTest {
     private WireMockServer currencyRateServiceMockServer;
 
     @Autowired
-    private RateService rateService;
+    private CurrencyRateService currencyRateService;
 
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
@@ -66,18 +66,18 @@ public class GetRateIntegrationTest {
         currencyRateServiceMockServer.stubFor(WireMock.get(requestUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
 
-        Assertions.assertDoesNotThrow(() -> rateService.getRate(RUB, USD, null, null));
+        Assertions.assertDoesNotThrow(() -> currencyRateService.getRate(RUB, USD, null, null));
         Assertions.assertNotNull(rateResponse);
-        Assertions.assertEquals(RUB, rateService.getRate(RUB, USD, null, null).block().getSourceCode());
+        Assertions.assertEquals(RUB, currencyRateService.getRate(RUB, USD, null, null).block().getSourceCode());
     }
 
     @Test
     public void failGetCurrencyInfoWithNullCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getRate(null, "EUR", null, null));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getRate(null, "EUR", null, null));
     }
 
     @Test
     public void failGetCurrencyInfoWithInvalidCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getRate("WRONG", "ME", null, null));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getRate("WRONG", "ME", null, null));
     }
 }

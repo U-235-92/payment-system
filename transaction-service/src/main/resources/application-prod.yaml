@@ -28,5 +28,7 @@ management:
         otlp:
           endpoint: ${OTEL_COLLECTOR_URI}
 service:
+  keycloak:
+    uri: ${KEYCLOAK_SERVICE_URL}
   wallet-service:
     uri: ${WALLET_SERVICE_URL}

@@ -1,7 +1,7 @@
 package aq.project.integration.rate;
 
 import aq.project.dto.RateProviderResponse;
-import aq.project.services.RateService;
+import aq.project.services.CurrencyRateService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -42,7 +42,7 @@ public class GetRateProvidersIntegrationTest {
     private WireMockServer currencyRateServiceMockServer;
 
     @Autowired
-    private RateService rateService;
+    private CurrencyRateService currencyRateService;
 
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
@@ -69,9 +69,9 @@ public class GetRateProvidersIntegrationTest {
         currencyRateServiceMockServer.stubFor(WireMock.get(getRateProvidersEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(List.of(amcm, bam))));
 
-        RateProviderResponse rateProviderResponse = rateService.getRateProviders().block().blockFirst();
+        RateProviderResponse rateProviderResponse = currencyRateService.getRateProviders().block().blockFirst();
 
-        Assertions.assertDoesNotThrow(() -> rateService.getRateProviders());
+        Assertions.assertDoesNotThrow(() -> currencyRateService.getRateProviders());
         Assertions.assertNotNull(rateProviderResponse);
         Assertions.assertEquals("AMCM", rateProviderResponse.getProviderCode());
     }

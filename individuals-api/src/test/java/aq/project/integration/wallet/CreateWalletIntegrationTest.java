@@ -1,10 +1,10 @@
 package aq.project.integration.wallet;
 
+import aq.project.clients.KeycloakServiceWebClientFacade;
 import aq.project.dto.CardType;
 import aq.project.dto.CreateWalletRequestDTO;
 import aq.project.dto.ErrorDTO;
 import aq.project.dto.WalletStatus;
-import aq.project.clients.JwtClient;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -28,16 +29,20 @@ import org.wiremock.spring.InjectWireMock;
 import java.util.UUID;
 
 @Testcontainers
+@ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@EnableWireMock(@ConfigureWireMock(name = "wallet-service", port = 8083))
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@EnableWireMock(@ConfigureWireMock(name = "wallet-service"))
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CreateWalletIntegrationTest {
 
     @Value("${application.wallet-service.endpoints.create-wallet}")
     private String createWalletEndpointUri;
+    @Value("${application.individuals-api.endpoints.create-wallet}")
+    private String individualsApiCreateWalletEndpoint;
 
     @Autowired
-    private JwtClient jwtClient;
+    private KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+
     @Autowired
     private WebTestClient webTestClient;
 
@@ -50,22 +55,20 @@ public class CreateWalletIntegrationTest {
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
         TestApplicationProperties.KeycloakProperties.registerApplicationContextContainerProperties(registry);
-        registry.add("server.port", () -> "8585");
         registry.add("application.wallet-service.uri", () -> "http://localhost:${wiremock.server.port}");
     }
 
     @Test
     public void successCreateWalletTest() {
-//        Prepare mock service
         String createdWalletId = UUID.randomUUID().toString();
-        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri)
-                .willReturn(WireMock.ok(createdWalletId)));
+//        Prepare mock service
+        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.ok(createdWalletId)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/wallet/create")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiCreateWalletEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearerHeader)
                 .bodyValue(getValidCreateWalletRequestDTO())
                 .exchange()
                 .expectStatus()
@@ -75,15 +78,13 @@ public class CreateWalletIntegrationTest {
     @Test
     public void failOn5xxStatusWalletServiceResponseTest() {
 //        Prepare mock service
-        String createdWalletId = UUID.randomUUID().toString();
-        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri)
-                .willReturn(WireMock.status(500)));
+        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.status(500)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/wallet/create")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiCreateWalletEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearerHeader)
                 .bodyValue(getValidCreateWalletRequestDTO())
                 .exchange()
                 .expectStatus()
@@ -94,15 +95,13 @@ public class CreateWalletIntegrationTest {
     @Test
     public void failOn4xxStatusWalletServiceResponseTest() {
 //        Prepare mock service
-        String createdWalletId = UUID.randomUUID().toString();
-        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri)
-                .willReturn(WireMock.status(400)));
+        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.status(400)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/wallets/create")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiCreateWalletEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearerHeader)
                 .bodyValue(getValidCreateWalletRequestDTO())
                 .exchange()
                 .expectStatus()
@@ -113,15 +112,13 @@ public class CreateWalletIntegrationTest {
     @Test
     public void failOnInvalidCreateWalletRequestDtoTest() {
 //        Prepare mock service
-        String createdWalletId = UUID.randomUUID().toString();
-        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri)
-                .willReturn(WireMock.status(500)));
+        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.status(500)));
 //        Prepare test resources
-        String adminAccessToken = jwtClient.requestAdminToken().block();
+        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
 //        Test call
         webTestClient.post()
-                .uri("/api/wallets/create")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminAccessToken)
+                .uri(individualsApiCreateWalletEndpoint)
+                .header(HttpHeaders.AUTHORIZATION, adminJwtBearerHeader)
                 .bodyValue(getInvalidCreateWalletRequestDTO())
                 .exchange()
                 .expectStatus()
@@ -132,12 +129,10 @@ public class CreateWalletIntegrationTest {
     @Test
     public void failOnUnauthorizedCreateWalletRequestDtoTest() {
 //        Prepare mock service
-        String createdWalletId = UUID.randomUUID().toString();
-        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri)
-                .willReturn(WireMock.status(500)));
+        walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.status(500)));
 //        Test call
         webTestClient.post()
-                .uri("/api/v1/wallet/create")
+                .uri(individualsApiCreateWalletEndpoint)
                 .bodyValue(getValidCreateWalletRequestDTO())
                 .exchange()
                 .expectStatus()

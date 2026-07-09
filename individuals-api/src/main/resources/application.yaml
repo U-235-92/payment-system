@@ -51,28 +51,31 @@ application:
     realm: ${KEYCLOAK_REALM}
     uri: http://localhost:8080
     admin-uri: http://localhost:8080/admin/realms/payment-system/users
+    endpoints:
+      token: /realms/payment-system/protocol/openid-connect/token
+      admin: /admin/realms/payment-system/users
   person-service:
     name: ${PERSON_SERVICE_NAME}
     uri: http://localhost:8082
     endpoints:
       create-person: /api/v1/person/create-person
-      delete-person-by-keycloak-id: /api/v1/person/delete-person-by-keycloak-id/
-      undo-delete-person-by-keycloak-id: /api/v1/person/undo-delete-person-by-keycloak-id/
+      delete-person-by-keycloak-id: /api/v1/person/delete-person-by-keycloak-id
+      undo-delete-person-by-keycloak-id: /api/v1/person/undo-delete-person-by-keycloak-id
       update-person: /api/v1/person/update-person
       undo-update-person: /api/v1/person/undo-update-person
-      get-person-info-by-keycloak-id: /api/v1/person/get-person-by-keycloak-id/
+      get-person-info-by-keycloak-id: /api/v1/person/get-person-by-keycloak-id
   wallet-service:
     name: ${WALLET_SERVICE_NAME}
     uri: http://localhost:8083
     endpoints:
       create-wallet: /api/v1/wallet/create
-      get-wallet-info: /api/v1/wallet/info/
+      get-wallet-info: /api/v1/wallet/info
       get-wallet-currency: /api/v1/wallet/currency
   transaction-service:
     name: ${TRANSACTION_SERVICE_NAME}
     uri: http://localhost:8084
     endpoints:
-      get-transaction-status: /api/v1/transaction/status/
+      get-transaction-status: /api/v1/transaction/status
       send-transaction-request: /api/v1/transaction/send
   currency-rate-service:
     name: ${CURRENCY_RATE_SERVICE_NAME}

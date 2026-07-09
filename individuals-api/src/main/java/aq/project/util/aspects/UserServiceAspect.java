@@ -89,11 +89,11 @@ public class UserServiceAspect {
         String actionName = "login-user";
         String tracerName = serviceName + "." + actionName + "-tracer";
         String loginUserEmail = loginUserDTO.getEmail();
-        String preMainLogicLogMessage = String.format("Received request to update user with email: %s",
+        String preMainLogicLogMessage = String.format("Received request to login user with email: %s",
                 loginUserEmail);
-        String postSuccessMainLogicCallLogMessage = String.format("Success handle request to update user with email: %s",
+        String postSuccessMainLogicCallLogMessage = String.format("Success handle request to login user with email: %s",
                 loginUserEmail);
-        String postFailureMainLogicCallLogMessage = String.format("Error occurred during handle request to update user with email: %s",
+        String postFailureMainLogicCallLogMessage = String.format("Error occurred during handle request to login user with email: %s",
                 loginUserEmail);;
 //        Handler logic call
         return serviceAspectHandler.handle(

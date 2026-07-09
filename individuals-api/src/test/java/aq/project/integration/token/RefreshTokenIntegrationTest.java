@@ -32,9 +32,6 @@ import static aq.project.util.TestDtoRepository.getLoginUserDTO;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RefreshTokenIntegrationTest {
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
     private TokenService tokenService;
 
@@ -55,18 +52,18 @@ public class RefreshTokenIntegrationTest {
         LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
         ResponseTokenDTO responseTokenDTO = authController.loginUser(Mono.just(loginUserDTO), null).block().getBody();
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken(responseTokenDTO.getRefreshToken());
-        Assertions.assertDoesNotThrow(() -> tokenService.refreshToken(refreshTokenDTO));
+        Assertions.assertDoesNotThrow(() -> tokenService.refreshUserJwt(refreshTokenDTO));
     }
 
     @Test
     public void failRefreshNullTokenTest() {
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken(null);
-        Assertions.assertThrows(ConstraintViolationException.class, () -> tokenService.refreshToken(refreshTokenDTO));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> tokenService.refreshUserJwt(refreshTokenDTO));
     }
 
     @Test
     public void failRefreshWrongTokenTest() {
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken("wrong-token");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> tokenService.refreshToken(refreshTokenDTO));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tokenService.refreshUserJwt(refreshTokenDTO));
     }
 }

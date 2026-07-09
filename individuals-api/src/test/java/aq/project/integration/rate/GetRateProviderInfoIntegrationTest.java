@@ -1,8 +1,7 @@
 package aq.project.integration.rate;
 
 import aq.project.dto.RateProviderResponse;
-import aq.project.dto.RateResponse;
-import aq.project.services.RateService;
+import aq.project.services.CurrencyRateService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -25,8 +24,6 @@ import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
 
-import java.math.BigDecimal;
-
 @Testcontainers
 @DirtiesContext
 @ActiveProfiles("test")
@@ -44,7 +41,7 @@ public class GetRateProviderInfoIntegrationTest {
     private WireMockServer currencyRateServiceMockServer;
 
     @Autowired
-    private RateService rateService;
+    private CurrencyRateService currencyRateService;
 
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
@@ -67,20 +64,20 @@ public class GetRateProviderInfoIntegrationTest {
         currencyRateServiceMockServer.stubFor(WireMock.get(requestUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(amcm)));
 
-        RateProviderResponse rateProviderResponse = rateService.getRateProviderInfo(AMCM).block();
+        RateProviderResponse rateProviderResponse = currencyRateService.getRateProviderInfo(AMCM).block();
 
-        Assertions.assertDoesNotThrow(() -> rateService.getRateProviderInfo(AMCM));
+        Assertions.assertDoesNotThrow(() -> currencyRateService.getRateProviderInfo(AMCM));
         Assertions.assertNotNull(rateProviderResponse);
         Assertions.assertEquals(AMCM, rateProviderResponse.getProviderCode());
     }
 
     @Test
     public void failGetCurrencyInfoWithNullCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getRateProviderInfo(null));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getRateProviderInfo(null));
     }
 
     @Test
     public void failGetCurrencyInfoWithInvalidCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getRateProviderInfo("InvalidCode"));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getRateProviderInfo("InvalidCode"));
     }
 }

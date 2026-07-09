@@ -6,21 +6,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-public class JwtTokenRepository {
+public class JwtRepository {
 
     private static final String ADMIN_ACCESS_TOKEN = "admin_access_token";
 
     private final Map<String, String> jwtRepository = new HashMap<>();
 
-    public boolean isAdminTokenExists() {
+    public boolean isAdminJwtExist() {
         return jwtRepository.get(ADMIN_ACCESS_TOKEN) != null;
     }
 
-    public String getAdminAccessToken() {
+    public String getAdminJwt() {
         return jwtRepository.get(ADMIN_ACCESS_TOKEN);
     }
 
-    public void putAdminAccessToken(String token) {
+    public void putAdminJwt(String token) {
         jwtRepository.put(ADMIN_ACCESS_TOKEN, token);
     }
 }

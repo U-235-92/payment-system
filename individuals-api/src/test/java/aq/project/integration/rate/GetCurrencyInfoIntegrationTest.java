@@ -1,7 +1,7 @@
 package aq.project.integration.rate;
 
 import aq.project.dto.CurrencyResponse;
-import aq.project.services.RateService;
+import aq.project.services.CurrencyRateService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -41,7 +41,7 @@ public class GetCurrencyInfoIntegrationTest {
     private WireMockServer currencyRateServiceMockServer;
 
     @Autowired
-    private RateService rateService;
+    private CurrencyRateService currencyRateService;
 
     @DynamicPropertySource
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
@@ -64,20 +64,20 @@ public class GetCurrencyInfoIntegrationTest {
         currencyRateServiceMockServer.stubFor(WireMock.get(requestUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rubCurrencyResponse)));
 
-        CurrencyResponse currencyResponse = rateService.getCurrencyInfo(RUB).block();
+        CurrencyResponse currencyResponse = currencyRateService.getCurrencyInfo(RUB).block();
 
-        Assertions.assertDoesNotThrow(() -> rateService.getCurrencies());
+        Assertions.assertDoesNotThrow(() -> currencyRateService.getCurrencies());
         Assertions.assertNotNull(currencyResponse);
         Assertions.assertEquals(RUB, currencyResponse.getCode());
     }
 
     @Test
     public void failGetCurrencyInfoWithNullCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getCurrencyInfo(null));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getCurrencyInfo(null));
     }
 
     @Test
     public void failGetCurrencyInfoWithInvalidCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> rateService.getCurrencyInfo("Invalid"));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getCurrencyInfo("Invalid"));
     }
 }

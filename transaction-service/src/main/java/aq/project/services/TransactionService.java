@@ -81,6 +81,7 @@ public class TransactionService {
 
     public TransactionStatus getTransactionStatus(String transactionId) {
         String adminJwt = tokenService.getAdminJwtAsAuthorizationHeaderValue();
-        return walletServiceRestClient.getTransactionStatus(adminJwt, transactionId);
+        String xTraceId = traceContext.getTraceId();
+        return walletServiceRestClient.getTransactionStatus(adminJwt, xTraceId, transactionId);
     }
 }

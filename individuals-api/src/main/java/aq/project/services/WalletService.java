@@ -1,37 +1,47 @@
 package aq.project.services;
 
-import aq.project.clients.KeycloakServiceWebClientFacade;
-import aq.project.clients.WalletServiceWebClient;
-import aq.project.dto.CreateWalletRequestDTO;
-import aq.project.dto.WalletInfoResponseDTO;
+import aq.project.clients.KeycloakServiceClientFacade;
+import aq.project.dto.CreateWalletRequestDto;
+import aq.project.dto.WalletInfoResponseDto;
+import aq.project.wallet_service.WalletApiClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import static aq.project.utils.telemetry.TracePropagator.fetchTraceId;
 
 @Service
 @RequiredArgsConstructor
 public class WalletService {
 
-    private final WalletServiceWebClient walletServiceWebClient;
+    private final WalletApiClient walletApiClient;
 
-    private final KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+    private final KeycloakServiceClientFacade keycloakServiceClientFacade;
 
-    public Mono<String> createWallet(CreateWalletRequestDTO createWalletRequestDTO) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> walletServiceWebClient.createWallet(jwt, createWalletRequestDTO)
-                        .map(HttpEntity::getBody));
+    public Mono<String> createWallet(
+            CreateWalletRequestDto dto
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> walletApiClient.createWallet(xTraceId, Mono.just(dto), jwtHeader)))
+                .flatMap(response -> Mono.just(response.getBody()));
     }
 
-    public Mono<WalletInfoResponseDTO> getWalletInfo(String walletId) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> walletServiceWebClient.getWalletInfo(jwt, walletId)
-                        .map(HttpEntity::getBody));
+    public Mono<WalletInfoResponseDto> getWalletInfo(
+            String walletId
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> walletApiClient.getWalletInfo(walletId, xTraceId, jwtHeader)))
+                .flatMap(response -> Mono.just(response.getBody()));
     }
 
-    public Mono<String> getWalletCurrencyCode(String walletId) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> walletServiceWebClient.getWalletCurrency(jwt, walletId)
-                        .map(HttpEntity::getBody));
+    public Mono<String> getWalletCurrencyCode(
+            String walletId
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> walletApiClient.getWalletCurrency(walletId, xTraceId, jwtHeader)))
+                .flatMap(response -> Mono.just(response.getBody()));
     }
 }

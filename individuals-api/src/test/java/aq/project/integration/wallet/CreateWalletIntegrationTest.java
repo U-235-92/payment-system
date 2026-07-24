@@ -1,10 +1,7 @@
 package aq.project.integration.wallet;
 
-import aq.project.clients.KeycloakServiceWebClientFacade;
-import aq.project.dto.CardType;
-import aq.project.dto.CreateWalletRequestDTO;
-import aq.project.dto.ErrorDTO;
-import aq.project.dto.WalletStatus;
+import aq.project.clients.KeycloakServiceClientFacade;
+import aq.project.dto.*;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -28,6 +25,9 @@ import org.wiremock.spring.InjectWireMock;
 
 import java.util.UUID;
 
+import static aq.project.dto.CreateWalletRequestDto.CardTypeEnum.VISA;
+import static aq.project.dto.CreateWalletRequestDto.WalletStatusEnum.ACTIVE;
+
 @Testcontainers
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
@@ -41,7 +41,7 @@ public class CreateWalletIntegrationTest {
     private String individualsApiCreateWalletEndpoint;
 
     @Autowired
-    private KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+    private KeycloakServiceClientFacade keycloakServiceClientFacade;
 
     @Autowired
     private WebTestClient webTestClient;
@@ -61,10 +61,13 @@ public class CreateWalletIntegrationTest {
     @Test
     public void successCreateWalletTest() {
         String createdWalletId = UUID.randomUUID().toString();
+
 //        Prepare mock service
         walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.ok(createdWalletId)));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiCreateWalletEndpoint)
@@ -79,8 +82,10 @@ public class CreateWalletIntegrationTest {
     public void failOn5xxStatusWalletServiceResponseTest() {
 //        Prepare mock service
         walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.status(500)));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiCreateWalletEndpoint)
@@ -89,15 +94,17 @@ public class CreateWalletIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is5xxServerError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
     public void failOn4xxStatusWalletServiceResponseTest() {
 //        Prepare mock service
         walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.status(400)));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiCreateWalletEndpoint)
@@ -106,15 +113,17 @@ public class CreateWalletIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
     public void failOnInvalidCreateWalletRequestDtoTest() {
 //        Prepare mock service
         walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.status(500)));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiCreateWalletEndpoint)
@@ -123,13 +132,14 @@ public class CreateWalletIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
     public void failOnUnauthorizedCreateWalletRequestDtoTest() {
 //        Prepare mock service
         walletServiceMock.stubFor(WireMock.post(createWalletEndpointUri).willReturn(WireMock.status(500)));
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiCreateWalletEndpoint)
@@ -137,13 +147,13 @@ public class CreateWalletIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is5xxServerError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
-    private CreateWalletRequestDTO getValidCreateWalletRequestDTO() {
-        return new CreateWalletRequestDTO()
+    private CreateWalletRequestDto getValidCreateWalletRequestDTO() {
+        return new CreateWalletRequestDto()
                 .personId(UUID.randomUUID().toString())
-                .walletStatus(WalletStatus.ACTIVE)
+                .walletStatus(ACTIVE)
                 .creator("Creator")
                 .modifier("Modifier")
                 .currencyCode("RUB")
@@ -151,13 +161,13 @@ public class CreateWalletIntegrationTest {
                 .cardNumber("0000 0000 0000 0000")
                 .cardCvvNumber("585")
                 .cardExpirationDate("08/55")
-                .cardType(CardType.VISA);
+                .cardType(VISA);
     }
 
-    private CreateWalletRequestDTO getInvalidCreateWalletRequestDTO() {
-        return new CreateWalletRequestDTO()
+    private CreateWalletRequestDto getInvalidCreateWalletRequestDTO() {
+        return new CreateWalletRequestDto()
                 .personId("person-id")
-                .walletStatus(WalletStatus.ACTIVE)
+                .walletStatus(ACTIVE)
                 .creator("Creator")
                 .modifier(null)
                 .currencyCode("CODE")
@@ -165,6 +175,6 @@ public class CreateWalletIntegrationTest {
                 .cardNumber("0000 0000 hello 0000")
                 .cardCvvNumber("585")
                 .cardExpirationDate("08/55")
-                .cardType(CardType.VISA);
+                .cardType(VISA);
     }
 }

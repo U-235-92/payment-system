@@ -27,12 +27,12 @@ public abstract class IndividualDataDtoMapper {
     @Mapping(target = "address", expression = "java(toAddress(dto.getAddress()))")
     @Mapping(target = "keycloakId", source = "keycloakUserId")
     @Mapping(target = "active", source = "active")
-    public abstract Person toPerson(CreateIndividualDataDTO dto);
+    public abstract Person toPerson(CreateIndividualDataDto dto);
 
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "passportNumber", source = "passportNumber")
-    protected abstract Individual toIndividual(CreateIndividualDataDTO dto);
+    protected abstract Individual toIndividual(CreateIndividualDataDto dto);
 
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
@@ -40,12 +40,12 @@ public abstract class IndividualDataDtoMapper {
     @Mapping(target = "address", expression = "java(toAddress(dto.getAddress()))")
     @Mapping(target = "keycloakId", source = "keycloakUserId")
     @Mapping(target = "active", source = "active")
-    public abstract Person toPerson(UpdateIndividualDataDTO dto) throws UserNotExistsException;
+    public abstract Person toPerson(UpdateIndividualDataDto dto) throws UserNotExistsException;
 
     @Mapping(target = "email", expression = "java(getPersonEmail(dto.getKeycloakUserId()))")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "passportNumber", source = "passportNumber")
-    protected abstract Individual toIndividual(UpdateIndividualDataDTO dto) throws UserNotExistsException;
+    protected abstract Individual toIndividual(UpdateIndividualDataDto dto) throws UserNotExistsException;
 
     @Named("getPersonEmail")
     protected String getPersonEmail(String keycloakUserId) throws UserNotExistsException {
@@ -58,11 +58,11 @@ public abstract class IndividualDataDtoMapper {
     @Mapping(target = "address", source = "address")
     @Mapping(target = "zip", source = "zipCode")
     @Mapping(target = "country", expression = "java(toCountry(address.getCountry()))")
-    protected abstract Address toAddress(AddressDTO address);
+    protected abstract Address toAddress(AddressDto address);
 
     @Mapping(target = "name", source = "name")
     @Mapping(target = "code", source = "code")
-    protected abstract Country toCountry(CountryDTO country);
+    protected abstract Country toCountry(CountryDto country);
 
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
@@ -70,7 +70,7 @@ public abstract class IndividualDataDtoMapper {
     @Mapping(target = "phoneNumber", expression = "java(person.getIndividual().getPhoneNumber())")
     @Mapping(target = "passportNumber", expression = "java(person.getIndividual().getPassportNumber())")
     @Mapping(target = "address", expression = "java(toAddressDTO(person.getAddress()))")
-    public abstract ResponseIndividualDataDTO toIndividualResponseDTO(Person person);
+    public abstract IndividualDataResponseDto toIndividualResponseDTO(Person person);
 
     @Named("toStringUUID")
     protected String toStringUUID(UUID uuid) {
@@ -82,9 +82,9 @@ public abstract class IndividualDataDtoMapper {
     @Mapping(target = "city", source = "city")
     @Mapping(target = "address", source = "address")
     @Mapping(target = "zipCode", source = "zip")
-    protected abstract AddressDTO toAddressDTO(Address address);
+    protected abstract AddressDto toAddressDTO(Address address);
 
     @Mapping(target = "name", source = "name")
     @Mapping(target = "code", source = "code")
-    protected abstract CountryDTO toCountryDTO(Country country);
+    protected abstract CountryDto toCountryDTO(Country country);
 }

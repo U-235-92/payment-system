@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
-import static aq.project.util.constants.CustomConstants.*;
+import static aq.project.utils.constants.CustomConstants.*;
 
 @Service
 @RequiredArgsConstructor

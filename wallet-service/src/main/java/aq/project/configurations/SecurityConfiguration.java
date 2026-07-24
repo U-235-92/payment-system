@@ -46,10 +46,10 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, "/api/v1" + PATH_CREATE_WALLET).authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_WALLET_INFO.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_WALLET_CURRENCY.replace("{id}", "*")).authenticated())
+                        .requestMatchers(HttpMethod.POST, PATH_CREATE_WALLET).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_WALLET_INFO.replace("{id}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_WALLET_CURRENCY.replace("{id}", "*")).authenticated())
                 .build();
     }
 

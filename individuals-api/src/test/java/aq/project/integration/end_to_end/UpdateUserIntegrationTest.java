@@ -22,8 +22,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
 import static aq.project.util.TestDtoRepository.*;
-import static aq.project.util.TestUtils.*;
+import static aq.project.util.TestUtils.getWebClient;
+import static aq.project.util.TestUtils.loginUserMono;
 
 @Disabled
 @Testcontainers
@@ -61,12 +63,12 @@ public class UpdateUserIntegrationTest {
 
     @Test
     public void successUpdateUserTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDTO(updateIndividualDataDTO, actualUserKeycloakId);
+        CountryDto countryDTO = getValidCountryDTO();
+        AddressDto addressDTO = getValidAddressDTO(countryDTO);
+        UpdateIndividualDataDto updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
+        UpdateUserDto updateUserDTO = getValidUpdateUserDTO(updateIndividualDataDTO, actualUserKeycloakId);
 
         WebClient webClient = getWebClient(port);
 
@@ -87,12 +89,12 @@ public class UpdateUserIntegrationTest {
 
     @Test
     public void failUpdateUserWithUnknownUserKeycloakIdTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDtoWithUnknownKeycloakUserId(addressDTO, unknownUserKeycloakId);
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDtoWithUnknownKeycloakUserId(updateIndividualDataDTO, unknownUserKeycloakId);
+        CountryDto countryDTO = getValidCountryDTO();
+        AddressDto addressDTO = getValidAddressDTO(countryDTO);
+        UpdateIndividualDataDto updateIndividualDataDTO = getValidUpdateIndividualDataDtoWithUnknownKeycloakUserId(addressDTO, unknownUserKeycloakId);
+        UpdateUserDto updateUserDTO = getValidUpdateUserDtoWithUnknownKeycloakUserId(updateIndividualDataDTO, unknownUserKeycloakId);
 
         WebClient webClient = getWebClient(port);
 
@@ -112,12 +114,12 @@ public class UpdateUserIntegrationTest {
 
     @Test
     public void failUpdateUserWithNoMatchPasswordsOfUpdateUserDtoTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
-        UpdateUserDTO updateUserDTO = getInvalidUpdateUserDtoWithNoMatchPassword(updateIndividualDataDTO, actualUserKeycloakId);
+        CountryDto countryDTO = getValidCountryDTO();
+        AddressDto addressDTO = getValidAddressDTO(countryDTO);
+        UpdateIndividualDataDto updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
+        UpdateUserDto updateUserDTO = getInvalidUpdateUserDtoWithNoMatchPassword(updateIndividualDataDTO, actualUserKeycloakId);
 
         WebClient webClient = getWebClient(port);
 
@@ -137,12 +139,12 @@ public class UpdateUserIntegrationTest {
 
     @Test
     public void failUpdateUserWithNullFieldsOfUpdateUserDtoTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
-        UpdateUserDTO updateUserDTO = getInvalidUpdateUserDtoWithNullFields(updateIndividualDataDTO, actualUserKeycloakId);
+        CountryDto countryDTO = getValidCountryDTO();
+        AddressDto addressDTO = getValidAddressDTO(countryDTO);
+        UpdateIndividualDataDto updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
+        UpdateUserDto updateUserDTO = getInvalidUpdateUserDtoWithNullFields(updateIndividualDataDTO, actualUserKeycloakId);
 
         WebClient webClient = getWebClient(port);
 
@@ -163,9 +165,9 @@ public class UpdateUserIntegrationTest {
 
     @Test
     public void failUpdateUserWithNullUpdateIndividualDataDtoTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDTO(null, actualUserKeycloakId);
+        UpdateUserDto updateUserDTO = getValidUpdateUserDTO(null, actualUserKeycloakId);
 
         WebClient webClient = getWebClient(port);
 

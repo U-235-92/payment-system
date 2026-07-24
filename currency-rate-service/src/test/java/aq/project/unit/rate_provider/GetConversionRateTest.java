@@ -1,11 +1,11 @@
 package aq.project.unit.rate_provider;
 
-import aq.project.entity.AdjustmentFactor;
-import aq.project.entity.ConversionRate;
-import aq.project.entity.Currency;
-import aq.project.entity.RateProvider;
-import aq.project.mappers.rate.FrankfurterRateProviderMapper;
-import aq.project.util.telemetry.TraceContext;
+import aq.project.entities.AdjustmentFactor;
+import aq.project.entities.ConversionRate;
+import aq.project.entities.Currency;
+import aq.project.entities.RateProvider;
+import aq.project.utils.mappers.rate.FrankfurterRateProviderMapper;
+import aq.project.utils.telemetry.TraceContext;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.opentelemetry.api.OpenTelemetry;
@@ -20,6 +20,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,8 +116,8 @@ public class GetConversionRateTest {
             AdjustmentFactor adjustmentFactor = new AdjustmentFactor();
             adjustmentFactor.setRateProvider(rateProviderMap.get(provider));
             adjustmentFactor.setFactor(FACTOR);
-            adjustmentFactor.setCreatedAt(System.currentTimeMillis());
-            adjustmentFactor.setModifiedAt(System.currentTimeMillis());
+            adjustmentFactor.setCreatedAt(OffsetDateTime.now());
+            adjustmentFactor.setModifiedAt(OffsetDateTime.now());
             adjustmentFactorMap.put(provider, adjustmentFactor);
         }
         return adjustmentFactorMap;

@@ -3,7 +3,7 @@ package aq.project.mocks;
 import aq.project.dto.OperationType;
 import aq.project.dto.TransactionStatus;
 import aq.project.entities.Transaction;
-import aq.project.util.constants.RequestPropertyKeys;
+import aq.project.utils.constants.RequestPropertyKeys;
 import aq.project.utils.UuidConstants;
 
 import java.security.SecureRandom;

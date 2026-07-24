@@ -22,7 +22,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
-
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Testcontainers
@@ -56,14 +56,14 @@ public class GetRateProvidersIntegrationTest {
         amcm.setProviderCode("AMCM");
         amcm.setProviderName("Autoridade Monetária de Macau");
         amcm.setDescription("Description");
-        amcm.setDate("2026-06-28");
+        amcm.setDate(OffsetDateTime.now());
         amcm.setActive(true);
 
         RateProviderResponse bam = new RateProviderResponse();
         bam.setProviderCode("BAM");
         bam.setProviderName("Bank Al-Maghrib");
         bam.setDescription("Description");
-        bam.setDate("2026-06-28");
+        bam.setDate(OffsetDateTime.now());
         bam.setActive(true);
 
         currencyRateServiceMockServer.stubFor(WireMock.get(getRateProvidersEndpoint)

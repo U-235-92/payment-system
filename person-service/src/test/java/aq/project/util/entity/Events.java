@@ -2,7 +2,7 @@ package aq.project.util.entity;
 
 import aq.project.entities.UndoOperation;
 import java.util.UUID;
-import static aq.project.util.constants.CustomConstants.*;
+import static aq.project.utils.constants.CustomConstants.*;
 
 public abstract class Events {
 

@@ -4,8 +4,8 @@ import aq.project.dto.*;
 
 public abstract class DTO {
 
-    public static UpdateIndividualDataDTO getUpdateIndividualDataDTO() {
-        UpdateIndividualDataDTO updateIndividualDataDTO = new UpdateIndividualDataDTO();
+    public static UpdateIndividualDataDto getUpdateIndividualDataDTO() {
+        UpdateIndividualDataDto updateIndividualDataDTO = new UpdateIndividualDataDto();
         updateIndividualDataDTO.setKeycloakUserId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
         updateIndividualDataDTO.setFirstName("Hello");
         updateIndividualDataDTO.setLastName("World");
@@ -15,8 +15,8 @@ public abstract class DTO {
         return updateIndividualDataDTO;
     }
 
-    public static CreateIndividualDataDTO getValidCreateIndividualDataDTO() {
-        CreateIndividualDataDTO createIndividualDataEvent = new CreateIndividualDataDTO();
+    public static CreateIndividualDataDto getValidCreateIndividualDataDTO() {
+        CreateIndividualDataDto createIndividualDataEvent = new CreateIndividualDataDto();
         createIndividualDataEvent.setKeycloakUserId(Constants.CORRECT_PERSON_KEYCLOAK_ID);
         createIndividualDataEvent.setFirstName(Constants.CORRECT_FIRST_NAME);
         createIndividualDataEvent.setLastName(Constants.CORRECT_LAST_NAME);
@@ -27,8 +27,8 @@ public abstract class DTO {
         return createIndividualDataEvent;
     }
 
-    public static AddressDTO getValidAddressDTO(CountryDTO countryDTO) {
-        AddressDTO addressDTO = new AddressDTO();
+    public static AddressDto getValidAddressDTO(CountryDto countryDTO) {
+        AddressDto addressDTO = new AddressDto();
         addressDTO.setCountry(countryDTO);
         addressDTO.setState(Constants.CORRECT_STATE);
         addressDTO.setCity(Constants.CORRECT_CITY);
@@ -37,25 +37,25 @@ public abstract class DTO {
         return addressDTO;
     }
 
-    public static CountryDTO getValidCountryDTO() {
-        CountryDTO countryDTO = new CountryDTO();
+    public static CountryDto getValidCountryDTO() {
+        CountryDto countryDTO = new CountryDto();
         countryDTO.setName(Constants.COUNTRY_NAME);
         countryDTO.setCode(Constants.COUNTRY_CODE);
         return countryDTO;
     }
 
-    public static UndoOperationDTO getValidUndoDeleteOperationDTO() {
-        UndoOperationDTO undoOperationDTO = new UndoOperationDTO();
-        undoOperationDTO.setOperation(UndoOperationDTO.OperationEnum.UNDO_DELETE_PERSON);
+    public static UndoOperationDto getValidUndoDeleteOperationDTO() {
+        UndoOperationDto undoOperationDTO = new UndoOperationDto();
+        undoOperationDTO.setOperation(UndoOperationDto.OperationEnum.UNDO_DELETE_PERSON);
         undoOperationDTO.getPayload().put("person-keycloak-id", Constants.CORRECT_PERSON_KEYCLOAK_ID);
         undoOperationDTO.getPayload().put("timestamp", System.currentTimeMillis() + "");
         undoOperationDTO.getPayload().put("description", "JUnit test undo delete person");
         return undoOperationDTO;
     }
 
-    public static UndoOperationDTO getValidUndoUpdateOperationDTO() {
-        UndoOperationDTO undoOperationDTO = new UndoOperationDTO();
-        undoOperationDTO.setOperation(UndoOperationDTO.OperationEnum.UNDO_UPDATE_PERSON);
+    public static UndoOperationDto getValidUndoUpdateOperationDTO() {
+        UndoOperationDto undoOperationDTO = new UndoOperationDto();
+        undoOperationDTO.setOperation(UndoOperationDto.OperationEnum.UNDO_UPDATE_PERSON);
         undoOperationDTO.getPayload().put("person-keycloak-id", Constants.CORRECT_PERSON_KEYCLOAK_ID);
         undoOperationDTO.getPayload().put("timestamp", System.currentTimeMillis() + "");
         undoOperationDTO.getPayload().put("description", "JUnit test undo update person");

@@ -10,11 +10,11 @@ import aq.project.exceptions.WalletConstrainsException;
 import aq.project.messages.TransactionRequest;
 import aq.project.messages.TransactionResponse;
 import aq.project.repositories.TransactionRepository;
-import aq.project.util.handlers.CommonRequestHandler;
-import aq.project.util.handlers.DepositRequestHandler;
-import aq.project.util.handlers.TransferRequestHandler;
-import aq.project.util.handlers.WithdrawRequestHandler;
-import aq.project.util.mappers.TransactionMapper;
+import aq.project.utils.handlers.CommonRequestHandler;
+import aq.project.utils.handlers.DepositRequestHandler;
+import aq.project.utils.handlers.TransferRequestHandler;
+import aq.project.utils.handlers.WithdrawRequestHandler;
+import aq.project.utils.mappers.TransactionMapper;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static aq.project.dto.OperationType.*;
-import static aq.project.util.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+import static aq.project.utils.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
 
 @Slf4j
 @Service

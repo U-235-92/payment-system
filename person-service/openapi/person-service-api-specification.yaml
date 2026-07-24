@@ -1,0 +1,411 @@
+openapi: 3.1.0
+
+info:
+  title: person-service-api-specification
+  description: Common person-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8082
+  - url: http://person-service:8082
+
+
+paths:
+  /api/v1/person/create-person:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: createPerson
+      tags:
+        - Person
+      summary: Create a new person
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIndividualDataDto"
+              description: Represents data for creating a new person
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns an ID of created person
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        409:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+  /api/v1/person/delete-person-by-keycloak-id/{keycloakId}:
+    delete:
+      security:
+        - BearerAuth: []
+      operationId: deletePersonByKeycloakId
+      tags:
+        - Person
+      summary: Delete a person by given ID
+      parameters:
+        - name: keycloakId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a person ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+  /api/v1/person/undo-delete-person-by-keycloak-id:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: undoDeletePerson
+      tags:
+        - Person
+      summary: Undo delete of a person
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UndoOperationDto"
+              description: Represents data of undo operation
+      responses:
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+  /api/v1/person/update-person:
+    patch:
+      security:
+        - BearerAuth: []
+      operationId: updatePerson
+      tags:
+        - Person
+      summary: Update of a person
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateIndividualDataDto"
+              description: Represents data for updating a person
+      responses:
+        200:
+          description: Returns OK status code if operation was successful
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+  /api/v1/person/undo-update-person:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: undoUpdatePerson
+      tags:
+        - Person
+      summary: Undo update of a person
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UndoOperationDto"
+              description: Represents data of undo operation
+      responses:
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+  /api/v1/person/get-person-by-keycloak-id/{keycloakId}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getPersonByKeycloakId
+      tags:
+        - Person
+      summary: Get person info by given ID
+      parameters:
+        - name: keycloakId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a person ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndividualDataResponseDto"
+          description: Returns current info of person by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+tags:
+  - name: Person
+    description: Describes operations with persons
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    IndividualDataResponseDto:
+      type: object
+      required: [ first_name, last_name, email, phone_number, passport_number, address ]
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone_number:
+          type: string
+        passport_number:
+          type: string
+        address:
+          $ref: "#/components/schemas/AddressDto"
+
+    AddressDto:
+      type: object
+      required: [ country, state, city, address, zip_code ]
+      properties:
+        country:
+          $ref: "#/components/schemas/CountryDto"
+        state:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        zip_code:
+          type: string
+
+    CountryDto:
+      type: object
+      required: [ name, code ]
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+
+    CreateIndividualDataDto:
+      type: object
+      required: [ first_name, last_name, email, phone_number, passport_number, address ]
+      properties:
+        keycloak_user_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone_number:
+          type: string
+        passport_number:
+          type: string
+        active:
+          type: boolean
+          default: true
+        address:
+          $ref: "#/components/schemas/AddressDto"
+
+    UpdateIndividualDataDto:
+      type: object
+      required: [ keycloak_user_id, first_name, last_name, phone_number, passport_number, address ]
+      properties:
+        keycloak_user_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        passport_number:
+          type: string
+        active:
+          type: boolean
+          default: true
+        address:
+          $ref: "#/components/schemas/AddressDto"
+
+    LoginUserDto:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    UndoOperationDto:
+      type: object
+      required: [ operation, payload ]
+      properties:
+        id:
+          type: string
+        operation:
+          enum:
+            - undo_update_person
+            - undo_delete_person
+        payload:
+          type: object
+          additionalProperties:
+            type: string
+
+    ErrorDto:
+      type: object
+      required: [ http_status, message ]
+      properties:
+        http_status:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    UuidDefinition:
+      type: string
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'

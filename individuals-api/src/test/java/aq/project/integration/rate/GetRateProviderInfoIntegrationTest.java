@@ -23,6 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
+import java.time.OffsetDateTime;
 
 @Testcontainers
 @DirtiesContext
@@ -58,7 +59,7 @@ public class GetRateProviderInfoIntegrationTest {
         amcm.setProviderCode(AMCM);
         amcm.setProviderName("Autoridade Monetária de Macau");
         amcm.setDescription("Description");
-        amcm.setDate("2026-06-28");
+        amcm.setDate(OffsetDateTime.now());
         amcm.setActive(true);
 
         currencyRateServiceMockServer.stubFor(WireMock.get(requestUrl)
@@ -66,18 +67,20 @@ public class GetRateProviderInfoIntegrationTest {
 
         RateProviderResponse rateProviderResponse = currencyRateService.getRateProviderInfo(AMCM).block();
 
-        Assertions.assertDoesNotThrow(() -> currencyRateService.getRateProviderInfo(AMCM));
+        Assertions.assertDoesNotThrow(() -> currencyRateService.getRateProviderInfo(AMCM).block());
         Assertions.assertNotNull(rateProviderResponse);
         Assertions.assertEquals(AMCM, rateProviderResponse.getProviderCode());
     }
 
     @Test
     public void failGetCurrencyInfoWithNullCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getRateProviderInfo(null));
+        Assertions.assertThrows(ConstraintViolationException.class,
+                () -> currencyRateService.getRateProviderInfo(null).block());
     }
 
     @Test
     public void failGetCurrencyInfoWithInvalidCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getRateProviderInfo("InvalidCode"));
+        Assertions.assertThrows(ConstraintViolationException.class,
+                () -> currencyRateService.getRateProviderInfo("InvalidCode").block());
     }
 }

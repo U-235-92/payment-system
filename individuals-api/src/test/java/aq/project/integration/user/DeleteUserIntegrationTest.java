@@ -1,6 +1,6 @@
 package aq.project.integration.user;
 
-import aq.project.dto.LoginUserDTO;
+import aq.project.dto.LoginUserDto;
 import aq.project.services.UserService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
@@ -28,8 +28,9 @@ import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
 
-import static aq.project.util.TestDtoRepository.*;
-import static aq.project.util.TestUtils.*;
+import static aq.project.util.TestDtoRepository.getLoginUserDTO;
+import static aq.project.util.TestUtils.getWebClient;
+import static aq.project.util.TestUtils.loginUserMono;
 
 @Testcontainers
 @DirtiesContext
@@ -82,7 +83,7 @@ public class DeleteUserIntegrationTest {
         personServiceMockServer.stubFor(WireMock.delete(personServiceDeletePersonEndpoint + "/" + actualUserKeycloakId)
                 .willReturn(WireMock.ok()));
 
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 
@@ -96,7 +97,7 @@ public class DeleteUserIntegrationTest {
         personServiceMockServer.stubFor(WireMock.delete(personServiceDeletePersonEndpoint + "/" + unknownUserKeycloakId)
                 .willReturn(WireMock.badRequest()));
 
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 
@@ -112,7 +113,7 @@ public class DeleteUserIntegrationTest {
 
     @Test
     public void failDeleteUserWithEmptyKeycloakIdTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 
@@ -128,7 +129,7 @@ public class DeleteUserIntegrationTest {
 
     @Test
     public void failDeleteUserWithNoValidKeycloakIdTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 

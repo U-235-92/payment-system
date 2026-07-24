@@ -1,33 +1,39 @@
 package aq.project.integration.rate_service;
 
-import aq.project.entity.AdjustmentFactor;
-import aq.project.entity.ConversionRate;
-import aq.project.entity.Currency;
-import aq.project.entity.RateProvider;
-import aq.project.mappers.rate.FrankfurterRateProviderMapper;
-import aq.project.repository.AdjustmentFactorRepository;
-import aq.project.repository.ConversionRateRepository;
-import aq.project.repository.CurrencyRepository;
-import aq.project.repository.RateProviderRepository;
-import aq.project.service.RateService;
+import aq.project.entities.AdjustmentFactor;
+import aq.project.entities.ConversionRate;
+import aq.project.entities.Currency;
+import aq.project.entities.RateProvider;
+import aq.project.repositories.AdjustmentFactorRepository;
+import aq.project.repositories.ConversionRateRepository;
+import aq.project.repositories.CurrencyRepository;
+import aq.project.repositories.RateProviderRepository;
+import aq.project.services.RateService;
+import aq.project.utils.mappers.rate.FrankfurterRateProviderMapper;
 import jakarta.validation.ConstraintViolationException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @DirtiesContext
+@Testcontainers
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment =  SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GetCurrencyInfoIntegrationTest {
@@ -46,6 +52,16 @@ public class GetCurrencyInfoIntegrationTest {
 
     @Autowired
     private RateService rateService;
+
+    @Container
+    private static final PostgreSQLContainer POSTGRESQL_CONTAINER = new PostgreSQLContainer("postgres:18-alpine");
+
+    @DynamicPropertySource
+    public static void dynamicConfigureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", POSTGRESQL_CONTAINER::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRESQL_CONTAINER::getUsername);
+        registry.add("spring.datasource.password", POSTGRESQL_CONTAINER::getPassword);
+    }
 
     @Test
     public void successCurrencyInfoTest() throws Exception {
@@ -87,8 +103,8 @@ public class GetCurrencyInfoIntegrationTest {
             AdjustmentFactor adjustmentFactor = new AdjustmentFactor();
             adjustmentFactor.setRateProvider(rateProviderMap.get(provider));
             adjustmentFactor.setFactor(FACTOR);
-            adjustmentFactor.setCreatedAt(System.currentTimeMillis());
-            adjustmentFactor.setModifiedAt(System.currentTimeMillis());
+            adjustmentFactor.setCreatedAt(OffsetDateTime.now());
+            adjustmentFactor.setModifiedAt(OffsetDateTime.now());
             adjustmentFactorMap.put(provider, adjustmentFactor);
         }
         return adjustmentFactorMap;

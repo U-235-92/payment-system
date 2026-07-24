@@ -1,14 +1,13 @@
 package aq.project.integration.transaction;
 
-import aq.project.clients.KeycloakServiceWebClientFacade;
-import aq.project.dto.ErrorDTO;
-import aq.project.dto.OperationType;
+import aq.project.clients.KeycloakServiceClientFacade;
+import aq.project.dto.ErrorDto;
 import aq.project.dto.RateResponse;
-import aq.project.dto.TransactionRequestDTO;
+import aq.project.dto.TransactionRequestDto;
 import aq.project.services.TransactionService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
-import aq.project.util.constants.RequestPropertyKeys;
+import aq.project.utils.constants.RequestPropertyKeys;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -31,14 +30,13 @@ import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
+import static aq.project.dto.TransactionRequestDto.OperationTypeEnum.WITHDRAW;
+import static aq.project.utils.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 
 @Testcontainers
 @ActiveProfiles("test")
@@ -62,7 +60,7 @@ public class DoWithdrawTransactionIntegrationTest {
     private String individualsApiDoDepositTransactionEndpoint;
 
     @Autowired
-    private KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+    private KeycloakServiceClientFacade keycloakServiceClientFacade;
 
     @Autowired
     private WebTestClient webTestClient;
@@ -93,13 +91,16 @@ public class DoWithdrawTransactionIntegrationTest {
 //        Prepare constants
         String RUB = "RUB";
         String transactionIdResponse = UUID.randomUUID().toString();
+
 //        Prepare DTO
-        TransactionRequestDTO transactionRequestDTO = getValidWithdrawTransactionRequestDto();
+        TransactionRequestDto transactionRequestDTO = getValidWithdrawTransactionRequestDto();
         RateResponse rateResponse = getValidRateResponse();
+
 //        Prepare URL
         String getWalletCurrencyUrl = String.format("%s/%s",
                 walletServiceGetWalletCurrencyEndpoint, transactionRequestDTO.getProperties().get(RECIPIENT_WALLET_ID));
         String getRateUrl = String.format("%s?from=%s&to=%s", getRateEndpoint, RUB, RUB);
+
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.ok(transactionIdResponse)));
@@ -107,6 +108,7 @@ public class DoWithdrawTransactionIntegrationTest {
                 .willReturn(WireMock.ok(RUB)));
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
 //        Test call
         Assertions.assertDoesNotThrow(() -> transactionService.doTransaction(transactionRequestDTO).block());
     }
@@ -115,13 +117,16 @@ public class DoWithdrawTransactionIntegrationTest {
     public void failOn5xxStatusTransactionServiceResponseTest() {
 //        Prepare constants
         String RUB = "RUB";
+
 //        Prepare DTO
-        TransactionRequestDTO transactionRequestDTO = getValidWithdrawTransactionRequestDto();
+        TransactionRequestDto transactionRequestDTO = getValidWithdrawTransactionRequestDto();
         RateResponse rateResponse = getValidRateResponse();
+
 //        Prepare URL
         String getWalletCurrencyUrl = String.format("%s/%s",
                 walletServiceGetWalletCurrencyEndpoint, transactionRequestDTO.getProperties().get(RECIPIENT_WALLET_ID));
         String getRateUrl = String.format("%s?from=%s&to=%s", getRateEndpoint, RUB, RUB);
+
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.status(500)));
@@ -129,8 +134,10 @@ public class DoWithdrawTransactionIntegrationTest {
                 .willReturn(WireMock.ok(RUB)));
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
 //        Prepare test resources
-        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearer = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiDoDepositTransactionEndpoint)
@@ -139,20 +146,23 @@ public class DoWithdrawTransactionIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is5xxServerError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
     public void failOn4xxStatusTransactionServiceResponseTest() {
 //        Prepare constants
         String RUB = "RUB";
+
 //        Prepare DTO
-        TransactionRequestDTO transactionRequestDTO = getValidWithdrawTransactionRequestDto();
+        TransactionRequestDto transactionRequestDTO = getValidWithdrawTransactionRequestDto();
         RateResponse rateResponse = getValidRateResponse();
+
 //        Prepare URL
         String getWalletCurrencyUrl = String.format("%s/%s",
                 walletServiceGetWalletCurrencyEndpoint, transactionRequestDTO.getProperties().get(RECIPIENT_WALLET_ID));
         String getRateUrl = String.format("%s?from=%s&to=%s", getRateEndpoint, RUB, RUB);
+
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.status(400)));
@@ -160,8 +170,10 @@ public class DoWithdrawTransactionIntegrationTest {
                 .willReturn(WireMock.ok(RUB)));
         currencyRateServiceMock.stubFor(WireMock.get(getRateUrl)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
 //        Prepare test resources
-        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearer = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiDoDepositTransactionEndpoint)
@@ -170,7 +182,7 @@ public class DoWithdrawTransactionIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
@@ -178,8 +190,10 @@ public class DoWithdrawTransactionIntegrationTest {
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.post(sendTransactionRequestUri)
                 .willReturn(WireMock.status(400)));
+
 //        Prepare test resources
-        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearer = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiDoDepositTransactionEndpoint)
@@ -188,25 +202,25 @@ public class DoWithdrawTransactionIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
-    private TransactionRequestDTO getValidWithdrawTransactionRequestDto() {
+    private TransactionRequestDto getValidWithdrawTransactionRequestDto() {
         Map<String, String> properties = new HashMap<>();
         properties.put(RequestPropertyKeys.RECIPIENT_WALLET_ID, UUID.randomUUID().toString());
-        return new TransactionRequestDTO()
-                .operationType(OperationType.WITHDRAW)
+        return new TransactionRequestDto()
+                .operationType(WITHDRAW)
                 .amount("85.58")
                 .currency("RUB")
                 .timestamp(System.currentTimeMillis())
                 .properties(properties);
     }
 
-    private TransactionRequestDTO getInvalidWithdrawTransactionRequestDto() {
+    private TransactionRequestDto getInvalidWithdrawTransactionRequestDto() {
         Map<String, String> properties = new HashMap<>();
         properties.put(RequestPropertyKeys.RECIPIENT_WALLET_ID, "invalid-id");
-        return new TransactionRequestDTO()
-                .operationType(OperationType.WITHDRAW)
+        return new TransactionRequestDto()
+                .operationType(WITHDRAW)
                 .amount("-85.58")
                 .currency("HELLO")
                 .timestamp(-System.currentTimeMillis())
@@ -220,7 +234,7 @@ public class DoWithdrawTransactionIntegrationTest {
         rateResponse.setProviderCode("CBR");
         rateResponse.setSourceCode(RUB);
         rateResponse.setDestinationCode(RUB);
-        rateResponse.setRateDate(LocalDate.now().format(DateTimeFormatter.ofPattern(ISO_DATE_FORMAT)));
+        rateResponse.setRateDate(OffsetDateTime.now());
         return rateResponse;
     }
 }

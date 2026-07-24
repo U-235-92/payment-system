@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.UUID;
 
-import static aq.project.util.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
-import static aq.project.util.constants.RequestPropertyKeys.*;
 import static aq.project.utils.UuidConstants.*;
+import static aq.project.utils.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+import static aq.project.utils.constants.RequestPropertyKeys.*;
 
 public class TestDepositTransactionRequestMocks {
 

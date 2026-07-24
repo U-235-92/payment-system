@@ -1,7 +1,7 @@
 package aq.project.integration.end_to_end;
 
-import aq.project.dto.LoginUserDTO;
-import aq.project.dto.UserInfoResponseDTO;
+import aq.project.dto.LoginUserDto;
+import aq.project.dto.UserInfoResponseDto;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -27,7 +27,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static aq.project.util.TestDtoRepository.getLoginUserDTO;
-import static aq.project.util.TestUtils.*;
+import static aq.project.util.TestUtils.getWebClient;
+import static aq.project.util.TestUtils.loginUserMono;
 
 @Disabled
 @Testcontainers
@@ -91,13 +92,13 @@ public class GetUserInfoIntegrationTest {
 //        >>>>>>>>>> WORKING TEST CASE <<<<<<<<<<
         WebClient webClient = getWebClient(port);
 
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
         Mono<ResponseEntity<Void>> responseEntityMono = loginUserMono(loginUserDTO, webClient)
                 .flatMap(responseEntityTokenDto -> webClient.get()
                         .uri(individualsApiGetUserInfoEndpoint)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + responseEntityTokenDto.getBody().getAccessToken())
-                        .exchangeToMono(responseEntityUserInfoDto -> responseEntityUserInfoDto.bodyToMono(UserInfoResponseDTO.class))
+                        .exchangeToMono(responseEntityUserInfoDto -> responseEntityUserInfoDto.bodyToMono(UserInfoResponseDto.class))
                         .map(response -> ResponseEntity.ok().build()));
 
         StepVerifier.create(responseEntityMono)

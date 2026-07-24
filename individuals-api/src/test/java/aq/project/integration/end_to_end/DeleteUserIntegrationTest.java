@@ -1,6 +1,6 @@
 package aq.project.integration.end_to_end;
 
-import aq.project.dto.LoginUserDTO;
+import aq.project.dto.LoginUserDto;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -22,8 +22,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import static aq.project.util.TestDtoRepository.*;
-import static aq.project.util.TestUtils.*;
+
+import static aq.project.util.TestDtoRepository.getLoginUserDTO;
+import static aq.project.util.TestUtils.getWebClient;
+import static aq.project.util.TestUtils.loginUserMono;
 
 @Disabled
 @Testcontainers
@@ -61,7 +63,7 @@ public class DeleteUserIntegrationTest {
 
     @Test
     public void successDeleteUserTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 
@@ -81,7 +83,7 @@ public class DeleteUserIntegrationTest {
 
     @Test
     public void failDeleteUserWithUnknownUserKeycloakIdTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 
@@ -100,7 +102,7 @@ public class DeleteUserIntegrationTest {
 
     @Test
     public void failDeleteUserWithEmptyKeycloakIdTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 
@@ -121,7 +123,7 @@ public class DeleteUserIntegrationTest {
 
     @Test
     public void failDeleteUserWithNoValidKeycloakIdTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 

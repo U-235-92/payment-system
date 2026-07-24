@@ -1,10 +1,10 @@
 package aq.project.services;
 
-import aq.project.clients.WalletServiceRestClient;
 import aq.project.dto.TransactionStatus;
 import aq.project.messages.TransactionRequest;
 import aq.project.messages.TransactionResponse;
-import aq.project.util.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceContext;
+import aq.project.wallet_service.TransactionApiClient;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -14,16 +14,11 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static aq.project.util.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+import static aq.project.utils.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
 
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
-
-    @Value("${service.wallet-service.uri}")
-    private String walletServiceApiUrl;
-    @Value("${service.wallet-service.endpoints.get-transaction-status}")
-    private String walletServiceApiGetTransactionStatusEndpoint;
 
     @Value("${service.kafka.topics.wallet_operation_request.name}")
     private String walletOperationRequestTopicName;
@@ -41,7 +36,7 @@ public class TransactionService {
 
     private final TraceContext traceContext;
 
-    private final WalletServiceRestClient walletServiceRestClient;
+    private final TransactionApiClient transactionApiClient;
 
     public String sendTransactionRequest(TransactionRequest transactionRequest) {
         sendTransactionRequest0(transactionRequest);
@@ -82,6 +77,6 @@ public class TransactionService {
     public TransactionStatus getTransactionStatus(String transactionId) {
         String adminJwt = tokenService.getAdminJwtAsAuthorizationHeaderValue();
         String xTraceId = traceContext.getTraceId();
-        return walletServiceRestClient.getTransactionStatus(adminJwt, xTraceId, transactionId);
+        return transactionApiClient.getTransactionStatus(transactionId, xTraceId, adminJwt).getBody();
     }
 }

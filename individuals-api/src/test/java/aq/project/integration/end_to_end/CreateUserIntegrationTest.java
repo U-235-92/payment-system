@@ -1,6 +1,6 @@
 package aq.project.integration.end_to_end;
 
-import aq.project.dto.CreateUserDTO;
+import aq.project.dto.CreateUserDto;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -20,6 +20,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
 import static aq.project.util.TestDtoRepository.*;
 
 @Disabled
@@ -52,7 +53,7 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void successCreateUserTest() {
-        CreateUserDTO validCreateUserDTO = getValidCreateUserDTO();
+        CreateUserDto validCreateUserDTO = getValidCreateUserDTO();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
@@ -70,7 +71,7 @@ public class CreateUserIntegrationTest {
             "TestApplicationProperties.KeycloakProperties class in" +
             "registerApplicationContextContainerProperties() method")
     public void failCreateUserWithNoValidAdminClientCredentialsTest() {
-        CreateUserDTO validCreateUserDTO = getValidCreateUserDTO();
+        CreateUserDto validCreateUserDTO = getValidCreateUserDTO();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
@@ -83,12 +84,12 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void failCreateDuplicateUserTest() {
-        CreateUserDTO Event = getDuplicateCreateUserDTO();
+        CreateUserDto createUserDto = getDuplicateCreateUserDTO();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Event)
+                .bodyValue(createUserDto)
                 .exchange()
                 .expectStatus()
                 .isEqualTo(HttpStatus.CONFLICT);
@@ -96,12 +97,12 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void failCreateUserWithNoMatchPasswordsTest() {
-        CreateUserDTO Event = getIncorrectCreateUserDTOWithDoNotMatchPasswords();
+        CreateUserDto createUserDto = getIncorrectCreateUserDTOWithDoNotMatchPasswords();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Event)
+                .bodyValue(createUserDto)
                 .exchange()
                 .expectStatus()
                 .isBadRequest();
@@ -109,12 +110,12 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void failCreateUserWithNullFieldsTest() {
-        CreateUserDTO Event = getIncorrectCreateUserDTOWithNullFields();
+        CreateUserDto createUserDto = getIncorrectCreateUserDTOWithNullFields();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Event)
+                .bodyValue(createUserDto)
                 .exchange()
                 .expectStatus()
                 .isBadRequest();
@@ -122,12 +123,12 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void failCreateUserWithNullIndividualDataTest() {
-        CreateUserDTO Event = getIncorrectCreateUserDTOWithNullIndividualData();
+        CreateUserDto createUserDto = getIncorrectCreateUserDTOWithNullIndividualData();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Event)
+                .bodyValue(createUserDto)
                 .exchange()
                 .expectStatus()
                 .isBadRequest();

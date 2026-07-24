@@ -1,0 +1,422 @@
+openapi: 3.1.0
+
+info:
+  title: wallet-service-api-specification
+  description: Common wallet-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8083
+  - url: http://wallet-service:8083
+
+paths:
+  /api/v1/wallet/create:
+    post:
+      security:
+        - BearerAuth: []
+      operationId: createWallet
+      tags:
+        - Wallet
+      summary: Create a new wallet
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWalletRequestDto"
+              description: Represents data for creating a new wallet
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns ID of created wallet
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/wallet/info/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getWalletInfo
+      tags:
+        - Wallet
+      summary: Get wallet info by given wallet ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a wallet ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletInfoResponseDto"
+          description: Returns DTO which describes the information about wallet by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/wallet/currency/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getWalletCurrency
+      tags:
+        - Wallet
+      summary: Get wallet currency by given wallet ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a wallet ID
+          schema:
+            type: string
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Returns valid currency code
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/status/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      operationId: getTransactionStatus
+      tags:
+        - Transaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a transaction ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+tags:
+  - name: Wallet
+    description: Describes operations with wallets
+  - name: Transaction
+    description: Describes operations with transactions
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequestResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+      description: Return DTO in case if parameter of request is not valid or requested data is absent
+    InternalServerErrorResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDto"
+      description: Return DTO in case if something went wrong during request handling on service side
+
+  schemas:
+    CreateWalletRequestDto:
+      type: object
+      required: [ personId, walletStatus, creator, modifier, currencyCode, balance, cardNumber, cardCvvNumber, cardExpirationDate, cardType ]
+      properties:
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        walletStatus:
+          $ref: "#/components/schemas/WalletStatus"
+        creator:
+          type: string
+          maxLength: 255
+        modifier:
+          type: string
+          maxLength: 255
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        balance:
+          $ref: "#/components/schemas/AmountDefinition"
+        cardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        cardCvvNumber:
+          $ref: "#/components/schemas/CardCvvDefinition"
+        cardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+        cardType:
+          $ref: "#/components/schemas/CardType"
+
+    WithdrawRequestDto:
+      type: object
+      required: [ transactionId, personId, walletId, amount, currencyCode, cardNumber, cardType, cardExpirationDate ]
+      properties:
+        transactionId:
+          $ref: "#/components/schemas/UuidDefinition"
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        walletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        cardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        cardType:
+          $ref: "#/components/schemas/CardType"
+        cardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    TransferRequestDto:
+      type: object
+      required: [ transactionId, personId, fromWalletId, toWalletId, amount, currencyCode, fromCardNumber, fromCardType, toCardNumber, toCardType, fromCardExpirationDate, toCardExpirationDate ]
+      properties:
+        transactionId:
+          $ref: "#/components/schemas/UuidDefinition"
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        fromWalletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        toWalletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        fromCardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        fromCardType:
+          $ref: "#/components/schemas/CardType"
+        fromCardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+        toCardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        toCardType:
+          $ref: "#/components/schemas/CardType"
+        toCardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    DepositRequestDto:
+      type: object
+      required: [ transactionId, personId, walletId, amount, currencyCode, cardNumber, cardType, cardExpirationDate ]
+      properties:
+        transactionId:
+          $ref: "#/components/schemas/UuidDefinition"
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        walletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        cardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        cardType:
+          $ref: "#/components/schemas/CardType"
+        cardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    WalletInfoResponseDto:
+      type: object
+      required: [ personId, walletId, balance, currencyCode, cardNumber, cardExpirationDate, cardType, createdAt, modifiedAt ]
+      properties:
+        personId:
+          $ref: "#/components/schemas/UuidDefinition"
+        walletId:
+          $ref: "#/components/schemas/UuidDefinition"
+        createdAt:
+          type: string
+        modifiedAt:
+          type: string
+        balance:
+          $ref: "#/components/schemas/AmountDefinition"
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        cardNumber:
+          $ref: "#/components/schemas/CardNumberDefinition"
+        cardType:
+          $ref: "#/components/schemas/CardType"
+        cardExpirationDate:
+          $ref: "#/components/schemas/CardExpirationDateDefinition"
+
+    RateResponse:
+      type: object
+      properties:
+        sourceCode:
+          type: string
+          description: Код исходной валюты (например, "USD")
+        destinationCode:
+          type: string
+          description: Код целевой валюты (например, "EUR")
+        rate:
+          type: number
+          description: Курс обмена sourceCode→destinationCode
+        rateDate:
+          type: string
+          description: Время, на которое действует курс
+        providerCode:
+          type: string
+          description: Код провайдера курса
+
+    ErrorDto:
+      type: object
+      required: [ http_status, message ]
+      properties:
+        http_status:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    WalletStatus:
+      enum: [ "ACTIVE", "BLOCKED" ]
+
+    CardType:
+      enum: [ "VISA", "MASTERCARD", "MIR", "AMERICAN_EXPRESS", "UNION_PAY" ]
+
+    OperationType:
+      enum: [ "DEPOSIT", "WITHDRAW", "TRANSFER" ]
+
+    TransactionStatus:
+      enum: [ "PENDING", "COMPLETED", "FAILED" ]
+
+    CurrencyCodeDefinition:
+      type: string
+      pattern: '^[A-Z]{3}$'
+      minLength: 3
+      maxLength: 3
+
+    AmountDefinition:
+      type: string
+      pattern: '^([1-9][0-9]*|[0]+)\.[0-9][0-9]$'
+      description: "Описание шаблона денежных средств в формате: 0.XX или Х.ХХ"
+
+    UuidDefinition:
+      type: string
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+    CardCvvDefinition:
+      type: string
+      pattern: '^[0-9]{3}$'
+      minLength: 3
+      maxLength: 3
+
+    CardNumberDefinition:
+      type: string
+      pattern: '^[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}$'
+      description: "Описание шаблона номера карты в формате: ХХХХ ХХХХ ХХХХ ХХХХ"
+
+    CardExpirationDateDefinition:
+      type: string
+      pattern: '^([0][1-9]|[1][0-2])/[0-9][0-9]$'
+      minLength: 5
+      maxLength: 5

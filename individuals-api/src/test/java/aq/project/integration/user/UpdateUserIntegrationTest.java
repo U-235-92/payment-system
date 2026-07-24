@@ -30,8 +30,10 @@ import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
 import static aq.project.util.TestDtoRepository.*;
-import static aq.project.util.TestUtils.*;
+import static aq.project.util.TestUtils.getWebClient;
+import static aq.project.util.TestUtils.loginUserMono;
 
 @Testcontainers
 @DirtiesContext
@@ -79,10 +81,10 @@ public class UpdateUserIntegrationTest {
         personServiceMockServer.stubFor(WireMock.patch(personServiceUpdatePersonEndpoint)
                 .willReturn(WireMock.ok()));
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDTO(updateIndividualDataDTO, actualUserKeycloakId);
+        CountryDto countryDTO = getValidCountryDTO();
+        AddressDto addressDTO = getValidAddressDTO(countryDTO);
+        UpdateIndividualDataDto updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
+        UpdateUserDto updateUserDTO = getValidUpdateUserDTO(updateIndividualDataDTO, actualUserKeycloakId);
 
         Assertions.assertDoesNotThrow(() -> userService.updateUser(updateUserDTO));
     }
@@ -92,14 +94,14 @@ public class UpdateUserIntegrationTest {
         personServiceMockServer.stubFor(WireMock.patch(personServiceUpdatePersonEndpoint)
                 .willReturn(WireMock.badRequest()));
 
-        LoginUserDTO loginUserDTO = new LoginUserDTO();
+        LoginUserDto loginUserDTO = new LoginUserDto();
         loginUserDTO.setEmail("alice@post.aq");
         loginUserDTO.setPassword("123");
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDtoWithUnknownKeycloakUserId(addressDTO, unknownUserKeycloakId);
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDtoWithUnknownKeycloakUserId(updateIndividualDataDTO, unknownUserKeycloakId);
+        CountryDto countryDTO = getValidCountryDTO();
+        AddressDto addressDTO = getValidAddressDTO(countryDTO);
+        UpdateIndividualDataDto updateIndividualDataDTO = getValidUpdateIndividualDataDtoWithUnknownKeycloakUserId(addressDTO, unknownUserKeycloakId);
+        UpdateUserDto updateUserDTO = getValidUpdateUserDtoWithUnknownKeycloakUserId(updateIndividualDataDTO, unknownUserKeycloakId);
 
         WebClient webClient = getWebClient(port);
 
@@ -120,14 +122,14 @@ public class UpdateUserIntegrationTest {
 
     @Test
     public void failUpdateUserWithNoMatchPasswordsOfUpdateUserDtoTest() {
-        LoginUserDTO loginUserDTO = new LoginUserDTO();
+        LoginUserDto loginUserDTO = new LoginUserDto();
         loginUserDTO.setEmail("alice@post.aq");
         loginUserDTO.setPassword("123");
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
-        UpdateUserDTO updateUserDTO = getInvalidUpdateUserDtoWithNoMatchPassword(updateIndividualDataDTO, actualUserKeycloakId);
+        CountryDto countryDTO = getValidCountryDTO();
+        AddressDto addressDTO = getValidAddressDTO(countryDTO);
+        UpdateIndividualDataDto updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
+        UpdateUserDto updateUserDTO = getInvalidUpdateUserDtoWithNoMatchPassword(updateIndividualDataDTO, actualUserKeycloakId);
 
         WebClient webClient = getWebClient(port);
 
@@ -148,16 +150,16 @@ public class UpdateUserIntegrationTest {
 
     @Test
     public void failUpdateUserWithNullFieldsOfUpdateUserDtoTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 
         String accessToken = loginUserMono(loginUserDTO, webClient).block().getBody().getAccessToken();
 
-        CountryDTO countryDTO = getValidCountryDTO();
-        AddressDTO addressDTO = getValidAddressDTO(countryDTO);
-        UpdateIndividualDataDTO updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
-        UpdateUserDTO updateUserDTO = getInvalidUpdateUserDtoWithNullFields(updateIndividualDataDTO, actualUserKeycloakId);
+        CountryDto countryDTO = getValidCountryDTO();
+        AddressDto addressDTO = getValidAddressDTO(countryDTO);
+        UpdateIndividualDataDto updateIndividualDataDTO = getValidUpdateIndividualDataDTO(addressDTO, actualUserKeycloakId);
+        UpdateUserDto updateUserDTO = getInvalidUpdateUserDtoWithNullFields(updateIndividualDataDTO, actualUserKeycloakId);
 
         webTestClient.patch()
                 .uri(individualsApiUpdateUserEndpoint)
@@ -171,13 +173,13 @@ public class UpdateUserIntegrationTest {
 
     @Test
     public void failUpdateUserWithNullUpdateIndividualDataDtoTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
+        LoginUserDto loginUserDTO = getLoginUserDTO("alexander@post.aq", "123");
 
         WebClient webClient = getWebClient(port);
 
         String accessToken = loginUserMono(loginUserDTO, webClient).block().getBody().getAccessToken();
 
-        UpdateUserDTO updateUserDTO = getValidUpdateUserDTO(null, actualUserKeycloakId);
+        UpdateUserDto updateUserDTO = getValidUpdateUserDTO(null, actualUserKeycloakId);
 
         webTestClient.patch()
                 .uri(individualsApiUpdateUserEndpoint)

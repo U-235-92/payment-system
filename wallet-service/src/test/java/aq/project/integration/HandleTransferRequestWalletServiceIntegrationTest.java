@@ -36,7 +36,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
+import static aq.project.utils.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 
 @Testcontainers
 @ActiveProfiles("test")

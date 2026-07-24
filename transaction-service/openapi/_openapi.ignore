@@ -1,0 +1,12 @@
+##############################
+# TRANSACTION-SERVICE IGNORE #
+##############################
+**/openapi/transaction-service/src/main/java/org/**
+**/openapi/transaction-service/src/main/java/aq/project/transaction_service/**
+
+#########################
+# WALLET-SERVICE IGNORE #
+#########################
+**/openapi/wallet-service/src/main/java/aq/project/dto/ErrorDto.java
+**/openapi/wallet-service/src/main/java/aq/project/dto/OperationType.java
+**/openapi/wallet-service/src/main/java/aq/project/dto/TransactionStatus.java

@@ -1,57 +1,69 @@
 package aq.project.services;
 
-import aq.project.clients.CurrencyRateServiceWebClient;
-import aq.project.clients.KeycloakServiceWebClientFacade;
+import aq.project.clients.KeycloakServiceClientFacade;
+import aq.project.currency_rate_service.RateApiClient;
 import aq.project.dto.CurrencyResponse;
 import aq.project.dto.RateProviderResponse;
 import aq.project.dto.RateResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
-import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
+import java.time.OffsetDateTime;
+
+import static aq.project.utils.telemetry.TracePropagator.fetchTraceId;
 
 @Service
 @RequiredArgsConstructor
 public class CurrencyRateService {
 
-    private final CurrencyRateServiceWebClient currencyRateServiceWebClient;
+    private final RateApiClient rateApiClient;
 
-    private final KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+    private final KeycloakServiceClientFacade keycloakServiceClientFacade;
 
     public Mono<Flux<CurrencyResponse>> getCurrencies() {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> currencyRateServiceWebClient.getCurrencies(jwt)
-                        .flatMap(response -> Mono.just(response.getBody())));
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> rateApiClient.getCurrencies(xTraceId, jwtHeader)
+                                .flatMap(response -> Mono.just(response.getBody()))));
     }
 
-    public Mono<CurrencyResponse> getCurrencyInfo(String code) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> currencyRateServiceWebClient.getCurrencyInfo(jwt, code)
-                        .flatMap(response -> Mono.just(response.getBody())));
+    public Mono<CurrencyResponse> getCurrencyInfo(
+            String code
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> rateApiClient.getCurrencyInfo(code, xTraceId, jwtHeader)
+                                .map(ResponseEntity::getBody)));
     }
 
-    public Mono<RateResponse> getRate(String from, String to, String provider, LocalDate date) {
-        String strDate = (date == null)
-                ? null
-                : DateTimeFormatter.ofPattern(ISO_DATE_FORMAT).format(date);
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> currencyRateServiceWebClient.getRate(jwt, from, to, provider, strDate)
-                        .flatMap(response -> Mono.just(response.getBody())));
+    public Mono<RateResponse> getRate(
+            String from,
+            String to,
+            String provider,
+            OffsetDateTime date
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> rateApiClient.getRate(from, to, xTraceId, provider, date, jwtHeader)
+                                .map(ResponseEntity::getBody)));
     }
 
-    public Mono<RateProviderResponse> getRateProviderInfo(String code) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> currencyRateServiceWebClient.getRateProviderInfo(jwt, code)
-                        .flatMap(response -> Mono.just(response.getBody())));
+    public Mono<RateProviderResponse> getRateProviderInfo(
+            String code
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> rateApiClient.getRateProviderInfo(code, xTraceId, jwtHeader)
+                                .map(ResponseEntity::getBody)));
     }
 
     public Mono<Flux<RateProviderResponse>> getRateProviders() {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> currencyRateServiceWebClient.getRateProviders(jwt)
-                        .flatMap(response -> Mono.just(response.getBody())));
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> rateApiClient.getRateProviders(xTraceId, jwtHeader)
+                                .map(ResponseEntity::getBody)));
     }
 }

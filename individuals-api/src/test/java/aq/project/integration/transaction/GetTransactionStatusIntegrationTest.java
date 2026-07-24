@@ -1,7 +1,7 @@
 package aq.project.integration.transaction;
 
-import aq.project.clients.KeycloakServiceWebClientFacade;
-import aq.project.dto.ErrorDTO;
+import aq.project.clients.KeycloakServiceClientFacade;
+import aq.project.dto.ErrorDto;
 import aq.project.services.TransactionService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
@@ -40,7 +40,7 @@ public class GetTransactionStatusIntegrationTest {
     private String individualsApiGetTransactionStatusEndpoint;
 
     @Autowired
-    private KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+    private KeycloakServiceClientFacade keycloakServiceClientFacade;
 
     @Autowired
     private WebTestClient webTestClient;
@@ -66,6 +66,7 @@ public class GetTransactionStatusIntegrationTest {
         String transactionId = UUID.randomUUID().toString();
         transactionServiceMock.stubFor(WireMock.get(getTransactionStatusUri + "/" + transactionId)
                 .willReturn(WireMock.ok()));
+
 //        Test call
         Assertions.assertDoesNotThrow(() -> transactionService.getTransactionStatus(transactionId));
     }
@@ -76,8 +77,10 @@ public class GetTransactionStatusIntegrationTest {
         String transactionId = UUID.randomUUID().toString();
         transactionServiceMock.stubFor(WireMock.get(getTransactionStatusUri + "/" + transactionId)
                 .willReturn(WireMock.status(500)));
+
 //        Prepare test resources
-        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearer = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.get()
                 .uri(individualsApiGetTransactionStatusEndpoint + "/" + transactionId)
@@ -85,7 +88,7 @@ public class GetTransactionStatusIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is5xxServerError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
@@ -94,8 +97,10 @@ public class GetTransactionStatusIntegrationTest {
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.get(getTransactionStatusUri + "/" + transactionId)
                 .willReturn(WireMock.status(400)));
+
 //        Prepare test resources
-        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearer = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.get()
                 .uri(individualsApiGetTransactionStatusEndpoint + "/" + transactionId)
@@ -103,7 +108,7 @@ public class GetTransactionStatusIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
@@ -112,8 +117,10 @@ public class GetTransactionStatusIntegrationTest {
         String transactionId = "invalid-id";
         transactionServiceMock.stubFor(WireMock.get(getTransactionStatusUri + "/" + transactionId)
                 .willReturn(WireMock.ok()));
+
 //        Prepare test resources
-        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearer = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiGetTransactionStatusEndpoint + "/" + transactionId)
@@ -121,7 +128,7 @@ public class GetTransactionStatusIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
@@ -129,8 +136,10 @@ public class GetTransactionStatusIntegrationTest {
 //        Prepare mock service
         transactionServiceMock.stubFor(WireMock.get(getTransactionStatusUri + "/" + null)
                 .willReturn(WireMock.status(400)));
+
 //        Prepare test resources
-        String adminJwtBearer = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearer = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.post()
                 .uri(individualsApiGetTransactionStatusEndpoint + "/" + null)
@@ -138,7 +147,7 @@ public class GetTransactionStatusIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
@@ -147,12 +156,13 @@ public class GetTransactionStatusIntegrationTest {
         String transactionId = UUID.randomUUID().toString();
         transactionServiceMock.stubFor(WireMock.get(getTransactionStatusUri + "/" + transactionId)
                 .willReturn(WireMock.unauthorized()));
+
 //        Test call
         webTestClient.get()
                 .uri(individualsApiGetTransactionStatusEndpoint + "/" + transactionId)
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 }

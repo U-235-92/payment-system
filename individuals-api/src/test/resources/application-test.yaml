@@ -4,28 +4,6 @@ logging:
     org.springframework.security: debug
 application:
   individuals-api:
-    endpoints:
-#      Person service operations:
-      create-user: /api/v1/user/create-user
-      login-user: /api/v1/user/login-user
-      update-user: /api/v1/user/update-user
-      delete-user-by-keycloak-id: /api/v1/user/delete-user-by-keycloak-id
-      get-user-info: /api/v1/user/get-user-info
-#      Token service operations:
-      refresh-token: /api/v1/token/refresh-token
-#      Currency rate service operations:
-      get-rate: /api/v1/currency-rate/rate
-      get-currencies: /api/v1/currency-rate/currencies
-      get-rate-providers: /api/v1/currency-rate/rate-providers
-      get-currency: /api/v1/currency-rate/currency
-      get-provider: /api/v1/currency-rate/provider
-#      Transaction service operations:
-      get-transaction-status: /api/v1/transaction/status
-      do-transaction: /api/v1/transaction/do-transaction
-#      Wallet service operations:
-      create-wallet: /api/v1/wallet/create
-      get-wallet-info: /api/v1/wallet/info
-
     test:
       actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)
       unknown-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407

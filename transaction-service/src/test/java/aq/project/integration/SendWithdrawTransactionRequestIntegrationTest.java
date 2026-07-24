@@ -3,8 +3,10 @@ package aq.project.integration;
 import aq.project.configs.ContainersConfigurer;
 import aq.project.mocks.TestWithdrawTransactionRequestMocks;
 import aq.project.services.TransactionService;
-import aq.project.util.telemetry.TraceContext;
+import aq.project.utils.KeycloakContainerTestPropertiesConfigurer;
+import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.Containers;
+import dasniko.testcontainers.keycloak.KeycloakContainer;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -15,6 +17,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Container;
@@ -26,6 +30,8 @@ import java.util.Collections;
 import java.util.Properties;
 
 @Testcontainers
+@DirtiesContext
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SendWithdrawTransactionRequestIntegrationTest {
 
@@ -33,6 +39,8 @@ public class SendWithdrawTransactionRequestIntegrationTest {
 
     @Container
     private static final KafkaContainer KAFKA_CONTAINER = Containers.KAFKA_CONTAINER;
+    @Container
+    private static final KeycloakContainer KEYCLOAK_CONTAINER = Containers.KEYCLOAK_CONTAINER;
 
     @Autowired
     private TransactionService transactionService;
@@ -42,6 +50,7 @@ public class SendWithdrawTransactionRequestIntegrationTest {
 
     @DynamicPropertySource
     static void configDynamicPropertySource(DynamicPropertyRegistry registry) {
+        KeycloakContainerTestPropertiesConfigurer.registerApplicationContextContainerProperties(registry);
         ContainersConfigurer.configureKafkaProperties(registry, KAFKA_CONTAINER);
     }
 

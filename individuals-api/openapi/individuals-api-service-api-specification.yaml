@@ -1,0 +1,685 @@
+openapi: 3.1.0
+
+info:
+  title: individuals-service-api-specification
+  description: Common individuals-api-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8081
+  - url: http://individuals-api:8081
+
+#############
+# ENDPOINTS #
+#############
+paths:
+  /api/v1/token/refresh-token:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: refreshToken
+      tags:
+        - Token
+      summary: Handle incoming refresh token request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenDto"
+              description: Represents data of refresh token
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseTokenDto"
+          description: Returns updated pair of access & refresh tokens
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/status/{transactionId}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getTransactionStatus
+      tags:
+        - Transaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/do-transaction:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: doTransaction
+      tags:
+        - Transaction
+      summary: Handle incoming transaction request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequestDto"
+              description: Represents data of transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns ID of requested transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/user/create-user:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: createUser
+      tags:
+        - User
+      summary: Handle incoming create user request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserDto"
+              description: Represents data of create user request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseTokenDto"
+          description: Returns pairs of access & refresh tokens which are represented created user
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/user/login-user:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: loginUser
+      tags:
+        - User
+      summary: Handle incoming login user request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUserDto"
+              description: Represents data of login user request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseTokenDto"
+          description: Returns pairs of access & refresh tokens which are represented login user
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+  /api/v1/user/update-user:
+    patch:
+      security:
+        - BearerAuth: [ ]
+      operationId: updateUser
+      tags:
+        - User
+      summary: Handle incoming update user request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserDto"
+              description: Represents data of update user request
+      responses:
+        200:
+          description: Returns OK status code if operation was successful
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/user/delete-user-by-keycloak-id/{keycloakId}:
+    delete:
+      security:
+        - BearerAuth: [ ]
+      operationId: deleteUserByKeycloakId
+      tags:
+        - User
+      summary: Delete a user by given ID
+      parameters:
+        - name: keycloakId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a user ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/wallet/create:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: createWallet
+      tags:
+        - Wallet
+      summary: Create a new wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWalletRequestDto"
+              description: Represents data for creating a new wallet
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UuidDefinition"
+          description: Returns ID of created wallet
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/wallet/info/{walletId}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getWalletInfo
+      tags:
+        - Wallet
+      summary: Get wallet info by given wallet ID
+      parameters:
+        - name: walletId
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a wallet ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletInfoResponseDto"
+          description: Returns DTO which describes the information about wallet by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/currency-rate/get-rate:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить курс между двумя валютами на указанную дату/время
+      operationId: getRate
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "USD"
+          description: Код исходной валюты (например, "USD")
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "EUR"
+          description: Код целевой валюты (например, "EUR")
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Идентификатор конкретного поставщика данных. Если параметр опущен, возвращается смешанное (усредненное) значение по всем доступным провайдерам.
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Дата курса валюты
+          example: "2025-11-22"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateResponse'
+          description: Курс найден
+        404:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+          description: Курс не найден
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+          description: Ошибка запроса
+
+  /api/v1/currency-rate/get-currencies:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить список поддерживаемых валют
+      operationId: getCurrencies
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyResponse'
+          description: Список валют
+
+  /api/v1/currency-rate/get-rate-providers:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить список провайдеров курсов валют
+      operationId: getRateProviders
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RateProviderResponse'
+          description: Провайдеры
+
+  /api/v1/currency-rate/get-currency-info/{code}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить информацию по указанной валюте
+      operationId: getCurrencyInfo
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Трехбуквенный код валюты
+          example: USD
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyResponse'
+          description: Информация по валюте
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+          description: Returns ErrorDto if any 4xx client error was occurred
+
+  /api/v1/currency-rate/get-rate-provider-info/{code}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - Rate
+      summary: Получить информацию по указанному поставщику курсов валют
+      operationId: getRateProviderInfo
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Код поставщика валют
+          example: AMCM
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateProviderResponse'
+          description: Информация по поставщику валют
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+          description: Returns ErrorDto if any 4xx client error was occurred
+
+########
+# TAGS #
+########
+tags:
+  - name: Token
+    description: Describes operations with tokens
+  - name: Transaction
+    description: Describes operations with transactions
+  - name: User
+    description: Describes operations with users
+  - name: Wallet
+    description: Describes operations with wallets
+  - name: Rate
+    description: Describes operations with currencies and its rates
+
+######################
+# COMPONENTS SCHEMAS #
+######################
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+##########################################
+# INDIVIDUALS-API SERVICE API COMPONENTS #
+##########################################
+    UserInfoResponseDto:
+      type: object
+      required: [ keycloak_user_id, email, roles, created, individual_data ]
+      properties:
+        keycloak_user_id:
+          $ref: "#/components/schemas/UuidDefinition"
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        created:
+          type: string
+          format: date-time
+        individual_data:
+          $ref: "#/components/schemas/IndividualDataResponseDto"
+
+    CreateUserDto:
+      type: object
+      required: [ username, password, confirm_password, individual_data ]
+      properties:
+        keycloak_user_id:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        confirm_password:
+          type: string
+        individual_data:
+          $ref: "#/components/schemas/CreateIndividualDataDto"
+
+    UpdateUserDto:
+      type: object
+      required: [ keycloak_user_id, password, confirm_password, individual_data ]
+      properties:
+        keycloak_user_id:
+          $ref: "#/components/schemas/UuidDefinition"
+        password:
+          type: string
+        confirm_password:
+          type: string
+        individual_data:
+          $ref: "#/components/schemas/UpdateIndividualDataDto"
+
+    RefreshTokenDto:
+      type: object
+      required: [ refresh_token ]
+      properties:
+        refresh_token:
+          type: string
+
+    ResponseTokenDto:
+      type: object
+      required: [ keycloak_user_id, access_token, refresh_token, expires_in, token_type ]
+      properties:
+        keycloak_user_id:
+          $ref: "#/components/schemas/UuidDefinition"
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: long
+        token_type:
+          type: string
+          example: Bearer [token]
+
+    ErrorDto:
+      type: object
+      required: [ http_status, message ]
+      properties:
+        http_status:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    CurrencyCodeDefinition:
+      type: string
+      pattern: '^[A-Z]{3}$'
+      minLength: 3
+      maxLength: 3
+
+    UuidDefinition:
+      type: string
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+#################################
+# PERSON SERVICE API COMPONENTS #
+#################################
+    UpdateIndividualDataDto:
+      allOf:
+        - $ref: "./person-service-api-specification.yaml#/components/schemas/UpdateIndividualDataDto"
+      properties:
+        address:
+          $ref: "#/components/schemas/AddressDto"
+
+    LoginUserDto:
+      $ref: "./person-service-api-specification.yaml#/components/schemas/LoginUserDto"
+
+    IndividualDataResponseDto:
+      allOf:
+        - $ref: "./person-service-api-specification.yaml#/components/schemas/IndividualDataResponseDto"
+      properties:
+        address:
+          $ref: "#/components/schemas/AddressDto"
+
+    AddressDto:
+#      $ref: "./person-service-api-specification.yaml#/components/schemas/AddressDto"
+      allOf:
+        - $ref: "./person-service-api-specification.yaml#/components/schemas/AddressDto"
+      properties:
+        country:
+          $ref: "#/components/schemas/CountryDto"
+
+    CountryDto:
+      $ref: "./person-service-api-specification.yaml#/components/schemas/CountryDto"
+
+    UndoOperationDto:
+      $ref: "./person-service-api-specification.yaml#/components/schemas/UndoOperationDto"
+
+    CreateIndividualDataDto:
+      allOf:
+        - $ref: "./person-service-api-specification.yaml#/components/schemas/CreateIndividualDataDto"
+      properties:
+        address:
+          $ref: "#/components/schemas/AddressDto"
+
+######################################
+# TRANSACTION SERVICE API COMPONENTS #
+######################################
+    TransactionRequestDto:
+      $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionRequestDto"
+
+    OperationType:
+      $ref: "./transaction-service-api-specification.yaml#/components/schemas/OperationType"
+
+    TransactionStatus:
+      $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
+
+########################################
+# CURRENCY RATE SERVICE API COMPONENTS #
+########################################
+    RateProviderResponse:
+      $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/RateProviderResponse"
+
+    CurrencyResponse:
+      $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/CurrencyResponse"
+
+    RateResponse:
+      $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/RateResponse"
+
+#################################
+# WALLET SERVICE API COMPONENTS #
+#################################
+    CreateWalletRequestDto:
+      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CreateWalletRequestDto"
+
+    WalletInfoResponseDto:
+      $ref: "./wallet-service-api-specification.yaml#/components/schemas/WalletInfoResponseDto"
+
+    WalletStatus:
+      $ref: "./wallet-service-api-specification.yaml#/components/schemas/WalletStatus"
+
+    CardType:
+      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardType"
+
+    AmountDefinition:
+      $ref: "./wallet-service-api-specification.yaml#/components/schemas/AmountDefinition"
+
+    CardCvvDefinition:
+      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardCvvDefinition"
+
+    CardNumberDefinition:
+      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardNumberDefinition"
+
+    CardExpirationDateDefinition:
+      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardExpirationDateDefinition"

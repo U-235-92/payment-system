@@ -1,12 +1,12 @@
 package aq.project.controllers;
 
 import aq.project.controller.WalletRestControllerApi;
-import aq.project.dto.CreateWalletRequestDTO;
-import aq.project.dto.WalletInfoResponseDTO;
+import aq.project.dto.CreateWalletRequestDto;
+import aq.project.dto.WalletInfoResponseDto;
 import aq.project.entities.Wallet;
-import aq.project.util.mappers.WalletMapper;
 import aq.project.services.WalletService;
-import aq.project.util.telemetry.TraceContext;
+import aq.project.utils.mappers.WalletMapper;
+import aq.project.utils.telemetry.TraceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,21 +24,33 @@ public class WalletRestController implements WalletRestControllerApi {
     private final TraceContext traceContext;
 
     @Override
-    public ResponseEntity<String> createWallet(String xTraceId, CreateWalletRequestDTO createWalletRequestDTO) {
+    public ResponseEntity<String> createWallet(
+            String xTraceId,
+            CreateWalletRequestDto createWalletRequestDTO,
+            String authorization
+    ) {
         traceContext.setTraceId(xTraceId);
         String createdWalletId = walletService.createWallet(walletMapper.toWallet(createWalletRequestDTO));
         return ResponseEntity.ok(createdWalletId);
     }
 
     @Override
-    public ResponseEntity<WalletInfoResponseDTO> getWalletInfo(String id, String xTraceId) {
+    public ResponseEntity<WalletInfoResponseDto> getWalletInfo(
+            String id,
+            String xTraceId,
+            String authorization
+    ) {
         traceContext.setTraceId(xTraceId);
         Wallet wallet = walletService.getWalletInfo(id);
         return ResponseEntity.ok(walletMapper.toWalletInfoResponseDto(wallet));
     }
 
     @Override
-    public ResponseEntity<String> getWalletCurrency(String id, String xTraceId) {
+    public ResponseEntity<String> getWalletCurrency(
+            String id,
+            String xTraceId,
+            String authorization
+    ) {
         traceContext.setTraceId(xTraceId);
         return ResponseEntity.ok(walletService.getWalletCurrency(id));
     }

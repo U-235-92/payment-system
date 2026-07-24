@@ -1,12 +1,12 @@
 package aq.project.controllers;
 
 import aq.project.controller.TransactionRestControllerApi;
-import aq.project.dto.TransactionRequestDTO;
+import aq.project.dto.TransactionRequestDto;
 import aq.project.dto.TransactionStatus;
-import aq.project.util.mappers.TransactionRequestMapper;
 import aq.project.messages.TransactionRequest;
 import aq.project.services.TransactionService;
-import aq.project.util.telemetry.TraceContext;
+import aq.project.utils.mappers.TransactionRequestMapper;
+import aq.project.utils.telemetry.TraceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,11 @@ public class TransactionRestController implements TransactionRestControllerApi {
     private final TraceContext traceContext;
 
     @Override
-    public ResponseEntity<String> sendTransactionRequest(String xTraceId, TransactionRequestDTO dto) {
+    public ResponseEntity<String> sendTransactionRequest(
+            String xTraceId,
+            TransactionRequestDto dto,
+            String authorization
+    ) {
         traceContext.setTraceId(xTraceId);
         TransactionRequest transactionRequest = transactionRequestMapper.toTransactionRequest(dto);
         String transactionId = UUID.randomUUID().toString();
@@ -36,7 +40,11 @@ public class TransactionRestController implements TransactionRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<TransactionStatus> getTransactionStatus(String transactionId, String xTraceId) {
+    public ResponseEntity<TransactionStatus> getTransactionStatus(
+            String transactionId,
+            String xTraceId,
+            String authorization
+    ) {
         traceContext.setTraceId(xTraceId);
         return ResponseEntity.ok(transactionService.getTransactionStatus(transactionId));
     }

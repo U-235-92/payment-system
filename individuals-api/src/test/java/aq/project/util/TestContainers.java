@@ -17,7 +17,7 @@ public abstract class TestContainers {
 
     public abstract static class Keycloak {
 
-        private static final String KEYCLOAK_IMAGE_NAME = "quay.io/keycloak/keycloak:latest";
+        private static final String KEYCLOAK_IMAGE_NAME = "quay.io/keycloak/keycloak:26.6.0";
 
         public static final KeycloakContainer KEYCLOAK_CONTAINER = new KeycloakContainer(KEYCLOAK_IMAGE_NAME)
                 .withRealmImportFile("realm-config.json")

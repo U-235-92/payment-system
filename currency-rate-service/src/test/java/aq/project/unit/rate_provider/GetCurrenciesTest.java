@@ -1,8 +1,8 @@
 package aq.project.unit.rate_provider;
 
-import aq.project.entity.Currency;
-import aq.project.mappers.rate.FrankfurterRateProviderMapper;
-import aq.project.util.telemetry.TraceContext;
+import aq.project.entities.Currency;
+import aq.project.utils.mappers.rate.FrankfurterRateProviderMapper;
+import aq.project.utils.telemetry.TraceContext;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.opentelemetry.api.OpenTelemetry;

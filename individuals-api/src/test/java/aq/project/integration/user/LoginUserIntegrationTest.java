@@ -1,6 +1,6 @@
 package aq.project.integration.user;
 
-import aq.project.dto.LoginUserDTO;
+import aq.project.dto.LoginUserDto;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -45,7 +45,7 @@ public class LoginUserIntegrationTest {
         webTestClient.post()
                 .uri(individualsApiLoginUserEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginUserDTO().email("alice@post.aq").password("123"))
+                .bodyValue(new LoginUserDto().email("alice@post.aq").password("123"))
                 .exchange()
                 .expectStatus()
                 .isOk();
@@ -56,7 +56,7 @@ public class LoginUserIntegrationTest {
         webTestClient.post()
                 .uri(individualsApiLoginUserEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginUserDTO().email("novalid@post.aq").password("123"))
+                .bodyValue(new LoginUserDto().email("novalid@post.aq").password("123"))
                 .exchange()
                 .expectStatus()
                 .is4xxClientError();
@@ -67,7 +67,7 @@ public class LoginUserIntegrationTest {
         webTestClient.post()
                 .uri(individualsApiLoginUserEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new LoginUserDTO().email(null).password("123"))
+                .bodyValue(new LoginUserDto().email(null).password("123"))
                 .exchange()
                 .expectStatus()
                 .isBadRequest();

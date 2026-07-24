@@ -1,9 +1,9 @@
 package aq.project.integration.token;
 
 import aq.project.controllers.UserRestController;
-import aq.project.dto.LoginUserDTO;
-import aq.project.dto.RefreshTokenDTO;
-import aq.project.dto.ResponseTokenDTO;
+import aq.project.dto.LoginUserDto;
+import aq.project.dto.RefreshTokenDto;
+import aq.project.dto.ResponseTokenDto;
 import aq.project.services.TokenService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -49,21 +48,21 @@ public class RefreshTokenIntegrationTest {
 
     @Test
     public void successRefreshTokenTest() {
-        LoginUserDTO loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
-        ResponseTokenDTO responseTokenDTO = authController.loginUser(Mono.just(loginUserDTO), null).block().getBody();
-        RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken(responseTokenDTO.getRefreshToken());
+        LoginUserDto loginUserDTO = getLoginUserDTO("alice@post.aq", "123");
+        ResponseTokenDto responseTokenDTO = authController.loginUser(Mono.just(loginUserDTO), null).block().getBody();
+        RefreshTokenDto refreshTokenDTO = new RefreshTokenDto().refreshToken(responseTokenDTO.getRefreshToken());
         Assertions.assertDoesNotThrow(() -> tokenService.refreshUserJwt(refreshTokenDTO));
     }
 
     @Test
     public void failRefreshNullTokenTest() {
-        RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken(null);
+        RefreshTokenDto refreshTokenDTO = new RefreshTokenDto().refreshToken(null);
         Assertions.assertThrows(ConstraintViolationException.class, () -> tokenService.refreshUserJwt(refreshTokenDTO));
     }
 
     @Test
     public void failRefreshWrongTokenTest() {
-        RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO().refreshToken("wrong-token");
+        RefreshTokenDto refreshTokenDTO = new RefreshTokenDto().refreshToken("wrong-token");
         Assertions.assertThrows(IllegalArgumentException.class, () -> tokenService.refreshUserJwt(refreshTokenDTO));
     }
 }

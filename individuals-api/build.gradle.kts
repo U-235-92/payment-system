@@ -1,6 +1,4 @@
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.java
-import org.gradle.kotlin.dsl.register
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
@@ -11,7 +9,79 @@ plugins {
 }
 
 group = "aq.payment-system"
-version = "1.0.0"
+version = "1.0.0-dev"
+
+extra["springCloudVersion"] = "2025.1.0"
+
+val artifact = "individuals-api-service"
+
+val yamlExtension = ".yaml"
+
+val openApiSpecificationBuildPath = "$rootDir/build/generated/openapi"
+val openApiSpecificationYamlPath = "$rootDir/openapi/individuals-api-service-api-specification.yaml"
+val openApiIgnore = "$rootDir/openapi/_openapi.ignore"
+
+val envFile = file(".env")
+if(envFile.exists()) {
+	envFile.forEachLine { line ->
+		if(line.isNotBlank() && !line.startsWith("#")) {
+			val pair = line.split("=", limit = 2)
+			if(pair.size == 2) {
+				val key = pair[0].trim()
+				val value = pair[1].trim()
+				if(key.startsWith("LOCAL_REPO_") && value.isNotBlank()) {
+					System.setProperty(key, value)
+				}
+			}
+		}
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		name = System.getProperty("LOCAL_REPO_NAME")
+		url = uri(System.getProperty("LOCAL_REPO_URL"))
+		isAllowInsecureProtocol = true
+		credentials {
+			username = System.getProperty("LOCAL_REPO_USERNAME")
+			password = System.getProperty("LOCAL_REPO_PASSWORD")
+		}
+	}
+}
+
+springBoot {
+	mainClass = "aq.project.IndividualsApiApplication"
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir("${rootDir}/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/currency-rate-service/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/individuals-api-service/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/person-service/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/transaction-service/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/wallet-service/src/main/java")
+		}
+	}
+}
+
+configurations {
+	create("apiSpec")
+}
 
 val dependencyVersionMap = mapOf(
 //	Keycloak
@@ -34,7 +104,19 @@ val dependencyVersionMap = mapOf(
 	"wiremock-spring-boot" to "4.0.9",
 
 //	OpenApi
-	"springdoc-openapi" to "3.0.2"
+	"springdoc-openapi" to "3.0.2",
+
+//	Currency rate service API specification
+	"currency-rate-service-api-specification" to "1.0.7-dev",
+
+//	Person service API specification
+	"person-service-api-specification" to "1.0.4-dev",
+
+//	Transaction service API specification
+	"transaction-service-api-specification" to "1.0.3-dev",
+
+//	Transaction service API specification
+	"wallet-service-api-specification" to "1.0.1-dev"
 )
 
 dependencies {
@@ -89,40 +171,18 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-}
 
-springBoot {
-	mainClass = "aq.project.IndividualsApiApplication"
-}
+//	Currency rate service api
+	"apiSpec"("aq.payment-system:currency-rate-service-api-specification:${dependencyVersionMap.getValue("currency-rate-service-api-specification")}")
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
-}
+//	Person service api
+	"apiSpec"("aq.payment-system:person-service-api-specification:${dependencyVersionMap.getValue("person-service-api-specification")}")
 
-repositories {
-	mavenCentral()
-}
+//	Transaction service api
+	"apiSpec"("aq.payment-system:transaction-service-api-specification:${dependencyVersionMap.getValue("transaction-service-api-specification")}")
 
-sourceSets { // Источники исходников для проекта
-	main {
-		java {
-			srcDirs(
-				"${rootDir}/src/main/java",
-				"${rootDir}/build/generated/openapi/client-contracts/src/main/java",
-				"${rootDir}/build/generated/openapi/controller-contracts/src/main/java"
-			)
-		}
-	}
-}
-
-extra["springCloudVersion"] = "2025.1.0"
-
-dependencyManagement {
-	imports {
-		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-	}
+//	Wallet service api
+	"apiSpec"("aq.payment-system:wallet-service-api-specification:${dependencyVersionMap.getValue("wallet-service-api-specification")}")
 }
 
 tasks.withType<Test> {
@@ -130,42 +190,62 @@ tasks.withType<Test> {
 }
 
 tasks.named("compileJava") {
-	dependsOn("generateOpenApiContracts")
+	dependsOn("genApi")
 }
 
-tasks.register("generateOpenApiContracts") {
-	dependsOn("generateClientContracts")
-	dependsOn("generateControllerContracts")
+tasks.register("genApi") {
+	dependsOn(genApiContractTask)
+	dependsOn("genApiControllers")
 }
 
-tasks.register<GenerateTask>("generateClientContracts") {
-	inputSpec.set("$rootDir/openapi/components-specification.yaml") // Источник спецификации
-	outputDir.set("$rootDir/build/generated/openapi/client-contracts") // Путь куда генерировать исходники
-	ignoreFileOverride.set("$rootDir/openapi/openapi-generator-java-sources.ignore") // Источник, в котором указано, какие файлы следует игнорировать в процессе генерации исходников
-	generatorName.set("java") // Использовать генератор Java для создания исходников на этом языке
-	library.set("webclient") // Без явного указания библиотеки генератор Java (выше) настроен на работу с okhttp-gson, по этой причине инструкция serializationLibrary работать не будет (игнорируется) и все DTO начинают использовать библиотеку gson для JSON! Эта инструкция явно указывает использование нужной библиотеки API, которая использует Jackson для JSON
-	modelPackage.set("aq.project.dto") // Название пакета модели
-	apiPackage.set("aq.project.client") // Название пакета api/controllers
-	configOptions.set(mapOf(
-		"useBeanValidation" to "true", // Использовать JSR валидацию
-		"useJakartaEe" to "true", // Использовать Jakarta EE в Spring
-		"sourceFolder" to "src/main/java", // Source папка для сгенерированного кода
-		"hideGenerationTimestamp" to "true", // Убрать из сгенерированных исходников отметку времени
-		"openApiNullable" to "false", // Не добавлять зависимость на jackson-databind-nullable для всех свойств, отмеченных как nullable: true
-		"dateLibrary" to "java8", // Использовать современную модель даты и времени в Java
-		"generateApiTests" to "false", // Не генерировать тесты для API
-		"generateApiDocumentation" to "false", // Не генерировать документацию для API
-		"serializationLibrary" to "jackson",
-		"useTags" to "true",
-		"reactive" to "true"
-	))
+val openApiDir = File("./openapi")
+val openApiYamlSpecFiles = openApiDir.listFiles { spec -> spec.name.endsWith(yamlExtension) } ?: emptyArray<File>()
+
+val genApiContractTask = openApiYamlSpecFiles.map { file ->
+	val serviceName = "${file.name.substring(0, file.name.lastIndexOf("service"))}service"
+	val serviceNameParts = serviceName.split("-").map { it.capitalized() }
+	val genApiClientTask = "gen${serviceNameParts.joinToString(separator = "", transform = { it })}Client"
+	val clientPackage = serviceNameParts.joinToString(separator = "_", transform = { it.lowercase() })
+	tasks.register<GenerateTask>(genApiClientTask) {
+		dependsOn("fetchExternalApi")
+		inputSpec.set("$rootDir/openapi/${file.name}")  // Источник спецификации
+		outputDir.set("$openApiSpecificationBuildPath/$serviceName") // Путь куда генерировать исходники
+		ignoreFileOverride.set(openApiIgnore) // Источник, в котором указано, какие файлы следует игнорировать в процессе генерации исходников
+		generatorName.set("spring") // Использовать генератор java для создания исходников на этом языке
+		library.set("spring-http-interface") // Без явного указания библиотеки генератор Java (выше) настроен на работу с okhttp-gson, по этой причине инструкция serializationLibrary работать не будет (игнорируется) и все DTO начинают использовать библиотеку gson для JSON! Эта инструкция явно указывает использование нужной библиотеки API, которая использует Jackson для JSON
+		invokerPackage.set("aq.project") // Устанавливает название корневого пакета для клиентов, dto и других сгенерированных артефактов
+		apiPackage.set("aq.project.$clientPackage") // Название пакета api/controllers
+		modelPackage.set("aq.project.dto") // Название пакета модели
+		apiNameSuffix.set("ApiClient")
+		configOptions.set(mapOf(
+			"useBeanValidation" to "true", // Использовать JSR валидацию
+			"useJakartaEe" to "true", // Использовать Jakarta EE в Spring
+			"sourceFolder" to "src/main/java", // Source папка для сгенерированного кода
+			"hideGenerationTimestamp" to "true", // Убрать из сгенерированных исходников отметку времени
+			"dateLibrary" to "java8", // Использовать современную модель даты и времени в Java
+			"generateApiTests" to "false", // Не генерировать тесты для API
+			"generateApiDocumentation" to "false", // Не генерировать документацию для API
+			"interfaceOnly" to "true", // Генерация только интерфейсов контроллеров по спецификации в .yaml файле
+			"generateApis" to "false",
+			"generateSupportingFiles" to "false",
+			"generateModels" to "true",
+			"serializationLibrary" to "jackson",
+			"openApiNullable" to "false",
+			"useTags" to "true",
+			"includeHttpRequestContext" to "false",
+			"reactive" to "true"
+		))
+	}
 }
 
-tasks.register<GenerateTask>("generateControllerContracts") {
-	inputSpec.set("$rootDir/openapi/components-specification.yaml") // Источник спецификации
-	outputDir.set("$rootDir/build/generated/openapi/controller-contracts") // Путь куда генерировать исходники
+tasks.register<GenerateTask>("genApiControllers") {
+	dependsOn("fetchExternalApi")
+	inputSpec.set(openApiSpecificationYamlPath) // Источник спецификации
+	outputDir.set("$openApiSpecificationBuildPath/$artifact") // Путь куда генерировать исходники
+	ignoreFileOverride.set(openApiIgnore) // Источник, в котором указано, какие файлы следует игнорировать в процессе генерации исходников
 	generatorName.set("spring") // Использовать генератор Java для создания исходников на этом языке
 	library.set("spring-boot") // Без явного указания библиотеки генератор Java (выше) настроен на работу с okhttp-gson, по этой причине инструкция serializationLibrary работать не будет (игнорируется) и все DTO начинают использовать библиотеку gson для JSON! Эта инструкция явно указывает использование нужной библиотеки API, которая использует Jackson для JSON
+	invokerPackage.set("aq.project") // Устанавливает название корневого пакета для клиентов, dto и других сгенерированных артефактов
 	modelPackage.set("aq.project.dto") // Название пакета модели
 	apiPackage.set("aq.project.controller") // Название пакета api/controllers
 	apiNameSuffix.set("RestControllerApi") // Заменяет суффикс (по умолчанию Api) на указанный для сгенерированных интерфейсов контроллеров
@@ -182,4 +262,21 @@ tasks.register<GenerateTask>("generateControllerContracts") {
 		"useTags" to "true",
 		"reactive" to "true"
 	))
+}
+
+tasks.register("purgeExternalApi") {
+	val dir = File("./openapi")
+	for(file in dir.listFiles()) {
+		if(file.name.endsWith(yamlExtension) && !file.name.startsWith(artifact)) {
+			file.delete()
+		}
+	}
+}
+
+tasks.register<Copy>("fetchExternalApi") {
+	dependsOn("purgeExternalApi")
+	from(configurations["apiSpec"]
+		.map { apiSpecification -> zipTree(apiSpecification)
+			.matching { include("*$yamlExtension") } })
+	into("$rootDir/openapi")
 }

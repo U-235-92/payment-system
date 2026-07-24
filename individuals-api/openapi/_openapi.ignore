@@ -1,0 +1,25 @@
+##################################
+# INDIVIDUALS-API-SERVICE IGNORE #
+##################################
+**/openapi/individuals-api-service/src/main/java/org/**
+**/openapi/individuals-api-service/src/main/java/aq/project/individuals_api_service/**
+
+################################
+# CURRENCY-RATE-SERVICE IGNORE #
+################################
+**/openapi/currency-rate-service/src/main/java/aq/project/dto/**
+
+##########################
+# PEROSON-SERVICE IGNORE #
+##########################
+**/openapi/person-service/src/main/java/aq/project/dto/**
+
+##############################
+# TRANSACTION-SERVICE IGNORE #
+##############################
+**/openapi/transaction-service/src/main/java/aq/project/dto/**
+
+#########################
+# WALLET-SERVICE IGNORE #
+#########################
+**/openapi/wallet-service/src/main/java/aq/project/dto/**

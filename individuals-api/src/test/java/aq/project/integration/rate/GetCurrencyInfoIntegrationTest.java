@@ -73,11 +73,14 @@ public class GetCurrencyInfoIntegrationTest {
 
     @Test
     public void failGetCurrencyInfoWithNullCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getCurrencyInfo(null));
+        Assertions.assertThrows(ConstraintViolationException.class,
+                () -> currencyRateService.getCurrencyInfo(null));
     }
 
     @Test
     public void failGetCurrencyInfoWithInvalidCurrencyIntegrationTest() {
-        Assertions.assertThrows(ConstraintViolationException.class, () -> currencyRateService.getCurrencyInfo("Invalid"));
+        String INVALID = "Invalid";
+        Assertions.assertThrows(ConstraintViolationException.class,
+                () -> currencyRateService.getCurrencyInfo(INVALID));
     }
 }

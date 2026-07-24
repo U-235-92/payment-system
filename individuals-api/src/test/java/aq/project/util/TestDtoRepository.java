@@ -4,15 +4,15 @@ import aq.project.dto.*;
 
 public abstract class TestDtoRepository {
 
-    public static CountryDTO getValidCountryDTO() {
-        CountryDTO countryDTO = new CountryDTO();
+    public static CountryDto getValidCountryDTO() {
+        CountryDto countryDTO = new CountryDto();
         countryDTO.setName("Russia");
         countryDTO.setCode("RU");
         return countryDTO;
     }
 
-    public static AddressDTO getValidAddressDTO(CountryDTO countryDTO) {
-        AddressDTO addressDTO = new AddressDTO();
+    public static AddressDto getValidAddressDTO(CountryDto countryDTO) {
+        AddressDto addressDTO = new AddressDto();
         addressDTO.setCountry(countryDTO);
         addressDTO.setState("updated_state");
         addressDTO.setCity("updated_city");
@@ -21,8 +21,8 @@ public abstract class TestDtoRepository {
         return addressDTO;
     }
 
-    public static UpdateIndividualDataDTO getValidUpdateIndividualDataDTO(AddressDTO addressDTO, String actualUserKeycloakId) {
-        UpdateIndividualDataDTO updateIndividualDataDTO = new UpdateIndividualDataDTO();
+    public static UpdateIndividualDataDto getValidUpdateIndividualDataDTO(AddressDto addressDTO, String actualUserKeycloakId) {
+        UpdateIndividualDataDto updateIndividualDataDTO = new UpdateIndividualDataDto();
         updateIndividualDataDTO.setKeycloakUserId(actualUserKeycloakId);
         updateIndividualDataDTO.setFirstName("updatedFirstName");
         updateIndividualDataDTO.setLastName("updatedLastName");
@@ -32,8 +32,8 @@ public abstract class TestDtoRepository {
         return updateIndividualDataDTO;
     }
 
-    public static UpdateIndividualDataDTO getValidUpdateIndividualDataDtoWithUnknownKeycloakUserId(AddressDTO addressDTO, String unknownUserKeycloakId) {
-        UpdateIndividualDataDTO updateIndividualDataDTO = new UpdateIndividualDataDTO();
+    public static UpdateIndividualDataDto getValidUpdateIndividualDataDtoWithUnknownKeycloakUserId(AddressDto addressDTO, String unknownUserKeycloakId) {
+        UpdateIndividualDataDto updateIndividualDataDTO = new UpdateIndividualDataDto();
         updateIndividualDataDTO.setKeycloakUserId(unknownUserKeycloakId);
         updateIndividualDataDTO.setFirstName("updatedFirstName");
         updateIndividualDataDTO.setLastName("updatedLastName");
@@ -43,55 +43,55 @@ public abstract class TestDtoRepository {
         return updateIndividualDataDTO;
     }
 
-    public static UpdateUserDTO getValidUpdateUserDTO(UpdateIndividualDataDTO updateIndividualDataDTO, String actualUserKeycloakId) {
-        return new UpdateUserDTO()
+    public static UpdateUserDto getValidUpdateUserDTO(UpdateIndividualDataDto updateIndividualDataDTO, String actualUserKeycloakId) {
+        return new UpdateUserDto()
                 .keycloakUserId(actualUserKeycloakId)
                 .password("password")
                 .confirmPassword("password")
                 .individualData(updateIndividualDataDTO);
     }
 
-    public static UpdateUserDTO getValidUpdateUserDtoWithUnknownKeycloakUserId(UpdateIndividualDataDTO updateIndividualDataDTO, String unknownUserKeycloakId) {
-        return new UpdateUserDTO()
+    public static UpdateUserDto getValidUpdateUserDtoWithUnknownKeycloakUserId(UpdateIndividualDataDto updateIndividualDataDTO, String unknownUserKeycloakId) {
+        return new UpdateUserDto()
                 .keycloakUserId(unknownUserKeycloakId)
                 .password("password")
                 .confirmPassword("password")
                 .individualData(updateIndividualDataDTO);
     }
 
-    public static UpdateUserDTO getInvalidUpdateUserDtoWithNoMatchPassword(UpdateIndividualDataDTO updateIndividualDataDTO, String actualUserKeycloakId) {
-        return new UpdateUserDTO()
+    public static UpdateUserDto getInvalidUpdateUserDtoWithNoMatchPassword(UpdateIndividualDataDto updateIndividualDataDTO, String actualUserKeycloakId) {
+        return new UpdateUserDto()
                 .keycloakUserId(actualUserKeycloakId)
                 .password("foo")
                 .confirmPassword("bar")
                 .individualData(updateIndividualDataDTO);
     }
 
-    public static UpdateUserDTO getInvalidUpdateUserDtoWithNullFields(UpdateIndividualDataDTO updateIndividualDataDTO, String actualUserKeycloakId) {
-        return new UpdateUserDTO()
+    public static UpdateUserDto getInvalidUpdateUserDtoWithNullFields(UpdateIndividualDataDto updateIndividualDataDTO, String actualUserKeycloakId) {
+        return new UpdateUserDto()
                 .keycloakUserId(actualUserKeycloakId)
                 .password(null)
                 .confirmPassword("bar")
                 .individualData(updateIndividualDataDTO);
     }
 
-    public static LoginUserDTO getLoginUserDTO(String email, String password) {
-        return new LoginUserDTO().email(email).password(password);
+    public static LoginUserDto getLoginUserDTO(String email, String password) {
+        return new LoginUserDto().email(email).password(password);
     }
 
-    public static CreateUserDTO getValidCreateUserDTO() {
-        CountryDTO countryDTO = new CountryDTO();
+    public static CreateUserDto getValidCreateUserDTO() {
+        CountryDto countryDTO = new CountryDto();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
 
-        AddressDTO addressDTO = new AddressDTO();
+        AddressDto addressDTO = new AddressDto();
         addressDTO.setCountry(countryDTO);
         addressDTO.setState("state");
         addressDTO.setCity("city");
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataDTO createIndividualDataDTO = new CreateIndividualDataDTO();
+        CreateIndividualDataDto createIndividualDataDTO = new CreateIndividualDataDto();
         createIndividualDataDTO.setFirstName("firstName");
         createIndividualDataDTO.setLastName("lastName");
         createIndividualDataDTO.setEmail("email@post.aq");
@@ -99,26 +99,26 @@ public abstract class TestDtoRepository {
         createIndividualDataDTO.setPassportNumber("1234567890");
         createIndividualDataDTO.setAddress(addressDTO);
 
-        return new CreateUserDTO()
+        return new CreateUserDto()
                 .username("username")
                 .password("password")
                 .confirmPassword("password")
                 .individualData(createIndividualDataDTO);
     }
 
-    public static CreateUserDTO getDuplicateCreateUserDTO() {
-        CountryDTO countryDTO = new CountryDTO();
+    public static CreateUserDto getDuplicateCreateUserDTO() {
+        CountryDto countryDTO = new CountryDto();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
 
-        AddressDTO addressDTO = new AddressDTO();
+        AddressDto addressDTO = new AddressDto();
         addressDTO.setCountry(countryDTO);
         addressDTO.setState("state");
         addressDTO.setCity("city");
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataDTO createIndividualDataDTO = new CreateIndividualDataDTO();
+        CreateIndividualDataDto createIndividualDataDTO = new CreateIndividualDataDto();
         createIndividualDataDTO.setFirstName("Alice");
         createIndividualDataDTO.setLastName("K");
         createIndividualDataDTO.setEmail("alice@post.aq");
@@ -126,7 +126,7 @@ public abstract class TestDtoRepository {
         createIndividualDataDTO.setPassportNumber("1234567890");
         createIndividualDataDTO.setAddress(addressDTO);
 
-        return new CreateUserDTO()
+        return new CreateUserDto()
                 .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad407")
                 .username("alice")
                 .password("password")
@@ -134,19 +134,19 @@ public abstract class TestDtoRepository {
                 .individualData(createIndividualDataDTO);
     }
 
-    public static CreateUserDTO getIncorrectCreateUserDTOWithDoNotMatchPasswords() {
-        CountryDTO countryDTO = new CountryDTO();
+    public static CreateUserDto getIncorrectCreateUserDTOWithDoNotMatchPasswords() {
+        CountryDto countryDTO = new CountryDto();
         countryDTO.setName("country");
         countryDTO.setCode("cty");
 
-        AddressDTO addressDTO = new AddressDTO();
+        AddressDto addressDTO = new AddressDto();
         addressDTO.setCountry(countryDTO);
         addressDTO.setState("state");
         addressDTO.setCity("city");
         addressDTO.setAddress("address");
         addressDTO.setZipCode("zipcode");
 
-        CreateIndividualDataDTO individualDataEvent = new CreateIndividualDataDTO();
+        CreateIndividualDataDto individualDataEvent = new CreateIndividualDataDto();
         individualDataEvent.setFirstName("Bob");
         individualDataEvent.setLastName("K");
         individualDataEvent.setEmail("bob@post.aq");
@@ -154,7 +154,7 @@ public abstract class TestDtoRepository {
         individualDataEvent.setPassportNumber("1234567890");
         individualDataEvent.setAddress(addressDTO);
 
-        return new CreateUserDTO()
+        return new CreateUserDto()
                 .keycloakUserId("c0391ed2-80b5-400c-8fd2-4d374acad477")
                 .username("bob")
                 .password("password")
@@ -162,15 +162,15 @@ public abstract class TestDtoRepository {
                 .individualData(individualDataEvent);
     }
 
-    public static CreateUserDTO getIncorrectCreateUserDTOWithNullFields() {
-        return new CreateUserDTO()
+    public static CreateUserDto getIncorrectCreateUserDTOWithNullFields() {
+        return new CreateUserDto()
                 .username(null)
                 .password("password")
                 .confirmPassword("123");
     }
 
-    public static CreateUserDTO getIncorrectCreateUserDTOWithNullIndividualData() {
-        return new CreateUserDTO()
+    public static CreateUserDto getIncorrectCreateUserDTOWithNullIndividualData() {
+        return new CreateUserDto()
                 .username("test")
                 .password("password")
                 .confirmPassword("123")

@@ -1,9 +1,8 @@
 package aq.project.integration.wallet;
 
-import aq.project.clients.KeycloakServiceWebClientFacade;
-import aq.project.dto.CardType;
-import aq.project.dto.ErrorDTO;
-import aq.project.dto.WalletInfoResponseDTO;
+import aq.project.clients.KeycloakServiceClientFacade;
+import aq.project.dto.ErrorDto;
+import aq.project.dto.WalletInfoResponseDto;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -31,7 +30,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import static aq.project.util.constants.CustomConstants.ISO_DATE_FORMAT;
+import static aq.project.dto.WalletInfoResponseDto.CardTypeEnum.VISA;
+import static aq.project.utils.constants.CustomConstants.ISO_DATE_FORMAT;
 
 @Testcontainers
 @ActiveProfiles("test")
@@ -46,7 +46,7 @@ public class GetWalletInfoIntegrationTest {
     private String individualsApiGetWalletInfoEndpoint;
 
     @Autowired
-    private KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+    private KeycloakServiceClientFacade keycloakServiceClientFacade;
 
     @Autowired
     private WebTestClient webTestClient;
@@ -71,8 +71,10 @@ public class GetWalletInfoIntegrationTest {
 
         walletServiceMock.stubFor(WireMock.get(getWalletInfoEndpointUri + "/" + walletId)
                 .willReturn(ResponseDefinitionBuilder.okForJson(getValidWalletInfoResponseDto(walletId))));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.get()
                 .uri(individualsApiGetWalletInfoEndpoint + "/" + walletId)
@@ -88,8 +90,10 @@ public class GetWalletInfoIntegrationTest {
         String walletId = UUID.randomUUID().toString();
         walletServiceMock.stubFor(WireMock.get(getWalletInfoEndpointUri + "/" + walletId)
                 .willReturn(WireMock.status(500)));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.get()
                 .uri(individualsApiGetWalletInfoEndpoint + "/" + walletId)
@@ -97,7 +101,7 @@ public class GetWalletInfoIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is5xxServerError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
@@ -106,8 +110,10 @@ public class GetWalletInfoIntegrationTest {
         String walletId = UUID.randomUUID().toString();
         walletServiceMock.stubFor(WireMock.get(getWalletInfoEndpointUri + "/" + walletId)
                 .willReturn(WireMock.status(400)));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.get()
                 .uri(individualsApiGetWalletInfoEndpoint + "/" + walletId)
@@ -115,7 +121,7 @@ public class GetWalletInfoIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
@@ -123,8 +129,10 @@ public class GetWalletInfoIntegrationTest {
 //        Prepare mock service
         walletServiceMock.stubFor(WireMock.get(getWalletInfoEndpointUri + "/" + null)
                 .willReturn(WireMock.status(400)));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.get()
                 .uri( individualsApiGetWalletInfoEndpoint + "/" + null)
@@ -132,7 +140,7 @@ public class GetWalletInfoIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
     @Test
@@ -140,8 +148,10 @@ public class GetWalletInfoIntegrationTest {
 //        Prepare mock service
         walletServiceMock.stubFor(WireMock.get(getWalletInfoEndpointUri + "/" + "invalid-id")
                 .willReturn(WireMock.status(400)));
+
 //        Prepare test resources
-        String adminJwtBearerHeader = keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+        String adminJwtBearerHeader = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
 //        Test call
         webTestClient.get()
                 .uri( individualsApiGetWalletInfoEndpoint + "/" + "invalid-id")
@@ -149,18 +159,18 @@ public class GetWalletInfoIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
-                .expectBody(ErrorDTO.class);
+                .expectBody(ErrorDto.class);
     }
 
-    private WalletInfoResponseDTO getValidWalletInfoResponseDto(String walletId) {
+    private WalletInfoResponseDto getValidWalletInfoResponseDto(String walletId) {
         String date = Instant.ofEpochMilli(System.currentTimeMillis())
                 .atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(ISO_DATE_FORMAT));
 
-        WalletInfoResponseDTO walletInfoResponseDTO = new WalletInfoResponseDTO();
+        WalletInfoResponseDto walletInfoResponseDTO = new WalletInfoResponseDto();
         walletInfoResponseDTO.setWalletId(walletId);
         walletInfoResponseDTO.setBalance("85.58");
         walletInfoResponseDTO.setCardNumber("1234 5678 9012 3456");
-        walletInfoResponseDTO.setCardType(CardType.VISA);
+        walletInfoResponseDTO.setCardType(VISA);
         walletInfoResponseDTO.setCardExpirationDate("08/85");
         walletInfoResponseDTO.setCurrencyCode("RUB");
         walletInfoResponseDTO.setCreatedAt(date);

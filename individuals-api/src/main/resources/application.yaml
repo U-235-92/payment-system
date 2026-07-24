@@ -81,8 +81,30 @@ application:
     name: ${CURRENCY_RATE_SERVICE_NAME}
     uri: http://localhost:8085
     endpoints:
-      get-rate: /api/v1/rate
-      get-rate-providers: /api/v1/rate-providers
-      get-rate-provider: /api/v1/rate-provider
-      get-currencies: /api/v1/currencies
-      get-currency: /api/v1/currency
+      get-rate: /api/v1/currency-rate/get-rate
+      get-rate-providers: /api/v1/currency-rate/get-rate-providers
+      get-rate-provider: /api/v1/currency-rate/get-rate-provider-info
+      get-currencies: /api/v1/currency-rate/get-currencies
+      get-currency: /api/v1/currency-rate/get-currency-info
+  individuals-api:
+    endpoints:
+#      User service operations:
+      create-user: /api/v1/user/create-user
+      login-user: /api/v1/user/login-user
+      update-user: /api/v1/user/update-user
+      delete-user-by-keycloak-id: /api/v1/user/delete-user-by-keycloak-id
+      get-user-info: /api/v1/user/get-user-info
+#      Token service operations:
+      refresh-token: /api/v1/token/refresh-token
+#      Currency rate service operations:
+      get-rate: /api/v1/currency-rate/rate
+      get-currencies: /api/v1/currency-rate/currencies
+      get-rate-providers: /api/v1/currency-rate/rate-providers
+      get-currency: /api/v1/currency-rate/currency
+      get-provider: /api/v1/currency-rate/provider
+#      Transaction service operations:
+      get-transaction-status: /api/v1/transaction/status
+      do-transaction: /api/v1/transaction/do-transaction
+#      Wallet service operations:
+      create-wallet: /api/v1/wallet/create
+      get-wallet-info: /api/v1/wallet/info

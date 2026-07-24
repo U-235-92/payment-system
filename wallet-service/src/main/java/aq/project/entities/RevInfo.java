@@ -1,6 +1,6 @@
 package aq.project.entities;
 
-import aq.project.util.audit.ServiceRevisionListener;
+import aq.project.utils.audit.ServiceRevisionListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

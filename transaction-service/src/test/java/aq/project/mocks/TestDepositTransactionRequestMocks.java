@@ -7,8 +7,8 @@ import aq.project.messages.TransactionRequest;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_PERSON_ID;
-import static aq.project.util.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
+import static aq.project.utils.constants.RequestPropertyKeys.RECIPIENT_PERSON_ID;
+import static aq.project.utils.constants.RequestPropertyKeys.RECIPIENT_WALLET_ID;
 import static aq.project.utils.UuidConstants.*;
 
 public class TestDepositTransactionRequestMocks {

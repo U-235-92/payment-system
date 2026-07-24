@@ -1,9 +1,9 @@
 package aq.project.controllers.handlers;
 
 import aq.project.controllers.WalletRestController;
-import aq.project.dto.ErrorDTO;
+import aq.project.dto.ErrorDto;
 import aq.project.exceptions.WalletException;
-import aq.project.util.ControllerExceptionLogger;
+import aq.project.utils.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,47 +22,47 @@ public class WalletRestControllerExceptionHandler {
 
 //    Project specific exceptions
     @ExceptionHandler(value = WalletException.class)
-    public Mono<ResponseEntity<ErrorDTO>> onWalletException(WalletException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onWalletException(WalletException exc) {
         HttpStatus status = HttpStatus.valueOf(exc.getHttpStatusCode());
         controllerExceptionLogger.logException(exc, status);
-        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        ErrorDto errorDTO = getErrorDto(status, exc.getMessage());
         return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
 //    Non-project specific exceptions
     @ExceptionHandler(value = ConstraintViolationException.class)
-    public Mono<ResponseEntity<ErrorDTO>> onConstraintViolationException(ConstraintViolationException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onConstraintViolationException(ConstraintViolationException exc) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         controllerExceptionLogger.logException(exc, status);
-        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        ErrorDto errorDTO = getErrorDto(status, exc.getMessage());
         return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public Mono<ResponseEntity<ErrorDTO>> onIllegalArgumentException(IllegalArgumentException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onIllegalArgumentException(IllegalArgumentException exc) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         controllerExceptionLogger.logException(exc, status);
-        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        ErrorDto errorDTO = getErrorDto(status, exc.getMessage());
         return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = HttpClientErrorException.class)
-    public Mono<ResponseEntity<ErrorDTO>> onHttpClientErrorException(HttpClientErrorException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onHttpClientErrorException(HttpClientErrorException exc) {
         HttpStatus status = HttpStatus.valueOf(exc.getStatusCode().value());
         controllerExceptionLogger.logException(exc, status);
-        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        ErrorDto errorDTO = getErrorDto(status, exc.getMessage());
         return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
     @ExceptionHandler(value = HttpServerErrorException.class)
-    public Mono<ResponseEntity<ErrorDTO>> onHttpServerErrorException(HttpServerErrorException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onHttpServerErrorException(HttpServerErrorException exc) {
         HttpStatus status = HttpStatus.valueOf(exc.getStatusCode().value());
         controllerExceptionLogger.logException(exc, status);
-        ErrorDTO errorDTO = getErrorDTO(status, exc.getMessage());
+        ErrorDto errorDTO = getErrorDto(status, exc.getMessage());
         return Mono.just(ResponseEntity.status(status).body(errorDTO));
     }
 
-    private ErrorDTO getErrorDTO(HttpStatus httpStatus, String message) {
-        return new ErrorDTO().httpStatus(httpStatus.value()).message(message);
+    private ErrorDto getErrorDto(HttpStatus httpStatus, String message) {
+        return new ErrorDto().httpStatus(httpStatus.value()).message(message);
     }
 }

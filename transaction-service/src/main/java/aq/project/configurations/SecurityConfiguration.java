@@ -45,8 +45,8 @@ public class SecurityConfiguration {
                 .oauth2Client(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, "/api/v1" + PATH_SEND_TRANSACTION_REQUEST).authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1" + PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
+                        .requestMatchers(HttpMethod.POST, PATH_SEND_TRANSACTION_REQUEST).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
                 .build();
     }
 

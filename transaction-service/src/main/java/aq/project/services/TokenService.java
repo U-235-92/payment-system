@@ -12,7 +12,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import static aq.project.util.constants.CustomHttpHeaders.BEARER;
+import static aq.project.utils.constants.CustomHttpHeaders.BEARER;
 
 @Service
 @RequiredArgsConstructor

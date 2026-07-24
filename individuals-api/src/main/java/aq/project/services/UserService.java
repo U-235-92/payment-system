@@ -1,11 +1,11 @@
 package aq.project.services;
 
-import aq.project.clients.KeycloakServiceWebClientFacade;
-import aq.project.clients.PersonServiceWebClient;
+import aq.project.clients.KeycloakServiceClientFacade;
 import aq.project.dto.*;
 import aq.project.exceptions.ExternalServiceException;
 import aq.project.exceptions.InvalidAccessTokenException;
 import aq.project.exceptions.ServiceException;
+import aq.project.person_service.PersonApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.Authentication;
@@ -16,24 +16,33 @@ import reactor.core.publisher.Mono;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import static aq.project.dto.UndoOperationDto.OperationEnum.UNDO_DELETE_PERSON;
+import static aq.project.dto.UndoOperationDto.OperationEnum.UNDO_UPDATE_PERSON;
+import static aq.project.utils.constants.CustomConstants.*;
+import static aq.project.utils.telemetry.TracePropagator.fetchTraceId;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private final PersonServiceWebClient personServiceWebClient;
+    private final PersonApiClient personApiClient;
 
-    private final KeycloakServiceWebClientFacade keycloakServiceWebClientFacade;
+    private final KeycloakServiceClientFacade keycloakServiceClientFacade;
 
-    public Mono<ResponseTokenDTO> createUser(CreateUserDTO createUserDTO) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> keycloakServiceWebClientFacade.createUser(jwt, createUserDTO)
+    public Mono<ResponseTokenDto> createUser(
+            CreateUserDto dto
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> keycloakServiceClientFacade.createUser(jwtHeader, dto)
                                 .flatMap(keycloakUserId -> {
-                                    createUserDTO.getIndividualData().setKeycloakUserId(keycloakUserId);
-                                    return personServiceWebClient.createUser(jwt, createUserDTO.getIndividualData())
+                                    dto.getIndividualData().setKeycloakUserId(keycloakUserId);
+                                    return personApiClient.createPerson(xTraceId, Mono.just(dto.getIndividualData()), jwtHeader)
                                             .flatMap(personServiceResponse -> {
                                                 if(isErrorStatusCode(personServiceResponse.getStatusCode()))
-                                                    return keycloakServiceWebClientFacade.undoCreateUser(jwt, keycloakUserId)
+                                                    return keycloakServiceClientFacade.undoCreateUser(jwtHeader, keycloakUserId)
                                                             .flatMap(keyclaokClientHttpStatusCode -> {
                                                                 if(isErrorStatusCode(keyclaokClientHttpStatusCode))
                                                                     return Mono.error(new ExternalServiceException("Error occurred during [undo-create] user on keycloak service side."));
@@ -43,66 +52,90 @@ public class UserService {
                                                 return Mono.empty();
                                             });
                                 })
-                                .then(keycloakServiceWebClientFacade.loginUser(createUserDTO.getIndividualData().getEmail(), createUserDTO.getPassword())));
+                                .then(keycloakServiceClientFacade.loginUser(dto.getIndividualData().getEmail(), dto.getPassword()))));
     }
 
-    public Mono<ResponseTokenDTO> loginUser(LoginUserDTO loginUserDTO) {
-        return keycloakServiceWebClientFacade.loginUser(loginUserDTO.getEmail(), loginUserDTO.getPassword());
+    public Mono<ResponseTokenDto> loginUser(
+            LoginUserDto dto
+    ) {
+        return keycloakServiceClientFacade.loginUser(dto.getEmail(), dto.getPassword());
     }
 
-    public Mono<Void> updateUser(UpdateUserDTO updateUserDTO) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> personServiceWebClient.updateUser(jwt, updateUserDTO.getIndividualData())
-                    .flatMap(personServiceResponse -> {
-                        if(isErrorStatusCode(personServiceResponse.getStatusCode()))
-                            return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("update", personServiceResponse.getBody())));
-                        return Mono.empty();
-                    })
-                    .then(keycloakServiceWebClientFacade.updateUser(jwt, updateUserDTO)
-                            .flatMap(keycloakHttpResponseStatus -> {
-                                if(isErrorStatusCode(keycloakHttpResponseStatus))
-                                    return personServiceWebClient.undoUpdateUser(updateUserDTO.getKeycloakUserId())
-                                            .flatMap(personServiceResponse -> {
-                                                if(isErrorStatusCode(personServiceResponse.getStatusCode()))
-                                                    return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("undo-update", personServiceResponse.getBody())));
-                                                return Mono.empty();
-                                            })
-                                            .then(Mono.error(new ServiceException(getIndividualsApiServiceCallExceptionMessage("update"))));
-                                return Mono.empty();
-                            })));
-    }
-
-    public Mono<Void> deleteUserByKeycloakId(String keycloakId) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> personServiceWebClient.deleteUserByKeycloakId(jwt, keycloakId)
-                        .flatMap(personServiceResponse -> {
-                            if(isErrorStatusCode(personServiceResponse.getStatusCode()))
-                                return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("delete", personServiceResponse.getBody())));
-                            return Mono.empty();
-                        })
-                        .then(keycloakServiceWebClientFacade.deleteUserByKeycloakId(jwt, keycloakId)
-                                .flatMap(keycloakHttpResponseStatus -> {
-                                    if(isErrorStatusCode(keycloakHttpResponseStatus))
-                                        return personServiceWebClient.undoDeleteUserByKeycloakId(jwt, keycloakId)
-                                                .flatMap(personServiceResponse -> {
-                                                    if(isErrorStatusCode(personServiceResponse.getStatusCode()))
-                                                        return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("undo-delete", personServiceResponse.getBody())));
+    public Mono<Void> updateUser(
+            UpdateUserDto dto
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> personApiClient.updatePerson(xTraceId, Mono.just(dto.getIndividualData()), jwtHeader))
+                                .flatMap(personServiceResponse -> {
+                                    if(isErrorStatusCode(personServiceResponse.getStatusCode()))
+                                        return Mono.error(new ExternalServiceException(
+                                                getPersonServiceCallExceptionMessage(dto.getKeycloakUserId(), "update", null)));
+                                    return Mono.empty();
+                                })
+                                .then(keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                                        .flatMap(jwtHeader -> keycloakServiceClientFacade.updateUser(jwtHeader, dto)
+                                                .flatMap(keycloakHttpResponseStatus -> {
+                                                    if(isErrorStatusCode(keycloakHttpResponseStatus))
+                                                        return personApiClient.undoUpdatePerson(xTraceId, Mono.just(getUndoOperationDto(dto.getKeycloakUserId(), UNDO_UPDATE_PERSON)), jwtHeader)
+                                                                .flatMap(personServiceResponse -> {
+                                                                    if(isErrorStatusCode(personServiceResponse.getStatusCode()))
+                                                                        return Mono.error(new ExternalServiceException(
+                                                                                getPersonServiceCallExceptionMessage(dto.getKeycloakUserId(), "undo-update", null)));
+                                                                    return Mono.empty();
+                                                                })
+                                                                .then(Mono.error(new ServiceException(
+                                                                        getIndividualsApiServiceCallExceptionMessage(dto.getKeycloakUserId(), "update"))));
                                                     return Mono.empty();
                                                 })
-                                                .then(Mono.error(new ServiceException(getIndividualsApiServiceCallExceptionMessage("delete"))));
-                                    return Mono.empty();
-                                })));
+                                        )
+                                )
+                );
     }
 
-    public Mono<UserInfoResponseDTO> getUserInfoResponseDTO(Authentication authentication) {
+    public Mono<Void> deleteUserByKeycloakId(
+            String keycloakId
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> personApiClient.deletePersonByKeycloakId(keycloakId, xTraceId, jwtHeader))
+                        .flatMap(personServiceResponse -> {
+                            if(isErrorStatusCode(personServiceResponse.getStatusCode()))
+                                return Mono.error(new ExternalServiceException(
+                                        getPersonServiceCallExceptionMessage(keycloakId, "delete", null)));
+                            return Mono.empty();
+                        })
+                        .then(keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                                .flatMap(jwtHeader -> keycloakServiceClientFacade.deleteUserByKeycloakId(jwtHeader, keycloakId)
+                                        .flatMap(keycloakHttpResponseStatus -> {
+                                            if(isErrorStatusCode(keycloakHttpResponseStatus))
+                                                return personApiClient.undoDeletePerson(xTraceId, Mono.just(getUndoOperationDto(keycloakId, UNDO_DELETE_PERSON)), jwtHeader)
+                                                        .flatMap(personServiceResponse -> {
+                                                            if(isErrorStatusCode(personServiceResponse.getStatusCode()))
+                                                                return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage(keycloakId, "undo-delete", null)));
+                                                            return Mono.empty();
+                                                        })
+                                                        .then(Mono.error(new ServiceException(getIndividualsApiServiceCallExceptionMessage(keycloakId, "delete"))));
+                                            return Mono.empty();
+                                        })
+                                )
+                        )
+                );
+    }
+
+    public Mono<UserInfoResponseDto> getUserInfoResponseDTO(
+            Authentication authentication
+    ) {
         return getUserInfoResponseFromIncomingJwt(authentication)
                     .flatMap(this::complementUserInfoResponseDtoByIndividualDataResponseDto)
                     .switchIfEmpty(Mono.error(new InvalidAccessTokenException(getInvalidAccessTokenExceptionMessage())));
     }
 
-    private Mono<UserInfoResponseDTO> getUserInfoResponseFromIncomingJwt(Authentication authentication) {
+    private Mono<UserInfoResponseDto> getUserInfoResponseFromIncomingJwt(
+            Authentication authentication
+    ) {
         if(authentication.getPrincipal() instanceof Jwt jwt) {
-            UserInfoResponseDTO response = new UserInfoResponseDTO();
+            UserInfoResponseDto response = new UserInfoResponseDto();
             response.keycloakUserId(jwt.getSubject())
                     .email(jwt.getClaim("email"))
                     .roles(getUserRoles(jwt))
@@ -112,7 +145,9 @@ public class UserService {
         return Mono.error(() -> new InvalidAccessTokenException(getInvalidAccessTokenExceptionMessage()));
     }
 
-    private List<String> getUserRoles(Jwt jwt) {
+    private List<String> getUserRoles(
+            Jwt jwt
+    ) {
         Map<String, Object> resourceAccess = jwt.getClaimAsMap("resource_access");
         return ((Map<String, List<Object>>) resourceAccess.get("account")).get("roles")
                 .stream()
@@ -120,23 +155,66 @@ public class UserService {
                 .toList();
     }
 
-    private Mono<UserInfoResponseDTO> complementUserInfoResponseDtoByIndividualDataResponseDto(UserInfoResponseDTO userInfoResponseDTO) {
-        return keycloakServiceWebClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                .flatMap(jwt -> personServiceWebClient.getUserInfoByKeycloakId(jwt, userInfoResponseDTO.getKeycloakUserId())
-                        .flatMap(personServiceResponse -> {
-                            if(isErrorStatusCode(personServiceResponse.getStatusCode()))
-                                return Mono.error(new ExternalServiceException(getPersonServiceCallExceptionMessage("get-info", personServiceResponse.getBody().toString())));
-                            userInfoResponseDTO.setIndividualData((IndividualDataResponseDTO) personServiceResponse.getBody());
-                            return Mono.just(userInfoResponseDTO);
-                        }));
+    private Mono<UserInfoResponseDto> complementUserInfoResponseDtoByIndividualDataResponseDto(
+            UserInfoResponseDto dto
+    ) {
+        return fetchTraceId()
+                .flatMap(xTraceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .flatMap(jwtHeader -> personApiClient.getPersonByKeycloakId(dto.getKeycloakUserId(), xTraceId, jwtHeader)
+                                .flatMap(personServiceResponse -> {
+                                    if(isErrorStatusCode(personServiceResponse.getStatusCode()))
+                                        return Mono.error(new ExternalServiceException(
+                                                getPersonServiceCallExceptionMessage(dto.getKeycloakUserId(), "get-info", personServiceResponse.getBody().toString())));
+                                    dto.setIndividualData(personServiceResponse.getBody());
+                                    return Mono.just(dto);
+                                })
+                        )
+                );
     }
 
-    private String getPersonServiceCallExceptionMessage(String operation, String message) {
-        return String.format("Error occurred during [%s user] on person-service side: %s", operation, message);
+    private UndoOperationDto getUndoOperationDto(
+            String personKeycloakId,
+            UndoOperationDto.OperationEnum operation
+    ) {
+        String timestamp = Long.toString(System.currentTimeMillis());
+        String description = String.format("Undo [%s] with id: [%s]", operation.getValue().toLowerCase(), personKeycloakId);
+        return new UndoOperationDto()
+                .id(UUID.randomUUID().toString())
+                .operation(operation)
+                .putPayloadItem(UNDO_OPERATION_PERSON_ID, personKeycloakId)
+                .putPayloadItem(UNDO_OPERATION_TIMESTAMP, timestamp)
+                .putPayloadItem(UNDO_OPERATION_DESCRIPTION, description);
     }
 
-    private String getIndividualsApiServiceCallExceptionMessage(String operation) {
-        return String.format("Error occurred during [%s user] on individuals-api-service side. Check individuals-api logs and try again later.", operation);
+    private String getPersonServiceCallExceptionMessage(
+            String operation,
+            String message
+    ) {
+        return (message == null || message.isBlank())
+                ? String.format("Error occurred during [%s user] on person-service side",
+                    operation)
+                : String.format("Error occurred during [%s user] on person-service side. Description: %s",
+                    operation, message);
+    }
+
+    private String getPersonServiceCallExceptionMessage(
+            String personId,
+            String operation,
+            String message
+    ) {
+        return (message == null || message.isBlank())
+                ? String.format("Error occurred during [%s user] with id: [%s] on person-service side",
+                    operation, personId)
+                : String.format("Error occurred during [%s user] with id: [%s] on person-service side. Description: %s",
+                    operation, personId, message);
+    }
+
+    private String getIndividualsApiServiceCallExceptionMessage(
+            String personId,
+            String operation
+    ) {
+        return String.format("Error occurred during [%s user] with id: [%s] on individuals-api-service side",
+                operation, personId);
     }
 
     private String getInvalidAccessTokenExceptionMessage() {
@@ -144,7 +222,9 @@ public class UserService {
                 "The request must include [Authorization] header with [Bearer [access_token]] value";
     }
 
-    private boolean isErrorStatusCode(HttpStatusCode statusCode) {
+    private boolean isErrorStatusCode(
+            HttpStatusCode statusCode
+    ) {
         return statusCode.is4xxClientError() || statusCode.is5xxServerError();
     }
 }

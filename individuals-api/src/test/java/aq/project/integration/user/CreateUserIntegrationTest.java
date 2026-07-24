@@ -1,7 +1,6 @@
 package aq.project.integration.user;
 
-import aq.project.dto.CreateUserDTO;
-import aq.project.dto.ResponseTokenDTO;
+import aq.project.dto.CreateUserDto;
 import aq.project.services.UserService;
 import aq.project.util.TestApplicationProperties;
 import aq.project.util.TestContainers;
@@ -19,22 +18,18 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
-import reactor.core.publisher.Mono;
 
 import static aq.project.util.TestDtoRepository.*;
-import static aq.project.util.TestUtils.getWebClient;
 
 @Testcontainers
 @DirtiesContext
@@ -81,7 +76,7 @@ public class CreateUserIntegrationTest {
         personServiceMockServer.stubFor(WireMock.post(personServiceCreatePersonEndpoint)
                 .willReturn(WireMock.created()));
 
-        CreateUserDTO createUserDTO = getValidCreateUserDTO();
+        CreateUserDto createUserDTO = getValidCreateUserDTO();
 
         Assertions.assertDoesNotThrow(() -> userService.createUser(createUserDTO));
     }
@@ -96,7 +91,7 @@ public class CreateUserIntegrationTest {
         personServiceMockServer.stubFor(WireMock.post(personServiceCreatePersonEndpoint)
                 .willReturn(WireMock.status(HttpStatus.INTERNAL_SERVER_ERROR.value())));
 
-        CreateUserDTO createUserDTO = getValidCreateUserDTO();
+        CreateUserDto createUserDTO = getValidCreateUserDTO();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
@@ -113,7 +108,7 @@ public class CreateUserIntegrationTest {
         personServiceMockServer.stubFor(WireMock.post(personServiceCreatePersonEndpoint)
                 .willReturn(WireMock.status(HttpStatus.CONFLICT.value())));
 
-        CreateUserDTO createUserDTO = getDuplicateCreateUserDTO();
+        CreateUserDto createUserDTO = getDuplicateCreateUserDTO();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
@@ -126,7 +121,7 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void failCreateUserWithNoMatchPasswordsTest() {
-        CreateUserDTO createUserDTO = getIncorrectCreateUserDTOWithDoNotMatchPasswords();
+        CreateUserDto createUserDTO = getIncorrectCreateUserDTOWithDoNotMatchPasswords();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
@@ -139,7 +134,7 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void failCreateUserWithNullFieldsTest() {
-        CreateUserDTO createUserDTO = getIncorrectCreateUserDTOWithNullFields();
+        CreateUserDto createUserDTO = getIncorrectCreateUserDTOWithNullFields();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)
@@ -152,7 +147,7 @@ public class CreateUserIntegrationTest {
 
     @Test
     public void failCreateUserWithNullIndividualDataTest() {
-        CreateUserDTO createUserDTO = getIncorrectCreateUserDTOWithNullIndividualData();
+        CreateUserDto createUserDTO = getIncorrectCreateUserDTOWithNullIndividualData();
 
         webTestClient.post()
                 .uri(individualsApiCreatePersonEndpoint)

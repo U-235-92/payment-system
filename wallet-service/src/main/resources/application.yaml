@@ -4,13 +4,13 @@ logging:
     org.apache.shardingsphere: info
     org.springframework.security: info
 server:
-  port: ${SERVICE_PORT}
+  port: 8083
 spring:
   application:
-    name: ${SERVICE_NAME}
+    name: wallet-service
   profiles:
     active:
-      - ${SERVICE_PROFILE}
+      - dev-shard
   kafka:
     listener:
       ack-mode: RECORD
@@ -22,7 +22,7 @@ spring:
     consumer:
       enable-auto-commit: false
       auto-offset-reset: latest
-      group-id: ${SERVICE_NAME}
+      group-id: wallet-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
       properties:
@@ -32,13 +32,6 @@ spring:
               packages: "aq.project.messages"
   flyway:
     enabled: false
-    driver-class-name:
-    default-schema: public
-    baseline-version: ${FLYWAY_DB_BASELINE_VERSION}
-    baseline-on-migrate: true
-    create-schemas: true
-    locations: ${FLYWAY_MIGRATION_SCRIPT_PATH}
-    clean-disabled: false
 management:
   otlp:
     metrics:
@@ -46,7 +39,7 @@ management:
         enabled: false
   metrics:
     tags:
-      application: ${SERVICE_NAME}
+      application: wallet-service
   endpoints:
     web:
       exposure:
@@ -66,8 +59,28 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
+      wallet_operation_response_dlt:
+        name: wallet_operation_response_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      wallet_operation_response_exceptions:
+        name: wallet_operation_response_exceptions
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
       wallet_operation_request:
         name: wallet_operation_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      wallet_operation_request_dlt:
+        name: wallet_operation_request_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      wallet_operation_request_exceptions:
+        name: wallet_operation_request_exceptions
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -81,9 +94,9 @@ service:
 application:
   services:
     wallet-service:
-      name: ${SERVICE_NAME}
+      name: wallet-service
       audit:
-        db: ${DB_NAME}
-        schema: ${DB_AUDIT_SCHEMA_NAME}
-        table: ${DB_AUDIT_TABLE}
-        column: ${DB_AUDIT_COLUMN}
+        db: wallets_db
+        schema: public
+        table: revinfo
+        column: rev

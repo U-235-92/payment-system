@@ -1,3 +1,28 @@
+server:
+  port: 8086
 spring:
+  profiles:
+    active:
+      - dev
   application:
     name: payment-provider-service
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # OTEL collector URI
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: payment-provider-service
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health

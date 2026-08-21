@@ -10,3 +10,12 @@
 **/openapi/wallet-service/src/main/java/aq/project/dto/ErrorDto.java
 **/openapi/wallet-service/src/main/java/aq/project/dto/OperationType.java
 **/openapi/wallet-service/src/main/java/aq/project/dto/TransactionStatus.java
+
+###################################
+# PAYMENT-PROVIDER-SERVICE IGNORE #
+###################################
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/TransactionRequestDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/TransactionStatus.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/OperationType.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/ErrorDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/payment_provider_service/AdminApiClient.java

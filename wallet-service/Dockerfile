@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=builder /source/build/libs/*.jar ./wallet-service.jar
 
 #Spring env:
-ENV SPRING_PROFILES_ACTIVE=prod-container
+ENV SPRING_PROFILES_ACTIVE=prod
 
 EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "wallet-service.jar"]

@@ -74,12 +74,16 @@ public class TransactionService {
 
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.wallet_operation_request.name}")
-    public void handleTransactionRequest(ConsumerRecord<String, TransactionRequest> consumerRecord) throws WalletConstrainsException, NoSuchWalletException, CreditCardConstrainsException {
+    public void handleTransactionRequest(
+            ConsumerRecord<String, TransactionRequest> consumerRecord
+    ) throws WalletConstrainsException, NoSuchWalletException, CreditCardConstrainsException {
         TransactionRequest transactionRequest = consumerRecord.value();
-        switch(transactionRequest.getOperationType()) {
-            case WITHDRAW -> handleTransactionRequest(transactionRequest, withdrawRequestHandler);
-            case DEPOSIT -> handleTransactionRequest(transactionRequest, depositRequestHandler);
-            case TRANSFER -> handleTransactionRequest(transactionRequest, transferRequestHandler);
+        if(transactionRequest.getTransactionStatus() == TransactionStatus.PENDING) {
+            switch(transactionRequest.getOperationType()) {
+                case WITHDRAW -> handleTransactionRequest(transactionRequest, withdrawRequestHandler);
+                case DEPOSIT -> handleTransactionRequest(transactionRequest, depositRequestHandler);
+                case TRANSFER -> handleTransactionRequest(transactionRequest, transferRequestHandler);
+            }
         }
     }
 
@@ -119,20 +123,28 @@ public class TransactionService {
         }
     }
 
-    private void handleIncomingTransaction(Transaction transaction, OperationType operationType, String partition, Span span) {
+    private void handleIncomingTransaction(
+            Transaction transaction,
+            OperationType operationType,
+            String partition,
+            Span span
+    ) {
         String spanId = span.getSpanContext().getSpanId();
         String traceId = transaction.getTraceId();
         try {
             log.info("[{}-{}]: Attempt to handle {} transaction event with transactionId [{}]",
                     traceId, spanId, operationType.name().toLowerCase(), transaction.getTransactionId());
-            ProducerRecord<String, TransactionResponse> record = new ProducerRecord<>(
-                    walletOperationResponseTopicName,
-                    partition,
-                    transactionMapper.toTransactionResponse(transaction));
+
+            ProducerRecord<String, TransactionResponse> record = getRecord(
+                    walletOperationResponseTopicName, partition, transaction);
+
             Headers headers = record.headers();
             headers.add(X_TRACE_ID_HEADER, traceId.getBytes());
+
             kafkaTemplate.send((ProducerRecord) record).get();
+
             transaction.setProcessed(true);
+
             log.info("[{}-{}]: Handle of {} transaction event with transactionId [{}] completed",
                     traceId, spanId, operationType.name(), transaction.getTransactionId());
         } catch (InterruptedException | ExecutionException exc) {
@@ -140,5 +152,13 @@ public class TransactionService {
                     traceId, spanId, operationType.name(), transaction.getTransactionId());
             throw new RuntimeException(exc);
         }
+    }
+
+    private ProducerRecord<String, TransactionResponse> getRecord(
+            String topic,
+            String partition,
+            Transaction transaction
+    ) {
+        return new ProducerRecord<>(topic, partition, transactionMapper.toTransactionResponse(transaction));
     }
 }

@@ -19,7 +19,7 @@ extra["springCloudVersion"] = "2025.1.2"
 /////////////////////////////////////
 val artifact = "payment-provider-service"
 
-val specificationArtifactVersion = "1.0.0-dev"
+val specificationArtifactVersion = "1.0.6-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -84,7 +84,13 @@ val dependencyVersionMap = mapOf(
 	"logstash-encoder" to "9.0",
 
 //	Test
-	"wiremock-spring-boot" to "4.0.9"
+	"wiremock-spring-boot" to "4.0.9",
+
+//	Spring data envers
+	"spring-data-envers" to "4.0.4",
+
+//	Lombok MapStruct binding
+	"lombok-mapstruct-binding" to "0.2.0"
 )
 
 dependencies {
@@ -101,6 +107,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-flyway")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.springframework.data:spring-data-envers:${dependencyVersionMap.getValue("spring-data-envers")}")
 
 //	Spring AOP
 	implementation("org.springframework.boot:spring-boot-starter-aop:${dependencyVersionMap.getValue("spring-boot-starter-aop")}")
@@ -115,18 +122,28 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
 	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
 
+//	Lombok
+	compileOnly("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
+
+//	Lombok MapStruct binding
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
+
 //	Logback JSON encoder
 	implementation("net.logstash.logback:logstash-logback-encoder:${dependencyVersionMap.getValue("logstash-encoder")}")
+
+//	OpenApi
+	implementation("tools.jackson.core:jackson-core")
+	implementation("tools.jackson.core:jackson-databind")
+	implementation("com.fasterxml.jackson.core:jackson-annotations")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${dependencyVersionMap.getValue("springdoc-openapi")}")
 
 //	Observability
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 	implementation("io.opentelemetry:opentelemetry-exporter-otlp")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
-
-//	Util
-	compileOnly("org.projectlombok:lombok")
-	annotationProcessor("org.projectlombok:lombok")
 
 //	Test
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
@@ -140,6 +157,8 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers-grafana")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testImplementation("org.springframework.boot:spring-boot-resttestclient:4.0.2")
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")

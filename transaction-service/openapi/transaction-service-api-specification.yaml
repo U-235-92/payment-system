@@ -138,15 +138,6 @@ components:
           $ref: "#/components/schemas/AmountDefinition"
         currency:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
-        currencyRateDate:
-          type: string
-          format: date-time
-        rateProvider:
-          type: string
-          pattern: '^[A-Z]{3,10}$'
-        timestamp:
-          type: integer
-          format: int64
         properties:
           type: object
           additionalProperties:

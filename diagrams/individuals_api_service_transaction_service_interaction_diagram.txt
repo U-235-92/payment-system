@@ -1,0 +1,17 @@
+@startuml
+
+actor individuals_api_service
+participant transaction_service
+participant transaction_service_db
+
+alt обработка запроса создания транзакции
+	individuals_api_service -> transaction_service : Создать транзакцию в состоянии PENDING
+	transaction_service -> transaction_service_db : Схранить транзакцию в состоянии PENDING в репозиторий
+	alt успех
+		transaction_service -> individuals_api_service : Ответ с возвратом ID транзакции
+	end 
+	alt неудача
+		transaction_service -> individuals_api_service : Ответ с сообщением о возникновении ошибки 
+	end
+end
+@enduml

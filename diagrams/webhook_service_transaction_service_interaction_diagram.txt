@@ -1,0 +1,25 @@
+@startuml
+
+actor transaction_service
+participant kafka
+participant individuals_api_service
+participant transaction_service_db
+
+alt обработка запроса создания транзакции
+	alt успех
+		transaction_service -> transaction_service_db : изменение статуса транзакции как PROCESSED
+		alt успех
+			transaction_service -> kafka : Отправка оповещения результата выполнения транзакции
+			kafka <- individuals_api_service : Чтение оповещения результата выполнения транзакции, уведомление пользователя
+		end
+		alt неудача
+			transaction_service -> transaction_service_db : отметить статус уведомления транзакции как FAILED
+			transaction_service -> kafka : Отправка в dlt администратора сообщения об ошибке в отправке уведомления о результате транзакции
+		end
+	end 
+	alt неудача
+		transaction_service -> kafka : Отправка в dlt администратора сообщения об ошибке в отправке изменении статуса транзакции на PROCESSED
+	end
+end
+
+@enduml

@@ -1,0 +1,31 @@
+@startuml
+
+actor transaction_service
+participant kafka
+participant webhook_service
+participant payment_provider_service
+participant payment_provider_service_db
+
+alt обработка запроса создания транзакции
+	transaction_service -> kafka : Обработка транзакции в состоянии PENDING
+	kafka <- payment_provider_service : Получение запроса обработки транзакции
+	alt успех
+		payment_provider_service -> payment_provider_service_db : Сохранение транзакции, изменение статуса транзакции на PROCESSED
+		payment_provider_service -> kafka : Отправка уведомления о завершении обработки транзакции сервисом payment_provider_service со статусом PROCESSED
+		note left transaction_service
+			Продолжение оркестрации следующих шагов обработки транзакции
+			на последующих сервисах
+		end note
+	end 
+	alt неудача
+		payment_provider_service -> payment_provider_service_db : Сохранение транзакции, изменение статуса транзакции на FAILED
+		payment_provider_service -> kafka :  Отправка уведомления о завершении обработки транзакции сервисом payment_provider_service со статусом FAILED
+		kafka -> transaction_service :  Прием уведомления о завершении обработки транзакции со статусом FAILED
+		transaction_service -> webhook_service : Отправка уведомления о завершении обработки транзакции со статусом FAILED
+		note left
+			Выполнение компенсационных операций с транзакцией в состоянии FAILED, 
+			в процессе оркестрации на предыдущих шагах обработки
+		end note
+	end
+end
+@enduml

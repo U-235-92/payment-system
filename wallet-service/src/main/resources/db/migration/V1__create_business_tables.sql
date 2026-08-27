@@ -40,22 +40,40 @@ CREATE TABLE IF NOT EXISTS public.wallets (
     CONSTRAINT fk_credit_cards FOREIGN KEY (credit_card_id) REFERENCES public.credit_cards(id)
 );
 
--- 4. Таблица транзакций (transactions)
-CREATE TABLE IF NOT EXISTS public.transactions (
-    id VARCHAR(36) NOT NULL,
-    type VARCHAR(255) NOT NULL,                -- Enum как строка (EventType)
-    status VARCHAR(255) NOT NULL,              -- Enum как строка (TransactionStatus)
-    timestamp BIGINT NOT NULL,
-    processed BOOLEAN NOT NULL,
-    trace_id VARCHAR(255) NOT NULL,
-    CONSTRAINT pk_transaction PRIMARY KEY (id)
+-- 4. Таблица метаданных транзакций
+CREATE TABLE IF NOT EXISTS public.transaction_metadata (
+    id BIGSERIAL PRIMARY KEY,
+    trace_id VARCHAR NOT NULL,
+    timestamp BIGINT NOT NULL
 );
 
--- 5. Дополнительная таблица свойств для ElementCollection из Transaction
-CREATE TABLE IF NOT EXISTS public.transaction_properties (
-    transaction_id VARCHAR(36) NOT NULL,               -- Ссылка на id основной сущности
-    property_key VARCHAR(255) NOT NULL,                -- Ключ карты Map (key)
-    property_value TEXT,                               -- Значение карты Map (value)
-    CONSTRAINT pk_transaction_properties PRIMARY KEY (transaction_id, property_key),
-    CONSTRAINT fk_transaction_properties FOREIGN KEY (transaction_id) REFERENCES public.transactions(id)
+-- 5. Таблица депозитных транзакций
+CREATE TABLE IF NOT EXISTS public.deposit_transactions (
+    id VARCHAR(36) PRIMARY KEY,
+    wallet_id VARCHAR(36) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    processed BOOLEAN NOT NULL DEFAULT FALSE,
+    metadata BIGINT NOT NULL,
+    CONSTRAINT fk_deposit_transactions_metadata FOREIGN KEY (metadata) REFERENCES public.transaction_metadata(id)
+);
+
+-- 6. Таблица транзакций перевода
+CREATE TABLE IF NOT EXISTS public.transfer_transactions (
+    id VARCHAR(36) PRIMARY KEY,
+    sender_wallet_id VARCHAR(36) NOT NULL,
+    recipient_wallet_id VARCHAR(36) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    processed BOOLEAN NOT NULL DEFAULT FALSE,
+    metadata BIGINT NOT NULL,
+    CONSTRAINT fk_transfer_transactions_metadata FOREIGN KEY (metadata) REFERENCES public.transaction_metadata(id)
+);
+
+-- 7. Таблица транзакций вывода
+CREATE TABLE IF NOT EXISTS public.withdraw_transactions (
+    id VARCHAR(36) PRIMARY KEY,
+    wallet_id VARCHAR(36) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    processed BOOLEAN NOT NULL DEFAULT FALSE,
+    metadata BIGINT NOT NULL,
+    CONSTRAINT fk_withdraw_transactions_metadata FOREIGN KEY (metadata) REFERENCES public.transaction_metadata(id)
 );

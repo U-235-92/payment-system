@@ -11,6 +11,10 @@ spring:
   profiles:
     active:
       - dev-shard
+  task:
+    scheduling:
+      pool:
+        size: 3
   kafka:
     listener:
       ack-mode: RECORD
@@ -54,43 +58,107 @@ otel:
 service:
   kafka:
     topics:
-      wallet_operation_response:
-        name: wallet_operation_response
+
+      deposit_transaction_response:
+        name: deposit_transaction_response
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      wallet_operation_response_dlt:
-        name: wallet_operation_response_dlt
+      deposit_transaction_response_dlt:
+        name: deposit_transaction_response_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      wallet_operation_response_exceptions:
-        name: wallet_operation_response_exceptions
+      deposit_transaction_response_exceptions:
+        name: deposit_transaction_response_exceptions
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      wallet_operation_request:
-        name: wallet_operation_request
+
+      withdraw_transaction_response:
+        name: withdraw_transaction_response
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      wallet_operation_request_dlt:
-        name: wallet_operation_request_dlt
+      withdraw_transaction_response_dlt:
+        name: withdraw_transaction_response_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      wallet_operation_request_exceptions:
-        name: wallet_operation_request_exceptions
+      withdraw_transaction_response_exceptions:
+        name: withdraw_transaction_response_exceptions
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-    partitions:
-      deposit:
-        name: deposit
-      withdraw:
-        name: withdraw
-      transfer:
-        name: transfer
+
+      transfer_transaction_response:
+        name: transfer_transaction_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      transfer_transaction_response_dlt:
+        name: transfer_transaction_response_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      transfer_transaction_response_exceptions:
+        name: transfer_transaction_response_exceptions
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      deposit_transaction_request:
+        name: deposit_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      deposit_transaction_request_dlt:
+        name: deposit_transaction_request_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      deposit_transaction_request_exceptions:
+        name: deposit_transaction_request_exceptions
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      withdraw_transaction_request:
+        name: withdraw_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      withdraw_transaction_request_dlt:
+        name: withdraw_transaction_request_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      withdraw_transaction_request_exceptions:
+        name: withdraw_transaction_request_exceptions
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      transfer_transaction_request:
+        name: transfer_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      transfer_transaction_request_dlt:
+        name: transfer_transaction_request_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      transfer_transaction_request_exceptions:
+        name: transfer_transaction_request_exceptions
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+    backoff:
+      max-attempts: 3
+      wait-duration: 1500
+      multiplier: 2
 application:
   services:
     wallet-service:

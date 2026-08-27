@@ -16,7 +16,7 @@ extra["springCloudVersion"] = "2025.1.2"
 
 val artifact = "wallet-service"
 
-val specificationArtifactVersion = "1.0.1-dev"
+val specificationArtifactVersion = "1.0.2-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -91,7 +91,10 @@ val dependencyVersionMap = mapOf(
 
 //	Sharding
 	"shardingsphere" to "5.5.1",
-	"atomikos" to "6.0.1"
+	"atomikos" to "6.0.1",
+
+//	Lombok MapStruct binding
+	"lombok-mapstruct-binding" to "0.2.0"
 )
 
 dependencies {
@@ -132,6 +135,9 @@ dependencies {
 //	Mapping
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
 	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
+
+//	Lombok MapStruct binding
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
 
 //	Test
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")

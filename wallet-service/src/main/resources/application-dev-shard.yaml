@@ -39,5 +39,5 @@ spring:
       ddl-auto: none
 application:
   datasource:
-    - jdbc:postgresql://localhost:5455/wallets_db,root,root
+    - jdbc:postgresql://localhost:5445/wallets_db,root,root
     - jdbc:postgresql://localhost:5455/wallets_db,root,root

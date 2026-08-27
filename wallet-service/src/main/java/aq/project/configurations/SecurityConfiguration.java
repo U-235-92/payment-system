@@ -15,8 +15,10 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static aq.project.controller.DepositTransactionRestControllerApi.PATH_GET_DEPOSIT_TRANSACTION_STATUS;
+import static aq.project.controller.TransferTransactionRestControllerApi.PATH_GET_TRANSFER_TRANSACTION_STATUS;
 import static aq.project.controller.WalletRestControllerApi.*;
-import static aq.project.controller.TransactionRestControllerApi.*;
+import static aq.project.controller.WithdrawTransactionRestControllerApi.PATH_GET_WITHDRAW_TRANSACTION_STATUS;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +41,7 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    @Profile(value = { "prod" })
+    @Profile(value = { "prod", "test" })
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/api/v1/**")
@@ -48,8 +50,10 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers(HttpMethod.POST, PATH_CREATE_WALLET).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_WALLET_INFO.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.GET, PATH_GET_WALLET_CURRENCY.replace("{id}", "*")).authenticated())
+                        .requestMatchers(HttpMethod.GET, PATH_GET_WALLET_CURRENCY.replace("{id}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_DEPOSIT_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_WITHDRAW_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_TRANSFER_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
                 .build();
     }
 

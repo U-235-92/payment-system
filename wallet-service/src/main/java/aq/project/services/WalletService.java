@@ -1,13 +1,17 @@
 package aq.project.services;
 
+import aq.project.dto.WalletStatus;
+import aq.project.entities.CreditCard;
 import aq.project.entities.InstantEmbeddedData;
 import aq.project.entities.Wallet;
-import aq.project.exceptions.NoSuchWalletException;
+import aq.project.exceptions.EntityNotFoundException;
 import aq.project.repositories.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.UUID;
 
 @Service
@@ -24,7 +28,7 @@ public class WalletService {
     }
 
     private void setUpIds(Wallet wallet) {
-//       Set up Wallet
+//        Set up Wallet
         String walletId = UUID.randomUUID().toString();
 //        Set up wallet_id PK
         wallet.setId(walletId);
@@ -51,15 +55,39 @@ public class WalletService {
         wallet.getCreditCard().setInstantEmbeddedData(instantEmbeddedData);
     }
 
-    public Wallet getWalletInfo(String walletId) throws NoSuchWalletException {
-        return walletRepository.findById(walletId)
-                .orElseThrow(() -> new NoSuchWalletException(walletId));
+    public Wallet getWallet(String id) {
+        return walletRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("No wallet found with id: [%s]", id)));
     }
 
-    public String getWalletCurrency(String id) throws NoSuchWalletException {
-        return walletRepository.findById(id)
-                .orElseThrow(() -> new NoSuchWalletException(id))
+    public Wallet getWalletWithLock(String id) {
+        return walletRepository.findByIdWithLock(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("No wallet found with id: [%s]", id)));
+    }
+
+    public String getWalletCurrencyCode(String id) {
+        return getWallet(id)
                 .getWalletDetails()
                 .getCurrencyCode();
+    }
+
+    protected boolean isWalletBlocked(Wallet wallet) {
+        return wallet.getWalletDetails()
+                .getWalletStatus()
+                .equals(WalletStatus.BLOCKED);
+    }
+
+    protected boolean isWalletCreditCardExpired(CreditCard creditCard) {
+        return creditCard
+                .getCardExpirationDate()
+                .isBefore(YearMonth.now());
+    }
+
+    protected boolean isWalletCreditCardBalanceLessThan(CreditCard creditCard, BigDecimal amount) {
+        return creditCard
+                .getBalance()
+                .compareTo(amount) < 0;
     }
 }

@@ -152,13 +152,107 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/transaction/status/{id}:
+  /api/v1/transaction/deposit/status/{id}:
     get:
       security:
         - BearerAuth: []
-      operationId: getTransactionStatus
+      operationId: getDepositTransactionStatus
       tags:
-        - Transaction
+        - DepositTransaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a transaction ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/withdraw/status/{id}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getWithdrawTransactionStatus
+      tags:
+        - WithdrawTransaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented an valid UUID that describes a transaction ID
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/transfer/status/{id}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getTransferTransactionStatus
+      tags:
+        - TransferTransaction
       summary: Get transaction status by given ID
       parameters:
         - name: id
@@ -202,8 +296,12 @@ paths:
 tags:
   - name: Wallet
     description: Describes operations with wallets
-  - name: Transaction
-    description: Describes operations with transactions
+  - name: DepositTransaction
+    description: Describes operations with deposit transactions
+  - name: WithdrawTransaction
+    description: Describes operations with withdraw transactions
+  - name: TransferTransaction
+    description: Describes operations with transfer transactions
 
 components:
   securitySchemes:

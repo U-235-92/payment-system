@@ -16,6 +16,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Aspect
+@Order(1)
 @Component
 @Validated
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class WalletServiceAspect {
     private final Validator validator;
 
     @Around("execution(* aq.project.services.WalletService.createWallet(..)) && args(wallet)")
-    public String aspectCreateWallet(
+    public String createWallet(
             ProceedingJoinPoint pjp,
             @NotNull @Valid Wallet wallet
     ) throws Throwable {
@@ -50,6 +52,7 @@ public class WalletServiceAspect {
                 personId);
         String postFailureMainLogicCallLogMessage = String.format("Error occurred during creating wallet by person with id: %s",
                 personId);
+
 //        Handler logic call
         return serviceAspectHandler.handle(
                 String.class,
@@ -77,20 +80,21 @@ public class WalletServiceAspect {
         return null;
     }
 
-    @Around("execution(* aq.project.services.WalletService.getWalletInfo(..)) && args(walletId)")
-    public Wallet aspectGetWalletInfo(
+    @Around("execution(* aq.project.services.WalletService.getWallet(..)) && args(id)")
+    public Wallet getWallet(
             ProceedingJoinPoint pjp,
-            @NotBlank @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String walletId
+            @NotBlank @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String id
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "get-wallet-info";
+        String actionName = "get-wallet";
         String tracerName = serviceName + "." + actionName + "-tracer";
         String preMainLogicLogMessage = String.format("Received request to get wallet info with id: %s",
-                walletId);
+                id);
         String postSuccessMainLogicCallLogMessage = String.format("Success handle of request to get wallet info with id: %s",
-                walletId);
+                id);
         String postFailureMainLogicCallLogMessage = String.format("Error occurred during getting wallet info with id: %s",
-                walletId);
+                id);
+
 //        Handler logic call
         return serviceAspectHandler.handle(
                 Wallet.class,
@@ -107,8 +111,39 @@ public class WalletServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.WalletService.getWalletCurrency(..)) && args(id)")
-    public String aspectGetWalletCurrency(
+    @Around("execution(* aq.project.services.WalletService.getWalletWithLock(..)) && args(id)")
+    public Wallet getWalletWithLock(
+            ProceedingJoinPoint pjp,
+            @NotBlank @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String id
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "get-wallet-with-lock";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+        String preMainLogicLogMessage = String.format("Received request to get wallet info with id: %s",
+                id);
+        String postSuccessMainLogicCallLogMessage = String.format("Success handle of request to get wallet info with id: %s",
+                id);
+        String postFailureMainLogicCallLogMessage = String.format("Error occurred during getting wallet info with id: %s",
+                id);
+
+//        Handler logic call
+        return serviceAspectHandler.handle(
+                Wallet.class,
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                preMainLogicLogMessage,
+                postSuccessMainLogicCallLogMessage,
+                postFailureMainLogicCallLogMessage,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Around("execution(* aq.project.services.WalletService.getWalletCurrencyCode(..)) && args(id)")
+    public String getWalletCurrencyCode(
             ProceedingJoinPoint pjp,
             @NotBlank @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String id
     ) throws Throwable {
@@ -121,6 +156,7 @@ public class WalletServiceAspect {
                 id);
         String postFailureMainLogicCallLogMessage = String.format("Error occurred during getting wallet currency with id: %s",
                 id);
+
 //        Handler logic call
         return serviceAspectHandler.handle(
                 String.class,

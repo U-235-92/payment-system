@@ -10,7 +10,11 @@ alt неуспех транзакции
 	alt обработчик kafka
 		payment_proider_service -> kafka : Получить запрос [неуспех транзакции];
 		payment_proider_service -> payment_proider_service_db : Извлечение транзакции с переданным ID;
-		payment_proider_service -> payment_proider_service_db : Обновить статус транзакции на [MARKED_FAILED]; 
+		payment_proider_service -> payment_proider_service_db : Обновить статус транзакции на [MARKED_FAILED];
+		note right payment_proider_service
+		    Обновление статуса транзакции производится только при условии,
+		    что указанный в DTO merchanId совпадает с merchanId транзакции
+		end note
 		note right payment_proider_service
 			Если извлеченная транзакция имеет статус [PENDING] или [COMPLETED], то изменить его на статус [MARKED_FAILED]. 
 			Статус [FAILED] является конечным для транзакции и не может быть изменен.
@@ -23,9 +27,8 @@ alt неуспех транзакции
 		payment_proider_service -> kafka : Отправить ответ на запрос [неуспех транзакции] в kafka. Дождаться ответа;
 		payment_proider_service -> payment_proider_service_db : Изменить статус транзакции на [FAILED];
 		note left payment_proider_service_db
-            Для идемпотентности операции обработки извлеченной сущности транзакции
-            обработка каждой сущности транзакции производится в новой транзакции БД.
-            Уровень изоляции каждой транзакции БД: [SERIALIZABLE]
+            Для идемпотентности операции обработки извлеченной сущности транзакции обработка каждой
+            сущности транзакции производится в новой транзакции БД, в режиме [PESSIMISTIC_WRITE].
         end note
         note left payment_proider_service
             При возникновении ошибки на этапе отправки ответа на запрос [неуспех транзакции] в топик kafka

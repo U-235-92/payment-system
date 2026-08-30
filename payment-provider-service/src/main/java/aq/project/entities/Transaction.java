@@ -1,6 +1,6 @@
 package aq.project.entities;
 
-import aq.project.dto.OperationType;
+import aq.project.dto.Operation;
 import aq.project.dto.TransactionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -8,12 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -30,7 +27,7 @@ public class Transaction {
     private UUID id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "merchant_id", nullable = false, referencedColumnName = "id")
     private Merchant merchant;
 
@@ -48,31 +45,24 @@ public class Transaction {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false, length = 50)
-    private OperationType operationType;
+    @Column(name = "operation", nullable = false, length = 50)
+    private Operation operation;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private TransactionStatus status;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
-
-    @Size(max = 255)
-    @Column(name = "description", length = 255)
+    @Size(max = 2048)
+    @Column(name = "description", length = 2048)
     private String description;
-
-    @Size(max = 100)
-    @Column(name = "external_id", length = 100)
-    private String externalId;
 
     @Size(max = 2048)
     @Column(name = "notification_url", length = 2048)
     private String notificationUrl;
+
+    @NotNull
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "metadata", nullable = false)
+    private TransactionMetadata metadata;
 }

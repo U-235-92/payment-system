@@ -1,11 +1,10 @@
 package aq.project.utils.aspects;
 
-import aq.project.dto.TransactionRequestDto;
+import aq.project.dto.CancelTransactionRequestDto;
+import aq.project.dto.CreateTransactionRequestDto;
+import aq.project.dto.FailTransactionRequestDto;
 import aq.project.dto.TransactionResponseDto;
-import aq.project.dto.TransactionStatus;
 import aq.project.utils.telemetry.ServiceAspectHandler;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
-
-import static aq.project.utils.constants.RequestPropertyKeys.TRANSACTION_ID;
 
 @Aspect
 @Component
@@ -36,32 +31,25 @@ public class TransactionServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.TransactionService.createTransaction(..)) && args(requestDto, merchantId)")
-    public TransactionResponseDto createTransaction(
+    @Around("execution(* aq.project.services.TransactionService.handleCreateTransaction(..)) && args(requestDto)")
+    public void handleCreateTransaction(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid TransactionRequestDto requestDto,
-            @NotBlank String merchantId
+            @Validated CreateTransactionRequestDto requestDto
     ) throws Throwable {
-//      Check request DTO property key
-        if(!requestDto.getProperties().containsKey(TRANSACTION_ID)) {
-            String msg = "Received transaction request with no specified transaction id property key";
-            throw new ConstraintViolationException(msg, null);
-        }
-
 //        Prepare handler metadata
-        String actionName = "create-transaction";
+        String actionName = "handle-create-transaction";
         String tracerName = serviceName + "." + actionName + "-tracer";
-        String transactionId = requestDto.getProperties().get(TRANSACTION_ID);
-        String preMainLogicLogMessage = String.format("Received request to create transaction with id: [%s] for merchant with id: [%s]",
-                transactionId, merchantId);
-        String postSuccessMainLogicCallLogMessage = String.format("Success handle request to create transaction with id: [%s] for merchant with id: [%s]",
-                transactionId, merchantId);
-        String postFailureMainLogicCallLogMessage = String.format("Error occurred during handle create transaction with id: [%s] for merchant with id: [%s]",
-                transactionId, merchantId);
+        String transactionId = requestDto.getTransactionId().toString();
+        String merchantId = requestDto.getMerchantId();
+        String preMainLogicLogMessage = String.format("Start process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
+        String postSuccessMainLogicCallLogMessage = String.format("Finish process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
+        String postFailureMainLogicCallLogMessage = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
 
 //        Handler logic call
-        return serviceAspectHandler.handle(
-                TransactionResponseDto.class,
+        serviceAspectHandler.handle(
                 pjp,
                 tracerName,
                 serviceName,
@@ -69,35 +57,74 @@ public class TransactionServiceAspect {
                 preMainLogicLogMessage,
                 postSuccessMainLogicCallLogMessage,
                 postFailureMainLogicCallLogMessage,
-                checkConstraints(requestDto),
+                null,
                 null,
                 null
         );
     }
 
-    private Supplier<Void> checkConstraints(TransactionRequestDto requestDto) {
-        checkPositiveAmount(requestDto);
-        checkIsExistTransactionIdProperty(requestDto);
-        return null;
+    @Around("execution(* aq.project.services.TransactionService.handleFailTransaction(..)) && args(requestDto)")
+    public void handleFailTransaction(
+            ProceedingJoinPoint pjp,
+            @Validated FailTransactionRequestDto requestDto
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "handle-fail-transaction";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+        String transactionId = requestDto.getTransactionId().toString();
+        String merchantId = requestDto.getMerchantId();
+        String preMainLogicLogMessage = String.format("Start process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
+        String postSuccessMainLogicCallLogMessage = String.format("Finish process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
+        String postFailureMainLogicCallLogMessage = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
+
+//        Handler logic call
+        serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                preMainLogicLogMessage,
+                postSuccessMainLogicCallLogMessage,
+                postFailureMainLogicCallLogMessage,
+                null,
+                null,
+                null
+        );
     }
 
-    private void checkPositiveAmount(TransactionRequestDto requestDto) {
-        try {
-            BigDecimal amount = new BigDecimal(requestDto.getAmount());
-            if(amount.compareTo(new BigDecimal(0)) <= 0) {
-                String msg = "The amount of the transaction must be greater than zero";
-                throw new ConstraintViolationException(msg, null);
-            }
-        } catch (NumberFormatException e) {
-            throw new ConstraintViolationException(e.getMessage(), null);
-        }
-    }
+    @Around("execution(* aq.project.services.TransactionService.handleCancelTransaction(..)) && args(requestDto)")
+    public void handleCancelTransaction(
+            ProceedingJoinPoint pjp,
+            @Validated CancelTransactionRequestDto requestDto
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "handle-cancel-transaction";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+        String transactionId = requestDto.getTransactionId().toString();
+        String merchantId = requestDto.getMerchantId();
+        String preMainLogicLogMessage = String.format("Start process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
+        String postSuccessMainLogicCallLogMessage = String.format("Finish process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
+        String postFailureMainLogicCallLogMessage = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
+                actionName, transactionId, merchantId);
 
-    private void checkIsExistTransactionIdProperty(TransactionRequestDto requestDto) {
-        if(requestDto.getProperties().get(TRANSACTION_ID) == null || requestDto.getProperties().get(TRANSACTION_ID).isBlank()) {
-            String msg = "Received transaction request with no specified transaction id property value";
-            throw new ConstraintViolationException(msg, null);
-        }
+//        Handler logic call
+        serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                preMainLogicLogMessage,
+                postSuccessMainLogicCallLogMessage,
+                postFailureMainLogicCallLogMessage,
+                null,
+                null,
+                null
+        );
     }
 
     @Around("execution(* aq.project.services.TransactionService.getTransactionInfo(..)) && args(transactionId, merchantId)")
@@ -153,38 +180,6 @@ public class TransactionServiceAspect {
 //        Handler logic call
         return serviceAspectHandler.handle(
                 List.class,
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                preMainLogicLogMessage,
-                postSuccessMainLogicCallLogMessage,
-                postFailureMainLogicCallLogMessage,
-                null,
-                null,
-                null
-        );
-    }
-
-    @Around("execution(* aq.project.services.TransactionService.cancelTransaction(..)) && args(transactionId, merchantId, transactionStatus)")
-    public void cancelTransaction(
-            ProceedingJoinPoint pjp,
-            @NotNull UUID transactionId,
-            @NotBlank String merchantId,
-            @NotNull TransactionStatus transactionStatus
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "cancel-transaction";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-        String preMainLogicLogMessage = String.format("Received request to cancel transaction with id: [%s] for merchant with id: [%s]",
-                transactionId, merchantId);
-        String postSuccessMainLogicCallLogMessage = String.format("Success handle request to cancel transaction with id: [%s] for merchant with id: [%s]",
-                transactionId, merchantId);
-        String postFailureMainLogicCallLogMessage = String.format("Error occurred during handle cancel transaction with id: [%s] for merchant with id: [%s]",
-                transactionId, merchantId);
-
-//        Handler logic call
-        serviceAspectHandler.handle(
                 pjp,
                 tracerName,
                 serviceName,

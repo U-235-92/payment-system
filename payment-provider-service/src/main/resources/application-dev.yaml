@@ -2,6 +2,11 @@ server:
   ssl:
     enabled: false
 spring:
+  kafka:
+    bootstrapServers:
+      - localhost:29092
+      - localhost:29093
+      - localhost:29094
   flyway:
     enabled: false
   datasource:

@@ -24,8 +24,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import static aq.project.controller.AdminRestControllerApi.PATH_REGISTER_MERCHANT;
-import static aq.project.controller.TransactionRestControllerApi.*;
-import static aq.project.controller.WebhookRestControllerApi.PATH_UPDATE_TRANSACTION_STATUS;
+import static aq.project.controller.TransactionRestControllerApi.PATH_GET_TRANSACTION_INFO;
+import static aq.project.controller.TransactionRestControllerApi.PATH_GET_TRANSACTION_LIST;
 
 @Configuration
 @RequiredArgsConstructor
@@ -56,11 +56,8 @@ public class SecurityConfiguration {
             .httpBasic(c -> c.authenticationEntryPoint(new AuthenticationExceptionEntryPoint(handlerExceptionResolver)))
             .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
             .authorizeHttpRequests(customizer -> customizer
-                    .requestMatchers(HttpMethod.POST, PATH_CREATE_TRANSACTION).hasRole(UserRole.USER.getValue())
                     .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_INFO.replace("{id}", "*")).hasRole(UserRole.USER.getValue())
                     .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_LIST).hasRole(UserRole.USER.getValue())
-                    .requestMatchers(HttpMethod.POST, PATH_UPDATE_TRANSACTION_STATUS).hasRole(UserRole.USER.getValue())
-                    .requestMatchers(HttpMethod.POST, PATH_CANCEL_TRANSACTION.replace("{id}", "*")).hasRole(UserRole.USER.getValue())
                     .requestMatchers(HttpMethod.POST, PATH_REGISTER_MERCHANT).hasRole(UserRole.ADMIN.getValue())
                     .anyRequest().authenticated()
             )

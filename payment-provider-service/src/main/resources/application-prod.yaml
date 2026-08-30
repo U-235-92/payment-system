@@ -23,6 +23,8 @@ management:
 spring:
   application:
     name: ${SERVICE_NAME}
+  kafka:
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS}
   flyway:
     enabled: true
     baseline-version: 1

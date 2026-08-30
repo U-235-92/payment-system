@@ -146,11 +146,14 @@ public class TransactionHandler {
     ) {
         String transactionId = transaction.getId().toString();
         String action = "handle-schedule-create-transaction";
-        String logMessageOnReceive = String.format("Start process operation: [%s] for transaction with id: [%s]",
+        String logMessageOnReceive = String.format(
+                "Start process operation: [%s] for transaction with id: [%s]",
                 action, transactionId);
-        String logMessageOnSuccess = String.format("Finish process operation: [%s] for transaction with id: [%s]",
+        String logMessageOnSuccess = String.format(
+                "Finish process operation: [%s] for transaction with id: [%s]",
                 action, transactionId);
-        String logMessageOnError = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] while send response to topic [%s]",
+        String logMessageOnError = String.format(
+                "Error occurred during process operation: [%s] for transaction with id: [%s] while send response to topic [%s]",
                 action, transactionId, createTransactionResponseTopic);
 
         handleScheduleOperationTransaction(
@@ -169,11 +172,14 @@ public class TransactionHandler {
     ) {
         String transactionId = transaction.getId().toString();
         String action = "handle-schedule-fail-transaction";
-        String logMessageOnReceive = String.format("Start process operation: [%s] for transaction with id: [%s]",
+        String logMessageOnReceive = String.format(
+                "Start process operation: [%s] for transaction with id: [%s]",
                 action, transactionId);
-        String logMessageOnSuccess = String.format("Finish process operation: [%s] for transaction with id: [%s]",
+        String logMessageOnSuccess = String.format(
+                "Finish process operation: [%s] for transaction with id: [%s]",
                 action, transactionId);
-        String logMessageOnError = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] while send response to topic [%s]",
+        String logMessageOnError = String.format(
+                "Error occurred during process operation: [%s] for transaction with id: [%s] while send response to topic [%s]",
                 action, transactionId, failTransactionResponseTopic);
 
         if(transaction.getStatus() == TransactionStatus.MARKED_FAILED) {
@@ -194,11 +200,14 @@ public class TransactionHandler {
     ) {
         String transactionId = transaction.getId().toString();
         String action = "handle-schedule-cancel-transaction";
-        String logMessageOnReceive = String.format("Start process operation: [%s] for transaction with id: [%s]",
+        String logMessageOnReceive = String.format(
+                "Start process operation: [%s] for transaction with id: [%s]",
                 action, transactionId);
-        String logMessageOnSuccess = String.format("Finish process operation: [%s] for transaction with id: [%s]",
+        String logMessageOnSuccess = String.format(
+                "Finish process operation: [%s] for transaction with id: [%s]",
                 action, transactionId);
-        String logMessageOnError = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] while send response to topic [%s]",
+        String logMessageOnError = String.format(
+                "Error occurred during process operation: [%s] for transaction with id: [%s] while send response to topic [%s]",
                 action, transactionId, cancelTransactionResponseTopic);
 
         if(transaction.getStatus() == TransactionStatus.MARKED_CANCELED) {
@@ -266,7 +275,8 @@ public class TransactionHandler {
                 try {
                     transactionRepository.save(transaction);
                 } catch (Exception e) {
-                    String errorMessage = String.format("Unexpected error occurred while save transaction with id: [%s] during process: [%s]",
+                    String errorMessage = String.format(
+                            "Unexpected error occurred while save transaction with id: [%s] during process: [%s]",
                             transactionId, action);
                     log.error("[{}-{}][{} -> {}]: {}. Exception: {}",
                             traceId, spanId, serviceName, action, errorMessage, e.getMessage());

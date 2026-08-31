@@ -1,6 +1,6 @@
 package aq.project.utils.audit;
 
-import aq.project.entities.RevInfo;
+import aq.project.entities.audit.RevInfo;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.hibernate.envers.RevisionListener;

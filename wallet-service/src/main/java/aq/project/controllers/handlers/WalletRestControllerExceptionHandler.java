@@ -1,6 +1,6 @@
 package aq.project.controllers.handlers;
 
-import aq.project.controllers.WalletRestController;
+import aq.project.controllers.wallet.WalletRestController;
 import aq.project.dto.ErrorDto;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.utils.logging.ControllerExceptionLogger;

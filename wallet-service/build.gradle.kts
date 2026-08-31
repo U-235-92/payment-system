@@ -16,7 +16,7 @@ extra["springCloudVersion"] = "2025.1.2"
 
 val artifact = "wallet-service"
 
-val specificationArtifactVersion = "1.0.2-dev"
+val specificationArtifactVersion = "1.0.3-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -85,6 +85,7 @@ val dependencyVersionMap = mapOf(
 //	Test
 	"testcontainers" to "2.0.3",
 	"wiremock-spring-boot" to "4.0.9",
+	"testcontainers-keycloak" to "4.1.1",
 
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
@@ -154,6 +155,7 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-kafka")
 	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")

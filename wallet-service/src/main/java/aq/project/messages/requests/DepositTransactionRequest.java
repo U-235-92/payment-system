@@ -10,19 +10,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DepositTransactionRequest {
 
-    @NotBlank
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-    private String transactionId;
+    @NotNull
+    private UUID transactionId;
 
-    @NotBlank
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-    private String walletId;
+    @NotNull
+    private UUID walletId;
 
     @NotNull
     private BigDecimal amount;
@@ -36,7 +36,7 @@ public class DepositTransactionRequest {
 
     @NotNull
     @PositiveOrZero
-    private Long timestamp;
+    private OffsetDateTime timestamp;
 
     @NotBlank
     private String traceId;

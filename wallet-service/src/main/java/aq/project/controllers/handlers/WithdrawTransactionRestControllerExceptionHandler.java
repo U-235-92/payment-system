@@ -1,6 +1,6 @@
 package aq.project.controllers.handlers;
 
-import aq.project.controllers.WithdrawTransactionRestController;
+import aq.project.controllers.transaction.WithdrawTransactionRestController;
 import aq.project.dto.ErrorDto;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;

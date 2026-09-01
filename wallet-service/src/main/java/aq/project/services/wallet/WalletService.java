@@ -47,6 +47,7 @@ public class WalletService {
                         String.format("No wallet found with id: [%s]", id)));
     }
 
+    @Transactional
     public Wallet getWalletWithLock(UUID id) {
         return walletRepository.findByIdWithLock(id)
                 .orElseThrow(() -> new EntityNotFoundException(

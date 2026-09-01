@@ -2,7 +2,6 @@ package aq.project.entities.wallet;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,7 +32,6 @@ public class Wallet {
     @OneToOne(cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.EAGER)
     private WalletDetails walletDetails;
 
-    @PositiveOrZero
     @Column(name = "archived_at")
     private OffsetDateTime archivedAt;
 

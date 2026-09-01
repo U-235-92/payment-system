@@ -2,7 +2,10 @@ package aq.project.entities.wallet;
 
 import aq.project.dto.WalletStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,7 +40,6 @@ public class WalletDetails {
     @Column(name = "modifier", nullable = false)
     private String modifier;
 
-    @PositiveOrZero
     @Column(name = "archived_at")
     private OffsetDateTime archivedAt;
 

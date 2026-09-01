@@ -34,7 +34,7 @@ public class WithdrawTransactionServiceAspect {
     @Around("execution(* aq.project.services.transaction.WithdrawTransactionService.handleTransactionRequest(..)) && args(request)")
     public void handleTransactionRequest(
             ProceedingJoinPoint pjp,
-            @Valid WithdrawTransactionRequest request
+            @NotNull @Valid WithdrawTransactionRequest request
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "handle-withdraw-transaction-request";

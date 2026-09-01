@@ -37,7 +37,7 @@ public class WalletServiceAspect {
     private final Validator validator;
 
     @Around("execution(* aq.project.services.wallet.WalletService.createWallet(..)) && args(wallet)")
-    public String createWallet(
+    public UUID createWallet(
             ProceedingJoinPoint pjp,
             @NotNull @Valid Wallet wallet
     ) throws Throwable {
@@ -54,7 +54,7 @@ public class WalletServiceAspect {
 
 //        Handler logic call
         return serviceAspectHandler.handle(
-                String.class,
+                UUID.class,
                 pjp,
                 tracerName,
                 serviceName,

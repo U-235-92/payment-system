@@ -4,6 +4,7 @@ import aq.project.dto.TransactionStatus;
 import aq.project.entities.transaction.DepositTransaction;
 import aq.project.entities.wallet.CreditCard;
 import aq.project.entities.wallet.Wallet;
+import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.messages.requests.DepositTransactionRequest;
@@ -77,7 +78,7 @@ public class DepositTransactionService {
             handleTransaction(request);
 
             transactionHandler.commitCompletedTransaction(transaction);
-        } catch(EntityNotFoundException e) {
+        } catch(EntityNotFoundException | DuplicateTransactionHandleException | EntityConstraintsException e) {
             transactionHandler.commitFailedTransaction(transaction);
             throw e;
         } finally {

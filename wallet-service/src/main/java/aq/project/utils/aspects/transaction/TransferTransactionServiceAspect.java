@@ -34,7 +34,7 @@ public class TransferTransactionServiceAspect {
     @Around("execution(* aq.project.services.transaction.TransferTransactionService.handleTransactionRequest(..)) && args(request)")
     public void handleTransactionRequest(
             ProceedingJoinPoint pjp,
-            @Valid TransferTransactionRequest request
+            @NotNull @Valid TransferTransactionRequest request
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "handle-transfer-transaction-request";

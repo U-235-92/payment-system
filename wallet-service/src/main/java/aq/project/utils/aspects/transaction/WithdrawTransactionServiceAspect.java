@@ -1,7 +1,7 @@
 package aq.project.utils.aspects.transaction;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.dto.WithdrawTransactionRequestDto;
+import aq.project.dto.WithdrawTransactionRequestWalletServiceDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -34,7 +34,7 @@ public class WithdrawTransactionServiceAspect {
     @Around("execution(* aq.project.services.transaction.WithdrawTransactionService.handleTransactionRequest(..)) && args(request)")
     public void handleTransactionRequest(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid WithdrawTransactionRequestDto request
+            @NotNull @Valid WithdrawTransactionRequestWalletServiceDto request
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "handle-withdraw-transaction-request";
@@ -63,7 +63,7 @@ public class WithdrawTransactionServiceAspect {
     }
 
     private Supplier<Void> checkConstraints(
-            WithdrawTransactionRequestDto request
+            WithdrawTransactionRequestWalletServiceDto request
     ) {
         BigDecimal amount = request.getAmount();
         BigDecimal conversionRate = request.getConversionRate();

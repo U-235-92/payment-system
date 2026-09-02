@@ -1,7 +1,7 @@
 package aq.project.utils.aspects.transaction;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.dto.TransferTransactionRequestDto;
+import aq.project.dto.TransferTransactionRequestWalletServiceDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -34,7 +34,7 @@ public class TransferTransactionServiceAspect {
     @Around("execution(* aq.project.services.transaction.TransferTransactionService.handleTransactionRequest(..)) && args(request)")
     public void handleTransactionRequest(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid TransferTransactionRequestDto request
+            @NotNull @Valid TransferTransactionRequestWalletServiceDto request
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "handle-transfer-transaction-request";
@@ -63,7 +63,7 @@ public class TransferTransactionServiceAspect {
     }
 
     private Supplier<Void> checkConstraints(
-            TransferTransactionRequestDto request
+            TransferTransactionRequestWalletServiceDto request
     ) {
         BigDecimal senderConversionRate = request.getSenderConversionRate();
         BigDecimal recipientConversionRate = request.getRecipientConversionRate();

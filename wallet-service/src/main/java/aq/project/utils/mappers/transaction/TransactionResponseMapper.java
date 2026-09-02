@@ -3,9 +3,9 @@ package aq.project.utils.mappers.transaction;
 import aq.project.entities.transaction.DepositTransaction;
 import aq.project.entities.transaction.TransferTransaction;
 import aq.project.entities.transaction.WithdrawTransaction;
-import aq.project.dto.DepositTransactionResponseDto;
-import aq.project.dto.TransferTransactionResponseDto;
-import aq.project.dto.WithdrawTransactionResponseDto;
+import aq.project.dto.DepositTransactionResponseWalletServiceDto;
+import aq.project.dto.TransferTransactionResponseWalletServiceDto;
+import aq.project.dto.WithdrawTransactionResponseWalletServiceDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -21,7 +21,7 @@ public interface TransactionResponseMapper {
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
-    DepositTransactionResponseDto toDepositResponse(DepositTransaction transaction);
+    DepositTransactionResponseWalletServiceDto toDepositResponse(DepositTransaction transaction);
 
     default OffsetDateTime toTimestamp(DepositTransaction transaction) {
         return transaction.getMetadata()
@@ -32,7 +32,7 @@ public interface TransactionResponseMapper {
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
-    WithdrawTransactionResponseDto toWithdrawResponse(WithdrawTransaction transaction);
+    WithdrawTransactionResponseWalletServiceDto toWithdrawResponse(WithdrawTransaction transaction);
 
     default OffsetDateTime toTimestamp(WithdrawTransaction transaction) {
         return transaction.getMetadata()
@@ -44,7 +44,7 @@ public interface TransactionResponseMapper {
     @Mapping(target = "recipientWalletId", source = "recipientWalletId")
     @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
-    TransferTransactionResponseDto toTransferResponse(TransferTransaction transaction);
+    TransferTransactionResponseWalletServiceDto toTransferResponse(TransferTransaction transaction);
 
     default OffsetDateTime toTimestamp(TransferTransaction transaction) {
         return transaction.getMetadata()

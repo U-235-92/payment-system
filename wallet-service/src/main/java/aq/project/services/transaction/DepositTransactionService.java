@@ -7,8 +7,8 @@ import aq.project.entities.wallet.Wallet;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.dto.DepositTransactionRequestDto;
-import aq.project.dto.DepositTransactionResponseDto;
+import aq.project.dto.DepositTransactionRequestWalletServiceDto;
+import aq.project.dto.DepositTransactionResponseWalletServiceDto;
 import aq.project.repositories.transaction.DepositTransactionRepository;
 import aq.project.services.wallet.WalletService;
 import aq.project.utils.handlers.TransactionHandler;
@@ -67,7 +67,7 @@ public class DepositTransactionService {
 
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.deposit_transaction_request.name}")
-    public void handleTransactionRequest(DepositTransactionRequestDto request) {
+    public void handleTransactionRequest(DepositTransactionRequestWalletServiceDto request) {
         DepositTransaction transaction = transactionRequestMapper.toDepositTransaction(request);
         try {
             traceContext.clean();
@@ -86,12 +86,12 @@ public class DepositTransactionService {
         }
     }
 
-    private void checkIdempotentTransactionHandle(DepositTransactionRequestDto request) {
+    private void checkIdempotentTransactionHandle(DepositTransactionRequestWalletServiceDto request) {
         UUID transactionId = request.getTransactionId();
         transactionHandler.checkDepositTransactionPresent(transactionId);
     }
 
-    private void checkTransactionConstraints(DepositTransactionRequestDto request) {
+    private void checkTransactionConstraints(DepositTransactionRequestWalletServiceDto request) {
         UUID walletId = request.getWalletId();
 
         Wallet wallet = walletService.getWallet(walletId);
@@ -107,7 +107,7 @@ public class DepositTransactionService {
                             creditCard.getCardNumber(), walletId));
     }
 
-    private void handleTransaction(DepositTransactionRequestDto request) {
+    private void handleTransaction(DepositTransactionRequestWalletServiceDto request) {
         UUID walletId = request.getWalletId();
         Wallet wallet = walletService.getWalletWithLock(walletId);
 
@@ -152,9 +152,9 @@ public class DepositTransactionService {
         log.info("[{}-{}]: Attempt to handle deposit transaction with id: [{}]",
                 traceId, spanId, transaction.getId());
 
-        DepositTransactionResponseDto response = transactionResponseMapper.toDepositResponse(transaction);
+        DepositTransactionResponseWalletServiceDto response = transactionResponseMapper.toDepositResponse(transaction);
 
-        ProducerRecord<String, DepositTransactionResponseDto> record = new ProducerRecord<>(transactionResponseTopicName, response);
+        ProducerRecord<String, DepositTransactionResponseWalletServiceDto> record = new ProducerRecord<>(transactionResponseTopicName, response);
 
         Headers headers = record.headers();
         headers.add(X_TRACE_ID_HEADER, traceId.getBytes());

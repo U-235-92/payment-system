@@ -400,7 +400,7 @@ components:
         cardExpirationDate:
           $ref: "#/components/schemas/CardExpirationDateDefinition"
 
-    DepositTransactionRequestDto:
+    DepositTransactionRequestWalletServiceDto:
       type: object
       required: [ transactionId, walletId, amount, currencyCode, transactionStatus, timestamp, traceId, conversionRate ]
       properties:
@@ -426,7 +426,7 @@ components:
           type: number
           format: decimal
 
-    TransferTransactionRequestDto:
+    TransferTransactionRequestWalletServiceDto:
       type: object
       required: [ transactionId, senderWalletId, recipientWalletId, amount, currencyCode, transactionStatus, timestamp, traceId, senderConversionRate, recipientConversionRate ]
       properties:
@@ -458,7 +458,7 @@ components:
           type: number
           format: decimal
 
-    WithdrawTransactionRequestDto:
+    WithdrawTransactionRequestWalletServiceDto:
       type: object
       required: [ transactionId, walletId, amount, currencyCode, transactionStatus, timestamp, traceId, conversionRate ]
       properties:
@@ -484,7 +484,7 @@ components:
           type: number
           format: decimal
 
-    DepositTransactionResponseDto:
+    DepositTransactionResponseWalletServiceDto:
       type: object
       required: [ transactionId, walletId, transactionStatus, timestamp ]
       properties:
@@ -500,7 +500,7 @@ components:
           type: string
           format: date-time
 
-    TransferTransactionResponseDto:
+    TransferTransactionResponseWalletServiceDto:
       type: object
       required: [ transactionId, senderWalletId, recipientWalletId, transactionStatus, timestamp ]
       properties:
@@ -519,7 +519,7 @@ components:
           type: string
           format: date-time
 
-    WithdrawTransactionResponseDto:
+    WithdrawTransactionResponseWalletServiceDto:
       type: object
       required: [ transactionId, walletId, transactionStatus, timestamp ]
       properties:

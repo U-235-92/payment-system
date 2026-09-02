@@ -7,8 +7,8 @@ import aq.project.entities.wallet.Wallet;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.dto.TransferTransactionRequestDto;
-import aq.project.dto.TransferTransactionResponseDto;
+import aq.project.dto.TransferTransactionRequestWalletServiceDto;
+import aq.project.dto.TransferTransactionResponseWalletServiceDto;
 import aq.project.repositories.transaction.TransferTransactionRepository;
 import aq.project.services.wallet.WalletService;
 import aq.project.utils.handlers.TransactionHandler;
@@ -70,7 +70,7 @@ public class TransferTransactionService {
 
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.transfer_transaction_request.name}")
-    public void handleTransactionRequest(TransferTransactionRequestDto request) {
+    public void handleTransactionRequest(TransferTransactionRequestWalletServiceDto request) {
         TransferTransaction transaction = transactionRequestMapper.toTransferTransaction(request);
         try {
             traceContext.clean();
@@ -89,12 +89,12 @@ public class TransferTransactionService {
         }
     }
 
-    private void checkIdempotentTransactionHandle(TransferTransactionRequestDto request) {
+    private void checkIdempotentTransactionHandle(TransferTransactionRequestWalletServiceDto request) {
         UUID transactionId = request.getTransactionId();
         transactionHandler.checkTransferTransactionPresent(transactionId);
     }
 
-    private void checkTransactionConstraints(TransferTransactionRequestDto request) {
+    private void checkTransactionConstraints(TransferTransactionRequestWalletServiceDto request) {
         UUID senderWalletId = request.getSenderWalletId();
         UUID recipientWalletId = request.getRecipientWalletId();
 
@@ -128,7 +128,7 @@ public class TransferTransactionService {
                             senderCreditCard.getCardNumber(), senderCreditCard.getBalance(), request.getAmount()));
     }
 
-    private void handleTransaction(TransferTransactionRequestDto request) {
+    private void handleTransaction(TransferTransactionRequestWalletServiceDto request) {
         UUID recipientWalletId = request.getRecipientWalletId();
         Wallet recipientWallet = walletService.getWalletWithLock(recipientWalletId);
 
@@ -187,9 +187,9 @@ public class TransferTransactionService {
         log.info("[{}-{}]: Attempt to handle transfer transaction with id: [{}]",
                 traceId, spanId, transaction.getId());
 
-        TransferTransactionResponseDto response = transactionResponseMapper.toTransferResponse(transaction);
+        TransferTransactionResponseWalletServiceDto response = transactionResponseMapper.toTransferResponse(transaction);
 
-        ProducerRecord<String, TransferTransactionResponseDto> record = new ProducerRecord<>(transactionResponseTopicName, response);
+        ProducerRecord<String, TransferTransactionResponseWalletServiceDto> record = new ProducerRecord<>(transactionResponseTopicName, response);
 
         Headers headers = record.headers();
         headers.add(X_TRACE_ID_HEADER, traceId.getBytes());

@@ -6,7 +6,7 @@ import aq.project.entities.wallet.Wallet;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.dto.DepositTransactionRequestDto;
+import aq.project.dto.DepositTransactionRequestWalletServiceDto;
 import aq.project.repositories.transaction.DepositTransactionRepository;
 import aq.project.services.transaction.DepositTransactionService;
 import aq.project.services.wallet.WalletService;
@@ -70,7 +70,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void successHandleTransactionRequest() {
 //        Arrange & Act
-        DepositTransactionRequestDto request = getValidDepositTransactionRequest();
+        DepositTransactionRequestWalletServiceDto request = getValidDepositTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -112,7 +112,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnNotIdempotentTransactionRequest() {
     //        Arrange & Act
-        DepositTransactionRequestDto request = getValidDepositTransactionRequest();
+        DepositTransactionRequestWalletServiceDto request = getValidDepositTransactionRequest();
 
         Mockito.doThrow(DuplicateTransactionHandleException.class)
                 .when(transactionHandler)
@@ -139,7 +139,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnWalletIsBlocked() {
 //        Arrange & Act
-        DepositTransactionRequestDto request = getValidDepositTransactionRequest();
+        DepositTransactionRequestWalletServiceDto request = getValidDepositTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -170,7 +170,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnCreditCardWasExpired() {
 //        Arrange & Act
-        DepositTransactionRequestDto request = getValidDepositTransactionRequest();
+        DepositTransactionRequestWalletServiceDto request = getValidDepositTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -201,7 +201,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnWalletNotFound() {
 //        Arrange & Act
-        DepositTransactionRequestDto request = getValidDepositTransactionRequest();
+        DepositTransactionRequestWalletServiceDto request = getValidDepositTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -229,7 +229,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnWalletNotFoundWithLockMode() {
 //        Arrange & Act
-        DepositTransactionRequestDto request = getValidDepositTransactionRequest();
+        DepositTransactionRequestWalletServiceDto request = getValidDepositTransactionRequest();
 
         Mockito.doReturn(getValidWallet())
                 .when(walletService)

@@ -8,7 +8,7 @@ import aq.project.entities.wallet.Wallet;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.dto.TransferTransactionRequestDto;
+import aq.project.dto.TransferTransactionRequestWalletServiceDto;
 import aq.project.repositories.transaction.TransferTransactionRepository;
 import aq.project.repositories.wallet.WalletRepository;
 import aq.project.services.transaction.TransferTransactionService;
@@ -105,7 +105,7 @@ public class HandleTransactionRequestIntegrationTest {
 
         Wallet senderWallet = getValidWallet(senderWalletId);
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
@@ -123,7 +123,7 @@ public class HandleTransactionRequestIntegrationTest {
 
         Wallet senderWallet = getValidWallet(senderWalletId);
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
         TransferTransaction transaction = getValidTransferTransaction(transactionId);
 
         walletRepository.save(senderWallet);
@@ -143,7 +143,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID recipientWalletId = UUID.randomUUID();
 
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(recipientWallet);
 
@@ -160,7 +160,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID recipientWalletId = UUID.randomUUID();
 
         Wallet senderWallet = getValidWallet(senderWalletId);
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
 
@@ -178,7 +178,7 @@ public class HandleTransactionRequestIntegrationTest {
 
         Wallet senderWallet = getValidWalletBlocked(senderWalletId);
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
@@ -197,7 +197,7 @@ public class HandleTransactionRequestIntegrationTest {
 
         Wallet senderWallet = getValidWallet(senderWalletId);
         Wallet recipientWallet = getValidWalletBlocked(recipientWalletId);
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
@@ -220,7 +220,7 @@ public class HandleTransactionRequestIntegrationTest {
         senderWallet.setCreditCard(expiredCard);
 
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
@@ -243,7 +243,7 @@ public class HandleTransactionRequestIntegrationTest {
         Wallet recipientWallet = getValidWallet(recipientWalletId);
         recipientWallet.setCreditCard(expiredCard);
 
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
@@ -265,7 +265,7 @@ public class HandleTransactionRequestIntegrationTest {
         senderWallet.getCreditCard().setBalance(new java.math.BigDecimal("50.00"));
 
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
@@ -278,7 +278,7 @@ public class HandleTransactionRequestIntegrationTest {
     @Test
     public void failHandleTransactionRequestOnInvalidTransferTransactionRequest() {
         // Arrange & Act
-        TransferTransactionRequestDto request = getInvalidTransferTransactionRequest();
+        TransferTransactionRequestWalletServiceDto request = getInvalidTransferTransactionRequest();
 
         // Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -288,7 +288,7 @@ public class HandleTransactionRequestIntegrationTest {
     @Test
     public void failHandleTransactionRequestOnNullTransferTransactionRequest() {
         // Arrange & Act
-        TransferTransactionRequestDto request = null;
+        TransferTransactionRequestWalletServiceDto request = null;
 
         // Assert
         Assertions.assertThrows(ConstraintViolationException.class,

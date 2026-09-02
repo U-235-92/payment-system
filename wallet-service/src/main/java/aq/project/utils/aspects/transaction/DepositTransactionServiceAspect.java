@@ -1,7 +1,7 @@
 package aq.project.utils.aspects.transaction;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.messages.requests.DepositTransactionRequest;
+import aq.project.dto.DepositTransactionRequestDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -34,7 +34,7 @@ public class DepositTransactionServiceAspect {
     @Around("execution(* aq.project.services.transaction.DepositTransactionService.handleTransactionRequest(..)) && args(request)")
     public void handleTransactionRequest(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid DepositTransactionRequest request
+            @NotNull @Valid DepositTransactionRequestDto request
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "handle-deposit-transaction-request";
@@ -63,7 +63,7 @@ public class DepositTransactionServiceAspect {
     }
 
     private Supplier<Void> checkConstraints(
-            DepositTransactionRequest request
+            DepositTransactionRequestDto request
     ) {
         BigDecimal amount = request.getAmount();
         BigDecimal conversionRate = request.getConversionRate();

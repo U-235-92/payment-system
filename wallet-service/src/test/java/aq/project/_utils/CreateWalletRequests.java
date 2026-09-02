@@ -4,6 +4,7 @@ import aq.project.dto.CardType;
 import aq.project.dto.CreateWalletRequestDto;
 import aq.project.dto.WalletStatus;
 
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public final class CreateWalletRequests {
         dto.setCreator("Creator");
         dto.setModifier("Modifier");
         dto.setCurrencyCode("USD");
-        dto.setBalance("100.00");
+        dto.setBalance(BigDecimal.valueOf(100.00));
         dto.setCardNumber("1234 5678 9012 3456");
         dto.setCardCvvNumber("123");
         // дата в формате MM/YY, например, через 3 года от текущего месяца
@@ -37,15 +38,14 @@ public final class CreateWalletRequests {
         dto.setModifier(null);
         // 3. Нарушаем @Pattern (длина и содержимое)
         dto.setCurrencyCode("US"); // должно быть 3 буквы
-        // 4. Нарушаем @Pattern для balance (должен быть формат "XXX.XX")
-        dto.setBalance("not a number");
-        // 5. Нарушаем @Pattern для cardNumber (должен быть "XXXX XXXX XXXX XXXX")
+        dto.setBalance(BigDecimal.valueOf(100.00));
+        // 4. Нарушаем @Pattern для cardNumber (должен быть "XXXX XXXX XXXX XXXX")
         dto.setCardNumber("1234-5678-9012-3456");
-        // 6. Нарушаем @Pattern для cvv (ровно 3 цифры)
+        // 5. Нарушаем @Pattern для cvv (ровно 3 цифры)
         dto.setCardCvvNumber("12");
-        // 7. Нарушаем @Pattern для expiration (MM/YY)
+        // 6. Нарушаем @Pattern для expiration (MM/YY)
         dto.setCardExpirationDate("13/25"); // месяц 13 недопустим
-        // 8. Нарушаем @NotNull для cardType
+        // 7. Нарушаем @NotNull для cardType
         dto.setCardType(null);
         return dto;
     }
@@ -60,9 +60,7 @@ public final class CreateWalletRequests {
 
     public static CreateWalletRequestDto getCreateWalletRequestWithInvalidBalance() {
         CreateWalletRequestDto dto = getValidCreateWalletRequest();
-        dto.setBalance("-10.00"); // отрицательная сумма, но @Pattern пропускает, так что лучше "abc"
-        // Для надёжности используем нечисловое значение
-        dto.setBalance("abc");
+        dto.setBalance(BigDecimal.valueOf(-10.00)); // отрицательная сумма
         return dto;
     }
 

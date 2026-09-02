@@ -8,7 +8,7 @@ import aq.project.entities.wallet.Wallet;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.messages.requests.DepositTransactionRequest;
+import aq.project.dto.DepositTransactionRequestDto;
 import aq.project.repositories.transaction.DepositTransactionRepository;
 import aq.project.repositories.wallet.WalletRepository;
 import aq.project.services.transaction.DepositTransactionService;
@@ -98,7 +98,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID walletId = UUID.randomUUID();
 
         Wallet wallet = getValidWallet(walletId);
-        DepositTransactionRequest request = getValidDepositTransactionRequest(transactionId, walletId);
+        DepositTransactionRequestDto request = getValidDepositTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
 
@@ -113,7 +113,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID walletId = UUID.randomUUID();
 
         Wallet wallet = getValidWallet(walletId);
-        DepositTransactionRequest request = getValidDepositTransactionRequest(transactionId, walletId);
+        DepositTransactionRequestDto request = getValidDepositTransactionRequest(transactionId, walletId);
         DepositTransaction transaction = getValidDepositTransaction(transactionId);
 
         walletRepository.save(wallet);
@@ -130,7 +130,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID transactionId = UUID.randomUUID();
         UUID walletId = UUID.randomUUID();
 
-        DepositTransactionRequest request = getValidDepositTransactionRequest(transactionId, walletId);
+        DepositTransactionRequestDto request = getValidDepositTransactionRequest(transactionId, walletId);
 
 //        Assert
         Assertions.assertThrows(EntityNotFoundException.class,
@@ -144,7 +144,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID walletId = UUID.randomUUID();
 
         Wallet wallet = getValidWalletBlocked(walletId);
-        DepositTransactionRequest request = getValidDepositTransactionRequest(transactionId, walletId);
+        DepositTransactionRequestDto request = getValidDepositTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
 
@@ -164,7 +164,7 @@ public class HandleTransactionRequestIntegrationTest {
         Wallet wallet = getValidWallet(walletId);
         wallet.setCreditCard(creditCard);
 
-        DepositTransactionRequest request = getValidDepositTransactionRequest(transactionId, walletId);
+        DepositTransactionRequestDto request = getValidDepositTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
 
@@ -176,7 +176,7 @@ public class HandleTransactionRequestIntegrationTest {
     @Test
     public void failHandleTransactionRequestOnInvalidDepositTransactionRequest() {
 //        Arrange & Act
-        DepositTransactionRequest request = getInvalidDepositTransactionRequest();
+        DepositTransactionRequestDto request = getInvalidDepositTransactionRequest();
 
 //        Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -186,7 +186,7 @@ public class HandleTransactionRequestIntegrationTest {
     @Test
     public void failHandleTransactionRequestOnNullDepositTransactionRequest() {
 //        Arrange & Act
-        DepositTransactionRequest request = null;
+        DepositTransactionRequestDto request = null;
 
 //        Assert
         Assertions.assertThrows(ConstraintViolationException.class,

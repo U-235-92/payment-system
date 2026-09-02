@@ -361,7 +361,8 @@ components:
         currencyCode:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
         balance:
-          $ref: "#/components/schemas/AmountDefinition"
+          type: number
+          format: decimal
         cardNumber:
           $ref: "#/components/schemas/CardNumberDefinition"
         cardCvvNumber:
@@ -370,87 +371,6 @@ components:
           $ref: "#/components/schemas/CardExpirationDateDefinition"
         cardType:
           $ref: "#/components/schemas/CardType"
-
-    WithdrawRequestDto:
-      type: object
-      required: [ transactionId, personId, walletId, amount, currencyCode, cardNumber, cardType, cardExpirationDate ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        personId:
-          type: string
-          format: uuid
-        walletId:
-          type: string
-          format: uuid
-        amount:
-          $ref: "#/components/schemas/AmountDefinition"
-        currencyCode:
-          $ref: "#/components/schemas/CurrencyCodeDefinition"
-        cardNumber:
-          $ref: "#/components/schemas/CardNumberDefinition"
-        cardType:
-          $ref: "#/components/schemas/CardType"
-        cardExpirationDate:
-          $ref: "#/components/schemas/CardExpirationDateDefinition"
-
-    TransferRequestDto:
-      type: object
-      required: [ transactionId, personId, fromWalletId, toWalletId, amount, currencyCode, fromCardNumber, fromCardType, toCardNumber, toCardType, fromCardExpirationDate, toCardExpirationDate ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        personId:
-          type: string
-          format: uuid
-        fromWalletId:
-          type: string
-          format: uuid
-        toWalletId:
-          type: string
-          format: uuid
-        amount:
-          $ref: "#/components/schemas/AmountDefinition"
-        currencyCode:
-          $ref: "#/components/schemas/CurrencyCodeDefinition"
-        fromCardNumber:
-          $ref: "#/components/schemas/CardNumberDefinition"
-        fromCardType:
-          $ref: "#/components/schemas/CardType"
-        fromCardExpirationDate:
-          $ref: "#/components/schemas/CardExpirationDateDefinition"
-        toCardNumber:
-          $ref: "#/components/schemas/CardNumberDefinition"
-        toCardType:
-          $ref: "#/components/schemas/CardType"
-        toCardExpirationDate:
-          $ref: "#/components/schemas/CardExpirationDateDefinition"
-
-    DepositRequestDto:
-      type: object
-      required: [ transactionId, personId, walletId, amount, currencyCode, cardNumber, cardType, cardExpirationDate ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        personId:
-          type: string
-          format: uuid
-        walletId:
-          type: string
-          format: uuid
-        amount:
-          $ref: "#/components/schemas/AmountDefinition"
-        currencyCode:
-          $ref: "#/components/schemas/CurrencyCodeDefinition"
-        cardNumber:
-          $ref: "#/components/schemas/CardNumberDefinition"
-        cardType:
-          $ref: "#/components/schemas/CardType"
-        cardExpirationDate:
-          $ref: "#/components/schemas/CardExpirationDateDefinition"
 
     WalletInfoResponseDto:
       type: object
@@ -469,7 +389,8 @@ components:
           type: string
           format: date-time
         balance:
-          $ref: "#/components/schemas/AmountDefinition"
+          type: number
+          format: decimal
         currencyCode:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
         cardNumber:
@@ -479,24 +400,140 @@ components:
         cardExpirationDate:
           $ref: "#/components/schemas/CardExpirationDateDefinition"
 
-    RateResponse:
+    DepositTransactionRequestDto:
       type: object
+      required: [ transactionId, walletId, amount, currencyCode, transactionStatus, timestamp, traceId, conversionRate ]
       properties:
-        sourceCode:
+        transactionId:
           type: string
-          description: Код исходной валюты (например, "USD")
-        destinationCode:
+          format: uuid
+        walletId:
           type: string
-          description: Код целевой валюты (например, "EUR")
-        rate:
+          format: uuid
+        amount:
           type: number
-          description: Курс обмена sourceCode→destinationCode
-        rateDate:
+          format: decimal
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        transactionStatus:
+          $ref: "#/components/schemas/TransactionStatus"
+        timestamp:
           type: string
-          description: Время, на которое действует курс
-        providerCode:
+          format: date-time
+        traceId:
           type: string
-          description: Код провайдера курса
+        conversionRate:
+          type: number
+          format: decimal
+
+    TransferTransactionRequestDto:
+      type: object
+      required: [ transactionId, senderWalletId, recipientWalletId, amount, currencyCode, transactionStatus, timestamp, traceId, senderConversionRate, recipientConversionRate ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        senderWalletId:
+          type: string
+          format: uuid
+        recipientWalletId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: decimal
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        transactionStatus:
+          $ref: "#/components/schemas/TransactionStatus"
+        timestamp:
+          type: string
+          format: date-time
+        traceId:
+          type: string
+        senderConversionRate:
+          type: number
+          format: decimal
+        recipientConversionRate:
+          type: number
+          format: decimal
+
+    WithdrawTransactionRequestDto:
+      type: object
+      required: [ transactionId, walletId, amount, currencyCode, transactionStatus, timestamp, traceId, conversionRate ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        walletId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: decimal
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        transactionStatus:
+          $ref: "#/components/schemas/TransactionStatus"
+        timestamp:
+          type: string
+          format: date-time
+        traceId:
+          type: string
+        conversionRate:
+          type: number
+          format: decimal
+
+    DepositTransactionResponseDto:
+      type: object
+      required: [ transactionId, walletId, transactionStatus, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        walletId:
+          type: string
+          format: uuid
+        transactionStatus:
+          $ref: "#/components/schemas/TransactionStatus"
+        timestamp:
+          type: string
+          format: date-time
+
+    TransferTransactionResponseDto:
+      type: object
+      required: [ transactionId, senderWalletId, recipientWalletId, transactionStatus, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        senderWalletId:
+          type: string
+          format: uuid
+        recipientWalletId:
+          type: string
+          format: uuid
+        transactionStatus:
+          $ref: "#/components/schemas/TransactionStatus"
+        timestamp:
+          type: string
+          format: date-time
+
+    WithdrawTransactionResponseDto:
+      type: object
+      required: [ transactionId, walletId, transactionStatus, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        walletId:
+          type: string
+          format: uuid
+        transactionStatus:
+          $ref: "#/components/schemas/TransactionStatus"
+        timestamp:
+          type: string
+          format: date-time
 
     ErrorDto:
       type: object
@@ -525,15 +562,6 @@ components:
       pattern: '^[A-Z]{3}$'
       minLength: 3
       maxLength: 3
-
-    AmountDefinition:
-      type: string
-      pattern: '^([1-9][0-9]*|[0]+)\.[0-9][0-9]$'
-      description: "Описание шаблона денежных средств в формате: 0.XX или Х.ХХ"
-
-#    UuidDefinition:
-#      type: string
-#      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
 
     CardCvvDefinition:
       type: string

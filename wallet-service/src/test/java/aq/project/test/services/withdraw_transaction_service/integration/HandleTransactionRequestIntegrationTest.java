@@ -2,13 +2,14 @@ package aq.project.test.services.withdraw_transaction_service.integration;
 
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
+import aq.project.dto.WithdrawTransactionRequestDto;
 import aq.project.entities.transaction.WithdrawTransaction;
 import aq.project.entities.wallet.CreditCard;
 import aq.project.entities.wallet.Wallet;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.messages.requests.WithdrawTransactionRequest;
+import aq.project.dto.WithdrawTransactionRequestDto;
 import aq.project.repositories.transaction.WithdrawTransactionRepository;
 import aq.project.repositories.wallet.WalletRepository;
 import aq.project.services.transaction.WithdrawTransactionService;
@@ -104,7 +105,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID walletId = UUID.randomUUID();
 
         Wallet wallet = getValidWallet(walletId);
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest(transactionId, walletId);
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
 
@@ -119,7 +120,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID walletId = UUID.randomUUID();
 
         Wallet wallet = getValidWallet(walletId);
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest(transactionId, walletId);
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest(transactionId, walletId);
         WithdrawTransaction transaction = getValidWithdrawTransaction(transactionId);
 
         walletRepository.save(wallet);
@@ -136,7 +137,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID transactionId = UUID.randomUUID();
         UUID walletId = UUID.randomUUID();
 
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest(transactionId, walletId);
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest(transactionId, walletId);
 
         // Assert
         Assertions.assertThrows(EntityNotFoundException.class,
@@ -150,7 +151,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID walletId = UUID.randomUUID();
 
         Wallet wallet = getValidWalletBlocked(walletId);
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest(transactionId, walletId);
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
 
@@ -170,7 +171,7 @@ public class HandleTransactionRequestIntegrationTest {
         Wallet wallet = getValidWallet(walletId);
         wallet.setCreditCard(expiredCard);
 
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest(transactionId, walletId);
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
 
@@ -189,7 +190,7 @@ public class HandleTransactionRequestIntegrationTest {
         // Устанавливаем баланс меньше суммы запроса (50.75)
         wallet.getCreditCard().setBalance(new BigDecimal("10.00"));
 
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest(transactionId, walletId);
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
 
@@ -201,7 +202,7 @@ public class HandleTransactionRequestIntegrationTest {
     @Test
     public void failHandleTransactionRequestOnInvalidWithdrawTransactionRequest() {
         // Arrange & Act
-        WithdrawTransactionRequest request = getInvalidWithdrawTransactionRequest();
+        WithdrawTransactionRequestDto request = getInvalidWithdrawTransactionRequest();
 
         // Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -211,7 +212,7 @@ public class HandleTransactionRequestIntegrationTest {
     @Test
     public void failHandleTransactionRequestOnNullWithdrawTransactionRequest() {
         // Arrange & Act
-        WithdrawTransactionRequest request = null;
+        WithdrawTransactionRequestDto request = null;
 
         // Assert
         Assertions.assertThrows(ConstraintViolationException.class,

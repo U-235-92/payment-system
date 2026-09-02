@@ -2,7 +2,6 @@ package aq.project.test.controllers.withdraw_transaction_rest_controller;
 
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
-import aq.project.entities.transaction.TransferTransaction;
 import aq.project.entities.transaction.WithdrawTransaction;
 import aq.project.repositories.transaction.WithdrawTransactionRepository;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -24,7 +23,6 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 import java.security.SecureRandom;
 import java.util.UUID;
 
-import static aq.project._utils.TransactionEntities.getValidTransferTransaction;
 import static aq.project._utils.TransactionEntities.getValidWithdrawTransaction;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

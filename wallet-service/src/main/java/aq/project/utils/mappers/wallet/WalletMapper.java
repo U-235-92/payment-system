@@ -30,19 +30,13 @@ public interface WalletMapper {
     @Mapping(target = "cardCvvNumber", source = "cardCvvNumber")
     @Mapping(target = "cardType", source = "cardType")
     @Mapping(target = "cardExpirationDate", expression = "java(toExpirationDate(dto))")
-    @Mapping(target = "balance", expression = "java(toBalance(dto))")
+    @Mapping(target = "balance", source = "balance")
     CreditCard toCreditCard(CreateWalletRequestDto dto);
 
     default YearMonth toExpirationDate(CreateWalletRequestDto dto) {
         return (dto.getCardExpirationDate() == null)
                 ? null
                 : YearMonth.parse(dto.getCardExpirationDate(), DateTimeFormatter.ofPattern(MONTH_YEAR_FORMAT));
-    }
-
-    default BigDecimal toBalance(CreateWalletRequestDto dto) {
-        return (dto.getBalance() == null)
-                ? null
-                : new BigDecimal(dto.getBalance());
     }
 
     @Mapping(target = "creator", source = "creator")
@@ -67,10 +61,9 @@ public interface WalletMapper {
                 .getCurrencyCode();
     }
 
-    default String toBalance(Wallet wallet) {
+    default BigDecimal toBalance(Wallet wallet) {
         return wallet.getCreditCard()
-                .getBalance()
-                .toString();
+                .getBalance();
     }
 
     default String toCardNumber(Wallet wallet) {

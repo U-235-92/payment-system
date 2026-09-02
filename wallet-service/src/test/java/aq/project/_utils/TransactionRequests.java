@@ -1,9 +1,9 @@
 package aq.project._utils;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.messages.requests.DepositTransactionRequest;
-import aq.project.messages.requests.TransferTransactionRequest;
-import aq.project.messages.requests.WithdrawTransactionRequest;
+import aq.project.dto.DepositTransactionRequestDto;
+import aq.project.dto.TransferTransactionRequestDto;
+import aq.project.dto.WithdrawTransactionRequestDto;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -13,12 +13,12 @@ public final class TransactionRequests {
 
 // ==================== DepositTransactionRequest ====================
 
-    public static DepositTransactionRequest getValidDepositTransactionRequest() {
-        DepositTransactionRequest request = new DepositTransactionRequest();
+    public static DepositTransactionRequestDto getValidDepositTransactionRequest() {
+        DepositTransactionRequestDto request = new DepositTransactionRequestDto();
         request.setTransactionId(UUID.randomUUID());
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(100.50));
-        request.setCurrency("USD");
+        request.setCurrencyCode("USD");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
@@ -26,12 +26,12 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static DepositTransactionRequest getValidDepositTransactionRequest(UUID transactionId, UUID walletId) {
-        DepositTransactionRequest request = new DepositTransactionRequest();
+    public static DepositTransactionRequestDto getValidDepositTransactionRequest(UUID transactionId, UUID walletId) {
+        DepositTransactionRequestDto request = new DepositTransactionRequestDto();
         request.setTransactionId(transactionId);
         request.setWalletId(walletId);
         request.setAmount(BigDecimal.valueOf(100.50));
-        request.setCurrency("USD");
+        request.setCurrencyCode("USD");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
@@ -39,12 +39,12 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static DepositTransactionRequest getInvalidDepositTransactionRequest() {
-        DepositTransactionRequest request = new DepositTransactionRequest();
+    public static DepositTransactionRequestDto getInvalidDepositTransactionRequest() {
+        DepositTransactionRequestDto request = new DepositTransactionRequestDto();
 //        отсутствует transactionId (null) – нарушает @NotNull
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(-100.50));
-        request.setCurrency("TEST");
+        request.setCurrencyCode("TEST");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
@@ -54,13 +54,13 @@ public final class TransactionRequests {
 
 // ==================== TransferTransactionRequest ====================
 
-    public static TransferTransactionRequest getValidTransferTransactionRequest() {
-        TransferTransactionRequest request = new TransferTransactionRequest();
+    public static TransferTransactionRequestDto getValidTransferTransactionRequest() {
+        TransferTransactionRequestDto request = new TransferTransactionRequestDto();
         request.setTransactionId(UUID.randomUUID());
         request.setSenderWalletId(UUID.randomUUID());
         request.setRecipientWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(200.00));
-        request.setCurrency("EUR");
+        request.setCurrencyCode("EUR");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
@@ -69,13 +69,13 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static TransferTransactionRequest getValidTransferTransactionRequest(UUID transactionId, UUID senderWalletId, UUID recipientWalletId) {
-        TransferTransactionRequest request = new TransferTransactionRequest();
+    public static TransferTransactionRequestDto getValidTransferTransactionRequest(UUID transactionId, UUID senderWalletId, UUID recipientWalletId) {
+        TransferTransactionRequestDto request = new TransferTransactionRequestDto();
         request.setTransactionId(transactionId);
         request.setSenderWalletId(senderWalletId);
         request.setRecipientWalletId(recipientWalletId);
         request.setAmount(BigDecimal.valueOf(200.00));
-        request.setCurrency("EUR");
+        request.setCurrencyCode("EUR");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
@@ -84,13 +84,13 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static TransferTransactionRequest getInvalidTransferTransactionRequest() {
-        TransferTransactionRequest request = new TransferTransactionRequest();
+    public static TransferTransactionRequestDto getInvalidTransferTransactionRequest() {
+        TransferTransactionRequestDto request = new TransferTransactionRequestDto();
 //        отсутствует senderWalletId (null)
         request.setTransactionId(UUID.randomUUID());
         request.setRecipientWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(-200.00));
-        request.setCurrency("usd");
+        request.setCurrencyCode("usd");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
@@ -101,12 +101,12 @@ public final class TransactionRequests {
 
 // ==================== WithdrawTransactionRequest ====================
 
-    public static WithdrawTransactionRequest getValidWithdrawTransactionRequest() {
-        WithdrawTransactionRequest request = new WithdrawTransactionRequest();
+    public static WithdrawTransactionRequestDto getValidWithdrawTransactionRequest() {
+        WithdrawTransactionRequestDto request = new WithdrawTransactionRequestDto();
         request.setTransactionId(UUID.randomUUID());
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(50.75));
-        request.setCurrency("RUB");
+        request.setCurrencyCode("RUB");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
@@ -114,12 +114,12 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static WithdrawTransactionRequest getValidWithdrawTransactionRequest(UUID transactionId, UUID walletId) {
-        WithdrawTransactionRequest request = new WithdrawTransactionRequest();
+    public static WithdrawTransactionRequestDto getValidWithdrawTransactionRequest(UUID transactionId, UUID walletId) {
+        WithdrawTransactionRequestDto request = new WithdrawTransactionRequestDto();
         request.setTransactionId(transactionId);
         request.setWalletId(walletId);
         request.setAmount(BigDecimal.valueOf(50.75));
-        request.setCurrency("RUB");
+        request.setCurrencyCode("RUB");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
@@ -127,12 +127,12 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static WithdrawTransactionRequest getInvalidWithdrawTransactionRequest() {
-        WithdrawTransactionRequest request = new WithdrawTransactionRequest();
+    public static WithdrawTransactionRequestDto getInvalidWithdrawTransactionRequest() {
+        WithdrawTransactionRequestDto request = new WithdrawTransactionRequestDto();
 //        отсутствует walletId (null)
         request.setTransactionId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(50.75));
-        request.setCurrency("RUB");
+        request.setCurrencyCode("RUB");
         request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(null);
@@ -142,20 +142,20 @@ public final class TransactionRequests {
 
 // ==================== Дополнительные методы для удобства ====================
 
-    public static DepositTransactionRequest getValidDepositTransactionRequestWithStatus(TransactionStatus status) {
-        DepositTransactionRequest request = getValidDepositTransactionRequest();
+    public static DepositTransactionRequestDto getValidDepositTransactionRequestWithStatus(TransactionStatus status) {
+        DepositTransactionRequestDto request = getValidDepositTransactionRequest();
         request.setTransactionStatus(status);
         return request;
     }
 
-    public static TransferTransactionRequest getValidTransferTransactionRequestWithStatus(TransactionStatus status) {
-        TransferTransactionRequest request = getValidTransferTransactionRequest();
+    public static TransferTransactionRequestDto getValidTransferTransactionRequestWithStatus(TransactionStatus status) {
+        TransferTransactionRequestDto request = getValidTransferTransactionRequest();
         request.setTransactionStatus(status);
         return request;
     }
 
-    public static WithdrawTransactionRequest getValidWithdrawTransactionRequestWithStatus(TransactionStatus status) {
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest();
+    public static WithdrawTransactionRequestDto getValidWithdrawTransactionRequestWithStatus(TransactionStatus status) {
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
         request.setTransactionStatus(status);
         return request;
     }

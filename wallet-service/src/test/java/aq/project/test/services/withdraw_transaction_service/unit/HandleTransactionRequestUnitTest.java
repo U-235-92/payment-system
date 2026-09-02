@@ -6,7 +6,7 @@ import aq.project.entities.wallet.Wallet;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.messages.requests.WithdrawTransactionRequest;
+import aq.project.dto.WithdrawTransactionRequestDto;
 import aq.project.repositories.transaction.WithdrawTransactionRepository;
 import aq.project.services.transaction.WithdrawTransactionService;
 import aq.project.services.wallet.WalletService;
@@ -70,7 +70,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void successHandleTransactionRequest() {
         // Arrange & Act
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest();
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -114,7 +114,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnNotIdempotentTransactionRequest() {
         // Arrange & Act
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest();
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
 
         Mockito.doThrow(DuplicateTransactionHandleException.class)
                 .when(transactionHandler)
@@ -141,7 +141,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnWalletNotFound() {
         // Arrange & Act
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest();
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -169,7 +169,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnWalletBlocked() {
         // Arrange & Act
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest();
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -200,7 +200,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnCreditCardExpired() {
         // Arrange & Act
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest();
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -234,7 +234,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnInsufficientBalance() {
         // Arrange & Act
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest();
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
 
         Mockito.doNothing()
                 .when(transactionHandler)
@@ -268,7 +268,7 @@ public class HandleTransactionRequestUnitTest {
     @Test
     public void failHandleTransactionRequestOnWalletNotFoundWithLockMode() {
         // Arrange & Act
-        WithdrawTransactionRequest request = getValidWithdrawTransactionRequest();
+        WithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
 
         Mockito.doReturn(getValidWallet())
                 .when(walletService)

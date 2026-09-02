@@ -7,8 +7,8 @@ import aq.project.entities.transaction.WithdrawTransaction;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.messages.requests.WithdrawTransactionRequest;
-import aq.project.messages.responses.WithdrawTransactionResponse;
+import aq.project.dto.WithdrawTransactionRequestDto;
+import aq.project.dto.WithdrawTransactionResponseDto;
 import aq.project.repositories.transaction.WithdrawTransactionRepository;
 import aq.project.services.wallet.WalletService;
 import aq.project.utils.handlers.TransactionHandler;
@@ -67,7 +67,7 @@ public class WithdrawTransactionService {
 
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.withdraw_transaction_request.name}")
-    public void handleTransactionRequest(WithdrawTransactionRequest request) {
+    public void handleTransactionRequest(WithdrawTransactionRequestDto request) {
         WithdrawTransaction transaction = transactionRequestMapper.toWithdrawTransaction(request);
         try {
             traceContext.clean();
@@ -86,12 +86,12 @@ public class WithdrawTransactionService {
         }
     }
 
-    private void checkIdempotentTransactionHandle(WithdrawTransactionRequest request) {
+    private void checkIdempotentTransactionHandle(WithdrawTransactionRequestDto request) {
         UUID transactionId = request.getTransactionId();
         transactionHandler.checkWithdrawTransactionPresent(transactionId);
     }
 
-    private void checkTransactionConstraints(WithdrawTransactionRequest request) {
+    private void checkTransactionConstraints(WithdrawTransactionRequestDto request) {
         UUID walletId = request.getWalletId();
 
         Wallet wallet = walletService.getWallet(walletId);
@@ -114,7 +114,7 @@ public class WithdrawTransactionService {
                             request.getAmount()));
     }
 
-    private void handleTransaction(WithdrawTransactionRequest request) {
+    private void handleTransaction(WithdrawTransactionRequestDto request) {
 //        Prepare data
         UUID walletId = request.getWalletId();
         Wallet wallet = walletService.getWalletWithLock(walletId);
@@ -162,9 +162,9 @@ public class WithdrawTransactionService {
         log.info("[{}-{}]: Attempt to handle withdraw transaction with id: [{}]",
                 traceId, spanId, transaction.getId());
 
-        WithdrawTransactionResponse response = transactionResponseMapper.toWithdrawResponse(transaction);
+        WithdrawTransactionResponseDto response = transactionResponseMapper.toWithdrawResponse(transaction);
 
-        ProducerRecord<String, WithdrawTransactionResponse> record = new ProducerRecord<>(transactionResponseTopicName, response);
+        ProducerRecord<String, WithdrawTransactionResponseDto> record = new ProducerRecord<>(transactionResponseTopicName, response);
 
         Headers headers = record.headers();
         headers.add(X_TRACE_ID_HEADER, traceId.getBytes());

@@ -8,15 +8,15 @@ CREATE TABLE merchants (
 );
 
 CREATE TABLE transactions (
-    id                UUID PRIMARY KEY,
-    merchant_id       VARCHAR(50) NOT NULL REFERENCES merchants(id),
-    amount            NUMERIC(18,2) NOT NULL,
-    currency          VARCHAR(3) NOT NULL,
-    operation         VARCHAR(50) NOT NULL,
-    status            VARCHAR(20) NOT NULL,
-    description       VARCHAR(2048),
-    notification_url  VARCHAR(2048),
-    metadata_id       BIGINT REFERENCES transaction_metadata(id)
+    id                     UUID PRIMARY KEY,
+    merchant_id            VARCHAR(50) NOT NULL REFERENCES merchants(id),
+    amount                 NUMERIC(18,2) NOT NULL,
+    currency_code          VARCHAR(3) NOT NULL,
+    operation              VARCHAR(50) NOT NULL,
+    status                 VARCHAR(20) NOT NULL,
+    description            VARCHAR(2048),
+    notification_url       VARCHAR(2048),
+    metadata_id            BIGINT REFERENCES transaction_metadata(id)
 );
 
 CREATE TABLE transaction_metadata (

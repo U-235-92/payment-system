@@ -40,8 +40,8 @@ public class Transaction {
     @NotBlank
     @Size(min = 3, max = 3)
     @Pattern(regexp = "^[A-Z]{3}$")
-    @Column(name = "currency", nullable = false, length = 3)
-    private String currency;
+    @Column(name = "currency_code", nullable = false, length = 3)
+    private String currencyCode;
 
     @NotNull
     @Enumerated(EnumType.STRING)

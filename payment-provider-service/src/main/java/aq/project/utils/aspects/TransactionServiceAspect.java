@@ -1,9 +1,9 @@
 package aq.project.utils.aspects;
 
-import aq.project.dto.CancelTransactionRequestDto;
-import aq.project.dto.CreateTransactionRequestDto;
-import aq.project.dto.FailTransactionRequestDto;
-import aq.project.dto.TransactionResponseDto;
+import aq.project.dto.CancelTransactionRequestPaymentProviderServiceDto;
+import aq.project.dto.CreateTransactionRequestPaymentProviderServiceDto;
+import aq.project.dto.FailTransactionRequestPaymentProviderServiceDto;
+import aq.project.dto.TransactionResponsePaymentProviderServiceDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +34,7 @@ public class TransactionServiceAspect {
     @Around("execution(* aq.project.services.TransactionService.handleCreateTransaction(..)) && args(requestDto)")
     public void handleCreateTransaction(
             ProceedingJoinPoint pjp,
-            @Validated CreateTransactionRequestDto requestDto
+            @Validated CreateTransactionRequestPaymentProviderServiceDto requestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "handle-create-transaction";
@@ -66,7 +66,7 @@ public class TransactionServiceAspect {
     @Around("execution(* aq.project.services.TransactionService.handleFailTransaction(..)) && args(requestDto)")
     public void handleFailTransaction(
             ProceedingJoinPoint pjp,
-            @Validated FailTransactionRequestDto requestDto
+            @Validated FailTransactionRequestPaymentProviderServiceDto requestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "handle-fail-transaction";
@@ -98,7 +98,7 @@ public class TransactionServiceAspect {
     @Around("execution(* aq.project.services.TransactionService.handleCancelTransaction(..)) && args(requestDto)")
     public void handleCancelTransaction(
             ProceedingJoinPoint pjp,
-            @Validated CancelTransactionRequestDto requestDto
+            @Validated CancelTransactionRequestPaymentProviderServiceDto requestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "handle-cancel-transaction";
@@ -128,7 +128,7 @@ public class TransactionServiceAspect {
     }
 
     @Around("execution(* aq.project.services.TransactionService.getTransactionInfo(..)) && args(transactionId, merchantId)")
-    public TransactionResponseDto getTransactionInfo(
+    public TransactionResponsePaymentProviderServiceDto getTransactionInfo(
             ProceedingJoinPoint pjp,
             @NotNull UUID transactionId,
             @NotBlank String merchantId
@@ -145,7 +145,7 @@ public class TransactionServiceAspect {
 
 //        Handler logic call
         return serviceAspectHandler.handle(
-                TransactionResponseDto.class,
+                TransactionResponsePaymentProviderServiceDto.class,
                 pjp,
                 tracerName,
                 serviceName,
@@ -160,7 +160,7 @@ public class TransactionServiceAspect {
     }
 
     @Around("execution(* aq.project.services.TransactionService.getTransactionList(..)) && args(startDate, endDate, merchantId)")
-    public List<TransactionResponseDto> getTransactionList(
+    public List<TransactionResponsePaymentProviderServiceDto> getTransactionList(
             ProceedingJoinPoint pjp,
             @NotNull OffsetDateTime startDate,
             @NotNull OffsetDateTime endDate,

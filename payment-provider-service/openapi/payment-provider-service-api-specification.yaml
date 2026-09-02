@@ -52,7 +52,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TransactionResponseDto"
+                  $ref: "#/components/schemas/TransactionResponsePaymentProviderServiceDto"
         400:
           description: Malformed request
           content:
@@ -96,7 +96,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionResponseDto"
+                $ref: "#/components/schemas/TransactionResponsePaymentProviderServiceDto"
         404:
           description: Transaction with specified id is not exist or belongs another merchant
           content:
@@ -157,9 +157,9 @@ components:
       scheme: basic
 
   schemas:
-    CreateTransactionRequestDto:
+    CreateTransactionRequestPaymentProviderServiceDto:
       type: object
-      required: [ transactionId, merchantId, traceId, operation, amount, currency, notificationUrl, timestamp ]
+      required: [ transactionId, merchantId, traceId, operation, amount, currencyCode, notificationUrl, timestamp ]
       properties:
         transactionId:
           type: string
@@ -171,8 +171,9 @@ components:
         operation:
           $ref: "#/components/schemas/Operation"
         amount:
-          $ref: "#/components/schemas/AmountDefinition"
-        currency:
+          type: number
+          format: decimal
+        currencyCode:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
         description:
           type: string
@@ -182,7 +183,7 @@ components:
           type: string
           format: date-time
 
-    FailTransactionRequestDto:
+    FailTransactionRequestPaymentProviderServiceDto:
       type: object
       required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
       properties:
@@ -198,7 +199,7 @@ components:
         operation:
           $ref: "#/components/schemas/Operation"
 
-    CancelTransactionRequestDto:
+    CancelTransactionRequestPaymentProviderServiceDto:
       type: object
       required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
       properties:
@@ -214,9 +215,9 @@ components:
         operation:
           $ref: "#/components/schemas/Operation"
 
-    TransactionResponseDto:
+    TransactionResponsePaymentProviderServiceDto:
       type: object
-      required: [ transactionId, merchantId, operation, amount, currency, status, timestamp ]
+      required: [ transactionId, merchantId, operation, amount, currencyCode, transactionStatus, timestamp ]
       properties:
         transactionId:
           type: string
@@ -226,10 +227,11 @@ components:
         operation:
           $ref: "#/components/schemas/Operation"
         amount:
-          $ref: "#/components/schemas/AmountDefinition"
-        currency:
+          type: number
+          format: decimal
+        currencyCode:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
-        status:
+        transactionStatus:
           $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
@@ -284,11 +286,6 @@ components:
           format: int32
         message:
           type: string
-
-    AmountDefinition:
-      type: string
-      pattern: '^([1-9][0-9]*|[0]+)\.[0-9][0-9]$'
-      description: "Описание шаблона денежных средств в формате: 0.XX или Х.ХХ"
 
     CurrencyCodeDefinition:
       type: string

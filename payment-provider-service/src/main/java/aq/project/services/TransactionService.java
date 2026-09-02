@@ -36,9 +36,7 @@ public class TransactionService {
     private final TraceContext traceContext;
 
     @KafkaListener(topics = "${service.kafka.topics.create_transaction_request.name}")
-    public void handleCreateTransaction(
-            CreateTransactionRequestDto requestDto
-    ) {
+    public void handleCreateTransaction(CreateTransactionRequestPaymentProviderServiceDto requestDto) {
         try {
             Transaction transaction = transactionMapper.toTransaction(requestDto);
 
@@ -54,7 +52,7 @@ public class TransactionService {
     }
 
     @KafkaListener(topics = "${service.kafka.topics.fail_transaction_request.name}")
-    public void handleFailTransaction(FailTransactionRequestDto requestDto) {
+    public void handleFailTransaction(FailTransactionRequestPaymentProviderServiceDto requestDto) {
         try {
             UUID transactionId = requestDto.getTransactionId();
 
@@ -70,7 +68,7 @@ public class TransactionService {
     }
 
     @KafkaListener(topics = "${service.kafka.topics.cancel_transaction_request.name}")
-    public void handleCancelTransaction(CancelTransactionRequestDto requestDto) {
+    public void handleCancelTransaction(CancelTransactionRequestPaymentProviderServiceDto requestDto) {
         try {
             UUID transactionId = requestDto.getTransactionId();
 
@@ -91,7 +89,7 @@ public class TransactionService {
     }
 
     @Transactional(readOnly = true)
-    public TransactionResponseDto getTransactionInfo(
+    public TransactionResponsePaymentProviderServiceDto getTransactionInfo(
             UUID transactionId,
             String merchantId
     ) {
@@ -104,7 +102,7 @@ public class TransactionService {
     }
 
     @Transactional(readOnly = true)
-    public List<TransactionResponseDto> getTransactionList(
+    public List<TransactionResponsePaymentProviderServiceDto> getTransactionList(
             OffsetDateTime startDate,
             OffsetDateTime endDate,
             String merchantId

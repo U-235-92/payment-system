@@ -1,7 +1,7 @@
 package aq.project.controllers;
 
 import aq.project.controller.TransactionRestControllerApi;
-import aq.project.dto.TransactionResponseDto;
+import aq.project.dto.TransactionResponsePaymentProviderServiceDto;
 import aq.project.services.TransactionService;
 import aq.project.utils.telemetry.TraceContext;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
     private final TransactionService transactionService;
 
     @Override
-    public ResponseEntity<TransactionResponseDto> getTransactionInfo(
+    public ResponseEntity<TransactionResponsePaymentProviderServiceDto> getTransactionInfo(
             UUID id,
             String authorization,
             String xTraceId
@@ -33,7 +33,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<List<TransactionResponseDto>> getTransactionList(
+    public ResponseEntity<List<TransactionResponsePaymentProviderServiceDto>> getTransactionList(
             OffsetDateTime startDate,
             OffsetDateTime endDate,
             String authorization,

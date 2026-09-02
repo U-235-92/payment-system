@@ -1,6 +1,6 @@
 package aq.project.get_transaction_list.unit;
 
-import aq.project.dto.TransactionResponseDto;
+import aq.project.dto.TransactionResponsePaymentProviderServiceDto;
 import aq.project.entities.Merchant;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
@@ -45,7 +45,7 @@ public class GetTransactionListUnitTest {
                         Mockito.eq(merchantId), Mockito.any(OffsetDateTime.class), Mockito.any(OffsetDateTime.class)))
                 .thenReturn(List.of(transaction));
 //        Act
-        List<TransactionResponseDto> dtoList = transactionService.getTransactionList(
+        List<TransactionResponsePaymentProviderServiceDto> dtoList = transactionService.getTransactionList(
                 OffsetDateTime.now(), OffsetDateTime.now().plusHours(1L), merchantId);
 
 //        Assert

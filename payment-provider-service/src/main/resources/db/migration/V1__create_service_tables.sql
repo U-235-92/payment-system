@@ -8,28 +8,19 @@ CREATE TABLE merchants (
 );
 
 CREATE TABLE transactions (
-    id           UUID PRIMARY KEY,
-    merchant_id  VARCHAR(50) NOT NULL REFERENCES merchants(id),
-    amount       NUMERIC(18,2) NOT NULL,
-    currency     VARCHAR(3) NOT NULL,
-    type         VARCHAR(50) NOT NULL,
-    status       VARCHAR(20) NOT NULL,
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP,
-    description  VARCHAR(255),
-    external_id  VARCHAR(100),
-    notification_url  VARCHAR(2048)
+    id                UUID PRIMARY KEY,
+    merchant_id       VARCHAR(50) NOT NULL REFERENCES merchants(id),
+    amount            NUMERIC(18,2) NOT NULL,
+    currency          VARCHAR(3) NOT NULL,
+    operation         VARCHAR(50) NOT NULL,
+    status            VARCHAR(20) NOT NULL,
+    description       VARCHAR(2048),
+    notification_url  VARCHAR(2048),
+    metadata_id       BIGINT REFERENCES transaction_metadata(id)
 );
 
-CREATE INDEX idx_transactions_merchant_date ON transactions(merchant_id, created_at);
-
-CREATE TABLE webhooks (
-    id               BIGSERIAL PRIMARY KEY,
-    event_type       VARCHAR(50) NOT NULL,
-    transaction_id   UUID NOT NULL,
-    payload          JSONB,
-    received_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    notification_url VARCHAR(2048)
+CREATE TABLE transaction_metadata (
+    id        BIGSERIAL PRIMARY KEY,
+    timestamp TIMESTAMP,
+    trace_id  VARCHAR(255)
 );
-
-CREATE INDEX idx_webhooks_entity ON webhooks(event_type, transaction_id);

@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
 
 import java.time.OffsetDateTime;
@@ -17,7 +15,7 @@ import java.time.OffsetDateTime;
 @Audited
 @Getter @Setter
 @NoArgsConstructor
-@Table(name = "transaction-metadata")
+@Table(name = "transaction_metadata")
 public class TransactionMetadata {
 
     @Id
@@ -27,14 +25,8 @@ public class TransactionMetadata {
     private Long id;
 
     @NotNull
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private OffsetDateTime createdAt;
-
-    @NotNull
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
+    @Column(name = "timestamp", updatable = false, nullable = false)
+    private OffsetDateTime timestamp;
 
     @NotBlank
     @Column(name = "trace_id", nullable = false)

@@ -24,18 +24,25 @@ CREATE TABLE merchants_aud (
 );
 
 CREATE TABLE transactions_aud (
-    id           UUID,
-    rev          INTEGER NOT NULL REFERENCES public.revinfo(rev),
-    revtype      SMALLINT,
-    merchant_id  VARCHAR(50),
-    amount       NUMERIC(18,2),
-    currency     VARCHAR(3),
-    type         VARCHAR(50),
-    status       VARCHAR(20),
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP,
-    description  VARCHAR(255),
-    external_id  VARCHAR(100),
+    id                UUID,
+    rev               INTEGER NOT NULL REFERENCES public.revinfo(rev),
+    revtype           SMALLINT,
+    merchant_id       VARCHAR(50),
+    amount            NUMERIC(18,2),
+    currency          VARCHAR(3),
+    operation         VARCHAR(50),
+    status            VARCHAR(20),
+    description       VARCHAR(2048),
     notification_url  VARCHAR(2048),
+    metadata_id       BIGINT,
+    PRIMARY KEY (rev, id)
+);
+
+CREATE TABLE transaction_metadata_aud (
+    id        BIGINT,
+    rev       INTEGER NOT NULL REFERENCES public.revinfo(rev),
+    revtype   SMALLINT,
+    timestamp TIMESTAMP,
+    trace_id  VARCHAR(255),
     PRIMARY KEY (rev, id)
 );

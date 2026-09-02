@@ -159,7 +159,7 @@ components:
   schemas:
     CreateTransactionRequestDto:
       type: object
-      required: [ transactionId, merchantId, traceId, operation, amount, currency, notificationUrl, createdAt, updatedAt ]
+      required: [ transactionId, merchantId, traceId, operation, amount, currency, notificationUrl, timestamp ]
       properties:
         transactionId:
           type: string
@@ -178,10 +178,7 @@ components:
           type: string
         notificationUrl:
           type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
+        timestamp:
           type: string
           format: date-time
 
@@ -219,7 +216,7 @@ components:
 
     TransactionResponseDto:
       type: object
-      required: [ transactionId, merchantId, operation, amount, currency, status, createdAt, updatedAt ]
+      required: [ transactionId, merchantId, operation, amount, currency, status, timestamp ]
       properties:
         transactionId:
           type: string
@@ -234,10 +231,7 @@ components:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
         status:
           $ref: "#/components/schemas/TransactionStatus"
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
+        timestamp:
           type: string
           format: date-time
         description:

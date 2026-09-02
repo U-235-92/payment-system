@@ -30,8 +30,7 @@ public interface TransactionMapper {
     default TransactionMetadata toTransactionMetadata(CreateTransactionRequestDto dto) {
         TransactionMetadata transactionMetadata = new TransactionMetadata();
         transactionMetadata.setTraceId(dto.getTraceId());
-        transactionMetadata.setCreatedAt(dto.getCreatedAt());
-        transactionMetadata.setUpdatedAt(dto.getUpdatedAt());
+        transactionMetadata.setTimestamp(dto.getTimestamp());
         return transactionMetadata;
     }
 
@@ -41,20 +40,17 @@ public interface TransactionMapper {
     @Mapping(target = "amount", source = "amount")
     @Mapping(target = "currency", source = "currency")
     @Mapping(target = "status", source = "status")
-    @Mapping(target = "createdAt", expression = "java(toCreatedAt(transaction))")
-    @Mapping(target = "updatedAt", expression = "java(toUpdatedAt(transaction))")
+    @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
     @Mapping(target = "description", source = "description")
     TransactionResponseDto toTransactionResponseDto(Transaction transaction);
 
     default String toMerchantId(Transaction transaction) {
-        return transaction.getMerchant().getId();
+        return transaction.getMerchant()
+                .getId();
     }
 
-    default OffsetDateTime toCreatedAt(Transaction transaction) {
-        return transaction.getMerchant().getCreatedAt();
-    }
-
-    default OffsetDateTime toUpdatedAt(Transaction transaction) {
-        return transaction.getMerchant().getUpdatedAt();
+    default OffsetDateTime toTimestamp(Transaction transaction) {
+        return transaction.getMetadata()
+                .getTimestamp();
     }
 }

@@ -63,6 +63,6 @@ public class Transaction {
 
     @NotNull
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "metadata", nullable = false)
+    @JoinColumn(name = "metadata_id", nullable = false)
     private TransactionMetadata metadata;
 }

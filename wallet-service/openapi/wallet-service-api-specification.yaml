@@ -551,9 +551,6 @@ components:
     CardType:
       enum: [ "VISA", "MASTERCARD", "MIR", "AMERICAN_EXPRESS", "UNION_PAY" ]
 
-    OperationType:
-      enum: [ "DEPOSIT", "WITHDRAW", "TRANSFER" ]
-
     TransactionStatus:
       enum: [ "PENDING", "COMPLETED", "FAILED" ]
 

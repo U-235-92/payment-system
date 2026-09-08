@@ -4,15 +4,15 @@ package aq.project.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
 @Getter @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "transaction_metadata")
 public class TransactionMetadata {
 
@@ -28,4 +28,7 @@ public class TransactionMetadata {
     @PositiveOrZero
     @Column(name = "retry_count", nullable = false)
     private Integer retryCount;
+
+    @Column(name = "notification_url")
+    private String notificationUrl;
 }

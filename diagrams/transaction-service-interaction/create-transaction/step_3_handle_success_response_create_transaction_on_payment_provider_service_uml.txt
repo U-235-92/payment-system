@@ -1,0 +1,22 @@
+@startuml
+
+actor transaction_service
+participant transaction_service_db
+participant kafka
+
+alt получение ответа об успешной обработке создания транзакции сервисом [payment_provider_service]
+	note right transaction_service
+	    Используется метод-обработчик отмеченный как @KafkaListener
+	end note
+	transaction_service -> kafka : Получение ответа обработки создания транзакции сервисом [payment_provider_service], извлечение id транзакции;
+	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service] по-указанному id;
+	transaction_service -> transaction_service : Отображение извлеченной сущности транзакции сервиса [transaction_service] на сущность создания транзакции сервиса [wallet_service] со статусом isProcessed = false;
+	transaction_service -> transaction_service_db : Сохранение сущности создания транзакции сервиса [wallet_service];
+	note right transaction_service
+		Далее, с помощью @Scheduler'a осуществляется извлечение из БД
+		созданной сущности транзакции сервиса [wallet_service],
+		преобразование ее в DTO и отправка в kafka-топик сервиса wallet_service.
+	end note
+end
+
+@enduml

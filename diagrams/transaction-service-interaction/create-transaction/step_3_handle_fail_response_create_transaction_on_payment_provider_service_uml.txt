@@ -1,0 +1,28 @@
+@startuml
+
+actor transaction_service
+participant transaction_service_db
+participant kafka
+
+alt получение ответа об ошибке обработки создания транзакции сервисом [payment_provider_service]
+	note right transaction_service
+		Обработка ошибок запроса на создание транзакции сервисом [payment_provider_service]
+		осуществляется @KafkaListener'ом с указанием regexp-шаблона топика. 
+		Общий шаблон имеет вид: "название_сервиса_название_топика_exceptios". 
+		Сам топик поделен на разделы таким образом, чтобы определенные исключения
+		направлялись в строго отведенные разделы (отдельный раздел для каждого бизнес-исключения).
+	end note
+	note right transaction_service
+		В случае ошибки обработки транзакции на стороне сервиса [payment_provider_service]
+		сообщение об ошибке доставляется в специфический exception-топик.
+		Сама же транзакция в сервисе [payment_provider_service] не будет сохранена.
+		Как следствие, в случае возникновения ошибки производить запрос на отмену 
+		транзакции в сервисе [payment_provider_service] не нужно.
+	end note
+	transaction_service -> kafka : Получение ответа обработки создания транзакции сервисом [payment_provider_service];
+	transaction_service -> transaction_service : Извлечение из полученного ответа id транзакции;
+	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service] по-указанному id, отметить ее статус как [FAILED], сохранить измененение;
+	transaction_service -> kafka : Отправка сообщения в kafka для [webhook_service] о результате работы транзакции;
+end
+
+@enduml

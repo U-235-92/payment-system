@@ -12,11 +12,6 @@ alt получение ответа об успешной обработке с�
 	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service] по-указанному id;
 	transaction_service -> transaction_service : Отображение извлеченной сущности транзакции сервиса [transaction_service] на сущность создания транзакции сервиса [wallet_service] со статусом isProcessed = false;
 	transaction_service -> transaction_service_db : Сохранение сущности создания транзакции сервиса [wallet_service];
-	note right transaction_service
-		Далее, с помощью @Scheduler'a осуществляется извлечение из БД
-		созданной сущности транзакции сервиса [wallet_service],
-		преобразование ее в DTO и отправка в kafka-топик сервиса wallet_service.
-	end note
 end
 
 @enduml

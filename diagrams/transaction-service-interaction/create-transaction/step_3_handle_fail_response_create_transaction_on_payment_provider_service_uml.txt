@@ -7,10 +7,8 @@ participant kafka
 alt получение ответа об ошибке обработки создания транзакции сервисом [payment_provider_service]
 	note right transaction_service
 		Обработка ошибок запроса на создание транзакции сервисом [payment_provider_service]
-		осуществляется @KafkaListener'ом с указанием regexp-шаблона топика. 
-		Общий шаблон имеет вид: "название_сервиса_название_топика_exceptios". 
-		Сам топик поделен на разделы таким образом, чтобы определенные исключения
-		направлялись в строго отведенные разделы (отдельный раздел для каждого бизнес-исключения).
+		осуществляется @KafkaListener'ом. 
+		Формат именования топика имеет вид: "название_сервиса_название_топика_exceptios".
 	end note
 	note right transaction_service
 		В случае ошибки обработки транзакции на стороне сервиса [payment_provider_service]
@@ -21,8 +19,19 @@ alt получение ответа об ошибке обработки соз�
 	end note
 	transaction_service -> kafka : Получение ответа обработки создания транзакции сервисом [payment_provider_service];
 	transaction_service -> transaction_service : Извлечение из полученного ответа id транзакции;
-	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service] по-указанному id, отметить ее статус как [FAILED], сохранить измененение;
-	transaction_service -> kafka : Отправка сообщения в kafka для [webhook_service] о результате работы транзакции;
+	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service] по-указанному id;
+	alt сущность транзакции сервиса [transaction_service] найдена
+		alt статус сущности транзакции сервиса [transaction_service] является [PENDING]
+			transaction_service -> transaction_service_db : Отметить статус сущности транзакции сервиса [transaction_service] как [FAILED], сохранить измененение;
+			transaction_service -> kafka : Отправка сообщения в kafka для [webhook_service] о результате работы транзакции;
+		else статус сущности транзакции сервиса [transaction_service] отличен от [PENDING]
+			transaction_service -> transaction_service : Логирование о возникшем несоответствии статуса транзакции;
+			transaction_service -> kafka : Отправка сообщения в kafka для [webhook_service] о результате работы транзакции;
+		end
+	else сущность транзакции сервиса [transaction_service] не найдена
+		transaction_service -> transaction_service : Логирование о возникшем исключении;
+		transaction_service -> kafka : Отправка сообщения в kafka для [webhook_service] о результате работы транзакции;
+	end
 end
 
 @enduml

@@ -10,6 +10,7 @@ alt получение ответа об успешной обработке с�
 	end note
 	transaction_service -> kafka : Получение ответа обработки создания транзакции сервисом [payment_provider_service], извлечение id транзакции;
 	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service] по-указанному id;
+	transaction_service -> transaction_service : Определение типа операции транзакции [DEPOSIT, WITHDRAW, TRANSFER], в зависимости от типа операции, обработать полученный ответ;
 	alt сущность транзакции сервиса [transaction_service] найдена
 		alt статус сущности транзакции сервиса [transaction_service] является [PENDING]
 			transaction_service -> transaction_service : Отображение извлеченной сущности транзакции сервиса [transaction_service] на сущность создания транзакции сервиса [wallet_service] со статусом isProcessed = false;

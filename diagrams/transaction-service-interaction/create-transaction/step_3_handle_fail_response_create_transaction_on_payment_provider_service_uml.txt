@@ -20,6 +20,7 @@ alt получение ответа об ошибке обработки соз�
 	transaction_service -> kafka : Получение ответа обработки создания транзакции сервисом [payment_provider_service];
 	transaction_service -> transaction_service : Извлечение из полученного ответа id транзакции;
 	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service] по-указанному id;
+	transaction_service -> transaction_service : Определение типа операции транзакции [DEPOSIT, WITHDRAW, TRANSFER], в зависимости от типа операции, обработать полученный ответ;
 	alt сущность транзакции сервиса [transaction_service] найдена
 		alt статус сущности транзакции сервиса [transaction_service] является [PENDING]
 			transaction_service -> transaction_service_db : Отметить статус сущности транзакции сервиса [transaction_service] как [FAILED], сохранить измененение;

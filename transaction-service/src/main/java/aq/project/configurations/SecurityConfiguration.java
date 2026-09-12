@@ -37,7 +37,7 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    @Profile("prod")
+    @Profile({ "prod", "test" })
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/api/v1/**")

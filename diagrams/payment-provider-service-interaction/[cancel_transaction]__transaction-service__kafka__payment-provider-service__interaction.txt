@@ -1,0 +1,41 @@
+@startuml
+
+actor transaction_service
+participant kafka
+participant payment_proider_service
+participant payment_proider_service_db
+
+alt отмена транзакции
+	transaction_service -> kafka : Отправить запрос [отмена транзакции];
+	alt обработчик kafka
+		payment_proider_service -> kafka : Получить запрос [отмена транзакции];
+		payment_proider_service -> payment_proider_service_db : Извлечение транзакции с переданным ID;
+		payment_proider_service -> payment_proider_service_db : Обновить статус транзакции на [MARKED_CANCELED];
+        note right payment_proider_service
+            Обновление статуса транзакции производится только при условии,
+            что указанный в DTO merchanId совпадает с merchanId транзакции
+        end note
+		note right payment_proider_service
+			Если извлеченная транзакция имеет статус [PENDING] или [COMPLETED], то изменить его на статус [MARKED_CANCELED]. 
+			Статус [CANCELED] является конечным для транзакции и не может быть изменен.
+			Статус [COMPLETED] может быть изменен ТОЛЬКО на статус [MARKED_CANCELED] или [MARKED_FAILED].
+			Статус [MARKED_CANCELED] может быть изменен ТОЛЬКО на статус [CANCELED].
+		end note
+	end
+	alt обработчик outbox
+		payment_proider_service -> payment_proider_service_db : Извлечение всех запосов в состоянии [MARKED_CANCELED];
+		payment_proider_service -> kafka : Отправить ответ на запрос [отмена транзакции] в kafka. Дождаться ответа;
+		payment_proider_service -> payment_proider_service_db : Изменить статус транзакции на [CANCELED];
+		note left payment_proider_service_db
+            Для идемпотентности операции обработки извлеченной сущности транзакции обработка каждой
+            сущности транзакции производится в новой транзакции БД, в режиме [PESSIMISTIC_WRITE].
+        end note
+        note left payment_proider_service
+            При возникновении ошибки на этапе отправки ответа на запрос [отмена транзакции] в топик kafka
+            незамедлительно отметить состояние транзакции как [REQUIRED_MANUAL_HANDLE],
+            добавить четкое описание возникшей неполадки в description и сохранить транзакцию в БД
+        end note
+	end
+end
+
+@enduml

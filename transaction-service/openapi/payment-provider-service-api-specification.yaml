@@ -1,0 +1,419 @@
+openapi: 3.1.0
+info:
+  title: Payment Provider API
+  description: Common payment-provider-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8086
+  - url: http://payment-provider-service:8086
+
+paths:
+  /api/v1/transactions/create:
+    post:
+      summary: Create a new transaction
+      security:
+        - basicAuth: []
+      operationId: createTransaction
+      tags:
+        - Transaction
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionRequestDto"
+      responses:
+        201:
+          description: Transaction was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionResponseDto"
+        400:
+          description: Transaction request is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/transactions/list-on-period:
+    get:
+      summary: Get list of transactions on described period
+      security:
+        - basicAuth: []
+      operationId: getTransactionList
+      tags:
+        - Transaction
+      parameters:
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: Start date (include) ISO 8601
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: End date (include) ISO 8601
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      responses:
+        200:
+          description: List of transactions on described period
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/transactions/info/{id}:
+    get:
+      summary: Get transaction info by id
+      security:
+        - basicAuth: []
+      operationId: getTransactionInfo
+      tags:
+        - Transaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: "#/components/schemas/UuidDefinition"
+          description: Transaction id
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      responses:
+        200:
+          description: Transaction info with specified id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionResponseDto"
+        404:
+          description: Transaction with specified id is not exist or belongs another merchant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/transactions/cancel:
+    post:
+      summary: Cancel transaction by specified id
+      security:
+        - basicAuth: []
+      operationId: cancelTransaction
+      tags:
+        - Transaction
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelTransactionDto"
+      responses:
+        200:
+          description: Transaction with specified id was canceled successfully
+        400:
+          description: No any transaction with specified id was found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/webhook/transactions/update-status:
+    post:
+      summary: Incoming notification about transaction status
+      security:
+        - basicAuth: []
+      operationId: updateTransactionStatus
+      tags:
+        - Webhook
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionStatusDto"
+      responses:
+        200:
+          description: Notification was received and transaction status was updated
+        400:
+          description: No any transaction with specified id was found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/admin/merchants/register:
+    post:
+      summary: Register a new merchant (admin only)
+      security:
+        - basicAuth: []
+      operationId: registerMerchant
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MerchantRegistrationRequestDto"
+      responses:
+        201:
+          description: Merchant successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MerchantRegistrationResponseDto"
+        400:
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Unauthorized (invalid credentials)
+        409:
+          description: Merchant with this merchantId already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+
+tags:
+  - name: Transaction
+    description: Describes operations with transactions
+  - name: Webhook
+    description: Describes operations with webhooks
+  - name: Admin
+    description: Administrative operations
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    TransactionRequestDto:
+      type: object
+      required: [ operationType, amount, currency, properties ]
+      properties:
+        operationType:
+          $ref: "#/components/schemas/OperationType"
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currency:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+
+    TransactionResponseDto:
+      type: object
+      required: [ id, merchantId, amount, currency, operationType, status, createdAt ]
+      properties:
+        id:
+          $ref: "#/components/schemas/UuidDefinition"
+        merchantId:
+          type: string
+        amount:
+          $ref: "#/components/schemas/AmountDefinition"
+        currency:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        operationType:
+          $ref: "#/components/schemas/OperationType"
+        status:
+          $ref: "#/components/schemas/TransactionStatus"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        externalId:
+          type: string
+
+    TransactionStatusDto:
+      type: object
+      required: [ id, status, event_type ]
+      properties:
+        id:
+          $ref: "#/components/schemas/UuidDefinition"
+        status:
+          $ref: "#/components/schemas/TransactionStatus"
+        event_type:
+          $ref: "#/components/schemas/EventType"
+        notification_url:
+          type: string
+        description:
+          type: string
+
+    CancelTransactionDto:
+      type: object
+      required: [ id, status ]
+      properties:
+        id:
+          $ref: "#/components/schemas/UuidDefinition"
+        status:
+          $ref: "#/components/schemas/TransactionStatus"
+
+    ErrorDto:
+      type: object
+      required: [ http_status, message ]
+      properties:
+        http_status:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    OperationType:
+      enum: [ "DEPOSIT", "WITHDRAW", "TRANSFER" ]
+
+    AmountDefinition:
+      type: string
+      pattern: '^([1-9][0-9]*|[0]+)\.[0-9][0-9]$'
+      description: "Описание шаблона денежных средств в формате: 0.XX или Х.ХХ"
+
+    CurrencyCodeDefinition:
+      type: string
+      pattern: '^[A-Z]{3}$'
+      minLength: 3
+      maxLength: 3
+
+    TransactionStatus:
+      enum: [ "PENDING", "COMPLETED", "FAILED" ]
+
+    UuidDefinition:
+      type: string
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+    MerchantRegistrationRequestDto:
+      type: object
+      required: [ merchantId, secretKey, name, role ]
+      properties:
+        merchantId:
+          type: string
+          maxLength: 50
+          pattern: '^[a-zA-Z0-9_-]{3,50}$'
+          description: Unique merchant identifier (used as username for Basic Auth)
+        secretKey:
+          type: string
+          maxLength: 255
+          minLength: 8
+          description: Secret key (will be hashed before storage)
+        name:
+          type: string
+          maxLength: 100
+          description: Display name of the merchant
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    MerchantRegistrationResponseDto:
+      type: object
+      required: [ merchantId, name, createdAt, role ]
+      properties:
+        merchantId:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    UserRole:
+      enum: [ "ADMIN", "USER" ]
+
+    EventType:
+      enum: [ "TRANSACTION_COMPLETED", "TRANSACTION_FAILED" ]

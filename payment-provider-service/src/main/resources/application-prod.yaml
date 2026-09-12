@@ -1,0 +1,45 @@
+server:
+  port: ${SERVICE_PORT}
+  ssl:
+    key-store: 'classpath:payment_provider_keystore.p12'
+    key-store-password: ${KEY_STORE_PASSWORD}
+    key-store-type: ${KEY_STORE_TYPE}
+    key-alias: ${KEY_STORE_ALIAS}
+logging:
+  level:
+    root: info
+    org.hibernate.orm.results: info
+    org.hibernate.SQL: info
+    org.hibernate.type.descriptor.sql: info
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_COLLECTOR_URI}
+  metrics:
+    tags:
+      application: ${SERVICE_NAME}
+spring:
+  application:
+    name: ${SERVICE_NAME}
+  kafka:
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS}
+  flyway:
+    enabled: true
+    baseline-version: 1
+    baseline-on-migrate: true
+    default-schema: public
+    create-schemas: true
+    locations: 'classpath:db/migration'
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate

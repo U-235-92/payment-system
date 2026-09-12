@@ -1,0 +1,161 @@
+server:
+  port: 8086
+spring:
+  profiles:
+    active:
+      - dev
+  task:
+    scheduling:
+      pool:
+        size: 3
+  application:
+    name: payment-provider-service
+  kafka:
+    listener:
+      ack-mode: RECORD
+    producer:
+      acks: all
+      retries: 5
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      group-id: payment-provider-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "aq.project.dto"
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # OTEL collector URI
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: payment-provider-service
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+service:
+  payment-provider-service:
+    scheduler:
+      handle_create_transaction:
+        rate: 5000
+      handle_fail_transaction:
+        rate: 5000
+      handle_cancel_transaction:
+        rate: 5000
+  kafka:
+    backoff:
+      max-attempts: 3
+      wait-duration: 500
+      multiplier: 2
+    topics:
+      create_transaction_request:
+        name: 'create_transaction_request'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_transaction_request_dlt:
+        name: 'create_transaction_request_dlt'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_transaction_request_exceptions:
+        name: 'create_transaction_request_exceptions'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      fail_transaction_request:
+        name: 'fail_transaction_request'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      fail_transaction_request_dlt:
+        name: 'fail_transaction_request_dlt'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      fail_transaction_request_exceptions:
+        name: 'fail_transaction_request_exceptions'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      cancel_transaction_request:
+        name: 'cancel_transaction_request'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      cancel_transaction_request_dlt:
+        name: 'cancel_transaction_request_dlt'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      cancel_transaction_request_exceptions:
+        name: 'cancel_transaction_request_exceptions'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      create_transaction_response:
+        name: 'create_transaction_response'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_transaction_response_dlt:
+        name: 'create_transaction_response_dlt'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_transaction_response_exceptions:
+        name: 'create_transaction_response_exceptions'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      fail_transaction_response:
+        name: 'fail_transaction_response'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      fail_transaction_response_dlt:
+        name: 'fail_transaction_response_dlt'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      fail_transaction_response_exceptions:
+        name: 'fail_transaction_response_exceptions'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      cancel_transaction_response:
+        name: 'cancel_transaction_response'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      cancel_transaction_response_dlt:
+        name: 'cancel_transaction_response_dlt'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      cancel_transaction_response_exceptions:
+        name: 'cancel_transaction_response_exceptions'
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2

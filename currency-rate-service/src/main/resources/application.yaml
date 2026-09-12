@@ -1,11 +1,11 @@
 server:
-  port: ${SERVICE_PORT}
+  port: 8085
 spring:
   profiles:
     active:
-      - ${SERVICE_PROFILE}
+      - dev
   application:
-    name: ${SERVICE_NAME}
+    name: currency-rate-service
   security:
     oauth2:
       resourceserver:
@@ -24,7 +24,7 @@ management:
         enabled: false
   metrics:
     tags:
-      application: ${SERVICE_NAME}
+      application: currency-rate-service
   endpoints:
     web:
       exposure:
@@ -53,9 +53,9 @@ application:
   rates:
     provider:
       default:
-        code: ${DEFAULT_RATE_PROVIDER_CODE}
-        name: ${DEFAULT_RATE_PROVIDER_NAME}
-        adjustment-factor: ${DEFAULT_RATE_PROVIDER_ADJUSTMENT_FACTOR}
+        code: CBR
+        name: 'Central Bank of Russia'
+        adjustment-factor: 1.0085
   client:
     frankfurter:
       base-url: 'https://api.frankfurter.dev/v2'

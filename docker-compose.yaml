@@ -193,6 +193,37 @@ services:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         loki-external-labels: container=currency-rate-service
 
+  payment-provider-service:
+    container_name: payment-provider-service
+    build:
+      context: .
+      dockerfile: ./payment-provider-service/Dockerfile
+    image: u23592/payment-provider-service:1.0.0
+    env_file:
+      - ./payment-provider-service/.env
+    ports:
+      - "8086:8086"
+    networks:
+      - app-network
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+      otel-collector:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+      payment-provider-service-db:
+        condition: service_healthy
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: container=payment-provider-service
+
   keycloak-db:
     image: postgres:18.3
     container_name: keycloak_db
@@ -272,6 +303,27 @@ services:
       PGDATA: /var/lib/postgresql/17/docker
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U root -d currency_rate_service_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  payment-provider-service-db:
+    image: postgres:18.3
+    container_name: payment-provider-service-db
+    ports:
+      - "5436:5432"
+    networks:
+      - app-network
+    volumes:
+      - payment_provider_service_data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: payment_provider_service_db
+      PGDATA: /var/lib/postgresql/17/docker
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d payment_provider_service_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -509,4 +561,6 @@ volumes:
   kafka_broker_3_data:
     driver: local
   currency_rate_service_data:
+    driver: local
+  payment_provider_service_data:
     driver: local

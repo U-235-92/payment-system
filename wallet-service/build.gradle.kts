@@ -16,7 +16,7 @@ extra["springCloudVersion"] = "2025.1.2"
 
 val artifact = "wallet-service"
 
-val specificationArtifactVersion = "1.0.1-dev"
+val specificationArtifactVersion = "1.0.7-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -85,13 +85,17 @@ val dependencyVersionMap = mapOf(
 //	Test
 	"testcontainers" to "2.0.3",
 	"wiremock-spring-boot" to "4.0.9",
+	"testcontainers-keycloak" to "4.1.1",
 
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
 
 //	Sharding
 	"shardingsphere" to "5.5.1",
-	"atomikos" to "6.0.1"
+	"atomikos" to "6.0.1",
+
+//	Lombok MapStruct binding
+	"lombok-mapstruct-binding" to "0.2.0"
 )
 
 dependencies {
@@ -133,6 +137,9 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
 	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
 
+//	Lombok MapStruct binding
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
+
 //	Test
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
@@ -148,6 +155,7 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-kafka")
 	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")

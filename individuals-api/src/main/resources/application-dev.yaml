@@ -2,3 +2,4 @@ logging:
   level:
     root: info
     reactor: info
+    org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping: debug

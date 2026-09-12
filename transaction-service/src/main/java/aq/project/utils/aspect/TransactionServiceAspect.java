@@ -2,37 +2,31 @@ package aq.project.utils.aspect;
 
 import aq.project.dto.TransactionStatus;
 import aq.project.messages.TransactionRequest;
-import aq.project.messages.TransactionResponse;
 import aq.project.utils.telemetry.ServiceAspectHandler;
-import aq.project.utils.telemetry.TraceContext;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.header.Header;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
-import static aq.project.utils.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
 import static aq.project.utils.constants.RequestPropertyKeys.*;
 
 @Slf4j
 @Aspect
+@Order(1)
 @Component
 @Validated
 @RequiredArgsConstructor
@@ -43,12 +37,8 @@ public class TransactionServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    private final TraceContext traceContext;
-
-    private final Validator validator;
-
     @Around("execution(* aq.project.services.TransactionService.sendTransactionRequest(..)) && args(transactionRequest)")
-    public String aspectSendTransactionRequest(
+    public String sendTransactionRequest(
             ProceedingJoinPoint pjp,
             @NotNull @Valid TransactionRequest transactionRequest
     ) throws Throwable {
@@ -75,7 +65,8 @@ public class TransactionServiceAspect {
                 postFailureMainLogicCallLogMessage,
                 checkConstraints(transactionRequest),
                 null,
-                null
+                null,
+                true
         );
     }
 
@@ -114,71 +105,8 @@ public class TransactionServiceAspect {
         }
     }
 
-    @Around("execution(* aq.project.services.TransactionService.handleTransactionResponse(..)) && args(consumerRecord)")
-    public void aspectHandleTransactionResponse(
-            ProceedingJoinPoint pjp,
-            ConsumerRecord<String, TransactionResponse> consumerRecord
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "handle-transaction-response";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-        String preMainLogicLogMessage = String.format("Received record from Kafka topic: %s, partition: %s, offset: %s",
-                consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
-        String postSuccessMainLogicCallLogMessage = String.format("Success handle record from Kafka topic: %s, partition: %s, offset: %s",
-                consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
-        String postFailureMainLogicCallLogMessage = String.format("Error occurred during handle record from Kafka topic: %s, partition: %s, offset: %s",
-                consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
-//        Handler logic call
-        serviceAspectHandler.handle(
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                preMainLogicLogMessage,
-                postSuccessMainLogicCallLogMessage,
-                postFailureMainLogicCallLogMessage,
-                checkConstraints(consumerRecord),
-                propagateTraceContext(consumerRecord),
-                null
-        );
-    }
-
-    private Supplier<Void> checkConstraints(ConsumerRecord<String, TransactionResponse> consumerRecord) {
-        return () -> {
-            if(consumerRecord == null) {
-                throw new ConstraintViolationException("Received null Kafka consumer record", null);
-            }
-            TransactionResponse transactionResponse = consumerRecord.value();
-            if(transactionResponse == null) {
-                throw new ConstraintViolationException("Transaction response is null", null);
-            }
-            Set<ConstraintViolation<TransactionResponse>> constraintViolations = validator.validate(transactionResponse);
-            if(!constraintViolations.isEmpty()) {
-                throw new ConstraintViolationException(constraintViolations);
-            }
-            return null;
-        };
-    }
-
-    private Supplier<Void> propagateTraceContext(ConsumerRecord<String, TransactionResponse> consumerRecord) {
-        return () -> {
-            traceContext.setTraceId(getTraceIdFromConsumerRecordHeader(consumerRecord));
-            return null;
-        };
-    }
-
-    private String getTraceIdFromConsumerRecordHeader(ConsumerRecord<String, ?> consumerRecord) {
-        for(Header header : consumerRecord.headers()) {
-            if(header.key().equals(X_TRACE_ID_HEADER)) {
-                return new String(header.value());
-            }
-        }
-        String msg = String.format("Transaction response hasn't got the header: [%s]", X_TRACE_ID_HEADER);
-        throw new IllegalStateException(msg);
-    }
-
     @Around("execution(* aq.project.services.TransactionService.getTransactionStatus(..)) && args(transactionId)")
-    public TransactionStatus aspectGetTransactionStatus(
+    public TransactionStatus getTransactionStatus(
             ProceedingJoinPoint pjp,
             @NotBlank @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String transactionId
     ) throws Throwable {
@@ -203,7 +131,8 @@ public class TransactionServiceAspect {
                 postFailureMainLogicCallLogMessage,
                 null,
                 null,
-                null
+                null,
+                true
         );
     }
 }

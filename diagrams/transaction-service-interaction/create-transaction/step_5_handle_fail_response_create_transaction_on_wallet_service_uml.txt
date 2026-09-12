@@ -1,0 +1,25 @@
+@startuml
+
+actor transaction_service
+participant transaction_service_db
+participant kafka
+
+alt получение ответа об ошибке обработки создания транзакции сервисом [wallet_service]
+	note right transaction_service
+		Обработка ошибок запроса на создание транзакции сервисом [wallet_service]
+		осуществляется @KafkaListener'ом.
+	end note
+	note right transaction_service
+		В случае ошибки обработки транзакции на стороне сервиса [wallet_service]
+		сообщение об ошибке доставляется в специфический exception-топик.
+		Сама же транзакция в сервисе [wallet_service] не будет обработана.
+		Как следствие, в случае возникновения ошибки производить запрос на отмену 
+		транзакции в сервисе [wallet_service] не нужно.
+	end note
+	transaction_service -> kafka : Получение ответа обработки создания транзакции сервисом [wallet_service];
+	transaction_service -> transaction_service : Извлечение из полученного ответа id транзакции;
+	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service] по-указанному id, отметить ее статус как [FAILED], сохранить измененение;
+	transaction_service -> kafka : Отправка сообщения в kafka для [webhook_service] о результате работы транзакции;
+end
+
+@enduml

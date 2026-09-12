@@ -500,9 +500,9 @@ components:
       bearerFormat: JWT
 
   schemas:
-##########################################
-# INDIVIDUALS-API SERVICE API COMPONENTS #
-##########################################
+    ##########################################
+    # INDIVIDUALS-API SERVICE API COMPONENTS #
+    ##########################################
     UserInfoResponseDto:
       type: object
       required: [ keycloak_user_id, email, roles, created, individual_data ]
@@ -592,9 +592,9 @@ components:
       type: string
       pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
 
-#################################
-# PERSON SERVICE API COMPONENTS #
-#################################
+    #################################
+    # PERSON SERVICE API COMPONENTS #
+    #################################
     UpdateIndividualDataDto:
       allOf:
         - $ref: "./person-service-api-specification.yaml#/components/schemas/UpdateIndividualDataDto"
@@ -632,9 +632,9 @@ components:
         address:
           $ref: "#/components/schemas/AddressDto"
 
-######################################
-# TRANSACTION SERVICE API COMPONENTS #
-######################################
+    ######################################
+    # TRANSACTION SERVICE API COMPONENTS #
+    ######################################
     TransactionRequestDto:
       $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionRequestDto"
 
@@ -644,9 +644,9 @@ components:
     TransactionStatus:
       $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
 
-########################################
-# CURRENCY RATE SERVICE API COMPONENTS #
-########################################
+    ########################################
+    # CURRENCY RATE SERVICE API COMPONENTS #
+    ########################################
     RateProviderResponse:
       $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/RateProviderResponse"
 
@@ -656,9 +656,9 @@ components:
     RateResponse:
       $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/RateResponse"
 
-#################################
-# WALLET SERVICE API COMPONENTS #
-#################################
+    #################################
+    # WALLET SERVICE API COMPONENTS #
+    #################################
     CreateWalletRequestDto:
       $ref: "./wallet-service-api-specification.yaml#/components/schemas/CreateWalletRequestDto"
 

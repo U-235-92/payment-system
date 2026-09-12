@@ -8,4 +8,5 @@ public interface RequestPropertyKeys {
     String SENDER_PERSON_ID = "sender_person_id";
     String RECIPIENT_CURRENCY_RATE = "recipient_currency_rate";
     String SENDER_CURRENCY_RATE = "sender_currency_rate";
+    String TIMESTAMP = "timestamp";
 }

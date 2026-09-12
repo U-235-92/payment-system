@@ -1,0 +1,30 @@
+logging:
+  level:
+    root: info
+    org.hibernate.SQL: debug # Вывод самого текста SQL-запроса
+    org.hibernate.orm.jdbc.bind: trace # Вывод значений параметров для Hibernate 6+ (используется в современном Spring Boot 3+)
+    org.hibernate.type.descriptor.sql.BasicBinder: trace # Вывод значений параметров для Hibernate 5 и ранних версий Spring Boot
+spring:
+  flyway:
+    enabled: false
+  datasource:
+    username: root
+    password:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:transaction_service_test_db
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: true # делает запросы многострочными и красивыми
+        use_sql_comments: true # добавляет в лог название метода репозитория или имя сущности, которая вызвала запрос
+    hibernate:
+      ddl-auto: create-drop
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true

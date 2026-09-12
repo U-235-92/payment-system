@@ -3,7 +3,7 @@ package aq.project.controllers.handlers;
 import aq.project.controllers.WalletRestController;
 import aq.project.dto.ErrorDto;
 import aq.project.exceptions.WalletException;
-import aq.project.utils.ControllerExceptionLogger;
+import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

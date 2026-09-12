@@ -1,11 +1,11 @@
 server:
-  port: ${SERVICE_PORT}
+  port: 8081
 spring:
   application:
-    name: ${SERVICE_NAME}
+    name: individuals-api
   profiles:
     active:
-      - ${SERVICE_PROFILE}
+      - dev
   main:
     web-application-type: reactive
   security:
@@ -21,10 +21,10 @@ spring:
             token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
         registration:
           keycloak:
-            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
-            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
-            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
-            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
+            client-id: individuals-api
+            client-secret: qomP5PU6JMurRIXkbFpQP0kbhqqA6RT5
+            admin-id: payment-system-admin-cli
+            admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
 management:
   opentelemetry:
     tracing:
@@ -37,7 +37,7 @@ management:
         enabled: false
   metrics:
     tags:
-      application: ${SERVICE_NAME}
+      application: individuals-api
   endpoints:
     web:
       exposure:
@@ -47,15 +47,15 @@ management:
           - health
 application:
   keycloak-service:
-    name: ${KEYCLOAK_SERVICE_NAME}
-    realm: ${KEYCLOAK_REALM}
+    name: keycloak-service
+    realm: payment-system
     uri: http://localhost:8080
     admin-uri: http://localhost:8080/admin/realms/payment-system/users
     endpoints:
       token: /realms/payment-system/protocol/openid-connect/token
       admin: /admin/realms/payment-system/users
   person-service:
-    name: ${PERSON_SERVICE_NAME}
+    name: person-service
     uri: http://localhost:8082
     endpoints:
       create-person: /api/v1/person/create-person
@@ -65,20 +65,20 @@ application:
       undo-update-person: /api/v1/person/undo-update-person
       get-person-info-by-keycloak-id: /api/v1/person/get-person-by-keycloak-id
   wallet-service:
-    name: ${WALLET_SERVICE_NAME}
+    name: wallet-service
     uri: http://localhost:8083
     endpoints:
       create-wallet: /api/v1/wallet/create
       get-wallet-info: /api/v1/wallet/info
       get-wallet-currency: /api/v1/wallet/currency
   transaction-service:
-    name: ${TRANSACTION_SERVICE_NAME}
+    name: transaction-service
     uri: http://localhost:8084
     endpoints:
       get-transaction-status: /api/v1/transaction/status
       send-transaction-request: /api/v1/transaction/send
   currency-rate-service:
-    name: ${CURRENCY_RATE_SERVICE_NAME}
+    name: currency-rate-service
     uri: http://localhost:8085
     endpoints:
       get-rate: /api/v1/currency-rate/get-rate

@@ -1,3 +1,5 @@
+server:
+  port: ${SERVICE_PORT}
 logging:
   level:
     root: info
@@ -7,7 +9,20 @@ management:
       export:
         otlp:
           endpoint: ${OTEL_COLLECTOR_URI}
+  metrics:
+    tags:
+      application: ${SERVICE_NAME}
 spring:
+  application:
+    name: ${SERVICE_NAME}
+  flyway:
+    driver-class-name:
+    default-schema: public
+    baseline-version: ${FLYWAY_DB_BASELINE_VERSION}
+    baseline-on-migrate: true
+    create-schemas: true
+    locations: ${FLYWAY_MIGRATION_SCRIPT_PATH}
+    clean-disabled: false
   kafka:
     bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS}
   security:
@@ -26,6 +41,14 @@ spring:
     hibernate:
       ddl-auto: validate
 application:
+  services:
+    wallet-service:
+      name: ${SERVICE_NAME}
+      audit:
+        db: ${DB_NAME}
+        schema: ${DB_AUDIT_SCHEMA_NAME}
+        table: ${DB_AUDIT_TABLE}
+        column: ${DB_AUDIT_COLUMN}
   datasource:
     - ${SHARD0_DB_URL},${SHARD0_DB_USERNAME},${SHARD0_DB_PASSWORD}
     - ${SHARD1_DB_URL},${SHARD1_DB_USERNAME},${SHARD1_DB_PASSWORD}

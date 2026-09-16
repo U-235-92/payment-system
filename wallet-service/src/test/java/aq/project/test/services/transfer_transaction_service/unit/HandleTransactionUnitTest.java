@@ -7,8 +7,11 @@ import aq.project.services.wallet.WalletService;
 import aq.project.utils.handlers.TransactionHandler;
 import aq.project.utils.mappers.transaction.TransactionRequestMapper;
 import aq.project.utils.mappers.transaction.TransactionResponseMapper;
+import aq.project.utils.telemetry.ApplicationMetricsRegistry;
 import aq.project.utils.telemetry.TraceContext;
 import io.opentelemetry.api.OpenTelemetry;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +46,9 @@ public class HandleTransactionUnitTest {
     @Spy
     private final OpenTelemetry openTelemetry = OpenTelemetry.noop();
 
+    @Spy
+    private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     @Mock
     private TransactionHandler transactionHandler;
 
@@ -58,44 +64,48 @@ public class HandleTransactionUnitTest {
     @Mock
     private TransferTransactionRepository transferTransactionRepository;
 
+    @Mock
+    private ApplicationMetricsRegistry applicationMetricsRegistry;
+
     @InjectMocks
     private TransferTransactionService transferTransactionService;
 
     @BeforeEach
     public void setUpValueFields() {
-        ReflectionTestUtils.setField(transferTransactionService, "tracerName", "testTracer");
-        ReflectionTestUtils.setField(transferTransactionService, "transactionResponseTopicName", "testTopic");
+        ReflectionTestUtils.setField(transferTransactionService, "serviceName", "testService");
+        ReflectionTestUtils.setField(transferTransactionService, "transactionResponseTopicName", "testTransactionResponseTopic");
+        ReflectionTestUtils.setField(transferTransactionService, "transactionExceptionResponseTopicName", "testTransactionExceptionResponseTopic");
     }
 
     @Test
     public void successHandleTransaction() {
-        // Arrange & Act
+        // Arrange
         TransferTransaction transaction = getValidTransferTransaction();
 
         Mockito.doReturn(Mockito.mock(CompletableFuture.class))
                 .when(kafkaTemplate)
-                .send(Mockito.any(ProducerRecord.class));
+                .send(Mockito.any(), Mockito.any());
 
         Mockito.doReturn(new PageImpl<>(List.of(transaction)))
                 .when(transferTransactionRepository)
                 .findAll(Mockito.any(Pageable.class));
 
-        // Assert
+        // Act & Assert
         Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransaction());
         Assertions.assertTrue(transaction.isProcessed());
 
         Mockito.verify(kafkaTemplate, Mockito.times(1))
-                .send(Mockito.any(ProducerRecord.class));
+                .send(Mockito.any(), Mockito.any());
     }
 
     @Test
     public void successHandleTransactionOnEmptyPage() {
-        // Arrange & Act
+        // Arrange
         Mockito.doReturn(Page.empty())
                 .when(transferTransactionRepository)
                 .findAll(Mockito.any(Pageable.class));
 
-        // Assert
+        // Act & Assert
         Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransaction());
 
         Mockito.verify(kafkaTemplate, Mockito.never()).send(Mockito.any(ProducerRecord.class));
@@ -103,14 +113,14 @@ public class HandleTransactionUnitTest {
 
     @Test
     public void failHandleTransactionOnExceptionAfterGetKafkaResponse() throws ExecutionException, InterruptedException {
-        // Arrange & Act
+        // Arrange
         TransferTransaction transaction = getValidTransferTransaction();
 
         CompletableFuture<SendResult<String, Object>> future = Mockito.mock(CompletableFuture.class);
 
         Mockito.doReturn(future)
                 .when(kafkaTemplate)
-                .send(Mockito.any(ProducerRecord.class));
+                .send(Mockito.any(), Mockito.any());
 
         Mockito.doThrow(InterruptedException.class)
                 .when(future)
@@ -120,7 +130,7 @@ public class HandleTransactionUnitTest {
                 .when(transferTransactionRepository)
                 .findAll(Mockito.any(Pageable.class));
 
-        // Assert
+        // Act & Assert
         Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransaction());
         Assertions.assertFalse(transaction.isProcessed());
     }

@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS public.wallets (
 CREATE TABLE IF NOT EXISTS public.transaction_metadata (
     id BIGSERIAL PRIMARY KEY,
     trace_id VARCHAR NOT NULL,
-    timestamp TIMESTAMP NOT NULL
+    timestamp TIMESTAMP NOT NULL,
+    description VARCHAR(2048)
 );
 
 -- 5. Таблица депозитных транзакций

@@ -1,11 +1,9 @@
 package aq.project.utils.mappers.transaction;
 
+import aq.project.dto.*;
 import aq.project.entities.transaction.DepositTransaction;
 import aq.project.entities.transaction.TransferTransaction;
 import aq.project.entities.transaction.WithdrawTransaction;
-import aq.project.dto.DepositTransactionResponseWalletServiceDto;
-import aq.project.dto.TransferTransactionResponseWalletServiceDto;
-import aq.project.dto.WithdrawTransactionResponseWalletServiceDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -21,22 +19,35 @@ public interface TransactionResponseMapper {
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
-    DepositTransactionResponseWalletServiceDto toDepositResponse(DepositTransaction transaction);
+    @Mapping(target = "traceId", expression = "java(toTraceId(transaction))")
+    WalletServiceDepositTransactionResponseDto toDepositResponse(DepositTransaction transaction);
 
     default OffsetDateTime toTimestamp(DepositTransaction transaction) {
         return transaction.getMetadata()
                 .getTimestamp();
     }
 
+    default String toTraceId(DepositTransaction transaction) {
+        return transaction.getMetadata()
+                .getTraceId();
+    }
+
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
-    WithdrawTransactionResponseWalletServiceDto toWithdrawResponse(WithdrawTransaction transaction);
+    @Mapping(target = "traceId", expression = "java(toTraceId(transaction))")
+    WalletServiceWithdrawTransactionResponseDto toWithdrawResponse(
+            WithdrawTransaction transaction);
 
     default OffsetDateTime toTimestamp(WithdrawTransaction transaction) {
         return transaction.getMetadata()
                 .getTimestamp();
+    }
+
+    default String toTraceId(WithdrawTransaction transaction) {
+        return transaction.getMetadata()
+                .getTraceId();
     }
 
     @Mapping(target = "transactionId", source = "id")
@@ -44,10 +55,38 @@ public interface TransactionResponseMapper {
     @Mapping(target = "recipientWalletId", source = "recipientWalletId")
     @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
-    TransferTransactionResponseWalletServiceDto toTransferResponse(TransferTransaction transaction);
+    @Mapping(target = "traceId", expression = "java(toTraceId(transaction))")
+    WalletServiceTransferTransactionResponseDto toTransferResponse(
+            TransferTransaction transaction);
 
     default OffsetDateTime toTimestamp(TransferTransaction transaction) {
         return transaction.getMetadata()
                 .getTimestamp();
     }
+
+    default String toTraceId(TransferTransaction transaction) {
+        return transaction.getMetadata()
+                .getTraceId();
+    }
+
+    @Mapping(target = "transactionId", source = "transactionId")
+    @Mapping(target = "traceId", source = "traceId")
+    @Mapping(target = "transactionStatus", ignore = true)
+    @Mapping(target = "description", ignore = true)
+    WalletServiceTransactionResponseErrorDto toWalletServiceTransactionResponseErrorDto(
+            WalletServiceDepositTransactionRequestDto dto);
+
+    @Mapping(target = "transactionId", source = "transactionId")
+    @Mapping(target = "traceId", source = "traceId")
+    @Mapping(target = "transactionStatus", ignore = true)
+    @Mapping(target = "description", ignore = true)
+    WalletServiceTransactionResponseErrorDto toWalletServiceTransactionResponseErrorDto(
+            WalletServiceTransferTransactionRequestDto dto);
+
+    @Mapping(target = "transactionId", source = "transactionId")
+    @Mapping(target = "traceId", source = "traceId")
+    @Mapping(target = "transactionStatus", ignore = true)
+    @Mapping(target = "description", ignore = true)
+    WalletServiceTransactionResponseErrorDto toWalletServiceTransactionResponseErrorDto(
+            WalletServiceWithdrawTransactionRequestDto dto);
 }

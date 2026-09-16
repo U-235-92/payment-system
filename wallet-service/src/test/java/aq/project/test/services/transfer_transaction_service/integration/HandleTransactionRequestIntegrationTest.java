@@ -8,7 +8,7 @@ import aq.project.entities.wallet.Wallet;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.dto.TransferTransactionRequestWalletServiceDto;
+import aq.project.dto.WalletServiceTransferTransactionRequestDto;
 import aq.project.repositories.transaction.TransferTransactionRepository;
 import aq.project.repositories.wallet.WalletRepository;
 import aq.project.services.transaction.TransferTransactionService;
@@ -98,118 +98,113 @@ public class HandleTransactionRequestIntegrationTest {
 
     @Test
     public void successHandleTransactionRequest() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
 
         Wallet senderWallet = getValidWallet(senderWalletId);
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
 
-        // Assert
+        // Act & Assert
         Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnDuplicateTransferTransaction() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
 
         Wallet senderWallet = getValidWallet(senderWalletId);
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
         TransferTransaction transaction = getValidTransferTransaction(transactionId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
         transferTransactionRepository.save(transaction);
 
-        // Assert
-        Assertions.assertThrows(DuplicateTransactionHandleException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnSenderWalletNotFound() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
 
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(recipientWallet);
 
-        // Assert
-        Assertions.assertThrows(EntityNotFoundException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnRecipientWalletNotFound() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
 
         Wallet senderWallet = getValidWallet(senderWalletId);
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
 
-        // Assert
-        Assertions.assertThrows(EntityNotFoundException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnSenderWalletBlocked() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
 
         Wallet senderWallet = getValidWalletBlocked(senderWalletId);
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
 
-        // Assert
-        Assertions.assertThrows(EntityConstraintsException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnRecipientWalletBlocked() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
 
         Wallet senderWallet = getValidWallet(senderWalletId);
         Wallet recipientWallet = getValidWalletBlocked(recipientWalletId);
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
 
-        // Assert
-        Assertions.assertThrows(EntityConstraintsException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnSenderCreditCardExpired() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
@@ -220,19 +215,18 @@ public class HandleTransactionRequestIntegrationTest {
         senderWallet.setCreditCard(expiredCard);
 
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
 
-        // Assert
-        Assertions.assertThrows(EntityConstraintsException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnRecipientCreditCardExpired() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
@@ -243,19 +237,18 @@ public class HandleTransactionRequestIntegrationTest {
         Wallet recipientWallet = getValidWallet(recipientWalletId);
         recipientWallet.setCreditCard(expiredCard);
 
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
 
-        // Assert
-        Assertions.assertThrows(EntityConstraintsException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnSenderInsufficientBalance() {
-        // Arrange & Act
+        // Arrange
         UUID transactionId = UUID.randomUUID();
         UUID senderWalletId = UUID.randomUUID();
         UUID recipientWalletId = UUID.randomUUID();
@@ -265,33 +258,30 @@ public class HandleTransactionRequestIntegrationTest {
         senderWallet.getCreditCard().setBalance(new java.math.BigDecimal("50.00"));
 
         Wallet recipientWallet = getValidWallet(recipientWalletId);
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest(transactionId, senderWalletId, recipientWalletId);
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
 
-        // Assert
-        Assertions.assertThrows(EntityConstraintsException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnInvalidTransferTransactionRequest() {
-        // Arrange & Act
-        TransferTransactionRequestWalletServiceDto request = getInvalidTransferTransactionRequest();
+        // Arrange
+        WalletServiceTransferTransactionRequestDto request = getInvalidTransferTransactionRequest();
 
-        // Assert
-        Assertions.assertThrows(ConstraintViolationException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 
     @Test
     public void failHandleTransactionRequestOnNullTransferTransactionRequest() {
-        // Arrange & Act
-        TransferTransactionRequestWalletServiceDto request = null;
+        // Arrange
+        WalletServiceTransferTransactionRequestDto request = null;
 
-        // Assert
-        Assertions.assertThrows(ConstraintViolationException.class,
-                () -> transferTransactionService.handleTransactionRequest(request));
+        // Act & Assert
+        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
     }
 }

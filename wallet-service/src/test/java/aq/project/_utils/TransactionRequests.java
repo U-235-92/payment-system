@@ -1,9 +1,6 @@
 package aq.project._utils;
 
-import aq.project.dto.TransactionStatus;
-import aq.project.dto.DepositTransactionRequestWalletServiceDto;
-import aq.project.dto.TransferTransactionRequestWalletServiceDto;
-import aq.project.dto.WithdrawTransactionRequestWalletServiceDto;
+import aq.project.dto.*;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -13,8 +10,8 @@ public final class TransactionRequests {
 
 // ==================== DepositTransactionRequest ====================
 
-    public static DepositTransactionRequestWalletServiceDto getValidDepositTransactionRequest() {
-        DepositTransactionRequestWalletServiceDto request = new DepositTransactionRequestWalletServiceDto();
+    public static WalletServiceDepositTransactionRequestDto getValidDepositTransactionRequest() {
+        WalletServiceDepositTransactionRequestDto request = new WalletServiceDepositTransactionRequestDto();
         request.setTransactionId(UUID.randomUUID());
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(100.50));
@@ -26,8 +23,8 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static DepositTransactionRequestWalletServiceDto getValidDepositTransactionRequest(UUID transactionId, UUID walletId) {
-        DepositTransactionRequestWalletServiceDto request = new DepositTransactionRequestWalletServiceDto();
+    public static WalletServiceDepositTransactionRequestDto getValidDepositTransactionRequest(UUID transactionId, UUID walletId) {
+        WalletServiceDepositTransactionRequestDto request = new WalletServiceDepositTransactionRequestDto();
         request.setTransactionId(transactionId);
         request.setWalletId(walletId);
         request.setAmount(BigDecimal.valueOf(100.50));
@@ -39,8 +36,8 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static DepositTransactionRequestWalletServiceDto getInvalidDepositTransactionRequest() {
-        DepositTransactionRequestWalletServiceDto request = new DepositTransactionRequestWalletServiceDto();
+    public static WalletServiceDepositTransactionRequestDto getInvalidDepositTransactionRequest() {
+        WalletServiceDepositTransactionRequestDto request = new WalletServiceDepositTransactionRequestDto();
 //        отсутствует transactionId (null) – нарушает @NotNull
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(-100.50));
@@ -54,8 +51,8 @@ public final class TransactionRequests {
 
 // ==================== TransferTransactionRequest ====================
 
-    public static TransferTransactionRequestWalletServiceDto getValidTransferTransactionRequest() {
-        TransferTransactionRequestWalletServiceDto request = new TransferTransactionRequestWalletServiceDto();
+    public static WalletServiceTransferTransactionRequestDto getValidTransferTransactionRequest() {
+        WalletServiceTransferTransactionRequestDto request = new WalletServiceTransferTransactionRequestDto();
         request.setTransactionId(UUID.randomUUID());
         request.setSenderWalletId(UUID.randomUUID());
         request.setRecipientWalletId(UUID.randomUUID());
@@ -69,8 +66,8 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static TransferTransactionRequestWalletServiceDto getValidTransferTransactionRequest(UUID transactionId, UUID senderWalletId, UUID recipientWalletId) {
-        TransferTransactionRequestWalletServiceDto request = new TransferTransactionRequestWalletServiceDto();
+    public static WalletServiceTransferTransactionRequestDto getValidTransferTransactionRequest(UUID transactionId, UUID senderWalletId, UUID recipientWalletId) {
+        WalletServiceTransferTransactionRequestDto request = new WalletServiceTransferTransactionRequestDto();
         request.setTransactionId(transactionId);
         request.setSenderWalletId(senderWalletId);
         request.setRecipientWalletId(recipientWalletId);
@@ -84,8 +81,8 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static TransferTransactionRequestWalletServiceDto getInvalidTransferTransactionRequest() {
-        TransferTransactionRequestWalletServiceDto request = new TransferTransactionRequestWalletServiceDto();
+    public static WalletServiceTransferTransactionRequestDto getInvalidTransferTransactionRequest() {
+        WalletServiceTransferTransactionRequestDto request = new WalletServiceTransferTransactionRequestDto();
 //        отсутствует senderWalletId (null)
         request.setTransactionId(UUID.randomUUID());
         request.setRecipientWalletId(UUID.randomUUID());
@@ -101,8 +98,8 @@ public final class TransactionRequests {
 
 // ==================== WithdrawTransactionRequest ====================
 
-    public static WithdrawTransactionRequestWalletServiceDto getValidWithdrawTransactionRequest() {
-        WithdrawTransactionRequestWalletServiceDto request = new WithdrawTransactionRequestWalletServiceDto();
+    public static WalletServiceWithdrawTransactionRequestDto getValidWithdrawTransactionRequest() {
+        WalletServiceWithdrawTransactionRequestDto request = new WalletServiceWithdrawTransactionRequestDto();
         request.setTransactionId(UUID.randomUUID());
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(50.75));
@@ -114,8 +111,8 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static WithdrawTransactionRequestWalletServiceDto getValidWithdrawTransactionRequest(UUID transactionId, UUID walletId) {
-        WithdrawTransactionRequestWalletServiceDto request = new WithdrawTransactionRequestWalletServiceDto();
+    public static WalletServiceWithdrawTransactionRequestDto getValidWithdrawTransactionRequest(UUID transactionId, UUID walletId) {
+        WalletServiceWithdrawTransactionRequestDto request = new WalletServiceWithdrawTransactionRequestDto();
         request.setTransactionId(transactionId);
         request.setWalletId(walletId);
         request.setAmount(BigDecimal.valueOf(50.75));
@@ -127,8 +124,8 @@ public final class TransactionRequests {
         return request;
     }
 
-    public static WithdrawTransactionRequestWalletServiceDto getInvalidWithdrawTransactionRequest() {
-        WithdrawTransactionRequestWalletServiceDto request = new WithdrawTransactionRequestWalletServiceDto();
+    public static WalletServiceWithdrawTransactionRequestDto getInvalidWithdrawTransactionRequest() {
+        WalletServiceWithdrawTransactionRequestDto request = new WalletServiceWithdrawTransactionRequestDto();
 //        отсутствует walletId (null)
         request.setTransactionId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(50.75));
@@ -140,22 +137,130 @@ public final class TransactionRequests {
         return request;
     }
 
+// ==================== WalletServiceCancelDepositTransactionRequestDto ====================
+
+    public static WalletServiceCancelDepositTransactionRequestDto getValidWalletServiceCancelDepositTransactionRequestDto() {
+        WalletServiceCancelDepositTransactionRequestDto request = new WalletServiceCancelDepositTransactionRequestDto();
+        request.setTransactionId(UUID.randomUUID());
+        request.setTraceId(UUID.randomUUID().toString());
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+    public static WalletServiceCancelDepositTransactionRequestDto getInvalidWalletServiceCancelDepositTransactionRequestDto() {
+        WalletServiceCancelDepositTransactionRequestDto request = new WalletServiceCancelDepositTransactionRequestDto();
+        request.setTransactionId(null);
+        request.setTraceId(null);
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+// ==================== WalletServiceCancelWithdrawTransactionRequestDto ====================
+
+    public static WalletServiceCancelWithdrawTransactionRequestDto getValidWalletServiceCancelWithdrawTransactionRequestDto() {
+        WalletServiceCancelWithdrawTransactionRequestDto request = new WalletServiceCancelWithdrawTransactionRequestDto();
+        request.setTransactionId(UUID.randomUUID());
+        request.setTraceId(UUID.randomUUID().toString());
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+    public static WalletServiceCancelWithdrawTransactionRequestDto getInvalidWalletServiceCancelWithdrawTransactionRequestDto() {
+        WalletServiceCancelWithdrawTransactionRequestDto request = new WalletServiceCancelWithdrawTransactionRequestDto();
+        request.setTransactionId(null);
+        request.setTraceId(null);
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+// ==================== WalletServiceCancelTransferTransactionRequestDto ====================
+
+    public static WalletServiceCancelTransferTransactionRequestDto getValidWalletServiceCancelTransferTransactionRequestDto() {
+        WalletServiceCancelTransferTransactionRequestDto request = new WalletServiceCancelTransferTransactionRequestDto();
+        request.setTransactionId(UUID.randomUUID());
+        request.setTraceId(UUID.randomUUID().toString());
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+    public static WalletServiceCancelTransferTransactionRequestDto getInvalidWalletServiceCancelTransferTransactionRequestDto() {
+        WalletServiceCancelTransferTransactionRequestDto request = new WalletServiceCancelTransferTransactionRequestDto();
+        request.setTransactionId(null);
+        request.setTraceId(null);
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+    // ==================== WalletServiceFailDepositTransactionRequestDto ====================
+
+    public static WalletServiceFailDepositTransactionRequestDto getValidWalletServiceFailDepositTransactionRequestDto() {
+        WalletServiceFailDepositTransactionRequestDto request = new WalletServiceFailDepositTransactionRequestDto();
+        request.setTransactionId(UUID.randomUUID());
+        request.setTraceId(UUID.randomUUID().toString());
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+    public static WalletServiceFailDepositTransactionRequestDto getInvalidWalletServiceFailDepositTransactionRequestDto() {
+        WalletServiceFailDepositTransactionRequestDto request = new WalletServiceFailDepositTransactionRequestDto();
+        request.setTransactionId(null);
+        request.setTraceId(null);
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+// ==================== WalletServiceFailWithdrawTransactionRequestDto ====================
+
+    public static WalletServiceFailWithdrawTransactionRequestDto getValidWalletServiceFailWithdrawTransactionRequestDto() {
+        WalletServiceFailWithdrawTransactionRequestDto request = new WalletServiceFailWithdrawTransactionRequestDto();
+        request.setTransactionId(UUID.randomUUID());
+        request.setTraceId(UUID.randomUUID().toString());
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+    public static WalletServiceFailWithdrawTransactionRequestDto getInvalidWalletServiceFailWithdrawTransactionRequestDto() {
+        WalletServiceFailWithdrawTransactionRequestDto request = new WalletServiceFailWithdrawTransactionRequestDto();
+        request.setTransactionId(null);
+        request.setTraceId(null);
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+// ==================== WalletServiceFailTransferTransactionRequestDto ====================
+
+    public static WalletServiceFailTransferTransactionRequestDto getValidWalletServiceFailTransferTransactionRequestDto() {
+        WalletServiceFailTransferTransactionRequestDto request = new WalletServiceFailTransferTransactionRequestDto();
+        request.setTransactionId(UUID.randomUUID());
+        request.setTraceId(UUID.randomUUID().toString());
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
+    public static WalletServiceFailTransferTransactionRequestDto getInvalidWalletServiceFailTransferTransactionRequestDto() {
+        WalletServiceFailTransferTransactionRequestDto request = new WalletServiceFailTransferTransactionRequestDto();
+        request.setTransactionId(null);
+        request.setTraceId(null);
+        request.setTimestamp(OffsetDateTime.now());
+        return request;
+    }
+
 // ==================== Дополнительные методы для удобства ====================
 
-    public static DepositTransactionRequestWalletServiceDto getValidDepositTransactionRequestWithStatus(TransactionStatus status) {
-        DepositTransactionRequestWalletServiceDto request = getValidDepositTransactionRequest();
+    public static WalletServiceDepositTransactionRequestDto getValidDepositTransactionRequestWithStatus(TransactionStatus status) {
+        WalletServiceDepositTransactionRequestDto request = getValidDepositTransactionRequest();
         request.setTransactionStatus(status);
         return request;
     }
 
-    public static TransferTransactionRequestWalletServiceDto getValidTransferTransactionRequestWithStatus(TransactionStatus status) {
-        TransferTransactionRequestWalletServiceDto request = getValidTransferTransactionRequest();
+    public static WalletServiceTransferTransactionRequestDto getValidTransferTransactionRequestWithStatus(TransactionStatus status) {
+        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest();
         request.setTransactionStatus(status);
         return request;
     }
 
-    public static WithdrawTransactionRequestWalletServiceDto getValidWithdrawTransactionRequestWithStatus(TransactionStatus status) {
-        WithdrawTransactionRequestWalletServiceDto request = getValidWithdrawTransactionRequest();
+    public static WalletServiceWithdrawTransactionRequestDto getValidWithdrawTransactionRequestWithStatus(TransactionStatus status) {
+        WalletServiceWithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
         request.setTransactionStatus(status);
         return request;
     }

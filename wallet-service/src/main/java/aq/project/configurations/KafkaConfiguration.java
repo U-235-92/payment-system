@@ -45,14 +45,16 @@ public class KafkaConfiguration {
 
     @Bean
     public DeadLetterPublishingRecoverer deadLetterPublishingRecoverer(KafkaTemplate<String, Object> kafkaTemplate) {
-        return new DeadLetterPublishingRecoverer(kafkaTemplate, destinationResolver());
+        DeadLetterPublishingRecoverer deadLetterPublishingRecoverer = new DeadLetterPublishingRecoverer(kafkaTemplate, destinationResolver());
+        deadLetterPublishingRecoverer.setThrowIfNoDestinationReturned(false);
+        return deadLetterPublishingRecoverer;
     }
 
     private BiFunction<ConsumerRecord<?, ?>, Exception, TopicPartition> destinationResolver() {
         return (record, exc) -> {
             if(isDltException(exc))
                 return new TopicPartition(record.topic() + "_dlt", record.partition());
-            return new TopicPartition(record.topic() + "_exceptions", record.partition());
+            return null;
         };
     }
 
@@ -171,6 +173,22 @@ public class KafkaConfiguration {
     }
 
     @Bean
+    public NewTopic failDepositTransactionRequestTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("fail_deposit_transaction_request");
+        return createTopic(config);
+    }
+
+    @Bean
+    public NewTopic cancelDepositTransactionRequestTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("cancel_deposit_transaction_request");
+        return createTopic(config);
+    }
+
+    @Bean
     public NewTopic withdrawTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
@@ -195,6 +213,22 @@ public class KafkaConfiguration {
     }
 
     @Bean
+    public NewTopic failWithdrawTransactionRequestTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("fail_withdraw_transaction_request");
+        return createTopic(config);
+    }
+
+    @Bean
+    public NewTopic cancelWithdrawTransactionRequestTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("cancel_withdraw_transaction_request");
+        return createTopic(config);
+    }
+
+    @Bean
     public NewTopic transferTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
@@ -215,6 +249,22 @@ public class KafkaConfiguration {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
                 .get("transfer_transaction_request_exceptions");
+        return createTopic(config);
+    }
+
+    @Bean
+    public NewTopic failTransferTransactionRequestTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("fail_transfer_transaction_request");
+        return createTopic(config);
+    }
+
+    @Bean
+    public NewTopic cancelTransferTransactionRequestTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("cancel_transfer_transaction_request");
         return createTopic(config);
     }
 

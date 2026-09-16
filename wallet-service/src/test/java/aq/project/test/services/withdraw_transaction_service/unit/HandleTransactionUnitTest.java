@@ -7,8 +7,11 @@ import aq.project.services.wallet.WalletService;
 import aq.project.utils.handlers.TransactionHandler;
 import aq.project.utils.mappers.transaction.TransactionRequestMapper;
 import aq.project.utils.mappers.transaction.TransactionResponseMapper;
+import aq.project.utils.telemetry.ApplicationMetricsRegistry;
 import aq.project.utils.telemetry.TraceContext;
 import io.opentelemetry.api.OpenTelemetry;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +46,9 @@ public class HandleTransactionUnitTest {
     @Spy
     private final OpenTelemetry openTelemetry = OpenTelemetry.noop();
 
+    @Spy
+    private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     @Mock
     private TransactionHandler transactionHandler;
 
@@ -58,13 +64,17 @@ public class HandleTransactionUnitTest {
     @Mock
     private WithdrawTransactionRepository withdrawTransactionRepository;
 
+    @Mock
+    private ApplicationMetricsRegistry applicationMetricsRegistry;
+
     @InjectMocks
     private WithdrawTransactionService withdrawTransactionService;
 
     @BeforeEach
     public void setUpValueFields() {
-        ReflectionTestUtils.setField(withdrawTransactionService, "tracerName", "testTracer");
-        ReflectionTestUtils.setField(withdrawTransactionService, "transactionResponseTopicName", "testTopic");
+        ReflectionTestUtils.setField(withdrawTransactionService, "serviceName", "testService");
+        ReflectionTestUtils.setField(withdrawTransactionService, "transactionResponseTopicName", "testTransactionResponseTopic");
+        ReflectionTestUtils.setField(withdrawTransactionService, "transactionExceptionResponseTopicName", "testTransactionExceptionResponseTopic");
     }
 
     @Test
@@ -74,7 +84,7 @@ public class HandleTransactionUnitTest {
 
         Mockito.doReturn(Mockito.mock(CompletableFuture.class))
                 .when(kafkaTemplate)
-                .send(Mockito.any(ProducerRecord.class));
+                .send(Mockito.any(), Mockito.any());
 
         Mockito.doReturn(new PageImpl<>(List.of(transaction)))
                 .when(withdrawTransactionRepository)
@@ -84,7 +94,8 @@ public class HandleTransactionUnitTest {
         Assertions.assertDoesNotThrow(() -> withdrawTransactionService.handleTransaction());
         Assertions.assertTrue(transaction.isProcessed());
 
-        Mockito.verify(kafkaTemplate, Mockito.times(1)).send(Mockito.any(ProducerRecord.class));
+        Mockito.verify(kafkaTemplate, Mockito.times(1))
+                .send(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -97,7 +108,8 @@ public class HandleTransactionUnitTest {
         // Assert
         Assertions.assertDoesNotThrow(() -> withdrawTransactionService.handleTransaction());
 
-        Mockito.verify(kafkaTemplate, Mockito.never()).send(Mockito.any(ProducerRecord.class));
+        Mockito.verify(kafkaTemplate, Mockito.never())
+                .send(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -109,7 +121,7 @@ public class HandleTransactionUnitTest {
 
         Mockito.doReturn(future)
                 .when(kafkaTemplate)
-                .send(Mockito.any(ProducerRecord.class));
+                .send(Mockito.any(), Mockito.any());
 
         Mockito.doThrow(InterruptedException.class)
                 .when(future)

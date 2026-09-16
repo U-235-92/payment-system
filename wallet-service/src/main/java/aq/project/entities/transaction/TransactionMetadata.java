@@ -1,5 +1,6 @@
 package aq.project.entities.transaction;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -29,4 +30,8 @@ public class TransactionMetadata {
     @NotNull
     @Column(name = "timestamp", nullable = false)
     private OffsetDateTime timestamp;
+
+    @Nullable
+    @Column(name = "description", length = 2048)
+    private String description;
 }

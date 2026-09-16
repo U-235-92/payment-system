@@ -400,7 +400,7 @@ components:
         cardExpirationDate:
           $ref: "#/components/schemas/CardExpirationDateDefinition"
 
-    DepositTransactionRequestWalletServiceDto:
+    WalletServiceDepositTransactionRequestDto:
       type: object
       required: [ transactionId, walletId, amount, currencyCode, transactionStatus, timestamp, traceId, conversionRate ]
       properties:
@@ -426,7 +426,7 @@ components:
           type: number
           format: decimal
 
-    TransferTransactionRequestWalletServiceDto:
+    WalletServiceTransferTransactionRequestDto:
       type: object
       required: [ transactionId, senderWalletId, recipientWalletId, amount, currencyCode, transactionStatus, timestamp, traceId, senderConversionRate, recipientConversionRate ]
       properties:
@@ -458,7 +458,7 @@ components:
           type: number
           format: decimal
 
-    WithdrawTransactionRequestWalletServiceDto:
+    WalletServiceWithdrawTransactionRequestDto:
       type: object
       required: [ transactionId, walletId, amount, currencyCode, transactionStatus, timestamp, traceId, conversionRate ]
       properties:
@@ -484,9 +484,87 @@ components:
           type: number
           format: decimal
 
-    DepositTransactionResponseWalletServiceDto:
+    WalletServiceFailDepositTransactionRequestDto:
       type: object
-      required: [ transactionId, walletId, transactionStatus, timestamp ]
+      required: [ transactionId, traceId, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    WalletServiceFailTransferTransactionRequestDto:
+      type: object
+      required: [ transactionId, traceId, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    WalletServiceFailWithdrawTransactionRequestDto:
+      type: object
+      required: [ transactionId, traceId, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    WalletServiceCancelDepositTransactionRequestDto:
+      type: object
+      required: [ transactionId, traceId, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    WalletServiceCancelTransferTransactionRequestDto:
+      type: object
+      required: [ transactionId, traceId, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    WalletServiceCancelWithdrawTransactionRequestDto:
+      type: object
+      required: [ transactionId, traceId, timestamp ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    WalletServiceDepositTransactionResponseDto:
+      type: object
+      required: [ transactionId, walletId, traceId, transactionStatus, timestamp ]
       properties:
         transactionId:
           type: string
@@ -494,15 +572,17 @@ components:
         walletId:
           type: string
           format: uuid
+        traceId:
+          type: string
         transactionStatus:
           $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
 
-    TransferTransactionResponseWalletServiceDto:
+    WalletServiceTransferTransactionResponseDto:
       type: object
-      required: [ transactionId, senderWalletId, recipientWalletId, transactionStatus, timestamp ]
+      required: [ transactionId, senderWalletId, recipientWalletId, traceId, transactionStatus, timestamp ]
       properties:
         transactionId:
           type: string
@@ -513,15 +593,17 @@ components:
         recipientWalletId:
           type: string
           format: uuid
+        traceId:
+          type: string
         transactionStatus:
           $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
 
-    WithdrawTransactionResponseWalletServiceDto:
+    WalletServiceWithdrawTransactionResponseDto:
       type: object
-      required: [ transactionId, walletId, transactionStatus, timestamp ]
+      required: [ transactionId, walletId, traceId, transactionStatus, timestamp ]
       properties:
         transactionId:
           type: string
@@ -529,11 +611,27 @@ components:
         walletId:
           type: string
           format: uuid
+        traceId:
+          type: string
         transactionStatus:
           $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
+
+    WalletServiceTransactionResponseErrorDto:
+      type: object
+      required: [ transactionId, traceId, transactionStatus ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        transactionStatus:
+          $ref: "#/components/schemas/TransactionStatus"
+        description:
+          type: string
 
     ErrorDto:
       type: object
@@ -552,7 +650,7 @@ components:
       enum: [ "VISA", "MASTERCARD", "MIR", "AMERICAN_EXPRESS", "UNION_PAY" ]
 
     TransactionStatus:
-      enum: [ "PENDING", "COMPLETED", "FAILED" ]
+      enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]
 
     CurrencyCodeDefinition:
       type: string

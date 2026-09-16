@@ -1,11 +1,9 @@
 package aq.project.test.handlers.cancel_transaction_request_handler.unit;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.dto.WalletServiceCancelDepositTransactionRequestDto;
+import aq.project.dto.WalletServiceCancelTransactionRequestDto;
 import aq.project.entities.transaction.DepositTransaction;
 import aq.project.repositories.transaction.DepositTransactionRepository;
-import aq.project.repositories.transaction.TransferTransactionRepository;
-import aq.project.repositories.transaction.WithdrawTransactionRepository;
 import aq.project.utils.handlers.CancelTransactionRequestHandler;
 import aq.project.utils.telemetry.ApplicationMetricsRegistry;
 import io.opentelemetry.api.OpenTelemetry;
@@ -26,8 +24,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static aq.project._utils.TransactionEntities.getValidDepositTransaction;
-import static aq.project._utils.TransactionRequests.getInvalidWalletServiceCancelDepositTransactionRequestDto;
-import static aq.project._utils.TransactionRequests.getValidWalletServiceCancelDepositTransactionRequestDto;
+import static aq.project._utils.TransactionRequests.getInvalidWalletServiceCancelTransactionRequestDto;
+import static aq.project._utils.TransactionRequests.getValidWalletServiceCancelTransactionRequestDto;
 
 @ExtendWith(MockitoExtension.class)
 public class HandleCancelDepositTransactionRequestUnitTest {
@@ -55,7 +53,7 @@ public class HandleCancelDepositTransactionRequestUnitTest {
     @Test
     public void successHandleCancelDepositTransactionRequest() {
 //        Arrange
-        WalletServiceCancelDepositTransactionRequestDto depositTransactionRequestDto = getValidWalletServiceCancelDepositTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
         DepositTransaction depositTransaction = getValidDepositTransaction();
         depositTransaction.setStatus(TransactionStatus.PENDING);
@@ -65,7 +63,7 @@ public class HandleCancelDepositTransactionRequestUnitTest {
                 .thenReturn(Optional.of(depositTransaction));
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(depositTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(cancelTransactionRequestDto));
         Assertions.assertEquals(TransactionStatus.CANCELED, depositTransaction.getStatus());
         Assertions.assertTrue(depositTransaction.isProcessed());
 
@@ -76,7 +74,7 @@ public class HandleCancelDepositTransactionRequestUnitTest {
     @Test
     public void failHandleCancelDepositTransactionRequestWhenTransactionInCanceledState() {
 //        Arrange
-        WalletServiceCancelDepositTransactionRequestDto depositTransactionRequestDto = getValidWalletServiceCancelDepositTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
         DepositTransaction depositTransaction = getValidDepositTransaction();
         depositTransaction.setStatus(TransactionStatus.CANCELED);
@@ -86,7 +84,7 @@ public class HandleCancelDepositTransactionRequestUnitTest {
                 .thenReturn(Optional.of(depositTransaction));
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(depositTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(cancelTransactionRequestDto));
         Assertions.assertEquals(TransactionStatus.CANCELED, depositTransaction.getStatus());
 
         Mockito.verify(depositTransactionRepository, Mockito.never())
@@ -96,7 +94,7 @@ public class HandleCancelDepositTransactionRequestUnitTest {
     @Test
     public void failHandleCancelDepositTransactionRequestWhenTransactionInFailedState() {
 //        Arrange
-        WalletServiceCancelDepositTransactionRequestDto depositTransactionRequestDto = getValidWalletServiceCancelDepositTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
         DepositTransaction depositTransaction = getValidDepositTransaction();
         depositTransaction.setStatus(TransactionStatus.FAILED);
@@ -106,7 +104,7 @@ public class HandleCancelDepositTransactionRequestUnitTest {
                 .thenReturn(Optional.of(depositTransaction));
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(depositTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(cancelTransactionRequestDto));
         Assertions.assertEquals(TransactionStatus.FAILED, depositTransaction.getStatus());
 
         Mockito.verify(depositTransactionRepository, Mockito.never())
@@ -116,13 +114,13 @@ public class HandleCancelDepositTransactionRequestUnitTest {
     @Test
     public void failHandleCancelDepositTransactionRequestWhenTransactionNotFound() {
 //        Arrange
-        WalletServiceCancelDepositTransactionRequestDto depositTransactionRequestDto = getValidWalletServiceCancelDepositTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
         Mockito.when(depositTransactionRepository.findById(Mockito.any(UUID.class)))
                 .thenReturn(Optional.empty());
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(depositTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(cancelTransactionRequestDto));
 
         Mockito.verify(depositTransactionRepository, Mockito.never())
                 .save(Mockito.any(DepositTransaction.class));
@@ -131,10 +129,10 @@ public class HandleCancelDepositTransactionRequestUnitTest {
     @Test
     public void failHandleInvalidCancelDepositTransactionRequest() {
 //        Arrange
-        WalletServiceCancelDepositTransactionRequestDto depositTransactionRequestDto = getInvalidWalletServiceCancelDepositTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelDepositTransactionRequestDto = getInvalidWalletServiceCancelTransactionRequestDto();
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(depositTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(cancelDepositTransactionRequestDto));
 
         Mockito.verify(depositTransactionRepository, Mockito.never())
                 .save(Mockito.any(DepositTransaction.class));
@@ -143,10 +141,10 @@ public class HandleCancelDepositTransactionRequestUnitTest {
     @Test
     public void failHandleNullCancelDepositTransactionRequest() {
 //        Arrange
-        WalletServiceCancelDepositTransactionRequestDto depositTransactionRequestDto = null;
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = null;
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(depositTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelDepositTransactionRequest(cancelTransactionRequestDto));
 
         Mockito.verify(depositTransactionRepository, Mockito.never())
                 .save(Mockito.any(DepositTransaction.class));

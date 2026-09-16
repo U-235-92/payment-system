@@ -1,9 +1,9 @@
 package aq.project.services.transaction;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.dto.WalletServiceTransactionResponseErrorDto;
+import aq.project.dto.WalletServiceTransactionErrorResponseDto;
 import aq.project.dto.WalletServiceTransferTransactionRequestDto;
-import aq.project.dto.WalletServiceTransferTransactionResponseDto;
+import aq.project.dto.WalletServiceTransferTransactionSuccessResponseDto;
 import aq.project.entities.transaction.TransferTransaction;
 import aq.project.entities.wallet.CreditCard;
 import aq.project.entities.wallet.Wallet;
@@ -104,7 +104,7 @@ public class TransferTransactionService {
             try(Scope scope = span.makeCurrent()) {
                 if(isValidRequestDto(request, traceId, spanId, action)) {
                     TransferTransaction transaction = transactionRequestMapper.toTransferTransaction(request);
-
+                    transaction.setStatus(TransactionStatus.PENDING);
                     try {
                         traceContext.clean();
                         traceContext.setTraceId(request.getTraceId());
@@ -135,7 +135,7 @@ public class TransferTransactionService {
 
                         transactionHandler.commitFailedTransaction(transaction);
 
-                        WalletServiceTransactionResponseErrorDto errorResponseDto = transactionResponseMapper.toWalletServiceTransactionResponseErrorDto(request);
+                        WalletServiceTransactionErrorResponseDto errorResponseDto = transactionResponseMapper.toWalletServiceTransactionResponseErrorDto(request);
                         errorResponseDto.setTransactionStatus(TransactionStatus.FAILED);
                         errorResponseDto.setDescription(e.getMessage());
 
@@ -357,7 +357,9 @@ public class TransferTransactionService {
         List<TransferTransaction> transferTransactions = transferTransactionRepository.findAll(pageable).getContent();
 
         for(TransferTransaction transaction : transferTransactions) {
-            handleTransaction(transaction);
+            if(!transaction.isProcessed()) {
+                handleTransaction(transaction);
+            }
         }
     }
 
@@ -384,7 +386,7 @@ public class TransferTransactionService {
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
 
         try(Scope scope = span.makeCurrent()) {
-            WalletServiceTransferTransactionResponseDto transferTransactionResponseDto = transactionResponseMapper.toTransferResponse(transaction);
+            WalletServiceTransferTransactionSuccessResponseDto transferTransactionResponseDto = transactionResponseMapper.toTransferResponse(transaction);
 
             try {
                 kafkaTemplate.send(transactionResponseTopicName, transferTransactionResponseDto).get();

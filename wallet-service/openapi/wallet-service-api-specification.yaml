@@ -402,7 +402,7 @@ components:
 
     WalletServiceDepositTransactionRequestDto:
       type: object
-      required: [ transactionId, walletId, amount, currencyCode, transactionStatus, timestamp, traceId, conversionRate ]
+      required: [ transactionId, walletId, amount, currencyCode, timestamp, traceId, conversionRate ]
       properties:
         transactionId:
           type: string
@@ -415,8 +415,6 @@ components:
           format: decimal
         currencyCode:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
-        transactionStatus:
-          $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
@@ -428,7 +426,7 @@ components:
 
     WalletServiceTransferTransactionRequestDto:
       type: object
-      required: [ transactionId, senderWalletId, recipientWalletId, amount, currencyCode, transactionStatus, timestamp, traceId, senderConversionRate, recipientConversionRate ]
+      required: [ transactionId, senderWalletId, recipientWalletId, amount, currencyCode, timestamp, traceId, senderConversionRate, recipientConversionRate ]
       properties:
         transactionId:
           type: string
@@ -444,8 +442,6 @@ components:
           format: decimal
         currencyCode:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
-        transactionStatus:
-          $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
@@ -460,7 +456,7 @@ components:
 
     WalletServiceWithdrawTransactionRequestDto:
       type: object
-      required: [ transactionId, walletId, amount, currencyCode, transactionStatus, timestamp, traceId, conversionRate ]
+      required: [ transactionId, walletId, amount, currencyCode, timestamp, traceId, conversionRate ]
       properties:
         transactionId:
           type: string
@@ -473,8 +469,6 @@ components:
           format: decimal
         currencyCode:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
-        transactionStatus:
-          $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
@@ -484,7 +478,7 @@ components:
           type: number
           format: decimal
 
-    WalletServiceFailDepositTransactionRequestDto:
+    WalletServiceFailTransactionRequestDto:
       type: object
       required: [ transactionId, traceId, timestamp ]
       properties:
@@ -497,7 +491,7 @@ components:
           type: string
           format: date-time
 
-    WalletServiceFailTransferTransactionRequestDto:
+    WalletServiceCancelTransactionRequestDto:
       type: object
       required: [ transactionId, traceId, timestamp ]
       properties:
@@ -510,61 +504,9 @@ components:
           type: string
           format: date-time
 
-    WalletServiceFailWithdrawTransactionRequestDto:
+    WalletServiceDepositTransactionSuccessResponseDto:
       type: object
-      required: [ transactionId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-
-    WalletServiceCancelDepositTransactionRequestDto:
-      type: object
-      required: [ transactionId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-
-    WalletServiceCancelTransferTransactionRequestDto:
-      type: object
-      required: [ transactionId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-
-    WalletServiceCancelWithdrawTransactionRequestDto:
-      type: object
-      required: [ transactionId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-
-    WalletServiceDepositTransactionResponseDto:
-      type: object
-      required: [ transactionId, walletId, traceId, transactionStatus, timestamp ]
+      required: [ transactionId, walletId, traceId, timestamp ]
       properties:
         transactionId:
           type: string
@@ -574,15 +516,13 @@ components:
           format: uuid
         traceId:
           type: string
-        transactionStatus:
-          $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
 
-    WalletServiceTransferTransactionResponseDto:
+    WalletServiceTransferTransactionSuccessResponseDto:
       type: object
-      required: [ transactionId, senderWalletId, recipientWalletId, traceId, transactionStatus, timestamp ]
+      required: [ transactionId, senderWalletId, recipientWalletId, traceId, timestamp ]
       properties:
         transactionId:
           type: string
@@ -595,15 +535,13 @@ components:
           format: uuid
         traceId:
           type: string
-        transactionStatus:
-          $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
 
-    WalletServiceWithdrawTransactionResponseDto:
+    WalletServiceWithdrawTransactionSuccessResponseDto:
       type: object
-      required: [ transactionId, walletId, traceId, transactionStatus, timestamp ]
+      required: [ transactionId, walletId, traceId, timestamp ]
       properties:
         transactionId:
           type: string
@@ -613,13 +551,11 @@ components:
           format: uuid
         traceId:
           type: string
-        transactionStatus:
-          $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
           format: date-time
 
-    WalletServiceTransactionResponseErrorDto:
+    WalletServiceTransactionErrorResponseDto:
       type: object
       required: [ transactionId, traceId, transactionStatus ]
       properties:

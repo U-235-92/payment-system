@@ -17,10 +17,9 @@ public interface TransactionResponseMapper {
 
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "walletId", source = "walletId")
-    @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
     @Mapping(target = "traceId", expression = "java(toTraceId(transaction))")
-    WalletServiceDepositTransactionResponseDto toDepositResponse(DepositTransaction transaction);
+    WalletServiceDepositTransactionSuccessResponseDto toDepositResponse(DepositTransaction transaction);
 
     default OffsetDateTime toTimestamp(DepositTransaction transaction) {
         return transaction.getMetadata()
@@ -34,10 +33,9 @@ public interface TransactionResponseMapper {
 
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "walletId", source = "walletId")
-    @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
     @Mapping(target = "traceId", expression = "java(toTraceId(transaction))")
-    WalletServiceWithdrawTransactionResponseDto toWithdrawResponse(
+    WalletServiceWithdrawTransactionSuccessResponseDto toWithdrawResponse(
             WithdrawTransaction transaction);
 
     default OffsetDateTime toTimestamp(WithdrawTransaction transaction) {
@@ -53,10 +51,9 @@ public interface TransactionResponseMapper {
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "senderWalletId", source = "senderWalletId")
     @Mapping(target = "recipientWalletId", source = "recipientWalletId")
-    @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
     @Mapping(target = "traceId", expression = "java(toTraceId(transaction))")
-    WalletServiceTransferTransactionResponseDto toTransferResponse(
+    WalletServiceTransferTransactionSuccessResponseDto toTransferResponse(
             TransferTransaction transaction);
 
     default OffsetDateTime toTimestamp(TransferTransaction transaction) {
@@ -73,20 +70,20 @@ public interface TransactionResponseMapper {
     @Mapping(target = "traceId", source = "traceId")
     @Mapping(target = "transactionStatus", ignore = true)
     @Mapping(target = "description", ignore = true)
-    WalletServiceTransactionResponseErrorDto toWalletServiceTransactionResponseErrorDto(
+    WalletServiceTransactionErrorResponseDto toWalletServiceTransactionResponseErrorDto(
             WalletServiceDepositTransactionRequestDto dto);
 
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "traceId", source = "traceId")
     @Mapping(target = "transactionStatus", ignore = true)
     @Mapping(target = "description", ignore = true)
-    WalletServiceTransactionResponseErrorDto toWalletServiceTransactionResponseErrorDto(
+    WalletServiceTransactionErrorResponseDto toWalletServiceTransactionResponseErrorDto(
             WalletServiceTransferTransactionRequestDto dto);
 
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "traceId", source = "traceId")
     @Mapping(target = "transactionStatus", ignore = true)
     @Mapping(target = "description", ignore = true)
-    WalletServiceTransactionResponseErrorDto toWalletServiceTransactionResponseErrorDto(
+    WalletServiceTransactionErrorResponseDto toWalletServiceTransactionResponseErrorDto(
             WalletServiceWithdrawTransactionRequestDto dto);
 }

@@ -1,7 +1,7 @@
 package aq.project.test.services.deposit_transaction_service.unit;
 
 import aq.project.dto.WalletServiceDepositTransactionRequestDto;
-import aq.project.dto.WalletServiceTransactionResponseErrorDto;
+import aq.project.dto.WalletServiceTransactionErrorResponseDto;
 import aq.project.entities.transaction.DepositTransaction;
 import aq.project.entities.wallet.CreditCard;
 import aq.project.entities.wallet.Wallet;
@@ -306,6 +306,6 @@ public class HandleTransactionRequestUnitTest {
         Assertions.assertDoesNotThrow(() -> depositTransactionService.handleTransactionRequest(request));
 
         Mockito.verify(kafkaTemplate, Mockito.times(1))
-                .send(Mockito.anyString(), Mockito.any(WalletServiceTransactionResponseErrorDto.class));
+                .send(Mockito.anyString(), Mockito.any(WalletServiceTransactionErrorResponseDto.class));
     }
 }

@@ -1,9 +1,7 @@
 package aq.project.utils.handlers;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.dto.WalletServiceCancelDepositTransactionRequestDto;
-import aq.project.dto.WalletServiceCancelTransferTransactionRequestDto;
-import aq.project.dto.WalletServiceCancelWithdrawTransactionRequestDto;
+import aq.project.dto.WalletServiceCancelTransactionRequestDto;
 import aq.project.entities.transaction.DepositTransaction;
 import aq.project.entities.transaction.TransferTransaction;
 import aq.project.entities.transaction.WithdrawTransaction;
@@ -52,7 +50,7 @@ public class CancelTransactionRequestHandler {
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.cancel_deposit_transaction_request.name}")
     public void handleCancelDepositTransactionRequest(
-            WalletServiceCancelDepositTransactionRequestDto request
+            WalletServiceCancelTransactionRequestDto request
     ) {
         if(request != null) {
             UUID transactionId = request.getTransactionId();
@@ -138,37 +136,10 @@ public class CancelTransactionRequestHandler {
         }
     }
 
-    private boolean isValidRequestDto(
-            WalletServiceCancelDepositTransactionRequestDto request,
-            String traceId,
-            String spanId,
-            String action
-    ) {
-        Set<ConstraintViolation<WalletServiceCancelDepositTransactionRequestDto>> violationSet = validator.validate(request);
-        if(!violationSet.isEmpty()) {
-            Function<ConstraintViolation<WalletServiceCancelDepositTransactionRequestDto>, String> violationToString = (violation) ->
-                    String.format("%s = %s", violation.getPropertyPath().toString(), violation.getInvalidValue());
-
-            String violations = violationSet
-                    .stream()
-                    .map(violationToString)
-                    .reduce("", String::concat);
-
-            String logOnInvalidDto = String.format(
-                    "Handle of operation [%s] was interrupted. Received invalid deposit transaction request: %s",
-                    action, violations);
-
-            log.error("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logOnInvalidDto);
-
-            return false;
-        }
-        return true;
-    }
-
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.cancel_withdraw_transaction_request.name}")
     public void handleCancelWithdrawTransactionRequest(
-            WalletServiceCancelWithdrawTransactionRequestDto request
+            WalletServiceCancelTransactionRequestDto request
     ) {
         if(request != null) {
             UUID transactionId = request.getTransactionId();
@@ -254,37 +225,10 @@ public class CancelTransactionRequestHandler {
         }
     }
 
-    private boolean isValidRequestDto(
-            WalletServiceCancelWithdrawTransactionRequestDto request,
-            String traceId,
-            String spanId,
-            String action
-    ) {
-        Set<ConstraintViolation<WalletServiceCancelWithdrawTransactionRequestDto>> violationSet = validator.validate(request);
-        if(!violationSet.isEmpty()) {
-            Function<ConstraintViolation<WalletServiceCancelWithdrawTransactionRequestDto>, String> violationToString = (violation) ->
-                    String.format("%s = %s", violation.getPropertyPath().toString(), violation.getInvalidValue());
-
-            String violations = violationSet
-                    .stream()
-                    .map(violationToString)
-                    .reduce("", String::concat);
-
-            String logOnInvalidDto = String.format(
-                    "Handle of operation [%s] was interrupted. Received invalid withdraw transaction request: %s",
-                    action, violations);
-
-            log.error("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logOnInvalidDto);
-
-            return false;
-        }
-        return true;
-    }
-
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.cancel_transfer_transaction_request.name}")
     public void handleCancelTransferTransactionRequest(
-            WalletServiceCancelTransferTransactionRequestDto request
+            WalletServiceCancelTransactionRequestDto request
     ) {
         if(request != null) {
             UUID transactionId = request.getTransactionId();
@@ -371,14 +315,14 @@ public class CancelTransactionRequestHandler {
     }
 
     private boolean isValidRequestDto(
-            WalletServiceCancelTransferTransactionRequestDto request,
+            WalletServiceCancelTransactionRequestDto request,
             String traceId,
             String spanId,
             String action
     ) {
-        Set<ConstraintViolation<WalletServiceCancelTransferTransactionRequestDto>> violationSet = validator.validate(request);
+        Set<ConstraintViolation<WalletServiceCancelTransactionRequestDto>> violationSet = validator.validate(request);
         if(!violationSet.isEmpty()) {
-            Function<ConstraintViolation<WalletServiceCancelTransferTransactionRequestDto>, String> violationToString = (violation) ->
+            Function<ConstraintViolation<WalletServiceCancelTransactionRequestDto>, String> violationToString = (violation) ->
                     String.format("%s = %s", violation.getPropertyPath().toString(), violation.getInvalidValue());
 
             String violations = violationSet
@@ -387,7 +331,7 @@ public class CancelTransactionRequestHandler {
                     .reduce("", String::concat);
 
             String logOnInvalidDto = String.format(
-                    "Handle of operation [%s] was interrupted. Received invalid transfer transaction request: %s",
+                    "Handle of operation [%s] was interrupted. Received invalid deposit transaction request: %s",
                     action, violations);
 
             log.error("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logOnInvalidDto);

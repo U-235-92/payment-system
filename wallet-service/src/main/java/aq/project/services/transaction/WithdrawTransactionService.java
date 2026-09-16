@@ -1,9 +1,9 @@
 package aq.project.services.transaction;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.dto.WalletServiceTransactionResponseErrorDto;
+import aq.project.dto.WalletServiceTransactionErrorResponseDto;
 import aq.project.dto.WalletServiceWithdrawTransactionRequestDto;
-import aq.project.dto.WalletServiceWithdrawTransactionResponseDto;
+import aq.project.dto.WalletServiceWithdrawTransactionSuccessResponseDto;
 import aq.project.entities.transaction.WithdrawTransaction;
 import aq.project.entities.wallet.CreditCard;
 import aq.project.entities.wallet.Wallet;
@@ -101,7 +101,7 @@ public class WithdrawTransactionService {
             try(Scope scope = span.makeCurrent()) {
                 if(isValidRequestDto(request, traceId, spanId, action)) {
                     WithdrawTransaction transaction = transactionRequestMapper.toWithdrawTransaction(request);
-
+                    transaction.setStatus(TransactionStatus.PENDING);
                     try {
                         traceContext.clean();
                         traceContext.setTraceId(request.getTraceId());
@@ -132,7 +132,7 @@ public class WithdrawTransactionService {
 
                         transactionHandler.commitFailedTransaction(transaction);
 
-                        WalletServiceTransactionResponseErrorDto errorResponseDto = transactionResponseMapper.toWalletServiceTransactionResponseErrorDto(request);
+                        WalletServiceTransactionErrorResponseDto errorResponseDto = transactionResponseMapper.toWalletServiceTransactionResponseErrorDto(request);
                         errorResponseDto.setTransactionStatus(TransactionStatus.FAILED);
                         errorResponseDto.setDescription(e.getMessage());
 
@@ -315,7 +315,9 @@ public class WithdrawTransactionService {
         List<WithdrawTransaction> withdrawTransactions = withdrawTransactionRepository.findAll(pageable).getContent();
 
         for(WithdrawTransaction transaction : withdrawTransactions) {
-            handleTransaction(transaction);
+            if(!transaction.isProcessed()) {
+                handleTransaction(transaction);
+            }
         }
     }
 
@@ -341,7 +343,7 @@ public class WithdrawTransactionService {
 
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
         try(Scope scope = span.makeCurrent()) {
-            WalletServiceWithdrawTransactionResponseDto withdrawTransactionResponseDto = transactionResponseMapper.toWithdrawResponse(transaction);
+            WalletServiceWithdrawTransactionSuccessResponseDto withdrawTransactionResponseDto = transactionResponseMapper.toWithdrawResponse(transaction);
 
             try {
                 kafkaTemplate.send(transactionResponseTopicName, withdrawTransactionResponseDto).get();

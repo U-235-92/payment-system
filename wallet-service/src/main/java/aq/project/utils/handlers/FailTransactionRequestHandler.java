@@ -49,7 +49,7 @@ public class FailTransactionRequestHandler {
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.fail_deposit_transaction_request.name}")
     public void handleFailDepositTransactionRequest(
-            WalletServiceFailDepositTransactionRequestDto request
+            WalletServiceFailTransactionRequestDto request
     ) {
         if(request != null) {
             UUID transactionId = request.getTransactionId();
@@ -135,37 +135,10 @@ public class FailTransactionRequestHandler {
         }
     }
 
-    private boolean isValidRequestDto(
-            WalletServiceFailDepositTransactionRequestDto request,
-            String traceId,
-            String spanId,
-            String action
-    ) {
-        Set<ConstraintViolation<WalletServiceFailDepositTransactionRequestDto>> violationSet = validator.validate(request);
-        if(!violationSet.isEmpty()) {
-            Function<ConstraintViolation<WalletServiceFailDepositTransactionRequestDto>, String> violationToString = (violation) ->
-                    String.format("%s = %s", violation.getPropertyPath().toString(), violation.getInvalidValue());
-
-            String violations = violationSet
-                    .stream()
-                    .map(violationToString)
-                    .reduce("", String::concat);
-
-            String logOnInvalidDto = String.format(
-                    "Handle of operation [%s] was interrupted. Received invalid deposit transaction request: %s",
-                    action, violations);
-
-            log.error("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logOnInvalidDto);
-
-            return false;
-        }
-        return true;
-    }
-
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.fail_withdraw_transaction_request.name}")
     public void handleFailWithdrawTransactionRequest(
-            WalletServiceFailWithdrawTransactionRequestDto request
+            WalletServiceFailTransactionRequestDto request
     ) {
         if(request != null) {
             UUID transactionId = request.getTransactionId();
@@ -251,37 +224,10 @@ public class FailTransactionRequestHandler {
         }
     }
 
-    private boolean isValidRequestDto(
-            WalletServiceFailWithdrawTransactionRequestDto request,
-            String traceId,
-            String spanId,
-            String action
-    ) {
-        Set<ConstraintViolation<WalletServiceFailWithdrawTransactionRequestDto>> violationSet = validator.validate(request);
-        if(!violationSet.isEmpty()) {
-            Function<ConstraintViolation<WalletServiceFailWithdrawTransactionRequestDto>, String> violationToString = (violation) ->
-                    String.format("%s = %s", violation.getPropertyPath().toString(), violation.getInvalidValue());
-
-            String violations = violationSet
-                    .stream()
-                    .map(violationToString)
-                    .reduce("", String::concat);
-
-            String logOnInvalidDto = String.format(
-                    "Handle of operation [%s] was interrupted. Received invalid withdraw transaction request: %s",
-                    action, violations);
-
-            log.error("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logOnInvalidDto);
-
-            return false;
-        }
-        return true;
-    }
-
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.fail_transfer_transaction_request.name}")
     public void handleFailTransferTransactionRequest(
-            WalletServiceFailTransferTransactionRequestDto request
+            WalletServiceFailTransactionRequestDto request
     ) {
         if(request != null) {
             UUID transactionId = request.getTransactionId();
@@ -368,14 +314,14 @@ public class FailTransactionRequestHandler {
     }
 
     private boolean isValidRequestDto(
-            WalletServiceFailTransferTransactionRequestDto request,
+            WalletServiceFailTransactionRequestDto request,
             String traceId,
             String spanId,
             String action
     ) {
-        Set<ConstraintViolation<WalletServiceFailTransferTransactionRequestDto>> violationSet = validator.validate(request);
+        Set<ConstraintViolation<WalletServiceFailTransactionRequestDto>> violationSet = validator.validate(request);
         if(!violationSet.isEmpty()) {
-            Function<ConstraintViolation<WalletServiceFailTransferTransactionRequestDto>, String> violationToString = (violation) ->
+            Function<ConstraintViolation<WalletServiceFailTransactionRequestDto>, String> violationToString = (violation) ->
                     String.format("%s = %s", violation.getPropertyPath().toString(), violation.getInvalidValue());
 
             String violations = violationSet
@@ -384,7 +330,7 @@ public class FailTransactionRequestHandler {
                     .reduce("", String::concat);
 
             String logOnInvalidDto = String.format(
-                    "Handle of operation [%s] was interrupted. Received invalid transfer transaction request: %s",
+                    "Handle of operation [%s] was interrupted. Received invalid deposit transaction request: %s",
                     action, violations);
 
             log.error("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logOnInvalidDto);

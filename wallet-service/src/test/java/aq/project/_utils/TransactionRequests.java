@@ -16,7 +16,6 @@ public final class TransactionRequests {
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(100.50));
         request.setCurrencyCode("USD");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
         request.setConversionRate(BigDecimal.valueOf(1.0));
@@ -29,7 +28,6 @@ public final class TransactionRequests {
         request.setWalletId(walletId);
         request.setAmount(BigDecimal.valueOf(100.50));
         request.setCurrencyCode("USD");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
         request.setConversionRate(BigDecimal.valueOf(1.0));
@@ -42,7 +40,6 @@ public final class TransactionRequests {
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(-100.50));
         request.setCurrencyCode("TEST");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
         request.setConversionRate(BigDecimal.valueOf(1.0));
@@ -58,7 +55,6 @@ public final class TransactionRequests {
         request.setRecipientWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(200.00));
         request.setCurrencyCode("EUR");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
         request.setSenderConversionRate(BigDecimal.valueOf(1.2));
@@ -73,7 +69,6 @@ public final class TransactionRequests {
         request.setRecipientWalletId(recipientWalletId);
         request.setAmount(BigDecimal.valueOf(200.00));
         request.setCurrencyCode("EUR");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
         request.setSenderConversionRate(BigDecimal.valueOf(1.2));
@@ -88,7 +83,6 @@ public final class TransactionRequests {
         request.setRecipientWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(-200.00));
         request.setCurrencyCode("usd");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
         request.setSenderConversionRate(BigDecimal.valueOf(-1.2));
@@ -104,7 +98,6 @@ public final class TransactionRequests {
         request.setWalletId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(50.75));
         request.setCurrencyCode("RUB");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
         request.setConversionRate(BigDecimal.valueOf(0.8));
@@ -117,7 +110,6 @@ public final class TransactionRequests {
         request.setWalletId(walletId);
         request.setAmount(BigDecimal.valueOf(50.75));
         request.setCurrencyCode("RUB");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(UUID.randomUUID().toString());
         request.setConversionRate(BigDecimal.valueOf(0.8));
@@ -130,138 +122,45 @@ public final class TransactionRequests {
         request.setTransactionId(UUID.randomUUID());
         request.setAmount(BigDecimal.valueOf(50.75));
         request.setCurrencyCode("RUB");
-        request.setTransactionStatus(TransactionStatus.PENDING);
         request.setTimestamp(OffsetDateTime.now());
         request.setTraceId(null);
         request.setConversionRate(BigDecimal.valueOf(0.8));
         return request;
     }
 
-// ==================== WalletServiceCancelDepositTransactionRequestDto ====================
+// ==================== WalletServiceCancelTransactionRequestDto ====================
 
-    public static WalletServiceCancelDepositTransactionRequestDto getValidWalletServiceCancelDepositTransactionRequestDto() {
-        WalletServiceCancelDepositTransactionRequestDto request = new WalletServiceCancelDepositTransactionRequestDto();
+    public static WalletServiceCancelTransactionRequestDto getValidWalletServiceCancelTransactionRequestDto() {
+        WalletServiceCancelTransactionRequestDto request = new WalletServiceCancelTransactionRequestDto();
         request.setTransactionId(UUID.randomUUID());
         request.setTraceId(UUID.randomUUID().toString());
         request.setTimestamp(OffsetDateTime.now());
         return request;
     }
 
-    public static WalletServiceCancelDepositTransactionRequestDto getInvalidWalletServiceCancelDepositTransactionRequestDto() {
-        WalletServiceCancelDepositTransactionRequestDto request = new WalletServiceCancelDepositTransactionRequestDto();
+    public static WalletServiceCancelTransactionRequestDto getInvalidWalletServiceCancelTransactionRequestDto() {
+        WalletServiceCancelTransactionRequestDto request = new WalletServiceCancelTransactionRequestDto();
         request.setTransactionId(null);
         request.setTraceId(null);
         request.setTimestamp(OffsetDateTime.now());
         return request;
     }
 
-// ==================== WalletServiceCancelWithdrawTransactionRequestDto ====================
+    // ==================== WalletServiceFailTransactionRequestDto ====================
 
-    public static WalletServiceCancelWithdrawTransactionRequestDto getValidWalletServiceCancelWithdrawTransactionRequestDto() {
-        WalletServiceCancelWithdrawTransactionRequestDto request = new WalletServiceCancelWithdrawTransactionRequestDto();
+    public static WalletServiceFailTransactionRequestDto getValidWalletServiceFailTransactionRequestDto() {
+        WalletServiceFailTransactionRequestDto request = new WalletServiceFailTransactionRequestDto();
         request.setTransactionId(UUID.randomUUID());
         request.setTraceId(UUID.randomUUID().toString());
         request.setTimestamp(OffsetDateTime.now());
         return request;
     }
 
-    public static WalletServiceCancelWithdrawTransactionRequestDto getInvalidWalletServiceCancelWithdrawTransactionRequestDto() {
-        WalletServiceCancelWithdrawTransactionRequestDto request = new WalletServiceCancelWithdrawTransactionRequestDto();
+    public static WalletServiceFailTransactionRequestDto getInvalidWalletServiceFailTransactionRequestDto() {
+        WalletServiceFailTransactionRequestDto request = new WalletServiceFailTransactionRequestDto();
         request.setTransactionId(null);
         request.setTraceId(null);
         request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-// ==================== WalletServiceCancelTransferTransactionRequestDto ====================
-
-    public static WalletServiceCancelTransferTransactionRequestDto getValidWalletServiceCancelTransferTransactionRequestDto() {
-        WalletServiceCancelTransferTransactionRequestDto request = new WalletServiceCancelTransferTransactionRequestDto();
-        request.setTransactionId(UUID.randomUUID());
-        request.setTraceId(UUID.randomUUID().toString());
-        request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-    public static WalletServiceCancelTransferTransactionRequestDto getInvalidWalletServiceCancelTransferTransactionRequestDto() {
-        WalletServiceCancelTransferTransactionRequestDto request = new WalletServiceCancelTransferTransactionRequestDto();
-        request.setTransactionId(null);
-        request.setTraceId(null);
-        request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-    // ==================== WalletServiceFailDepositTransactionRequestDto ====================
-
-    public static WalletServiceFailDepositTransactionRequestDto getValidWalletServiceFailDepositTransactionRequestDto() {
-        WalletServiceFailDepositTransactionRequestDto request = new WalletServiceFailDepositTransactionRequestDto();
-        request.setTransactionId(UUID.randomUUID());
-        request.setTraceId(UUID.randomUUID().toString());
-        request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-    public static WalletServiceFailDepositTransactionRequestDto getInvalidWalletServiceFailDepositTransactionRequestDto() {
-        WalletServiceFailDepositTransactionRequestDto request = new WalletServiceFailDepositTransactionRequestDto();
-        request.setTransactionId(null);
-        request.setTraceId(null);
-        request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-// ==================== WalletServiceFailWithdrawTransactionRequestDto ====================
-
-    public static WalletServiceFailWithdrawTransactionRequestDto getValidWalletServiceFailWithdrawTransactionRequestDto() {
-        WalletServiceFailWithdrawTransactionRequestDto request = new WalletServiceFailWithdrawTransactionRequestDto();
-        request.setTransactionId(UUID.randomUUID());
-        request.setTraceId(UUID.randomUUID().toString());
-        request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-    public static WalletServiceFailWithdrawTransactionRequestDto getInvalidWalletServiceFailWithdrawTransactionRequestDto() {
-        WalletServiceFailWithdrawTransactionRequestDto request = new WalletServiceFailWithdrawTransactionRequestDto();
-        request.setTransactionId(null);
-        request.setTraceId(null);
-        request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-// ==================== WalletServiceFailTransferTransactionRequestDto ====================
-
-    public static WalletServiceFailTransferTransactionRequestDto getValidWalletServiceFailTransferTransactionRequestDto() {
-        WalletServiceFailTransferTransactionRequestDto request = new WalletServiceFailTransferTransactionRequestDto();
-        request.setTransactionId(UUID.randomUUID());
-        request.setTraceId(UUID.randomUUID().toString());
-        request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-    public static WalletServiceFailTransferTransactionRequestDto getInvalidWalletServiceFailTransferTransactionRequestDto() {
-        WalletServiceFailTransferTransactionRequestDto request = new WalletServiceFailTransferTransactionRequestDto();
-        request.setTransactionId(null);
-        request.setTraceId(null);
-        request.setTimestamp(OffsetDateTime.now());
-        return request;
-    }
-
-// ==================== Дополнительные методы для удобства ====================
-
-    public static WalletServiceDepositTransactionRequestDto getValidDepositTransactionRequestWithStatus(TransactionStatus status) {
-        WalletServiceDepositTransactionRequestDto request = getValidDepositTransactionRequest();
-        request.setTransactionStatus(status);
-        return request;
-    }
-
-    public static WalletServiceTransferTransactionRequestDto getValidTransferTransactionRequestWithStatus(TransactionStatus status) {
-        WalletServiceTransferTransactionRequestDto request = getValidTransferTransactionRequest();
-        request.setTransactionStatus(status);
-        return request;
-    }
-
-    public static WalletServiceWithdrawTransactionRequestDto getValidWithdrawTransactionRequestWithStatus(TransactionStatus status) {
-        WalletServiceWithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
-        request.setTransactionStatus(status);
         return request;
     }
 }

@@ -59,8 +59,9 @@ public class GetTransactionStatusUnitTest {
 
     @BeforeEach
     public void setUpValueFields() {
-        ReflectionTestUtils.setField(withdrawTransactionService, "tracerName", "testTracer");
-        ReflectionTestUtils.setField(withdrawTransactionService, "transactionResponseTopicName", "testTopic");
+        ReflectionTestUtils.setField(withdrawTransactionService, "serviceName", "testService");
+        ReflectionTestUtils.setField(withdrawTransactionService, "transactionResponseTopicName", "testTransactionResponseTopic");
+        ReflectionTestUtils.setField(withdrawTransactionService, "transactionExceptionResponseTopicName", "testTransactionExceptionResponseTopic");
     }
 
     @Test

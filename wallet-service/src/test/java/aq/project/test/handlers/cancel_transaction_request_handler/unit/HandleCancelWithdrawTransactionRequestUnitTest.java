@@ -1,10 +1,8 @@
 package aq.project.test.handlers.cancel_transaction_request_handler.unit;
 
 import aq.project.dto.TransactionStatus;
-import aq.project.dto.WalletServiceCancelWithdrawTransactionRequestDto;
+import aq.project.dto.WalletServiceCancelTransactionRequestDto;
 import aq.project.entities.transaction.WithdrawTransaction;
-import aq.project.repositories.transaction.DepositTransactionRepository;
-import aq.project.repositories.transaction.TransferTransactionRepository;
 import aq.project.repositories.transaction.WithdrawTransactionRepository;
 import aq.project.utils.handlers.CancelTransactionRequestHandler;
 import aq.project.utils.telemetry.ApplicationMetricsRegistry;
@@ -26,8 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static aq.project._utils.TransactionEntities.getValidWithdrawTransaction;
-import static aq.project._utils.TransactionRequests.getInvalidWalletServiceCancelWithdrawTransactionRequestDto;
-import static aq.project._utils.TransactionRequests.getValidWalletServiceCancelWithdrawTransactionRequestDto;
+import static aq.project._utils.TransactionRequests.getValidWalletServiceCancelTransactionRequestDto;
 
 @ExtendWith(MockitoExtension.class)
 public class HandleCancelWithdrawTransactionRequestUnitTest {
@@ -55,7 +52,7 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
     @Test
     public void successHandleCancelDepositTransactionRequest() {
 //        Arrange
-        WalletServiceCancelWithdrawTransactionRequestDto withdrawTransactionRequestDto = getValidWalletServiceCancelWithdrawTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
         WithdrawTransaction withdrawTransaction = getValidWithdrawTransaction();
         withdrawTransaction.setStatus(TransactionStatus.PENDING);
@@ -65,7 +62,7 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
                 .thenReturn(Optional.of(withdrawTransaction));
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(withdrawTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(cancelTransactionRequestDto));
         Assertions.assertEquals(TransactionStatus.CANCELED, withdrawTransaction.getStatus());
         Assertions.assertTrue(withdrawTransaction.isProcessed());
 
@@ -76,7 +73,7 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
     @Test
     public void failHandleCancelDepositTransactionRequestWhenTransactionInCanceledState() {
 //        Arrange
-        WalletServiceCancelWithdrawTransactionRequestDto withdrawTransactionRequestDto = getValidWalletServiceCancelWithdrawTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
         WithdrawTransaction withdrawTransaction = getValidWithdrawTransaction();
         withdrawTransaction.setStatus(TransactionStatus.CANCELED);
@@ -86,7 +83,7 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
                 .thenReturn(Optional.of(withdrawTransaction));
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(withdrawTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(cancelTransactionRequestDto));
         Assertions.assertEquals(TransactionStatus.CANCELED, withdrawTransaction.getStatus());
 
         Mockito.verify(withdrawTransactionRepository, Mockito.never())
@@ -96,7 +93,7 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
     @Test
     public void failHandleCancelDepositTransactionRequestWhenTransactionInFailedState() {
 //        Arrange
-        WalletServiceCancelWithdrawTransactionRequestDto withdrawTransactionRequestDto = getValidWalletServiceCancelWithdrawTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
         WithdrawTransaction withdrawTransaction = getValidWithdrawTransaction();
         withdrawTransaction.setStatus(TransactionStatus.FAILED);
@@ -106,7 +103,7 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
                 .thenReturn(Optional.of(withdrawTransaction));
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(withdrawTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(cancelTransactionRequestDto));
         Assertions.assertEquals(TransactionStatus.FAILED, withdrawTransaction.getStatus());
 
         Mockito.verify(withdrawTransactionRepository, Mockito.never())
@@ -116,13 +113,13 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
     @Test
     public void failHandleCancelDepositTransactionRequestWhenTransactionNotFound() {
 //        Arrange
-        WalletServiceCancelWithdrawTransactionRequestDto withdrawTransactionRequestDto = getValidWalletServiceCancelWithdrawTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
         Mockito.when(withdrawTransactionRepository.findById(Mockito.any(UUID.class)))
                 .thenReturn(Optional.empty());
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(withdrawTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(cancelTransactionRequestDto));
 
         Mockito.verify(withdrawTransactionRepository, Mockito.never())
                 .save(Mockito.any(WithdrawTransaction.class));
@@ -131,10 +128,10 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
     @Test
     public void failHandleInvalidCancelDepositTransactionRequest() {
 //        Arrange
-        WalletServiceCancelWithdrawTransactionRequestDto withdrawTransactionRequestDto = getInvalidWalletServiceCancelWithdrawTransactionRequestDto();
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = getValidWalletServiceCancelTransactionRequestDto();
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(withdrawTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(cancelTransactionRequestDto));
 
         Mockito.verify(withdrawTransactionRepository, Mockito.never())
                 .save(Mockito.any(WithdrawTransaction.class));
@@ -143,10 +140,10 @@ public class HandleCancelWithdrawTransactionRequestUnitTest {
     @Test
     public void failHandleNullCancelDepositTransactionRequest() {
 //        Arrange
-        WalletServiceCancelWithdrawTransactionRequestDto withdrawTransactionRequestDto = null;
+        WalletServiceCancelTransactionRequestDto cancelTransactionRequestDto = null;
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(withdrawTransactionRequestDto));
+        Assertions.assertDoesNotThrow(() -> cancelTransactionRequestHandler.handleCancelWithdrawTransactionRequest(cancelTransactionRequestDto));
 
         Mockito.verify(withdrawTransactionRepository, Mockito.never())
                 .save(Mockito.any(WithdrawTransaction.class));

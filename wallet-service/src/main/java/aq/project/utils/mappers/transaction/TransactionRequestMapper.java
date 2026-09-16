@@ -18,7 +18,6 @@ public interface TransactionRequestMapper {
 
     @Mapping(target = "id", source = "transactionId")
     @Mapping(target = "walletId", source = "walletId")
-    @Mapping(target = "status", source = "transactionStatus")
     @Mapping(target = "metadata", expression = "java(toMetadata(request))")
     DepositTransaction toDepositTransaction(WalletServiceDepositTransactionRequestDto request);
 
@@ -31,7 +30,6 @@ public interface TransactionRequestMapper {
 
     @Mapping(target = "id", source = "transactionId")
     @Mapping(target = "walletId", source = "walletId")
-    @Mapping(target = "status", source = "transactionStatus")
     @Mapping(target = "metadata", expression = "java(toMetadata(request))")
     WithdrawTransaction toWithdrawTransaction(WalletServiceWithdrawTransactionRequestDto request);
 
@@ -45,7 +43,6 @@ public interface TransactionRequestMapper {
     @Mapping(target = "id", source = "transactionId")
     @Mapping(target = "senderWalletId", source = "senderWalletId")
     @Mapping(target = "recipientWalletId", source = "recipientWalletId")
-    @Mapping(target = "status", source = "transactionStatus")
     @Mapping(target = "metadata", expression = "java(toMetadata(request))")
     TransferTransaction toTransferTransaction(WalletServiceTransferTransactionRequestDto request);
 

@@ -58,66 +58,8 @@ otel:
 service:
   kafka:
     topics:
-      deposit_transaction_response:
-        name: wallet_service_deposit_transaction_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      deposit_transaction_response_dlt:
-        name: wallet_service_deposit_transaction_response_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      deposit_transaction_response_exceptions:
-        name: wallet_service_deposit_transaction_response_exceptions
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-
-      withdraw_transaction_response:
-        name: wallet_service_withdraw_transaction_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      withdraw_transaction_response_dlt:
-        name: wallet_service_withdraw_transaction_response_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      withdraw_transaction_response_exceptions:
-        name: wallet_service_withdraw_transaction_response_exceptions
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-
-      transfer_transaction_response:
-        name: wallet_service_transfer_transaction_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      transfer_transaction_response_dlt:
-        name: wallet_service_transfer_transaction_response_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      transfer_transaction_response_exceptions:
-        name: wallet_service_transfer_transaction_response_exceptions
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-
-      deposit_transaction_request:
-        name: wallet_service_deposit_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      deposit_transaction_request_dlt:
-        name: wallet_service_deposit_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      deposit_transaction_request_exceptions:
-        name: wallet_service_deposit_transaction_request_exceptions
+      create_deposit_transaction_request:
+        name: wallet_service_create_deposit_transaction_request
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -131,19 +73,24 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
+      create_deposit_transaction_response:
+        name: wallet_service_create_deposit_transaction_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_deposit_transaction_response_dlt:
+        name: wallet_service_create_deposit_transaction_response_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_deposit_transaction_response_exceptions:
+        name: wallet_service_create_deposit_transaction_response_exceptions
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
 
-      withdraw_transaction_request:
-        name: wallet_service_withdraw_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      withdraw_transaction_request_dlt:
-        name: wallet_service_withdraw_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      withdraw_transaction_request_exceptions:
-        name: wallet_service_withdraw_transaction_request_exceptions
+      create_withdraw_transaction_request:
+        name: wallet_service_create_withdraw_transaction_request
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -157,19 +104,24 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
+      create_withdraw_transaction_response:
+        name: wallet_service_create_withdraw_transaction_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_withdraw_transaction_response_dlt:
+        name: wallet_service_create_withdraw_transaction_response_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_withdraw_transaction_response_exceptions:
+        name: wallet_service_create_withdraw_transaction_response_exceptions
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
 
-      transfer_transaction_request:
-        name: wallet_service_transfer_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      transfer_transaction_request_dlt:
-        name: wallet_service_transfer_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      transfer_transaction_request_exceptions:
-        name: wallet_service_transfer_transaction_request_exceptions
+      create_transfer_transaction_request:
+        name: wallet_service_create_transfer_transaction_request
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -180,6 +132,21 @@ service:
         min_insync_replicas: 2
       cancel_transfer_transaction_request:
         name: wallet_service_cancel_transfer_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_transfer_transaction_response:
+        name: wallet_service_create_transfer_transaction_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_transfer_transaction_response_dlt:
+        name: wallet_service_create_transfer_transaction_response_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      create_transfer_transaction_response_exceptions:
+        name: wallet_service_create_transfer_transaction_response_exceptions
         partitions: 3
         replicas: 3
         min_insync_replicas: 2

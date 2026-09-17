@@ -76,99 +76,83 @@ public class KafkaConfiguration {
 
 //     RESPONSE TOPICS
     @Bean
-    public NewTopic depositTransactionResponseTopic() {
+    public NewTopic createDepositTransactionResponseTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("deposit_transaction_response");
+                .get("create_deposit_transaction_response");
         return createTopic(config);
     }
 
     @Bean
-    public NewTopic depositTransactionResponseDltTopic() {
+    public NewTopic createDepositTransactionResponseDltTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("deposit_transaction_response_dlt");
+                .get("create_deposit_transaction_response_dlt");
         return createTopic(config);
     }
 
     @Bean
-    public NewTopic depositTransactionResponseExceptionsTopic() {
+    public NewTopic createDepositTransactionResponseExceptionsTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("deposit_transaction_response_exceptions");
+                .get("create_deposit_transaction_response_exceptions");
         return createTopic(config);
     }
 
     @Bean
-    public NewTopic withdrawTransactionResponseTopic() {
+    public NewTopic createWithdrawTransactionResponseTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("withdraw_transaction_response");
+                .get("create_withdraw_transaction_response");
         return createTopic(config);
     }
 
     @Bean
-    public NewTopic withdrawTransactionResponseDltTopic() {
+    public NewTopic createWithdrawTransactionResponseDltTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("withdraw_transaction_response_dlt");
+                .get("create_withdraw_transaction_response_dlt");
         return createTopic(config);
     }
 
     @Bean
-    public NewTopic withdrawTransactionResponseExceptionsTopic() {
+    public NewTopic createWithdrawTransactionResponseExceptionsTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("withdraw_transaction_response_exceptions");
+                .get("create_withdraw_transaction_response_exceptions");
         return createTopic(config);
     }
 
     @Bean
-    public NewTopic transferTransactionResponseTopic() {
+    public NewTopic createTransferTransactionResponseTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("transfer_transaction_response");
+                .get("create_transfer_transaction_response");
         return createTopic(config);
     }
 
     @Bean
-    public NewTopic transferTransactionResponseDltTopic() {
+    public NewTopic createTransferTransactionResponseDltTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("transfer_transaction_response_dlt");
+                .get("create_transfer_transaction_response_dlt");
         return createTopic(config);
     }
 
     @Bean
-    public NewTopic transferTransactionResponseExceptionsTopic() {
+    public NewTopic createTransferTransactionResponseExceptionsTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("transfer_transaction_response_exceptions");
+                .get("create_transfer_transaction_response_exceptions");
         return createTopic(config);
     }
 
 //     REQUEST TOPICS
     @Bean
-    public NewTopic depositTransactionRequestTopic() {
+    public NewTopic createDepositTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("deposit_transaction_request");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic depositTransactionRequestDltTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("deposit_transaction_request_dlt");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic depositTransactionRequestExceptionsTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("deposit_transaction_request_exceptions");
+                .get("create_deposit_transaction_request");
         return createTopic(config);
     }
 
@@ -189,26 +173,10 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public NewTopic withdrawTransactionRequestTopic() {
+    public NewTopic createWithdrawTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("withdraw_transaction_request");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic withdrawTransactionRequestDltTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("withdraw_transaction_request_dlt");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic withdrawTransactionRequestExceptionsTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("withdraw_transaction_request_exceptions");
+                .get("create_withdraw_transaction_request");
         return createTopic(config);
     }
 
@@ -229,26 +197,10 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public NewTopic transferTransactionRequestTopic() {
+    public NewTopic createTransferTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("transfer_transaction_request");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic transferTransactionRequestDltTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("transfer_transaction_request_dlt");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic transferTransactionRequestExceptionsTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("transfer_transaction_request_exceptions");
+                .get("create_transfer_transaction_request");
         return createTopic(config);
     }
 

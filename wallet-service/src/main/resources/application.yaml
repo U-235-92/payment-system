@@ -63,8 +63,18 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
+      create_deposit_transaction_request_dlt:
+        name: wallet_service_create_deposit_transaction_request_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
       fail_deposit_transaction_request:
         name: wallet_service_fail_deposit_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      fail_deposit_transaction_request_dlt:
+        name: wallet_service_fail_deposit_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -73,13 +83,14 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      create_deposit_transaction_response:
-        name: wallet_service_create_deposit_transaction_response
+      cancel_deposit_transaction_request_dlt:
+        name: wallet_service_cancel_deposit_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      create_deposit_transaction_response_dlt:
-        name: wallet_service_create_deposit_transaction_response_dlt
+
+      create_deposit_transaction_response:
+        name: wallet_service_create_deposit_transaction_response
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -94,8 +105,18 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
+      create_withdraw_transaction_request_dlt:
+        name: wallet_service_create_withdraw_transaction_request_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
       fail_withdraw_transaction_request:
         name: wallet_service_fail_withdraw_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      fail_withdraw_transaction_request_dlt:
+        name: wallet_service_fail_withdraw_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -104,13 +125,14 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      create_withdraw_transaction_response:
-        name: wallet_service_create_withdraw_transaction_response
+      cancel_withdraw_transaction_request_dlt:
+        name: wallet_service_cancel_withdraw_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      create_withdraw_transaction_response_dlt:
-        name: wallet_service_create_withdraw_transaction_response_dlt
+
+      create_withdraw_transaction_response:
+        name: wallet_service_create_withdraw_transaction_response
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -125,8 +147,18 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
+      create_transfer_transaction_request_dlt:
+        name: wallet_service_create_transfer_transaction_request_dlt
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
       fail_transfer_transaction_request:
         name: wallet_service_fail_transfer_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      fail_transfer_transaction_request_dlt:
+        name: wallet_service_fail_transfer_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
@@ -135,13 +167,14 @@ service:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      create_transfer_transaction_response:
-        name: wallet_service_create_transfer_transaction_response
+      cancel_transfer_transaction_request_dlt:
+        name: wallet_service_cancel_transfer_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
-      create_transfer_transaction_response_dlt:
-        name: wallet_service_create_transfer_transaction_response_dlt
+
+      create_transfer_transaction_response:
+        name: wallet_service_create_transfer_transaction_response
         partitions: 3
         replicas: 3
         min_insync_replicas: 2

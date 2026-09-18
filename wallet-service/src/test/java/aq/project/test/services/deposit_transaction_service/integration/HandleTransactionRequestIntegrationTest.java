@@ -30,7 +30,6 @@ import java.util.Properties;
 import java.util.UUID;
 
 import static aq.project._utils.TransactionEntities.getValidDepositTransaction;
-import static aq.project._utils.TransactionRequests.getInvalidDepositTransactionRequest;
 import static aq.project._utils.TransactionRequests.getValidDepositTransactionRequest;
 import static aq.project._utils.WalletEntities.*;
 
@@ -163,24 +162,6 @@ public class HandleTransactionRequestIntegrationTest {
         WalletServiceDepositTransactionRequestDto request = getValidDepositTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
-
-//        Act & Assert
-        Assertions.assertDoesNotThrow(() -> depositTransactionService.handleTransactionRequest(request));
-    }
-
-    @Test
-    public void failHandleTransactionRequestOnInvalidDepositTransactionRequest() {
-//        Arrange
-        WalletServiceDepositTransactionRequestDto request = getInvalidDepositTransactionRequest();
-
-//        Act & Assert
-        Assertions.assertDoesNotThrow(() -> depositTransactionService.handleTransactionRequest(request));
-    }
-
-    @Test
-    public void failHandleTransactionRequestOnNullDepositTransactionRequest() {
-//        Arrange
-        WalletServiceDepositTransactionRequestDto request = null;
 
 //        Act & Assert
         Assertions.assertDoesNotThrow(() -> depositTransactionService.handleTransactionRequest(request));

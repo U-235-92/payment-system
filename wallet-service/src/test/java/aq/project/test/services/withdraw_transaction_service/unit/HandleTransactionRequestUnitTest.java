@@ -1,9 +1,11 @@
 package aq.project.test.services.withdraw_transaction_service.unit;
 
+import aq.project.dto.WalletServiceTransactionErrorResponseDto;
 import aq.project.dto.WalletServiceWithdrawTransactionRequestDto;
 import aq.project.entities.transaction.WithdrawTransaction;
 import aq.project.entities.wallet.CreditCard;
 import aq.project.entities.wallet.Wallet;
+import aq.project.exceptions.DtoConstraintsException;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
@@ -16,6 +18,7 @@ import aq.project.utils.mappers.transaction.TransactionResponseMapper;
 import aq.project.utils.telemetry.ApplicationMetricsRegistry;
 import aq.project.utils.telemetry.TraceContext;
 import io.opentelemetry.api.OpenTelemetry;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Assertions;
@@ -31,10 +34,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import static aq.project._utils.TransactionRequests.getInvalidWithdrawTransactionRequest;
 import static aq.project._utils.TransactionRequests.getValidWithdrawTransactionRequest;
 import static aq.project._utils.WalletEntities.*;
 
@@ -313,5 +318,35 @@ public class HandleTransactionRequestUnitTest {
                 .clean();
         Mockito.verify(traceContext, Mockito.times(1))
                 .setTraceId(Mockito.anyString());
+    }
+
+    @Test
+    public void failHandleTransactionRequestOnInvalidDepositTransactionRequestWhenThrowsConstraintViolationException() {
+//        Arrange
+        WalletServiceWithdrawTransactionRequestDto request = getInvalidWithdrawTransactionRequest();
+
+//        Act & Assert
+        Assertions.assertThrows(ConstraintViolationException.class,
+                () -> withdrawTransactionService.handleTransactionRequest(request));
+    }
+
+    @Test
+    public void failHandleTransactionRequestOnInvalidDepositTransactionRequest() {
+//        Arrange
+        WalletServiceWithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest();
+        request.setAmount(BigDecimal.valueOf(-100.00));
+
+        CompletableFuture<SendResult<String, Object>> future = Mockito.mock(CompletableFuture.class);
+
+        Mockito.doReturn(future)
+                .when(kafkaTemplate)
+                .send(Mockito.anyString(), Mockito.any());
+
+//        Act & Assert
+        Assertions.assertThrows(DtoConstraintsException.class,
+                () -> withdrawTransactionService.handleTransactionRequest(request));
+
+        Mockito.verify(kafkaTemplate, Mockito.times(1))
+                .send(Mockito.any(String.class), Mockito.any(WalletServiceTransactionErrorResponseDto.class));
     }
 }

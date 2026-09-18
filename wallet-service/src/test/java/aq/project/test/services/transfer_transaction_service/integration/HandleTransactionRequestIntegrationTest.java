@@ -2,26 +2,18 @@ package aq.project.test.services.transfer_transaction_service.integration;
 
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
+import aq.project.dto.WalletServiceTransferTransactionRequestDto;
 import aq.project.entities.transaction.TransferTransaction;
 import aq.project.entities.wallet.CreditCard;
 import aq.project.entities.wallet.Wallet;
-import aq.project.exceptions.DuplicateTransactionHandleException;
-import aq.project.exceptions.EntityConstraintsException;
-import aq.project.exceptions.EntityNotFoundException;
-import aq.project.dto.WalletServiceTransferTransactionRequestDto;
 import aq.project.repositories.transaction.TransferTransactionRepository;
 import aq.project.repositories.wallet.WalletRepository;
 import aq.project.services.transaction.TransferTransactionService;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
-import jakarta.validation.ConstraintViolationException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -38,7 +30,6 @@ import java.util.Properties;
 import java.util.UUID;
 
 import static aq.project._utils.TransactionEntities.getValidTransferTransaction;
-import static aq.project._utils.TransactionRequests.getInvalidTransferTransactionRequest;
 import static aq.project._utils.TransactionRequests.getValidTransferTransactionRequest;
 import static aq.project._utils.WalletEntities.*;
 
@@ -262,24 +253,6 @@ public class HandleTransactionRequestIntegrationTest {
 
         walletRepository.save(senderWallet);
         walletRepository.save(recipientWallet);
-
-        // Act & Assert
-        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
-    }
-
-    @Test
-    public void failHandleTransactionRequestOnInvalidTransferTransactionRequest() {
-        // Arrange
-        WalletServiceTransferTransactionRequestDto request = getInvalidTransferTransactionRequest();
-
-        // Act & Assert
-        Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));
-    }
-
-    @Test
-    public void failHandleTransactionRequestOnNullTransferTransactionRequest() {
-        // Arrange
-        WalletServiceTransferTransactionRequestDto request = null;
 
         // Act & Assert
         Assertions.assertDoesNotThrow(() -> transferTransactionService.handleTransactionRequest(request));

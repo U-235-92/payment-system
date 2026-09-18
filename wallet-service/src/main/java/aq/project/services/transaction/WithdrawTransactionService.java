@@ -1,12 +1,10 @@
 package aq.project.services.transaction;
 
-import aq.project.dto.TransactionStatus;
-import aq.project.dto.WalletServiceTransactionErrorResponseDto;
-import aq.project.dto.WalletServiceWithdrawTransactionRequestDto;
-import aq.project.dto.WalletServiceWithdrawTransactionSuccessResponseDto;
+import aq.project.dto.*;
 import aq.project.entities.transaction.WithdrawTransaction;
 import aq.project.entities.wallet.CreditCard;
 import aq.project.entities.wallet.Wallet;
+import aq.project.exceptions.DtoConstraintsException;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
@@ -23,6 +21,7 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,79 +98,103 @@ public class WithdrawTransactionService {
             Timer.Sample sample = applicationMetricsRegistry.startTimer();
 
             try(Scope scope = span.makeCurrent()) {
-                if(isValidRequestDto(request, traceId, spanId, action)) {
-                    WithdrawTransaction transaction = transactionRequestMapper.toWithdrawTransaction(request);
-                    transaction.setStatus(TransactionStatus.PENDING);
-                    try {
-                        traceContext.clean();
-                        traceContext.setTraceId(request.getTraceId());
+                validateRequestDto(request, traceId, spanId, action);
 
-                        checkIdempotentTransactionHandle(request);
-                        checkTransactionConstraints(request);
-                        handleTransaction(request);
+                WithdrawTransaction transaction = transactionRequestMapper.toWithdrawTransaction(request);
+                transaction.setStatus(TransactionStatus.PENDING);
+                try {
+                    traceContext.clean();
+                    traceContext.setTraceId(request.getTraceId());
 
-                        transactionHandler.commitCompletedTransaction(transaction);
+                    checkIdempotentTransactionHandle(request);
+                    checkTransactionConstraints(request);
+                    handleTransaction(request);
 
-                        String logMessageOnSuccess = String.format(
-                                "Request to handle withdraw transaction with id: [%s] completed successfully",
-                                transactionId);
+                    transactionHandler.commitCompletedTransaction(transaction);
 
-                        log.info("[{}-{}][{} -> {}]: {}",
-                                traceId, spanId, serviceName, action, logMessageOnSuccess);
+                    String logMessageOnSuccess = String.format(
+                            "Request to handle withdraw transaction with id: [%s] completed successfully",
+                            transactionId);
 
-                        applicationMetricsRegistry.countAction(true, action);
-                    } catch(EntityNotFoundException | DuplicateTransactionHandleException | EntityConstraintsException e) {
-                        String logMessageOnError = String.format(
-                                "Error occurred while handle withdraw transaction with id: [%s]. Exception: [%s]",
-                                transactionId, e.getMessage());
+                    log.info("[{}-{}][{} -> {}]: {}",
+                            traceId, spanId, serviceName, action, logMessageOnSuccess);
 
-                        log.error("[{}-{}][{} -> {}]: {}",
-                                traceId, spanId, serviceName, action, logMessageOnError);
+                    applicationMetricsRegistry.countAction(true, action);
 
-                        applicationMetricsRegistry.countAction(false, action);
+                } catch(EntityNotFoundException | DuplicateTransactionHandleException | EntityConstraintsException e) {
+                    String logMessageOnError = String.format(
+                            "Error occurred while handle withdraw transaction with id: [%s]. Exception: [%s]",
+                            transactionId, e.getMessage());
 
-                        transactionHandler.commitFailedTransaction(transaction);
+                    log.error("[{}-{}][{} -> {}]: {}",
+                            traceId, spanId, serviceName, action, logMessageOnError);
 
-                        WalletServiceTransactionErrorResponseDto errorResponseDto = transactionResponseMapper.toWalletServiceTransactionResponseErrorDto(request);
-                        errorResponseDto.setTransactionStatus(TransactionStatus.FAILED);
-                        errorResponseDto.setDescription(e.getMessage());
-
-                        try {
-                            String logMessageOnSendToKafka = String.format(
-                                    "Attempt to send withdraw transaction failure response with transaction id: [%s] " +
-                                    "to kafka-topic: [%s]",
-                                    transactionId, transactionExceptionResponseTopicName);
-
-                            log.info("[{}-{}][{} -> {}]: {}",
-                                    traceId, spanId, serviceName, action, logMessageOnSendToKafka);
-
-                            kafkaTemplate.send(transactionExceptionResponseTopicName, errorResponseDto).get();
-
-                            String logMessageOnCompletedSendToKafka = String.format(
-                                    "Sending withdraw transaction failure response with transaction id: [%s] " +
-                                    "to kafka-topic: [%s] completed successfully",
-                                    transactionId, transactionExceptionResponseTopicName);
-
-                            log.info("[{}-{}][{} -> {}]: {}",
-                                    traceId, spanId, serviceName, action, logMessageOnCompletedSendToKafka);
-                        } catch(InterruptedException | ExecutionException ex) {
-                            String logMessageOnFailedSendToKafka = String.format(
-                                    "Exception occurred while send withdraw transaction failure response with transaction id: [%s] " +
-                                    "to kafka-topic: [%s]. Exception: [%s]",
-                                    transactionId, transactionExceptionResponseTopicName, ex.getMessage());
-
-                            log.error("[{}-{}][{} -> {}]: {}",
-                                    traceId, spanId, serviceName, action, logMessageOnFailedSendToKafka);
-                        }
-                    }
-                } else {
                     applicationMetricsRegistry.countAction(false, action);
+
+                    transactionHandler.commitFailedTransaction(transaction);
+
+                    WalletServiceTransactionErrorResponseDto errorResponseDto = transactionResponseMapper.toWalletServiceTransactionResponseErrorDto(request);
+                    errorResponseDto.setTransactionStatus(TransactionStatus.FAILED);
+                    errorResponseDto.setDescription(e.getMessage());
+
+                    sendWalletServiceTransactionErrorResponseDtoToKafka(errorResponseDto, traceId, spanId, action);
                 }
             } finally {
                 applicationMetricsRegistry.finishTimer(sample, action);
                 traceContext.clean();
                 span.end();
             }
+        }
+    }
+
+    private void validateRequestDto(
+            WalletServiceWithdrawTransactionRequestDto request,
+            String traceId,
+            String spanId,
+            String action
+    ) {
+        Set<ConstraintViolation<WalletServiceWithdrawTransactionRequestDto>> violationSet = validator.validate(request);
+
+        if(!violationSet.isEmpty()) {
+            Function<ConstraintViolation<WalletServiceWithdrawTransactionRequestDto>, String> violationToString = (violation) ->
+                    String.format("%s = %s", violation.getPropertyPath().toString(), violation.getInvalidValue());
+
+            String violations = violationSet
+                    .stream()
+                    .map(violationToString)
+                    .reduce("", String::concat);
+
+            String logOnInvalidDto = String.format(
+                    "Handle of operation [%s] was interrupted. Received invalid withdraw transaction request: %s",
+                    action, violations);
+
+            log.error("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logOnInvalidDto);
+
+            applicationMetricsRegistry.countAction(false, action);
+
+            throw new ConstraintViolationException(violationSet);
+        }
+
+        boolean isValidAmount = isValidAmount(request, traceId, spanId, action);
+        boolean isValidConversionRate = isValidConversionRate(request, traceId, spanId, action);
+
+        if(!(isValidAmount & isValidConversionRate)) {
+            applicationMetricsRegistry.countAction(false, action);
+
+            String description = "Request contains invalid parameter(s): ";
+
+            if(!isValidAmount)
+                description += String.format("amount = [%s]; ", request.getAmount());
+            if(!isValidConversionRate)
+                description += String.format("conversion rate = [%s]; ", request.getConversionRate());
+
+            WalletServiceTransactionErrorResponseDto errorResponseDto = transactionResponseMapper.toWalletServiceTransactionResponseErrorDto(request);
+            errorResponseDto.setTransactionStatus(TransactionStatus.FAILED);
+            errorResponseDto.setDescription(description);
+
+            sendWalletServiceTransactionErrorResponseDtoToKafka(errorResponseDto, traceId, spanId, action);
+
+            throw new DtoConstraintsException(description);
         }
     }
 
@@ -305,6 +328,44 @@ public class WithdrawTransactionService {
         wallet.getCreditCard().setBalance(updatedBalance);
     }
 
+    private void sendWalletServiceTransactionErrorResponseDtoToKafka(
+            WalletServiceTransactionErrorResponseDto errorResponseDto,
+            String traceId,
+            String spanId,
+            String action
+    ) {
+        UUID transactionId = errorResponseDto.getTransactionId();
+
+        try {
+            String logMessageOnSendToKafka = String.format(
+                    "Attempt to send deposit transaction failure response with transaction id: [%s] " +
+                            "to kafka-topic: [%s]",
+                    transactionId, transactionExceptionResponseTopicName);
+
+            log.info("[{}-{}][{} -> {}]: {}",
+                    traceId, spanId, serviceName, action, logMessageOnSendToKafka);
+
+            kafkaTemplate.send(transactionExceptionResponseTopicName, errorResponseDto).get();
+
+            String logMessageOnCompletedSendToKafka = String.format(
+                    "Sending deposit transaction failure response with transaction id: [%s] " +
+                            "to kafka-topic: [%s] completed successfully",
+                    transactionId, transactionExceptionResponseTopicName);
+
+            log.info("[{}-{}][{} -> {}]: {}",
+                    traceId, spanId, serviceName, action, logMessageOnCompletedSendToKafka);
+
+        } catch(InterruptedException | ExecutionException e) {
+            String logMessageOnFailedSendToKafka = String.format(
+                    "Exception occurred while send deposit transaction failure response with transaction id: [%s] " +
+                            "to kafka-topic: [%s]. Exception: [%s]",
+                    transactionId, transactionExceptionResponseTopicName, e.getMessage());
+
+            log.error("[{}-{}][{} -> {}]: {}",
+                    traceId, spanId, serviceName, action, logMessageOnFailedSendToKafka);
+        }
+    }
+
     @Transactional
     @Scheduled(fixedDelay = 5000)
     public void handleTransaction() {
@@ -357,6 +418,7 @@ public class WithdrawTransactionService {
                 applicationMetricsRegistry.countAction(true, action);
 
                 transaction.setProcessed(true);
+
             } catch (ExecutionException | InterruptedException e) {
                 String logMessageOnFailedSendToKafka = String.format(
                         "Exception occurred while send withdraw transaction handle response with transaction id: [%s] " +

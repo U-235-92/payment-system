@@ -31,7 +31,6 @@ import java.util.Properties;
 import java.util.UUID;
 
 import static aq.project._utils.TransactionEntities.getValidWithdrawTransaction;
-import static aq.project._utils.TransactionRequests.getInvalidWithdrawTransactionRequest;
 import static aq.project._utils.TransactionRequests.getValidWithdrawTransactionRequest;
 import static aq.project._utils.WalletEntities.*;
 
@@ -180,24 +179,6 @@ public class HandleTransactionRequestIntegrationTest {
         WalletServiceWithdrawTransactionRequestDto request = getValidWithdrawTransactionRequest(transactionId, walletId);
 
         walletRepository.save(wallet);
-
-        // Act & Assert
-        Assertions.assertDoesNotThrow(() -> withdrawTransactionService.handleTransactionRequest(request));
-    }
-
-    @Test
-    public void failHandleTransactionRequestOnInvalidWithdrawTransactionRequest() {
-        // Arrange
-        WalletServiceWithdrawTransactionRequestDto request = getInvalidWithdrawTransactionRequest();
-
-        // Act & Assert
-        Assertions.assertDoesNotThrow(() -> withdrawTransactionService.handleTransactionRequest(request));
-    }
-
-    @Test
-    public void failHandleTransactionRequestOnNullWithdrawTransactionRequest() {
-        // Arrange
-        WalletServiceWithdrawTransactionRequestDto request = null;
 
         // Act & Assert
         Assertions.assertDoesNotThrow(() -> withdrawTransactionService.handleTransactionRequest(request));

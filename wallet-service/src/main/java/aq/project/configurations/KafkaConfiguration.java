@@ -2,6 +2,7 @@ package aq.project.configurations;
 
 import aq.project.configurations.properties.KafkaBackoffProperties;
 import aq.project.configurations.properties.KafkaTopicProperties;
+import aq.project.exceptions.DtoConstraintsException;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
@@ -40,6 +41,7 @@ public class KafkaConfiguration {
         handler.addNotRetryableExceptions(ExecutionException.class);
         handler.addNotRetryableExceptions(InterruptedException.class);
         handler.addNotRetryableExceptions(ConstraintViolationException.class);
+        handler.addNotRetryableExceptions(DtoConstraintsException.class);
         return handler;
     }
 

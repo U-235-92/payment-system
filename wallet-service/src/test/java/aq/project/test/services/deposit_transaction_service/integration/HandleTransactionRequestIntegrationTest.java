@@ -68,8 +68,8 @@ public class HandleTransactionRequestIntegrationTest {
         Properties props = new Properties();
         props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_CONTAINER.getBootstrapServers());
 
-        NewTopic depositTransactionResponseTopic = new NewTopic("deposit_transaction_response", 3, (short) 1);
-        NewTopic depositTransactionResponseExceptionsTopic = new NewTopic("wallet_service_deposit_transaction_response_exceptions", 3, (short) 1);
+        NewTopic depositTransactionResponseTopic = new NewTopic("wallet_service_create_deposit_transaction_response", 3, (short) 1);
+        NewTopic depositTransactionResponseExceptionsTopic = new NewTopic("wallet_service_create_deposit_transaction_response_exceptions", 3, (short) 1);
 
         adminClient = AdminClient.create(props);
         adminClient.createTopics(List.of(

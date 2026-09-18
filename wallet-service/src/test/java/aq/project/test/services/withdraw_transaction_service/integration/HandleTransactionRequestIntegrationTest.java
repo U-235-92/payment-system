@@ -26,7 +26,7 @@ import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -39,8 +39,6 @@ import static aq.project._utils.WalletEntities.*;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class HandleTransactionRequestIntegrationTest {
-
-    private static final String KAFKA_TEST_CONTAINER_TOPIC = "withdraw_transaction_response";
 
     private static AdminClient adminClient;
 
@@ -71,10 +69,14 @@ public class HandleTransactionRequestIntegrationTest {
         Properties props = new Properties();
         props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_CONTAINER.getBootstrapServers());
 
-        NewTopic walletOperationRequestTopic = new NewTopic(KAFKA_TEST_CONTAINER_TOPIC, 3, (short) 1);
+        NewTopic transferTransactionResponseTopic = new NewTopic("wallet_service_create_withdraw_transaction_response", 3, (short) 1);
+        NewTopic transferTransactionResponseExceptionsTopic = new NewTopic("wallet_service_create_withdraw_transaction_response_exceptions", 3, (short) 1);
 
         adminClient = AdminClient.create(props);
-        adminClient.createTopics(Collections.singleton(walletOperationRequestTopic));
+        adminClient.createTopics(List.of(
+                transferTransactionResponseTopic,
+                transferTransactionResponseExceptionsTopic
+        ));
     }
 
     @AfterAll

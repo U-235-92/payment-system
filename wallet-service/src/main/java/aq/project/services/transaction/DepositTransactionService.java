@@ -77,7 +77,7 @@ public class DepositTransactionService {
     private final Validator validator;
 
     @Transactional
-    @KafkaListener(topics = "${service.kafka.topics.deposit_transaction_request.name}")
+    @KafkaListener(topics = "${service.kafka.topics.create_deposit_transaction_request.name}")
     public void handleTransactionRequest(
             WalletServiceDepositTransactionRequestDto request
     ) {

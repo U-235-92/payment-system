@@ -49,9 +49,9 @@ public class WithdrawTransactionService {
 
     @Value("${spring.application.name}")
     private String serviceName;
-    @Value("${service.kafka.topics.withdraw_transaction_response.name}")
+    @Value("${service.kafka.topics.create_withdraw_transaction_response.name}")
     private String transactionResponseTopicName;
-    @Value("${service.kafka.topics.withdraw_transaction_response_exceptions.name}")
+    @Value("${service.kafka.topics.create_withdraw_transaction_response_exceptions.name}")
     private String transactionExceptionResponseTopicName;
 
     private final TransactionRequestMapper transactionRequestMapper = TransactionRequestMapper.INSTANCE;
@@ -74,7 +74,7 @@ public class WithdrawTransactionService {
     private final Validator validator;
 
     @Transactional
-    @KafkaListener(topics = "${service.kafka.topics.withdraw_transaction_request.name}")
+    @KafkaListener(topics = "${service.kafka.topics.create_withdraw_transaction_request.name}")
     public void handleTransactionRequest(
             WalletServiceWithdrawTransactionRequestDto request
     ) {

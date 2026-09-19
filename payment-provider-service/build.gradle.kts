@@ -19,7 +19,7 @@ extra["springCloudVersion"] = "2025.1.2"
 /////////////////////////////////////
 val artifact = "payment-provider-service"
 
-val specificationArtifactVersion = "1.0.9-dev"
+val specificationArtifactVersion = "1.0.12-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -160,6 +160,7 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers-grafana")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testImplementation("org.testcontainers:testcontainers-kafka")
 	testImplementation("org.springframework.boot:spring-boot-resttestclient:4.0.2")
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 	testCompileOnly("org.projectlombok:lombok")

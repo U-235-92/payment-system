@@ -3,7 +3,7 @@ package aq.project.utils.schedulers;
 import aq.project.dto.TransactionStatus;
 import aq.project.entities.Transaction;
 import aq.project.repositories.TransactionRepository;
-import aq.project.utils.handlers.TransactionHandler;
+import aq.project.utils.handlers.CreateTransactionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class CreateTransactionScheduler {
 
     private final TransactionRepository transactionRepository;
 
-    private final TransactionHandler transactionHandler;
+    private final CreateTransactionHandler createTransactionHandler;
 
     @Scheduled(
             fixedRateString = "${service.payment-provider-service.scheduler.handle_create_transaction.rate}",
@@ -25,8 +25,9 @@ public class CreateTransactionScheduler {
     )
     public void handleCreateTransaction() {
         List<Transaction> transactions = transactionRepository.findByStatus(TransactionStatus.PENDING);
+
         for(Transaction transaction : transactions) {
-            transactionHandler.handleScheduleCreateTransaction(transaction);
+            createTransactionHandler.handleScheduleCreateTransaction(transaction);
         }
     }
 }

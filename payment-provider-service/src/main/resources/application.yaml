@@ -10,6 +10,13 @@ spring:
         size: 3
   application:
     name: payment-provider-service
+  flyway:
+    enabled: true
+    baseline-version: 1
+    baseline-on-migrate: true
+    default-schema: public
+    create-schemas: true
+    locations: 'classpath:db/migration'
   kafka:
     listener:
       ack-mode: RECORD
@@ -65,97 +72,45 @@ service:
       multiplier: 2
     topics:
       create_transaction_request:
-        name: 'create_transaction_request'
+        name: payment_provider_service_create_transaction_request
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
       create_transaction_request_dlt:
-        name: 'create_transaction_request_dlt'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      create_transaction_request_exceptions:
-        name: 'create_transaction_request_exceptions'
+        name: payment_provider_service_create_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
 
       fail_transaction_request:
-        name: 'fail_transaction_request'
+        name: payment_provider_service_fail_transaction_request
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
       fail_transaction_request_dlt:
-        name: 'fail_transaction_request_dlt'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_transaction_request_exceptions:
-        name: 'fail_transaction_request_exceptions'
+        name: payment_provider_service_fail_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
 
       cancel_transaction_request:
-        name: 'cancel_transaction_request'
+        name: payment_provider_service_cancel_transaction_request
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
       cancel_transaction_request_dlt:
-        name: 'cancel_transaction_request_dlt'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_transaction_request_exceptions:
-        name: 'cancel_transaction_request_exceptions'
+        name: payment_provider_service_cancel_transaction_request_dlt
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
 
       create_transaction_response:
-        name: 'create_transaction_response'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      create_transaction_response_dlt:
-        name: 'create_transaction_response_dlt'
+        name: payment_provider_service_create_transaction_response
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
       create_transaction_response_exceptions:
-        name: 'create_transaction_response_exceptions'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-
-      fail_transaction_response:
-        name: 'fail_transaction_response'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_transaction_response_dlt:
-        name: 'fail_transaction_response_dlt'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_transaction_response_exceptions:
-        name: 'fail_transaction_response_exceptions'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-
-      cancel_transaction_response:
-        name: 'cancel_transaction_response'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_transaction_response_dlt:
-        name: 'cancel_transaction_response_dlt'
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_transaction_response_exceptions:
-        name: 'cancel_transaction_response_exceptions'
+        name: payment_provider_service_create_transaction_response_exceptions
         partitions: 3
         replicas: 3
         min_insync_replicas: 2

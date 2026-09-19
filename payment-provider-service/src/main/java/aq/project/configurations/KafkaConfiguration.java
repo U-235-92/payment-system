@@ -2,10 +2,7 @@ package aq.project.configurations;
 
 import aq.project.configurations.properties.KafkaBackoffProperties;
 import aq.project.configurations.properties.KafkaTopicProperties;
-import aq.project.exceptions.EntityAlreadyExistsException;
-import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ForeignMerchantTransactionException;
-import aq.project.exceptions.ProhibitedOperationException;
+import aq.project.exceptions.*;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -42,26 +39,30 @@ public class KafkaConfiguration {
         handler.addNotRetryableExceptions(ExecutionException.class);
         handler.addNotRetryableExceptions(InterruptedException.class);
         handler.addNotRetryableExceptions(ConstraintViolationException.class);
+        handler.addNotRetryableExceptions(DtoConstraintsException.class);
         return handler;
     }
 
     @Bean
     public DeadLetterPublishingRecoverer deadLetterPublishingRecoverer(KafkaTemplate<String, Object> kafkaTemplate) {
-        return new DeadLetterPublishingRecoverer(kafkaTemplate, destinationResolver());
+        DeadLetterPublishingRecoverer deadLetterPublishingRecoverer = new DeadLetterPublishingRecoverer(kafkaTemplate, destinationResolver());
+        deadLetterPublishingRecoverer.setThrowIfNoDestinationReturned(false); // Whether it should throw an exception in case destinationResolver() returns null TopicPartition
+        return deadLetterPublishingRecoverer;
     }
 
     private BiFunction<ConsumerRecord<?, ?>, Exception, TopicPartition> destinationResolver() {
         return (record, exc) -> {
             if(isDltException(exc))
                 return new TopicPartition(record.topic() + "_dlt", record.partition());
-            return new TopicPartition(record.topic() + "_exceptions", record.partition());
+            return null;
         };
     }
 
     private boolean isDltException(Exception exc) {
-        return exc instanceof DeserializationException ||
-                exc instanceof ExecutionException ||
-                exc instanceof InterruptedException;
+        return exc instanceof DeserializationException
+                || exc instanceof ExecutionException
+                || exc instanceof InterruptedException
+                || exc instanceof ConstraintViolationException;
     }
 
     private BackOff backOff() {
@@ -92,14 +93,6 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public NewTopic createTransactionRequestExceptionsTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("create_transaction_request_exceptions");
-        return createTopic(config);
-    }
-
-    @Bean
     public NewTopic failTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
@@ -112,14 +105,6 @@ public class KafkaConfiguration {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
                 .get("fail_transaction_request_dlt");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic failTransactionRequestExceptionsTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("fail_transaction_request_exceptions");
         return createTopic(config);
     }
 
@@ -139,14 +124,6 @@ public class KafkaConfiguration {
         return createTopic(config);
     }
 
-    @Bean
-    public NewTopic cancelTransactionRequestExceptionsTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("cancel_transaction_request_exceptions");
-        return createTopic(config);
-    }
-
 //     RESPONSE TOPICS
     @Bean
     public NewTopic createTransactionResponseTopic() {
@@ -157,66 +134,10 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public NewTopic createTransactionResponseDltTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("create_transaction_response_dlt");
-        return createTopic(config);
-    }
-
-    @Bean
     public NewTopic createTransactionResponseExceptionsTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
                 .get("create_transaction_response_exceptions");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic failTransactionResponseTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("fail_transaction_response");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic failTransactionResponseDltTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("fail_transaction_response_dlt");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic failTransactionResponseExceptionsTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("fail_transaction_response_exceptions");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic cancelTransactionResponseTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("cancel_transaction_response");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic cancelTransactionResponseDltTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("cancel_transaction_response_dlt");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic cancelTransactionResponseExceptionsTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("cancel_transaction_response_exceptions");
         return createTopic(config);
     }
 

@@ -18,14 +18,13 @@ public class Entities {
     public static Transaction getValidPendingTransaction() {
         TransactionMetadata transactionMetadata = new TransactionMetadata();
         transactionMetadata.setCreatedAt(OffsetDateTime.now());
-        transactionMetadata.setUpdatedAt(OffsetDateTime.now());
         transactionMetadata.setTraceId(UUID.randomUUID().toString());
 
         Transaction transaction = new Transaction();
         transaction.setId(UUID.fromString(getValidTransactionId()));
         transaction.setMerchant(getValidMerchant());
         transaction.setAmount(BigDecimal.valueOf(58.85));
-        transaction.setCurrency("USD");
+        transaction.setCurrencyCode("USD");
         transaction.setOperation(Operation.DEPOSIT);
         transaction.setStatus(TransactionStatus.PENDING);
         transaction.setDescription("description");

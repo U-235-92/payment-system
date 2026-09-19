@@ -1,7 +1,9 @@
 package aq.project.utils.mappers;
 
-import aq.project.dto.CreateTransactionRequestPaymentProviderServiceDto;
-import aq.project.dto.TransactionResponsePaymentProviderServiceDto;
+import aq.project.dto.PaymentProviderServiceCreateTransactionRequestDto;
+import aq.project.dto.PaymentProviderServiceErrorHandleTransactionDto;
+import aq.project.dto.PaymentProviderServiceSuccessHandleTransactionDto;
+import aq.project.dto.PaymentProviderServiceTransactionInfoResponseDto;
 import aq.project.entities.Transaction;
 import aq.project.entities.TransactionMetadata;
 import org.mapstruct.Builder;
@@ -25,12 +27,12 @@ public interface TransactionMapper {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "notificationUrl", source = "notificationUrl")
     @Mapping(target = "metadata", expression = "java(toTransactionMetadata(dto))")
-    Transaction toTransaction(CreateTransactionRequestPaymentProviderServiceDto dto);
+    Transaction toTransaction(PaymentProviderServiceCreateTransactionRequestDto dto);
 
-    default TransactionMetadata toTransactionMetadata(CreateTransactionRequestPaymentProviderServiceDto dto) {
+    default TransactionMetadata toTransactionMetadata(PaymentProviderServiceCreateTransactionRequestDto dto) {
         TransactionMetadata transactionMetadata = new TransactionMetadata();
         transactionMetadata.setTraceId(dto.getTraceId());
-        transactionMetadata.setTimestamp(dto.getTimestamp());
+        transactionMetadata.setCreatedAt(dto.getTimestamp());
         return transactionMetadata;
     }
 
@@ -42,15 +44,38 @@ public interface TransactionMapper {
     @Mapping(target = "transactionStatus", source = "status")
     @Mapping(target = "timestamp", expression = "java(toTimestamp(transaction))")
     @Mapping(target = "description", source = "description")
-    TransactionResponsePaymentProviderServiceDto toTransactionResponseDto(Transaction transaction);
+    PaymentProviderServiceTransactionInfoResponseDto toTransactionResponseDto(Transaction transaction);
+
+    default OffsetDateTime toTimestamp(Transaction transaction) {
+        return transaction.getMetadata()
+                .getCreatedAt();
+    }
+
+    @Mapping(target = "transactionId", source = "transactionId")
+    @Mapping(target = "merchantId", source = "merchantId")
+    @Mapping(target = "traceId", source = "traceId")
+    @Mapping(target = "notificationUrl", source = "notificationUrl")
+    @Mapping(target = "operation", source = "operation")
+    @Mapping(target = "description", ignore = true)
+    PaymentProviderServiceErrorHandleTransactionDto toPaymentProviderServiceErrorHandleTransactionDto(
+            PaymentProviderServiceCreateTransactionRequestDto request);
+
+    @Mapping(target = "transactionId", source = "id")
+    @Mapping(target = "merchantId", expression = "java(toMerchantId(transaction))")
+    @Mapping(target = "traceId", expression = "java(toTraceId(transaction))")
+    @Mapping(target = "notificationUrl", source = "notificationUrl")
+    @Mapping(target = "operation", source = "operation")
+    @Mapping(target = "description", ignore = true)
+    PaymentProviderServiceSuccessHandleTransactionDto toPaymentProviderServiceSuccessHandleTransactionDto(
+            Transaction transaction);
 
     default String toMerchantId(Transaction transaction) {
         return transaction.getMerchant()
                 .getId();
     }
 
-    default OffsetDateTime toTimestamp(Transaction transaction) {
+    default String toTraceId(Transaction transaction) {
         return transaction.getMetadata()
-                .getTimestamp();
+                .getTraceId();
     }
 }

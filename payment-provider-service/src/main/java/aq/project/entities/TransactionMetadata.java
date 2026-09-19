@@ -25,8 +25,8 @@ public class TransactionMetadata {
     private Long id;
 
     @NotNull
-    @Column(name = "timestamp", updatable = false, nullable = false)
-    private OffsetDateTime timestamp;
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
 
     @NotBlank
     @Column(name = "trace_id", nullable = false)

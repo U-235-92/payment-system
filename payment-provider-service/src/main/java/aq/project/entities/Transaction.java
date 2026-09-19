@@ -62,7 +62,7 @@ public class Transaction {
     private String notificationUrl;
 
     @NotNull
-    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "metadata_id", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private TransactionMetadata metadata;
 }

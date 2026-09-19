@@ -5,6 +5,7 @@ logging:
   level:
     root: info
     aq.project.services: info
+    org.hibernate: info
     org.hibernate.orm.results: info
     org.hibernate.SQL: info
     org.hibernate.type.descriptor.sql: info
@@ -12,14 +13,6 @@ logging:
     org.springframework.security: debug
     org.apache.http: debug
 spring:
-  flyway:
-    enabled: true
-    baseline-version: 1
-    baseline-on-migrate: true
-    default-schema: public
-    create-schemas: true
-    locations:
-      - classpath:db/test-migration
   datasource:
     driver-class-name: org.postgresql.Driver
   jpa:

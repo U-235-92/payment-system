@@ -1,9 +1,6 @@
 package aq.project.utils.aspects;
 
-import aq.project.dto.CancelTransactionRequestPaymentProviderServiceDto;
-import aq.project.dto.CreateTransactionRequestPaymentProviderServiceDto;
-import aq.project.dto.FailTransactionRequestPaymentProviderServiceDto;
-import aq.project.dto.TransactionResponsePaymentProviderServiceDto;
+import aq.project.dto.PaymentProviderServiceTransactionInfoResponseDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,104 +28,8 @@ public class TransactionServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.TransactionService.handleCreateTransaction(..)) && args(requestDto)")
-    public void handleCreateTransaction(
-            ProceedingJoinPoint pjp,
-            @Validated CreateTransactionRequestPaymentProviderServiceDto requestDto
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "handle-create-transaction";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-        String transactionId = requestDto.getTransactionId().toString();
-        String merchantId = requestDto.getMerchantId();
-        String preMainLogicLogMessage = String.format("Start process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-        String postSuccessMainLogicCallLogMessage = String.format("Finish process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-        String postFailureMainLogicCallLogMessage = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-
-//        Handler logic call
-        serviceAspectHandler.handle(
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                preMainLogicLogMessage,
-                postSuccessMainLogicCallLogMessage,
-                postFailureMainLogicCallLogMessage,
-                null,
-                null,
-                null
-        );
-    }
-
-    @Around("execution(* aq.project.services.TransactionService.handleFailTransaction(..)) && args(requestDto)")
-    public void handleFailTransaction(
-            ProceedingJoinPoint pjp,
-            @Validated FailTransactionRequestPaymentProviderServiceDto requestDto
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "handle-fail-transaction";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-        String transactionId = requestDto.getTransactionId().toString();
-        String merchantId = requestDto.getMerchantId();
-        String preMainLogicLogMessage = String.format("Start process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-        String postSuccessMainLogicCallLogMessage = String.format("Finish process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-        String postFailureMainLogicCallLogMessage = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-
-//        Handler logic call
-        serviceAspectHandler.handle(
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                preMainLogicLogMessage,
-                postSuccessMainLogicCallLogMessage,
-                postFailureMainLogicCallLogMessage,
-                null,
-                null,
-                null
-        );
-    }
-
-    @Around("execution(* aq.project.services.TransactionService.handleCancelTransaction(..)) && args(requestDto)")
-    public void handleCancelTransaction(
-            ProceedingJoinPoint pjp,
-            @Validated CancelTransactionRequestPaymentProviderServiceDto requestDto
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "handle-cancel-transaction";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-        String transactionId = requestDto.getTransactionId().toString();
-        String merchantId = requestDto.getMerchantId();
-        String preMainLogicLogMessage = String.format("Start process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-        String postSuccessMainLogicCallLogMessage = String.format("Finish process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-        String postFailureMainLogicCallLogMessage = String.format("Error occurred during process operation: [%s] for transaction with id: [%s] and merchant id: [%s]",
-                actionName, transactionId, merchantId);
-
-//        Handler logic call
-        serviceAspectHandler.handle(
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                preMainLogicLogMessage,
-                postSuccessMainLogicCallLogMessage,
-                postFailureMainLogicCallLogMessage,
-                null,
-                null,
-                null
-        );
-    }
-
     @Around("execution(* aq.project.services.TransactionService.getTransactionInfo(..)) && args(transactionId, merchantId)")
-    public TransactionResponsePaymentProviderServiceDto getTransactionInfo(
+    public PaymentProviderServiceTransactionInfoResponseDto getTransactionInfo(
             ProceedingJoinPoint pjp,
             @NotNull UUID transactionId,
             @NotBlank String merchantId
@@ -145,7 +46,7 @@ public class TransactionServiceAspect {
 
 //        Handler logic call
         return serviceAspectHandler.handle(
-                TransactionResponsePaymentProviderServiceDto.class,
+                PaymentProviderServiceTransactionInfoResponseDto.class,
                 pjp,
                 tracerName,
                 serviceName,
@@ -160,7 +61,7 @@ public class TransactionServiceAspect {
     }
 
     @Around("execution(* aq.project.services.TransactionService.getTransactionList(..)) && args(startDate, endDate, merchantId)")
-    public List<TransactionResponsePaymentProviderServiceDto> getTransactionList(
+    public List<PaymentProviderServiceTransactionInfoResponseDto> getTransactionList(
             ProceedingJoinPoint pjp,
             @NotNull OffsetDateTime startDate,
             @NotNull OffsetDateTime endDate,

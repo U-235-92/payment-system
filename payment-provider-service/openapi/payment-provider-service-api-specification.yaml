@@ -52,7 +52,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TransactionResponsePaymentProviderServiceDto"
+                  $ref: "#/components/schemas/PaymentProviderServiceTransactionInfoResponseDto"
         400:
           description: Malformed request
           content:
@@ -96,7 +96,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionResponsePaymentProviderServiceDto"
+                $ref: "#/components/schemas/PaymentProviderServiceTransactionInfoResponseDto"
         404:
           description: Transaction with specified id is not exist or belongs another merchant
           content:
@@ -157,7 +157,7 @@ components:
       scheme: basic
 
   schemas:
-    CreateTransactionRequestPaymentProviderServiceDto:
+    PaymentProviderServiceCreateTransactionRequestDto:
       type: object
       required: [ transactionId, merchantId, traceId, operation, amount, currencyCode, notificationUrl, timestamp ]
       properties:
@@ -183,7 +183,7 @@ components:
           type: string
           format: date-time
 
-    FailTransactionRequestPaymentProviderServiceDto:
+    PaymentProviderServiceFailTransactionRequestDto:
       type: object
       required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
       properties:
@@ -199,7 +199,7 @@ components:
         operation:
           $ref: "#/components/schemas/Operation"
 
-    CancelTransactionRequestPaymentProviderServiceDto:
+    PaymentProviderServiceCancelTransactionRequestDto:
       type: object
       required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
       properties:
@@ -215,14 +215,18 @@ components:
         operation:
           $ref: "#/components/schemas/Operation"
 
-    TransactionResponsePaymentProviderServiceDto:
+    PaymentProviderServiceTransactionInfoResponseDto:
       type: object
-      required: [ transactionId, merchantId, operation, amount, currencyCode, transactionStatus, timestamp ]
+      required: [ transactionId, merchantId, traceId, notificationUrl, operation, amount, currencyCode, transactionStatus, timestamp ]
       properties:
         transactionId:
           type: string
           format: uuid
         merchantId:
+          type: string
+        traceId:
+          type: string
+        notificationUrl:
           type: string
         operation:
           $ref: "#/components/schemas/Operation"
@@ -236,6 +240,42 @@ components:
         timestamp:
           type: string
           format: date-time
+        description:
+          type: string
+
+    PaymentProviderServiceSuccessHandleTransactionDto:
+      type: object
+      required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        merchantId:
+          type: string
+        traceId:
+          type: string
+        notificationUrl:
+          type: string
+        operation:
+          $ref: "#/components/schemas/Operation"
+        description:
+          type: string
+
+    PaymentProviderServiceErrorHandleTransactionDto:
+      type: object
+      required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        merchantId:
+          type: string
+        traceId:
+          type: string
+        notificationUrl:
+          type: string
+        operation:
+          $ref: "#/components/schemas/Operation"
         description:
           type: string
 

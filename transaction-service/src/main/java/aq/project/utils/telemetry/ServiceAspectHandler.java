@@ -35,7 +35,8 @@ public class ServiceAspectHandler {
             String postFailureMainLogicCallLogMessage,
             Supplier<Void> validation,
             Supplier<Void> before,
-            Consumer<T> after
+            Consumer<T> after,
+            boolean cleanTraceContext
     ) throws Throwable {
 //        Prepare telemetry metadata
         Tracer tracer = openTelemetry.getTracer(tracerName);
@@ -69,7 +70,8 @@ public class ServiceAspectHandler {
         } finally {
 //            Close all telemetry resources
             executionTime = applicationMetricsRegistry.finishTimer(sample, actionName);
-            traceContext.clean();
+            if(cleanTraceContext)
+                traceContext.clean();
             span.end();
         }
 //            Telemetry on success
@@ -88,7 +90,8 @@ public class ServiceAspectHandler {
             String postFailureMainLogicCallLogMessage,
             Supplier<Void> validation,
             Supplier<Void> before,
-            Supplier<Void> after
+            Supplier<Void> after,
+            boolean cleanTraceContext
     ) throws Throwable {
 //        Prepare telemetry metadata
         Tracer tracer = openTelemetry.getTracer(tracerName);
@@ -121,7 +124,8 @@ public class ServiceAspectHandler {
         } finally {
 //            Close all telemetry resources
             executionTime = applicationMetricsRegistry.finishTimer(sample, actionName);
-            traceContext.clean();
+            if(cleanTraceContext)
+                traceContext.clean();
             span.end();
         }
 //            Telemetry on success

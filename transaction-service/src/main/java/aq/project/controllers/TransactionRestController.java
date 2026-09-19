@@ -9,19 +9,15 @@ import aq.project.utils.mappers.TransactionRequestMapper;
 import aq.project.utils.telemetry.TraceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
 public class TransactionRestController implements TransactionRestControllerApi {
 
-    private final TransactionService transactionService;
+    private final TransactionRequestMapper transactionRequestMapper = TransactionRequestMapper.INSTANCE;
 
-    private final TransactionRequestMapper transactionRequestMapper;
+    private final TransactionService transactionService;
 
     private final TraceContext traceContext;
 
@@ -31,12 +27,13 @@ public class TransactionRestController implements TransactionRestControllerApi {
             TransactionRequestDto dto,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        setUpTraceContext(xTraceId);
+
         TransactionRequest transactionRequest = transactionRequestMapper.toTransactionRequest(dto);
-        String transactionId = UUID.randomUUID().toString();
-        transactionRequest.setTransactionId(transactionId);
-        transactionRequest.setTransactionStatus(TransactionStatus.PENDING);
-        return ResponseEntity.ok(transactionService.sendTransactionRequest(transactionRequest));
+
+        transactionService.sendTransactionRequest(transactionRequest);
+
+        return ResponseEntity.ok(transactionRequest.getTransactionId());
     }
 
     @Override
@@ -45,7 +42,13 @@ public class TransactionRestController implements TransactionRestControllerApi {
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        setUpTraceContext(xTraceId);
+
         return ResponseEntity.ok(transactionService.getTransactionStatus(transactionId));
+    }
+
+    private void setUpTraceContext(String xTraceId) {
+        traceContext.clean();
+        traceContext.setTraceId(xTraceId);
     }
 }

@@ -1,0 +1,22 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Container(individuals_api_service, "individuals-api", "сервис-шлюз, принимает и обрабатывает пользовательские запросы")
+Container(transaction_service, "transaction-service", "Оркестратор процессов, связанных с обработкой транзакций")
+Container(wallet_service, "wallet-service", "Выполняет операции с кошельками пользователей")
+Container(payment_provider_service, "payment-provider-service", "Принимает и обрабатывает запросы платежей")
+Container(webhook_service, "webhook-service", "Обработчик обратных вызовов уведомлений о результате выполнения транзакции")
+Container(kafka, "kafka", "Шина обмена данных между сервисами")
+
+Rel(individuals_api_service, transaction_service, событие, создание транзакции)
+Rel(transaction_service, kafka, событие, отправка события создания транзакции)
+Rel(kafka, transaction_service, событие, получение результата обработки транзакции внешними сервисами и оркестрация выполнения транзакции прочим компонентам системы)
+Rel(kafka, payment_provider_service, событие, чтение и обработка входящего события создания транзакции)
+Rel(payment_provider_service, kafka, событие, отправка результата обработки события создания транзакции)
+Rel(kafka, wallet_service, событие, чтение и обработка входящего события создания транзакции)
+Rel(wallet_service, kafka, событие, отправка результата обработки события создания транзакции)
+Rel(transaction_service, webhook_service, событие, уведомление о событии результата обработки транзакции)
+Rel(webhook_service, kafka, событие, отправка уведомления о результате выполнения транзакции)
+Rel(kafka, individuals_api_service, событие, чтение результата выполнение транзакции и оповещение пользователя)
+
+@enduml

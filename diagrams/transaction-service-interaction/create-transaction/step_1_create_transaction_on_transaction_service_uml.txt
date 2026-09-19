@@ -1,0 +1,15 @@
+@startuml
+
+actor individuals_api_service
+participant transaction_service
+participant transaction_service_db
+
+alt создание транзакции
+	individuals_api_service -> transaction_service : Отправить запрос создания транзакции;
+	transaction_service -> transaction_service_db : Сохранить сущность транзакции сервиса [transaction_service] в состоянии [PENDING];
+	transaction_service -> transaction_service : Преобразовать сущность транзакции сервиса [transaction_service] в сущность запроса создания транзакции [payment_provider_service];
+	transaction_service -> transaction_service_db : Сохранить сущность запроса создания транзакции [payment_provider_service] со статусом isProcessed = false;
+	individuals_api_service <- transaction_service : Ответить клиенту сгенерированным UUID транзакции;
+end
+
+@enduml

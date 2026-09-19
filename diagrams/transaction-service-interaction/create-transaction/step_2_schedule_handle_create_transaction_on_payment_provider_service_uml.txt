@@ -1,0 +1,35 @@
+@startuml
+
+actor transaction_service
+participant transaction_service_db
+participant kafka
+
+alt обработка события создания транзакции планировщиком
+	note right transaction_service
+		Используется прием с включением в работу @Scheduler'a
+		с опросом БД через фиксированные промежутки времени и
+		извлечение набора необработанных сущностей создания транзакции
+		с последующим перенаправлением их в целевой сервис-обработчик.
+		По завершении обработки происходит фиксация сущности как обработанной,
+		чтобы предотвратить ее повторную обработку.
+	end note
+	transaction_service -> transaction_service_db : Извлечение сущности создания транзакции сервиса [payment_provider_service] со статусом isProcessed = false;
+	transaction_service -> transaction_service : Отображение сущности создания транзакции сервиса [payment_provider_service] в DTO сервиса [payment_provider_service];
+	transaction_service -> kafka : Отправка DTO сервиса [payment_provider_service], ожидание выполнения операции;
+	alt ошибка в процессе отправки события создания транзакции в kafka
+		transaction_service -> transaction_service_db : Отметить статус извлеченной сущности создания транзакции сервиса [payment_provider_service] как isProcessed = true, сохранить измененение;
+		transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service], отметить ее статус как [FAILED], сохранить измененение;
+		transaction_service -> kafka : Отправка события в kafka для [webhook_service] о результате работы транзакции;
+	else успешная отправка события создания транзакции в kafka
+		transaction_service -> transaction_service_db : Отметить статус извлеченной сущности создания транзакции сервиса [payment_provider_service] как isProcessed = true, сохранить измененение;
+		note right transaction_service
+			Обработка запроса создания транзакции сервисом [payment_provider_service]
+			является первым этапом в оркестрации данного события сервисом [transaction_service].
+			Следующий этап - обработка создания транзакции сервисом [wallet_service]
+			осуществляется после получения ответа результата обработки создания транзакции
+			сервисом [payment_provider_service].
+		end note
+	end
+end
+
+@enduml

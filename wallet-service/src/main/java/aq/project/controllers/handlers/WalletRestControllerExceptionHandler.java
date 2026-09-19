@@ -1,8 +1,9 @@
 package aq.project.controllers.handlers;
 
+import aq.project.controllers.wallet.WalletRestController;
 import aq.project.dto.ErrorDto;
-import aq.project.exceptions.NoSuchWalletException;
-import aq.project.utils.ControllerExceptionLogger;
+import aq.project.exceptions.EntityNotFoundException;
+import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,15 +14,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
-@RestControllerAdvice
 @RequiredArgsConstructor
+@RestControllerAdvice(basePackageClasses = WalletRestController.class)
 public class WalletRestControllerExceptionHandler {
 
     private final ControllerExceptionLogger controllerExceptionLogger;
 
-//    Project's exception handlers [aq.project.exceptions.*]
-    @ExceptionHandler(NoSuchWalletException.class)
-    public ResponseEntity<ErrorDto> onIllegalArgumentException(NoSuchWalletException e) {
+//    Project's exception handlers
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         controllerExceptionLogger.logException(e, status);
         return ResponseEntity.status(status).body(getErrorDto(status, e.getMessage()));

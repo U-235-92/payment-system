@@ -1,0 +1,23 @@
+server:
+  ssl:
+    enabled: false
+logging:
+  level:
+    root: info
+    aq.project.services: info
+    org.hibernate: info
+    org.hibernate.orm.results: info
+    org.hibernate.SQL: info
+    org.hibernate.type.descriptor.sql: info
+    org.springframework.web: debug
+    org.springframework.security: debug
+    org.apache.http: debug
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate

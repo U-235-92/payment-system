@@ -1,4 +1,8 @@
+server:
+  port: ${SERVICE_PORT}
 spring:
+  application:
+    name: ${SERVICE_NAME}
   security:
     oauth2:
       resourceserver:
@@ -22,6 +26,9 @@ management:
       export:
         otlp:
           endpoint: ${OTEL_COLLECTOR_URI} # Connect to OTEL collector
+  metrics:
+    tags:
+      application: ${SERVICE_NAME}
 application:
   keycloak-service:
     name: ${KEYCLOAK_SERVICE_NAME}
@@ -29,10 +36,14 @@ application:
     uri: ${KEYCLOAK_SERVICE_URI}
     admin-uri: ${KEYCLOAK_ADMIN_URI}
   person-service:
+    name: ${PERSON_SERVICE_NAME}
     uri: ${PERSON_SERVICE_URI}
   wallet-service:
+    name: ${WALLET_SERVICE_NAME}
     uri: ${WALLET_SERVICE_URI}
   transaction-service:
+    name: ${TRANSACTION_SERVICE_NAME}
     uri: ${TRANSACTION_SERVICE_URI}
   currency-rate-service:
+    name: ${CURRENCY_RATE_SERVICE_NAME}
     uri: ${CURRENCY_RATE_SERVICE_URI}

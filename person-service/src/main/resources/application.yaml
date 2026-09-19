@@ -1,8 +1,8 @@
 server:
-  port: ${APP_PORT}
+  port: 8082
 spring:
   application:
-    name: ${APP_NAME}
+    name: person-service
   profiles:
     active:
       - dev
@@ -13,7 +13,7 @@ management:
         enabled: false
   metrics:
     tags:
-      application: ${APP_NAME}
+      application: person-service
   endpoints:
     web:
       exposure:

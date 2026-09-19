@@ -19,8 +19,10 @@ rules:
   - !BROADCAST
     tables:
       - revinfo
-      - transactions
-      - transaction_properties
+      - deposit_transactions
+      - withdraw_transactions
+      - transfer_transactions
+      - transaction_metadata
   - !SHARDING
     tables:
 #      WALLETS table

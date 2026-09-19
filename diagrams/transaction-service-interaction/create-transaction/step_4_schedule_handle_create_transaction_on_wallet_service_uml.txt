@@ -1,0 +1,37 @@
+@startuml
+
+actor transaction_service
+participant transaction_service_db
+participant kafka
+
+alt обработка события создания транзакции планировщиком
+	transaction_service -> transaction_service_db : Извлечение сущности создания транзакции сервиса [wallet_service] со статусом isProcessed = false;
+	transaction_service -> transaction_service : Отображение сущности создания транзакции сервиса [wallet_service] в DTO сервиса [wallet_service];
+	note right transaction_service
+			В случае если топик отсутствует, отметить сущность транзакции сервиса [transaction_service] как [FAILED].
+			Отметить статус извлеченной сущности создания транзакции сервиса [wallet_service] как isProcessed = true.
+			Отправить событие отмены транзакции в сервис [payment_provider_service], дождаться ответа от kafka о приеме.
+		end note
+	transaction_service -> kafka : Отправка DTO сервиса [wallet_service], ожидание ответа;
+	alt ответ от kafka с ошибкой
+		note right transaction_service
+			В случае ошибки во время отправки запроса на отмену транзакции в сервис [payment_provider_service]
+			незамедлительно логировать возникшую неисправность, а также дополнить описание транзакции сервиса 
+			[transaction-service] развернутым комментарием о случившимся с последующим сохраненем в БД.
+		end note
+		transaction_service -> kafka : Отправка события отмены создания транзакции в kafka для [payment_provider_service], ожидание ответа;
+		alt ответ от kafka с ошибкой
+			transaction_service -> transaction_service_db : Отметить статус извлеченной сущности создания транзакции сервиса [wallet_service] как isProcessed = true, сохранить измененение;
+			transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service], отметить ее статус как [FAILED], сохранить измененение;
+			transaction_service -> kafka : Отправка события в kafka для [webhook_service] о результате работы транзакции;
+		else ответ от kafka	без ошибки
+			transaction_service -> transaction_service_db : Отметить статус извлеченной сущности создания транзакции сервиса [wallet_service] как isProcessed = true, сохранить измененение;
+			transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service], отметить ее статус как [FAILED], сохранить измененение;
+			transaction_service -> kafka : Отправка события в kafka для [webhook_service] о результате работы транзакции;
+		end
+	else ответот kafka без ошибки
+		transaction_service -> transaction_service_db : Отметить статус извлеченной сущности создания транзакции сервиса [wallet_service] как isProcessed = true, сохранить измененение;
+	end
+end
+
+@enduml

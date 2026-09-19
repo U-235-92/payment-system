@@ -79,6 +79,7 @@ public class TransactionService {
                                                             .flatMap(senderCurrencyRate -> {
                                                                 dto.getProperties().put(RECIPIENT_CURRENCY_RATE, recipientCurrencyRate);
                                                                 dto.getProperties().put(SENDER_CURRENCY_RATE, senderCurrencyRate);
+                                                                dto.getProperties().put(TIMESTAMP, System.currentTimeMillis() + "");
                                                                 return transactionApiClient.sendTransactionRequest(xTraceId, Mono.just(dto), jwtHeader);
                                                             })
                                                             .flatMap(response -> onDoTransactionResponse(response, dto))

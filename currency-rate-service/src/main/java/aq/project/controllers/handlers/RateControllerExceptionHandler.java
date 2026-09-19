@@ -1,7 +1,7 @@
 package aq.project.controllers.handlers;
 
 import aq.project.dto.ErrorDto;
-import aq.project.utils.ControllerExceptionLogger;
+import aq.project.utils.logging.ControllerExceptionLogger;
 import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;

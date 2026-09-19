@@ -1,0 +1,19 @@
+logging:
+  level:
+    root: info
+spring:
+  flyway:
+    enabled: true
+    baseline-version: 1
+    baseline-on-migrate: true
+    default-schema: public
+    create-schemas: true
+    locations: 'classpath:db/migration'
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate

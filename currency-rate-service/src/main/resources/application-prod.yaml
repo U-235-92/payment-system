@@ -1,3 +1,5 @@
+server:
+  port: ${SERVICE_PORT}
 logging:
   level:
     root: info
@@ -12,7 +14,12 @@ management:
       export:
         otlp:
           endpoint: ${OTEL_COLLECTOR_URI}
+  metrics:
+    tags:
+      application: ${SERVICE_NAME}
 spring:
+  application:
+    name: ${SERVICE_NAME}
   security:
     oauth2:
       resourceserver:
@@ -37,3 +44,10 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
+application:
+  rates:
+    provider:
+      default:
+        code: ${DEFAULT_RATE_PROVIDER_CODE}
+        name: ${DEFAULT_RATE_PROVIDER_NAME}
+        adjustment-factor: ${DEFAULT_RATE_PROVIDER_ADJUSTMENT_FACTOR}

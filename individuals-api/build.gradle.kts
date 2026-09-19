@@ -115,7 +115,7 @@ val dependencyVersionMap = mapOf(
 //	Transaction service API specification
 	"transaction-service-api-specification" to "1.0.3-dev",
 
-//	Transaction service API specification
+//	Wallet service API specification
 	"wallet-service-api-specification" to "1.0.1-dev"
 )
 

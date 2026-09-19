@@ -3,7 +3,7 @@ package aq.project.controllers.handlers;
 import aq.project.controllers.UserRestController;
 import aq.project.dto.ErrorDto;
 import aq.project.exceptions.*;
-import aq.project.utils.ControllerExceptionLogger;
+import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

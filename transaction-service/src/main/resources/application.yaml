@@ -2,13 +2,13 @@ logging:
   level:
     root: info
 server:
-  port: ${SERVICE_PORT}
+  port: 8084
 spring:
   application:
-    name: ${SERVICE_NAME}
+    name: transaction-service
   profiles:
     active:
-      - ${SERVICE_PROFILE}
+      - dev
   security:
     oauth2:
       resourceserver:
@@ -22,10 +22,10 @@ spring:
             token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
         registration:
           keycloak:
-            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
-            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
-            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
-            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
+            client-id: transaction-service
+            client-secret: VQHOlxhSlKxAVbcfJWi1ewULWhYiY3wf
+            admin-id: payment-system-admin-cli
+            admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
   kafka:
     bootstrapServers:
       - localhost:29092
@@ -41,7 +41,7 @@ spring:
     consumer:
       enable-auto-commit: false
       auto-offset-reset: latest
-      group-id: ${SERVICE_NAME}
+      group-id: transaction-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
       properties:
@@ -61,7 +61,7 @@ management:
         enabled: false
   metrics:
     tags:
-      application: ${SERVICE_NAME}
+      application: transaction-service
   endpoints:
     web:
       exposure:
@@ -69,6 +69,73 @@ management:
           - prometheus
           - info
           - health
+resilience4j:
+  retry:
+    instances:
+      send-transaction-request-to-payment-service:
+        max-attempts: 3
+        wait-duration: 1500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exception-predicate: aq.project.utils.resilence.FallbackExceptionPredicate
+      get-transaction-status:
+        max-attempts: 3
+        wait-duration: 1500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exception-predicate: aq.project.utils.resilence.FallbackExceptionPredicate
+      send-cancel-transaction-request-to-payment-service:
+        max-attempts: 3
+        wait-duration: 1500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exception-predicate: aq.project.utils.resilence.FallbackExceptionPredicate
+
+  bulkhead:
+    instances:
+      send-transaction-request-to-payment-service:
+        max-concurrent-calls: 100
+      get-transaction-status:
+        max-concurrent-calls: 100
+      send-cancel-transaction-request-to-payment-service:
+        max-concurrent-calls: 100
+
+  ratelimiter:
+    instances:
+      send-transaction-request-to-payment-service:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-transaction-status:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      send-cancel-transaction-request-to-payment-service:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+  circuitbreaker:
+    instances:
+      send-transaction-request-to-payment-service:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      get-transaction-status:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      send-cancel-transaction-request-to-payment-service:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
 otel:
   instrumentation:
     annotations:
@@ -91,8 +158,23 @@ service:
         name: withdraw
       transfer:
         name: transfer
+    backoff:
+      max-attempts: 3
+      wait-duration: 1500
+      multiplier: 2
   wallet-service:
-    name: ${WALLET_SERVICE_NAME}
+    name: wallet-service
     uri: http://localhost:8083
     endpoints:
       get-transaction-status: /api/v1/transaction/status
+  payment-provider-service:
+    name: payment-provider-service
+    uri: http://localhost:8086
+  transaction-service:
+    merchant-id: transaction-service
+    merchant-secret: secret
+    schedule:
+      send-transaction-request-rate: 30
+    retry:
+      send-transaction-request-to-message-broker:
+        max-attempts: 3

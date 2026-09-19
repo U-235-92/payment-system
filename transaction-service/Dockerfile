@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=builder /source/build/libs/*.jar ./transaction-service.jar
 
 #Spring env:
-ENV SPRING_PROFILES_ACTIVE=prod-container
+ENV SPRING_PROFILES_ACTIVE=prod
 
 EXPOSE 8084
 ENTRYPOINT ["java", "-jar", "transaction-service.jar"]

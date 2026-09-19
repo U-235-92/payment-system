@@ -64,6 +64,7 @@ sourceSets { // Источники исходников для проекта
 			srcDir("${rootDir}/src/main/java")
 			srcDir("${openApiSpecificationBuildPath}/transaction-service/src/main/java")
 			srcDir("${openApiSpecificationBuildPath}/wallet-service/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/payment-provider-service/src/main/java")
 		}
 	}
 }
@@ -95,8 +96,17 @@ val dependencyVersionMap = mapOf(
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
 
-//	Transaction service API specification
-	"wallet-service-api-specification" to "1.0.1-dev"
+//	Wallet service API specification
+	"wallet-service-api-specification" to "1.0.1-dev",
+
+//	Payment provider service API specification
+	"payment-provider-service-api-specification" to "1.0.6-dev",
+
+//	Resilience4j
+	"resilience4j" to "2.4.0",
+
+//	Lombok MapStruct binding
+	"lombok-mapstruct-binding" to "0.2.0"
 )
 
 dependencies {
@@ -114,6 +124,18 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
 
+//	Spring data
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-h2console")
+
+//	DB drivers
+	runtimeOnly("org.postgresql:postgresql")
+	runtimeOnly("com.h2database:h2")
+
+//	Flyway
+	implementation("org.flywaydb:flyway-database-postgresql")
+	implementation("org.springframework.boot:spring-boot-starter-flyway")
+
 //	Spring validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
@@ -124,6 +146,9 @@ dependencies {
 	implementation("io.opentelemetry:opentelemetry-exporter-otlp")
 	implementation("io.micrometer:micrometer-registry-prometheus")
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+//	Resilience4j
+	implementation("io.github.resilience4j:resilience4j-spring-boot4:${dependencyVersionMap.getValue("resilience4j")}")
 
 //	OpenApi
 	implementation("tools.jackson.core:jackson-core")
@@ -136,6 +161,9 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
 	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
 
+//	Lombok MapStruct binding
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
+
 //	Logback JSON encoder
 	implementation("net.logstash.logback:logstash-logback-encoder:${dependencyVersionMap.getValue("logstash-encoder")}")
 
@@ -144,6 +172,7 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 
 //	Test
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-opentelemetry-test")
@@ -151,6 +180,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:testcontainers-postgresql")
 	testImplementation("org.testcontainers:testcontainers-grafana")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-kafka")
@@ -162,6 +192,9 @@ dependencies {
 
 //	Wallet service api
 	"apiSpec"("aq.payment-system:wallet-service-api-specification:${dependencyVersionMap.getValue("wallet-service-api-specification")}")
+
+//	Payment provider service api
+	"apiSpec"("aq.payment-system:payment-provider-service-api-specification:${dependencyVersionMap.getValue("payment-provider-service-api-specification")}")
 }
 
 tasks.withType<Test> {

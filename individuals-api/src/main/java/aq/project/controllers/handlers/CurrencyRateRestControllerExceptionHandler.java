@@ -2,7 +2,7 @@ package aq.project.controllers.handlers;
 
 import aq.project.controllers.CurrencyRateRestController;
 import aq.project.dto.ErrorDto;
-import aq.project.utils.ControllerExceptionLogger;
+import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,0 +1,31 @@
+@startuml
+
+actor transaction_service
+participant kafka
+participant payment_proider_service
+participant payment_proider_service_db
+
+alt создание транзакции
+	transaction_service -> kafka : Отправить запрос [создание транзакции];
+	alt обработчик kafka
+		payment_proider_service -> kafka : Получить запрос [создание транзакции];
+		payment_proider_service -> payment_proider_service_db : Сохранить запрос [создание транзакции] в состоянии [PENDING];
+	end
+	alt обработчик outbox
+		payment_proider_service -> payment_proider_service_db : Извлечение всех запосов в состоянии [PENDING];
+		payment_proider_service -> kafka : Отправить ответ на запрос [создание транзакции] в kafka. Дождаться ответа;
+		payment_proider_service -> payment_proider_service_db : Изменить статус транзакции на [COMPLETED];
+		note left payment_proider_service_db
+		    Для идемпотентности операции обработки извлеченной сущности транзакции
+			обработка каждой сущности транзакции производится в новой транзакции БД.
+			Уровень изоляции каждой транзакции БД: [SERIALIZABLE]
+		end note
+		note left payment_proider_service
+            При возникновении ошибки на этапе отправки ответа на запрос [создание транзакции] в топик kafka
+            незамедлительно отметить состояние транзакции как [REQUIRED_MANUAL_HANDLE],
+            добавить четкое описание возникшей неполадки в description и сохранить транзакцию в БД
+        end note
+	end
+end
+
+@enduml

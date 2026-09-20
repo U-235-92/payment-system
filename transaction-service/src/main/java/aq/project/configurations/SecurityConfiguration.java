@@ -1,5 +1,6 @@
 package aq.project.configurations;
 
+import aq.project.utils.security.HeaderValidatorHttpFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +14,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import static aq.project.controller.TransactionRestControllerApi.*;
+import static aq.project.controller.DepositTransactionRestControllerApi.*;
+import static aq.project.controller.TransferTransactionRestControllerApi.*;
+import static aq.project.controller.WithdrawTransactionRestControllerApi.*;
 
 @Configuration
 @EnableWebSecurity
@@ -45,8 +49,15 @@ public class SecurityConfiguration {
                 .oauth2Client(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, PATH_SEND_TRANSACTION_REQUEST).authenticated()
-                        .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
+                        .requestMatchers(HttpMethod.POST, PATH_CREATE_DEPOSIT_TRANSACTION).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_DEPOSIT_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
+
+                        .requestMatchers(HttpMethod.POST, PATH_CREATE_TRANSFER_TRANSACTION).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_TRANSFER_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
+
+                        .requestMatchers(HttpMethod.POST, PATH_CREATE_WITHDRAW_TRANSACTION).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_WITHDRAW_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
+                .addFilterBefore(new HeaderValidatorHttpFilter(), BasicAuthenticationFilter.class)
                 .build();
     }
 

@@ -48,7 +48,6 @@ public class TokenServiceAspect {
         );
     }
 
-
     @Around("execution(* aq.project.services.TokenService.getAdminJwtAsAuthorizationHeaderValue())")
     public String getAdminJwtAsAuthorizationHeaderValue(ProceedingJoinPoint pjp) throws Throwable {
 //        Prepare handler metadata

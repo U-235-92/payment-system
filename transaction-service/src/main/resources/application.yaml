@@ -70,71 +70,45 @@ management:
           - info
           - health
 resilience4j:
-  retry:
-    instances:
-      send-transaction-request-to-payment-service:
-        max-attempts: 3
-        wait-duration: 1500ms
-        enable-exponential-backoff: true
-        exponential-backoff-multiplier: 2
-        retry-exception-predicate: aq.project.utils.resilence.FallbackExceptionPredicate
-      get-transaction-status:
-        max-attempts: 3
-        wait-duration: 1500ms
-        enable-exponential-backoff: true
-        exponential-backoff-multiplier: 2
-        retry-exception-predicate: aq.project.utils.resilence.FallbackExceptionPredicate
-      send-cancel-transaction-request-to-payment-service:
-        max-attempts: 3
-        wait-duration: 1500ms
-        enable-exponential-backoff: true
-        exponential-backoff-multiplier: 2
-        retry-exception-predicate: aq.project.utils.resilence.FallbackExceptionPredicate
-
   bulkhead:
     instances:
-      send-transaction-request-to-payment-service:
+      create-deposit-transaction-bulkhead:
         max-concurrent-calls: 100
-      get-transaction-status:
+      get-deposit-transaction-status-bulkhead:
         max-concurrent-calls: 100
-      send-cancel-transaction-request-to-payment-service:
+
+      create-withdraw-transaction-bulkhead:
+        max-concurrent-calls: 100
+      get-withdraw-transaction-status-bulkhead:
+        max-concurrent-calls: 100
+
+      create-transfer-transaction-bulkhead:
+        max-concurrent-calls: 100
+      get-transfer-transaction-status-bulkhead:
         max-concurrent-calls: 100
 
   ratelimiter:
     instances:
-      send-transaction-request-to-payment-service:
+      create-deposit-transaction-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
-      get-transaction-status:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      send-cancel-transaction-request-to-payment-service:
+      get-deposit-transaction-status-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
 
-  circuitbreaker:
-    instances:
-      send-transaction-request-to-payment-service:
-        sliding-window-type: COUNT_BASED
-        sliding-window-size: 100
-        minimum-number-of-calls: 10
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 10s
-        slow-call-rate-threshold: 50
-      get-transaction-status:
-        sliding-window-type: COUNT_BASED
-        sliding-window-size: 100
-        minimum-number-of-calls: 10
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 10s
-        slow-call-rate-threshold: 50
-      send-cancel-transaction-request-to-payment-service:
-        sliding-window-type: COUNT_BASED
-        sliding-window-size: 100
-        minimum-number-of-calls: 10
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 10s
-        slow-call-rate-threshold: 50
+      create-withdraw-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-withdraw-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      create-transfer-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-transfer-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
 otel:
   instrumentation:
@@ -146,22 +120,35 @@ service:
     endpoints:
       token: /realms/payment-system/protocol/openid-connect/token
   kafka:
-    topics:
-      wallet_operation_response:
-        name: wallet_operation_response
-      wallet_operation_request:
-        name: wallet_operation_request
-    partitions:
-      deposit:
-        name: deposit
-      withdraw:
-        name: withdraw
-      transfer:
-        name: transfer
     backoff:
       max-attempts: 3
       wait-duration: 1500
       multiplier: 2
+    services:
+      wallet-service:
+        topics:
+          - wallet_service_create_deposit_transaction_request
+          - wallet_service_create_deposit_transaction_response
+          - wallet_service_create_deposit_transaction_response_exceptions
+          - wallet_service_fail_deposit_transaction_request
+          - wallet_service_cancel_deposit_transaction_request # <- end of list deposit transaction topics
+          - wallet_service_create_withdraw_transaction_request
+          - wallet_service_create_withdraw_transaction_response
+          - wallet_service_create_withdraw_transaction_response_exceptions
+          - wallet_service_fail_withdraw_transaction_request
+          - wallet_service_cancel_withdraw_transaction_request # <- end of list withdraw transaction topics
+          - wallet_service_create_transfer_transaction_request
+          - wallet_service_create_transfer_transaction_response
+          - wallet_service_create_transfer_transaction_response_exceptions
+          - wallet_service_fail_transfer_transaction_request
+          - wallet_service_cancel_transfer_transaction_request # <- end of list transfer transaction topics
+      payment-provider-service:
+        topics:
+          - payment_provider_service_create_transaction_request
+          - payment_provider_service_fail_transaction_request
+          - payment_provider_service_cancel_transaction_request
+          - payment_provider_service_create_transaction_response
+          - payment_provider_service_create_transaction_response_exceptions
   wallet-service:
     name: wallet-service
     uri: http://localhost:8083
@@ -175,6 +162,10 @@ service:
     merchant-secret: secret
     schedule:
       send-transaction-request-rate: 30
+      handle-create-transaction-on-payment-provider-service: 5
+      handle-create-deposit-transaction-on-wallet-service: 5
+      handle-create-withdraw-transaction-on-wallet-service: 5
+      handle-create-transfer-transaction-on-wallet-service: 5
     retry:
       send-transaction-request-to-message-broker:
         max-attempts: 3

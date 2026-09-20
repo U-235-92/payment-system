@@ -109,15 +109,18 @@ public class Fallback {
     private Object[] startSpan(String tracerName, String actionName) {
         Tracer tracer = openTelemetry.getTracer(tracerName);
         Span span = tracer.spanBuilder(actionName).startSpan();
+
         String traceId = (traceContext.getTraceId() == null)
                 ? span.getSpanContext().getTraceId()
                 : traceContext.getTraceId();
         String spanId = span.getSpanContext().getTraceId();
+
         return new Object[]{ span, traceId, spanId };
     }
 
     private boolean isNullOrBlank(String str) {
-        return str == null || str.isBlank();
+        return str == null
+                || str.isBlank();
     }
 
     private void logError(String traceId, String spanId, String action, String message, Exception exc) {

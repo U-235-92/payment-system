@@ -1,20 +1,22 @@
-package aq.project.entities;
+package aq.project.entities.transaction_service;
 
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.envers.Audited;
+
+import java.time.OffsetDateTime;
 
 @Entity
 @Audited
 @Getter @Setter
 @NoArgsConstructor
-@Table(name = "transaction_metadata")
-public class TransactionMetadata {
+@Table(name = "transaction_service_transaction_metadata")
+public class TransactionServiceTransactionMetadata {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -25,10 +27,7 @@ public class TransactionMetadata {
     @Column(name = "trace_id", nullable = false)
     private String traceId;
 
-    @PositiveOrZero
-    @Column(name = "retry_count", nullable = false)
-    private Integer retryCount;
-
-    @Column(name = "notification_url")
-    private String notificationUrl;
+    @CreationTimestamp
+    @Column(name = "timestamp", nullable = false)
+    private OffsetDateTime timestamp;
 }

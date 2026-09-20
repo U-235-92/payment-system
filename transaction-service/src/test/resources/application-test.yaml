@@ -1,6 +1,7 @@
 logging:
   level:
     root: info
+
 spring:
   flyway:
     enabled: true
@@ -9,11 +10,54 @@ spring:
     default-schema: public
     create-schemas: true
     locations: 'classpath:db/migration'
+
   datasource:
     driver-class-name: org.postgresql.Driver
+
   jpa:
     show-sql: false
     generate-ddl: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
+
+resilience4j:
+  bulkhead:
+    instances:
+      create-deposit-transaction-bulkhead:
+        max-concurrent-calls: 5
+      get-deposit-transaction-status-bulkhead:
+        max-concurrent-calls: 5
+
+      create-withdraw-transaction-bulkhead:
+        max-concurrent-calls: 5
+      get-withdraw-transaction-status-bulkhead:
+        max-concurrent-calls: 5
+
+      create-transfer-transaction-bulkhead:
+        max-concurrent-calls: 5
+      get-transfer-transaction-status-bulkhead:
+        max-concurrent-calls: 5
+
+  ratelimiter:
+    instances:
+      create-deposit-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+      get-deposit-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      create-withdraw-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+      get-withdraw-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      create-transfer-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+      get-transfer-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1

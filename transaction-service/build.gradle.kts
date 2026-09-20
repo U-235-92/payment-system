@@ -16,7 +16,7 @@ val artifact = "transaction-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "1.0.3-dev"
+val specificationArtifactVersion = "1.0.4-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -84,6 +84,7 @@ val dependencyVersionMap = mapOf(
 
 //	Spring
 	"spring-boot-starter-aop" to "4.0.0-M2",
+	"spring-data-envers" to "4.0.4",
 
 //	Test
 	"testcontainers" to "2.0.3",
@@ -97,10 +98,10 @@ val dependencyVersionMap = mapOf(
 	"springdoc-openapi" to "3.0.2",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "1.0.1-dev",
+	"wallet-service-api-specification" to "1.0.9-dev",
 
 //	Payment provider service API specification
-	"payment-provider-service-api-specification" to "1.0.6-dev",
+	"payment-provider-service-api-specification" to "1.0.12-dev",
 
 //	Resilience4j
 	"resilience4j" to "2.4.0",
@@ -127,6 +128,7 @@ dependencies {
 //	Spring data
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-h2console")
+	implementation("org.springframework.data:spring-data-envers:${dependencyVersionMap.getValue("spring-data-envers")}")
 
 //	DB drivers
 	runtimeOnly("org.postgresql:postgresql")
@@ -184,11 +186,11 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers-grafana")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-kafka")
+	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
 	testAnnotationProcessor("org.projectlombok:lombok")
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.wiremock.integrations:wiremock-spring-boot:${dependencyVersionMap.getValue("wiremock-spring-boot")}")
-	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
 
 //	Wallet service api
 	"apiSpec"("aq.payment-system:wallet-service-api-specification:${dependencyVersionMap.getValue("wallet-service-api-specification")}")

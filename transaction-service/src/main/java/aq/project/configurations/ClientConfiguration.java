@@ -21,16 +21,8 @@ import java.io.IOException;
         types = aq.project.wallet_service.WalletApiClient.class
 )
 @ImportHttpServices(
-        group = "wallet-service",
-        types = aq.project.wallet_service.TransactionApiClient.class
-)
-@ImportHttpServices(
         group = "keycloak-service",
         types = aq.project.clients.KeycloakServiceRestClient.class
-)
-@ImportHttpServices(
-        group = "payment-provider-service",
-        types = aq.project.payment_provider_service.WebhookApiClient.class
 )
 @ImportHttpServices(
         group = "payment-provider-service",

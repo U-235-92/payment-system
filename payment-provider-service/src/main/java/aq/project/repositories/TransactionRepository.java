@@ -4,6 +4,7 @@ import aq.project.dto.TransactionStatus;
 import aq.project.entities.Transaction;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +20,6 @@ public interface TransactionRepository extends CrudRepository<Transaction, UUID>
     List<Transaction> findByMerchantIdAndMetadataCreatedAtBetween(String merchantId, OffsetDateTime startDate, OffsetDateTime endDate);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Transaction> findByStatus(TransactionStatus status);
+    @Query("SELECT t FROM Transaction t WHERE t.status = :status")
+    List<Transaction> findAllByStatus(TransactionStatus status);
 }

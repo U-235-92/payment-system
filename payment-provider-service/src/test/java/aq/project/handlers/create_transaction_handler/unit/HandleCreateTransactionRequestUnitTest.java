@@ -80,8 +80,6 @@ public class HandleCreateTransactionRequestUnitTest {
 
         Mockito.when(transactionRepository.existsById(Mockito.any()))
                 .thenReturn(false);
-        Mockito.when(merchantRepository.existsById(Mockito.any()))
-                .thenReturn(true);
         Mockito.when(merchantRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(merchant));
 
@@ -191,8 +189,8 @@ public class HandleCreateTransactionRequestUnitTest {
 
         Mockito.when(transactionRepository.existsById(Mockito.any()))
                 .thenReturn(false);
-        Mockito.when(merchantRepository.existsById(Mockito.any()))
-                .thenReturn(false);
+        Mockito.when(merchantRepository.findById(Mockito.any()))
+                .thenReturn(Optional.empty());
         Mockito.when(kafkaTemplate.send(Mockito.anyString(), Mockito.any()))
                 .thenReturn(future);
 

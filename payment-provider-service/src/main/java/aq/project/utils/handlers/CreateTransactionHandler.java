@@ -1,6 +1,9 @@
 package aq.project.utils.handlers;
 
-import aq.project.dto.*;
+import aq.project.dto.PaymentProviderServiceCreateTransactionRequestDto;
+import aq.project.dto.PaymentProviderServiceErrorHandleTransactionDto;
+import aq.project.dto.PaymentProviderServiceSuccessHandleTransactionDto;
+import aq.project.dto.TransactionStatus;
 import aq.project.entities.Merchant;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.DtoConstraintsException;
@@ -24,10 +27,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -111,7 +114,17 @@ public class CreateTransactionHandler {
 
                 String merchantId = request.getMerchantId();
 
-                if(!merchantRepository.existsById(merchantId)) {
+                Optional<Merchant> merchantOptional = merchantRepository.findById(merchantId);
+
+                if(merchantOptional.isPresent()) {
+                    Merchant merchant = merchantOptional.get();
+
+                    transaction.setStatus(TransactionStatus.PENDING);
+                    transaction.setMerchant(merchant);
+
+                    transactionRepository.save(transaction);
+
+                } else {
                     String logMessageOnTransactionAlreadyExists = String.format(
                             "Fail attempt to handle create transaction request with transaction id: [%s]. " +
                             "Merchant with id [%s] not found",
@@ -131,14 +144,6 @@ public class CreateTransactionHandler {
 
                     throw new EntityNotFoundException(description);
                 }
-
-                Merchant merchant = merchantRepository.findById(merchantId).get();
-
-                transaction.setStatus(TransactionStatus.PENDING);
-                transaction.setMerchant(merchant);
-
-                transactionRepository.save(transaction);
-
             } finally {
                 applicationMetricsRegistry.finishTimer(sample, action);
                 span.end();
@@ -254,7 +259,7 @@ public class CreateTransactionHandler {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void handleScheduleCreateTransaction(
             Transaction transaction
     ) {

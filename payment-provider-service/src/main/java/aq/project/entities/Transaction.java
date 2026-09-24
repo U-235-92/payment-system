@@ -4,10 +4,7 @@ import aq.project.dto.Operation;
 import aq.project.dto.TransactionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
@@ -15,6 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Audited
+@ToString
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor

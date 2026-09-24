@@ -7,6 +7,7 @@ import aq.project.utils.handlers.CreateTransactionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -23,8 +24,9 @@ public class CreateTransactionScheduler {
             fixedRateString = "${service.payment-provider-service.scheduler.handle_create_transaction.rate}",
             timeUnit = TimeUnit.MILLISECONDS
     )
+    @Transactional
     public void handleCreateTransaction() {
-        List<Transaction> transactions = transactionRepository.findByStatus(TransactionStatus.PENDING);
+        List<Transaction> transactions = transactionRepository.findAllByStatus(TransactionStatus.PENDING);
 
         for(Transaction transaction : transactions) {
             createTransactionHandler.handleScheduleCreateTransaction(transaction);

@@ -116,16 +116,16 @@ val dependencyVersionMap = mapOf(
 	"resilience4j" to "2.4.0",
 
 //	Currency rate service API specification
-	"currency-rate-service-api-specification" to "1.0.7-dev",
+	"currency-rate-service-api-specification" to "2.0.0-dev",
 
 //	Person service API specification
-	"person-service-api-specification" to "1.0.4-dev",
+	"person-service-api-specification" to "2.0.0-dev",
 
 //	Transaction service API specification
-	"transaction-service-api-specification" to "1.0.4-dev",
+	"transaction-service-api-specification" to "2.0.0-dev",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "1.0.9-dev"
+	"wallet-service-api-specification" to "2.0.0-dev"
 )
 
 dependencies {

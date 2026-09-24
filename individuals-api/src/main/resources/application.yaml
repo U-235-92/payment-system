@@ -45,6 +45,77 @@ management:
           - prometheus
           - info
           - health
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      create-deposit-transaction-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      create-withdraw-transaction-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      create-transfer-transaction-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+      create-wallet-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      get-wallet-info-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+  ratelimiter:
+    instances:
+      create-deposit-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-deposit-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      create-withdraw-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-withdraw-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      create-transfer-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-transfer-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      create-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-wallet-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
 application:
   keycloak-service:
     name: keycloak-service
@@ -54,6 +125,7 @@ application:
     endpoints:
       token: /realms/payment-system/protocol/openid-connect/token
       admin: /admin/realms/payment-system/users
+
   person-service:
     name: person-service
     uri: http://localhost:8082
@@ -64,6 +136,7 @@ application:
       update-person: /api/v1/person/update-person
       undo-update-person: /api/v1/person/undo-update-person
       get-person-info-by-keycloak-id: /api/v1/person/get-person-by-keycloak-id
+
   wallet-service:
     name: wallet-service
     uri: http://localhost:8083
@@ -71,12 +144,19 @@ application:
       create-wallet: /api/v1/wallet/create
       get-wallet-info: /api/v1/wallet/info
       get-wallet-currency: /api/v1/wallet/currency
+
   transaction-service:
     name: transaction-service
     uri: http://localhost:8084
     endpoints:
-      get-transaction-status: /api/v1/transaction/status
-      send-transaction-request: /api/v1/transaction/send
+      get-deposit-transaction-status: /api/v1/transaction/deposit/status
+      get-transfer-transaction-status: /api/v1/transaction/transfer/status
+      get-withdraw-transaction-status: /api/v1/transaction/withdraw/status
+
+      create-deposit-transaction: /api/v1/transaction/deposit/create
+      create-transfer-transaction: /api/v1/transaction/transfer/create
+      create-withdraw-transaction: /api/v1/transaction/withdraw/create
+
   currency-rate-service:
     name: currency-rate-service
     uri: http://localhost:8085
@@ -86,8 +166,13 @@ application:
       get-rate-provider: /api/v1/currency-rate/get-rate-provider-info
       get-currencies: /api/v1/currency-rate/get-currencies
       get-currency: /api/v1/currency-rate/get-currency-info
+
   individuals-api:
     endpoints:
+#      Notification:
+      deposit-transaction-notification: /api/v1/deposit-transaction-notification
+      transfer-transaction-notification: /api/v1/transfer-transaction-notification
+      withdraw-transaction-notification: /api/v1/withdraw-transaction-notification
 #      User service operations:
       create-user: /api/v1/user/create-user
       login-user: /api/v1/user/login-user
@@ -103,8 +188,13 @@ application:
       get-currencies: /api/v1/currency-rate/get-currencies
       get-currency: /api/v1/currency-rate/get-currency-info
 #      Transaction service operations:
-      get-transaction-status: /api/v1/transaction/status
-      do-transaction: /api/v1/transaction/do-transaction
+      get-deposit-transaction-status: /api/v1/transaction/deposit/status
+      get-transfer-transaction-status: /api/v1/transaction/transfer/status
+      get-withdraw-transaction-status: /api/v1/transaction/withdraw/status
+
+      create-deposit-transaction: /api/v1/transaction/deposit/create
+      create-transfer-transaction: /api/v1/transaction/transfer/create
+      create-withdraw-transaction: /api/v1/transaction/withdraw/create
 #      Wallet service operations:
       create-wallet: /api/v1/wallet/create
       get-wallet-info: /api/v1/wallet/info

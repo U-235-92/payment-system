@@ -1,9 +1,43 @@
 logging:
   level:
     root: debug
+    reactor.netty.http.client: debug
+    org.springframework.web.reactive.function.client: debug
+    org.springframework.boot.autoconfigure.web.reactive.error: debug
     org.springframework.security: debug
-application:
-  individuals-api:
-    test:
-      actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)
-      unknown-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407
+
+resilience4j:
+  ratelimiter:
+    instances:
+      create-deposit-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+      get-deposit-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      create-withdraw-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+      get-withdraw-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      create-transfer-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+      get-transfer-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      create-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+      get-wallet-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+individuals-api:
+  test:
+    actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)
+    unknown-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407

@@ -17,7 +17,7 @@
 ##############################
 # TRANSACTION-SERVICE IGNORE #
 ##############################
-**/openapi/transaction-service/src/main/java/aq/project/dto/**
+**/openapi/transaction-service/src/main/java/aq/project/dto/ErrorDto.java
 
 #########################
 # WALLET-SERVICE IGNORE #

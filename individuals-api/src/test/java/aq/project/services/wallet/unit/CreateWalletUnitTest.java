@@ -1,0 +1,61 @@
+package aq.project.services.wallet.unit;
+
+import aq.project.clients.KeycloakServiceClientFacade;
+import aq.project.dto.CreateWalletRequestDto;
+import aq.project.services.wallets.WalletService;
+import aq.project.wallet_service.WalletApiClient;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
+
+import static aq.project._utils.entities.wallet_service.WalletServiceEntities.*;
+
+@ExtendWith(MockitoExtension.class)
+public class CreateWalletUnitTest {
+
+    @Mock
+    private WalletApiClient walletApiClient;
+
+    @Mock
+    private KeycloakServiceClientFacade keycloakServiceClientFacade;
+
+    @InjectMocks
+    private WalletService walletService;
+
+    @BeforeEach
+    void setUpFields() {
+        ReflectionTestUtils.setField(walletService, "serviceName", "service");
+    }
+
+    @Test
+    public void successCreateWallet() {
+//        Arrange
+        CreateWalletRequestDto createWalletRequestDto = getValidCreateWalletRequestDto();
+
+        UUID createdWalletId = UUID.randomUUID();
+
+        Mockito.when(keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue())
+                .thenReturn(Mono.just("TEST_JWT"));
+        Mockito.when(walletApiClient.createWallet(Mockito.any(String.class), Mockito.any(Mono.class), Mockito.any(String.class)))
+                .thenReturn(Mono.just(ResponseEntity.ok(createdWalletId)));
+
+//        Act & Assert
+        Assertions.assertDoesNotThrow(() -> walletService.createWallet(createWalletRequestDto).block());
+
+        Mockito.verify(walletApiClient, Mockito.times(1))
+                .createWallet(Mockito.any(String.class), Mockito.any(Mono.class), Mockito.any(String.class));
+
+        Assertions.assertEquals(createdWalletId, walletService.createWallet(createWalletRequestDto).block());
+
+    }
+}

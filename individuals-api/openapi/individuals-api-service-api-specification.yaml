@@ -48,13 +48,13 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/transaction/status/{transactionId}:
+  /api/v1/transaction/deposit/status/{transactionId}:
     get:
       security:
         - BearerAuth: [ ]
-      operationId: getTransactionStatus
+      operationId: getDepositTransactionStatus
       tags:
-        - Transaction
+        - DepositTransaction
       summary: Get transaction status by given ID
       parameters:
         - name: transactionId
@@ -62,13 +62,14 @@ paths:
           required: true
           description: Parameter is represented a valid UUID that describes a transaction ID
           schema:
-            $ref: "#/components/schemas/UuidDefinition"
+            type: string
+            format: uuid
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionStatus"
+                $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
           description: Returns current status of transaction by given ID
         400:
           content:
@@ -83,27 +84,172 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/transaction/do-transaction:
+  /api/v1/transaction/deposit/create:
     post:
       security:
         - BearerAuth: [ ]
-      operationId: doTransaction
+      operationId: createDepositTransaction
       tags:
-        - Transaction
-      summary: Handle incoming transaction request
+        - DepositTransaction
+      summary: Handle incoming deposit transaction request
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TransactionRequestDto"
-              description: Represents data of transaction request
+              $ref: "#/components/schemas/IndividualsApiServiceDepositTransactionRequestDto"
+              description: Represents data of deposit transaction request
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UuidDefinition"
+                type: string
+                format: uuid
+          description: Returns ID of requested transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/transfer/status/{transactionId}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getTransferTransactionStatus
+      tags:
+        - TransferTransaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/transfer/create:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: createTransferTransaction
+      tags:
+        - TransferTransaction
+      summary: Handle incoming transfer transaction request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IndividualsApiServiceTransferTransactionRequestDto"
+              description: Represents data of transfer transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+          description: Returns ID of requested transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/withdraw/status/{transactionId}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getWithdrawTransactionStatus
+      tags:
+        - WithdrawTransaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 4xx client error was occurred
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Returns ErrorDto if any 5xx server error was occurred
+
+  /api/v1/transaction/withdraw/create:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: createWithdrawTransaction
+      tags:
+        - WithdrawTransaction
+      summary: Handle incoming withdraw transaction request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IndividualsApiServiceWithdrawTransactionRequestDto"
+              description: Represents data of withdraw transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
           description: Returns ID of requested transaction
         400:
           content:
@@ -187,6 +333,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
+
   /api/v1/user/update-user:
     patch:
       security:
@@ -267,7 +414,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UuidDefinition"
+                type: string
+                format: uuid
           description: Returns ID of created wallet
         400:
           content:
@@ -296,7 +444,8 @@ paths:
           required: true
           description: Parameter is represented an valid UUID that describes a wallet ID
           schema:
-            $ref: "#/components/schemas/UuidDefinition"
+            type: string
+            format: uuid
       responses:
         200:
           content:
@@ -480,8 +629,12 @@ paths:
 tags:
   - name: Token
     description: Describes operations with tokens
-  - name: Transaction
-    description: Describes operations with transactions
+  - name: DepositTransaction
+    description: Describes operations with deposit transactions
+  - name: TransferTransaction
+    description: Describes operations with transfer transactions
+  - name: WithdrawTransaction
+    description: Describes operations with withdraw transactions
   - name: User
     description: Describes operations with users
   - name: Wallet
@@ -503,6 +656,51 @@ components:
     ##########################################
     # INDIVIDUALS-API SERVICE API COMPONENTS #
     ##########################################
+    IndividualsApiServiceDepositTransactionRequestDto:
+      type: object
+      required: [ wallet_id, currency_code, amount ]
+      properties:
+        wallet_id:
+          type: string
+          format: uuid
+        currency_code:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        amount:
+          type: string
+          format: decimal
+
+    IndividualsApiServiceTransferTransactionRequestDto:
+      type: object
+      required: [ sender_wallet_id, recipient_wallet_id, currency_code, amount ]
+      properties:
+        sender_wallet_id:
+          type: string
+          format: uuid
+        recipient_wallet_id:
+          type: string
+          format: uuid
+        currency_code:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        amount:
+          type: string
+          format: decimal
+
+    IndividualsApiServiceWithdrawTransactionRequestDto:
+      type: object
+      required: [ wallet_id, currency_code, amount ]
+      properties:
+        wallet_id:
+          type: string
+          format: uuid
+        currency_code:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        amount:
+          type: string
+          format: decimal
+
     UserInfoResponseDto:
       type: object
       required: [ keycloak_user_id, email, roles, created, individual_data ]
@@ -632,18 +830,6 @@ components:
         address:
           $ref: "#/components/schemas/AddressDto"
 
-    ######################################
-    # TRANSACTION SERVICE API COMPONENTS #
-    ######################################
-    TransactionRequestDto:
-      $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionRequestDto"
-
-    OperationType:
-      $ref: "./transaction-service-api-specification.yaml#/components/schemas/OperationType"
-
-    TransactionStatus:
-      $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
-
     ########################################
     # CURRENCY RATE SERVICE API COMPONENTS #
     ########################################
@@ -670,9 +856,6 @@ components:
 
     CardType:
       $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardType"
-
-    AmountDefinition:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/AmountDefinition"
 
     CardCvvDefinition:
       $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardCvvDefinition"

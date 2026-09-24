@@ -4,7 +4,9 @@ import aq.project.clients.KeycloakServiceClient;
 import aq.project.currency_rate_service.RateApiClient;
 import aq.project.dto.ErrorDto;
 import aq.project.person_service.PersonApiClient;
-import aq.project.transaction_service.TransactionApiClient;
+import aq.project.transaction_service.DepositTransactionApiClient;
+import aq.project.transaction_service.TransferTransactionApiClient;
+import aq.project.transaction_service.WithdrawTransactionApiClient;
 import aq.project.wallet_service.WalletApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,7 +92,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public TransactionApiClient transactionApiClient(Environment env) {
+    public DepositTransactionApiClient depositTransactionApiClient(Environment env) {
         WebClient webClient = WebClient.builder()
                 .baseUrl(transactionServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::doOn4xxClientError)
@@ -102,7 +104,39 @@ public class ClientConfiguration {
                 .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
-        return factory.createClient(TransactionApiClient.class);
+        return factory.createClient(DepositTransactionApiClient.class);
+    }
+
+    @Bean
+    public TransferTransactionApiClient transferTransactionApiClient(Environment env) {
+        WebClient webClient = WebClient.builder()
+                .baseUrl(transactionServiceBaseUrl)
+                .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::doOn4xxClientError)
+                .defaultStatusHandler(HttpStatusCode::is5xxServerError, this::doOn5xxServerError)
+                .build();
+
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
+                .exchangeAdapter(WebClientAdapter.create(webClient))
+                .embeddedValueResolver(env::resolvePlaceholders)
+                .build();
+
+        return factory.createClient(TransferTransactionApiClient.class);
+    }
+
+    @Bean
+    public WithdrawTransactionApiClient withdrawTransactionApiClient(Environment env) {
+        WebClient webClient = WebClient.builder()
+                .baseUrl(transactionServiceBaseUrl)
+                .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::doOn4xxClientError)
+                .defaultStatusHandler(HttpStatusCode::is5xxServerError, this::doOn5xxServerError)
+                .build();
+
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
+                .exchangeAdapter(WebClientAdapter.create(webClient))
+                .embeddedValueResolver(env::resolvePlaceholders)
+                .build();
+
+        return factory.createClient(WithdrawTransactionApiClient.class);
     }
 
     @Bean

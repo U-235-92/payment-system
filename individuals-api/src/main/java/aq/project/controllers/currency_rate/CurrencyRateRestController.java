@@ -1,0 +1,68 @@
+package aq.project.controllers.currency_rate;
+
+import aq.project.controller.RateRestControllerApi;
+import aq.project.dto.CurrencyResponse;
+import aq.project.dto.RateProviderResponse;
+import aq.project.dto.RateResponse;
+import aq.project.services.currency_rate.CurrencyRateService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.time.OffsetDateTime;
+
+@RestController
+@RequiredArgsConstructor
+public class CurrencyRateRestController implements RateRestControllerApi {
+
+    private final CurrencyRateService currencyRateService;
+
+    @Override
+    public Mono<ResponseEntity<Flux<CurrencyResponse>>> getCurrencies(
+            ServerWebExchange exchange
+    ) {
+        return currencyRateService.getCurrencies()
+                .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
+    }
+
+    @Override
+    public Mono<ResponseEntity<CurrencyResponse>> getCurrencyInfo(
+            String code,
+            ServerWebExchange exchange
+    ) {
+        return currencyRateService.getCurrencyInfo(code)
+                .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
+    }
+
+    @Override
+    public Mono<ResponseEntity<RateResponse>> getRate(
+            String from,
+            String to,
+            String provider,
+            OffsetDateTime date,
+            ServerWebExchange exchange
+    ) {
+        return currencyRateService.getRate(from, to, provider, date)
+                .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
+    }
+
+    @Override
+    public Mono<ResponseEntity<RateProviderResponse>> getRateProviderInfo(
+            String code,
+            ServerWebExchange exchange
+    ) {
+        return currencyRateService.getRateProviderInfo(code)
+                .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
+    }
+
+    @Override
+    public Mono<ResponseEntity<Flux<RateProviderResponse>>> getRateProviders(
+            ServerWebExchange exchange
+    ) {
+        return currencyRateService.getRateProviders()
+                .flatMap(flux -> Mono.just(ResponseEntity.ok().body(flux)));
+    }
+}

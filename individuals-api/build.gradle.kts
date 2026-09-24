@@ -106,6 +106,15 @@ val dependencyVersionMap = mapOf(
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
 
+//	Mapping
+	"mapstruct" to "1.6.3",
+
+//	Lombok MapStruct binding
+	"lombok-mapstruct-binding" to "0.2.0",
+
+//	Resilience4j
+	"resilience4j" to "2.4.0",
+
 //	Currency rate service API specification
 	"currency-rate-service-api-specification" to "1.0.7-dev",
 
@@ -113,10 +122,10 @@ val dependencyVersionMap = mapOf(
 	"person-service-api-specification" to "1.0.4-dev",
 
 //	Transaction service API specification
-	"transaction-service-api-specification" to "1.0.3-dev",
+	"transaction-service-api-specification" to "1.0.4-dev",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "1.0.1-dev"
+	"wallet-service-api-specification" to "1.0.9-dev"
 )
 
 dependencies {
@@ -150,6 +159,10 @@ dependencies {
 	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
 	testImplementation("org.wiremock.integrations:wiremock-spring-boot:${dependencyVersionMap.getValue("wiremock-spring-boot")}")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testCompileOnly("org.projectlombok:lombok")
+
+//	Resilience4j
+	implementation("io.github.resilience4j:resilience4j-spring-boot4:${dependencyVersionMap.getValue("resilience4j")}")
 
 //	OpenApi
 	implementation("tools.jackson.core:jackson-core")
@@ -171,6 +184,13 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+//	Mapping
+	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
+	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
+
+//	Lombok MapStruct binding
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
 
 //	Currency rate service api
 	"apiSpec"("aq.payment-system:currency-rate-service-api-specification:${dependencyVersionMap.getValue("currency-rate-service-api-specification")}")

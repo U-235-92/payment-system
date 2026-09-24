@@ -13,14 +13,14 @@ servers:
 # ENDPOINTS #
 #############
 paths:
-  /api/v1/transaction/send:
+  /api/v1/transaction/deposit/create:
     post:
       security:
         - BearerAuth: []
-      operationId: sendTransactionRequest
+      operationId: createDepositTransaction
       tags:
-        - Transaction
-      summary: Handle incoming transaction request
+        - DepositTransaction
+      summary: Handle incoming deposit transaction request
       parameters:
         - name: x-trace-id
           in: header
@@ -39,34 +39,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TransactionRequestDto"
+              $ref: "#/components/schemas/TransactionServiceDepositTransactionRequestDto"
               description: Represents data of transaction request
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UuidDefinition"
+                type: string
+                format: uuid
           description: Returns ID of requested transaction
         400:
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
         500:
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
-  /api/v1/transaction/status/{id}:
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/deposit/status/{id}:
     get:
       security:
-        - BearerAuth: []
-      operationId: getTransactionStatus
+        - BearerAuth: [ ]
+      operationId: getDepositTransactionStatus
       tags:
-        - Transaction
+        - DepositTransaction
       summary: Get transaction status by given ID
       parameters:
         - name: id
@@ -74,7 +78,8 @@ paths:
           required: true
           description: Parameter is represented a valid UUID that describes a transaction ID
           schema:
-            $ref: "#/components/schemas/UuidDefinition"
+            type: string
+            format: uuid
         - name: x-trace-id
           in: header
           required: true
@@ -99,20 +104,228 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
         500:
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/transfer/create:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: createTransferTransaction
+      tags:
+        - TransferTransaction
+      summary: Handle incoming transfer transaction request
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionServiceTransferTransactionRequestDto"
+              description: Represents data of transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+          description: Returns ID of requested transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/transfer/status/{id}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getTransferTransactionStatus
+      tags:
+        - TransferTransaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            type: string
+            format: uuid
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/withdraw/create:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: createWithdrawTransaction
+      tags:
+        - WithdrawTransaction
+      summary: Handle incoming withdraw transaction request
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionServiceWithdrawTransactionRequestDto"
+              description: Represents data of transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+          description: Returns ID of requested transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/withdraw/status/{id}:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getWithdrawTransactionStatus
+      tags:
+        - WithdrawTransaction
+      summary: Get transaction status by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            type: string
+            format: uuid
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Returns current status of transaction by given ID
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
 
 ########
 # TAGS #
 ########
 tags:
-  - name: Transaction
-    description: Describes operations with transactions
+  - name: DepositTransaction
+    description: Describes operations with deposit transactions
+  - name: TransferTransaction
+    description: Describes operations with transfer transactions
+  - name: WithdrawTransaction
+    description: Describes operations with withdraw transactions
 
 ######################
 # COMPONENTS SCHEMAS #
@@ -128,29 +341,71 @@ components:
 ######################################
 # TRANSACTION SERVICE API COMPONENTS #
 ######################################
-    TransactionRequestDto:
+    TransactionServiceDepositTransactionRequestDto:
       type: object
-      required: [ operationType, amount, currency, properties ]
+      required: [ walletId, traceId, amount, currencyCode, conversionRate, notificationUrl ]
       properties:
-        operationType:
-          $ref: "#/components/schemas/OperationType"
+        walletId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
         amount:
-          $ref: "#/components/schemas/AmountDefinition"
-        currency:
+          type: number
+          format: decimal
+        currencyCode:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
-        currencyRateDate:
+        conversionRate:
+          type: number
+          format: decimal
+        notificationUrl:
           type: string
-          format: date-time
-        rateProvider:
+
+    TransactionServiceTransferTransactionRequestDto:
+      type: object
+      required: [ senderWalletId, recipientWalletId, traceId, amount, currencyCode, senderConversionRate, recipientConversionRate, notificationUrl ]
+      properties:
+        senderWalletId:
           type: string
-          pattern: '^[A-Z]{3,10}$'
-        timestamp:
-          type: integer
-          format: int64
-        properties:
-          type: object
-          additionalProperties:
-            type: string
+          format: uuid
+        recipientWalletId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        senderConversionRate:
+          type: number
+          format: decimal
+        recipientConversionRate:
+          type: number
+          format: decimal
+        notificationUrl:
+          type: string
+
+    TransactionServiceWithdrawTransactionRequestDto:
+      type: object
+      required: [ walletId, traceId, amount, currencyCode, conversionRate, notificationUrl ]
+      properties:
+        walletId:
+          type: string
+          format: uuid
+        traceId:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        currencyCode:
+          $ref: "#/components/schemas/CurrencyCodeDefinition"
+        conversionRate:
+          type: number
+          format: decimal
+        notificationUrl:
+          type: string
 
     ErrorDto:
       type: object
@@ -162,21 +417,11 @@ components:
         message:
           type: string
 
-    OperationType:
-      enum: [ "DEPOSIT", "WITHDRAW", "TRANSFER" ]
-
     TransactionStatus:
-      enum: [ "PENDING", "COMPLETED", "FAILED" ]
-
-    UuidDefinition:
-      type: string
-      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-
-#################################
-# WALLET SERVICE API COMPONENTS #
-#################################
-    AmountDefinition:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/AmountDefinition"
+      enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]
 
     CurrencyCodeDefinition:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CurrencyCodeDefinition"
+      type: string
+      pattern: '^[A-Z]{3}$'
+      minLength: 3
+      maxLength: 3

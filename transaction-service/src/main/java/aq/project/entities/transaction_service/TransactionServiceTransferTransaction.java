@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Entity
 @Audited
+@ToString
 @Getter @Setter
 @NoArgsConstructor
 @Table(name = "transaction_service_transfer_transactions")

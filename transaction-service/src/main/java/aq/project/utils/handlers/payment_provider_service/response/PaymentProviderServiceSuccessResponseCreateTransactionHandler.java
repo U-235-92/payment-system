@@ -446,7 +446,7 @@ public class PaymentProviderServiceSuccessResponseCreateTransactionHandler {
 
             PaymentProviderServiceFailTransactionRequestDto failTransactionRequestPaymentProviderServiceDto = paymentProviderTransactionDtoMapper.toPaymentProviderServiceFailTransactionRequestDto(transactionServiceWithdrawTransaction);
             failTransactionRequestPaymentProviderServiceDto.setMerchantId(merchantId);
-            failTransactionRequestPaymentProviderServiceDto.setOperation(Operation.DEPOSIT);
+            failTransactionRequestPaymentProviderServiceDto.setOperation(Operation.WITHDRAW);
 
             try {
                 kafkaTemplate.send(paymentProviderServiceFailTransactionRequestTopic, failTransactionRequestPaymentProviderServiceDto).get();
@@ -487,7 +487,7 @@ public class PaymentProviderServiceSuccessResponseCreateTransactionHandler {
                     .getTopic("payment_provider_service_cancel_transaction_request");
 
             PaymentProviderServiceCancelTransactionRequestDto cancelTransactionRequestPaymentProviderServiceDto = paymentProviderTransactionDtoMapper.toPaymentProviderServiceCancelTransactionRequestDto(transactionServiceWithdrawTransaction);
-            cancelTransactionRequestPaymentProviderServiceDto.setOperation(Operation.DEPOSIT);
+            cancelTransactionRequestPaymentProviderServiceDto.setOperation(Operation.WITHDRAW);
             cancelTransactionRequestPaymentProviderServiceDto.setMerchantId(merchantId);
 
             try {
@@ -643,7 +643,7 @@ public class PaymentProviderServiceSuccessResponseCreateTransactionHandler {
 
             PaymentProviderServiceFailTransactionRequestDto failTransactionRequestPaymentProviderServiceDto = paymentProviderTransactionDtoMapper.toPaymentProviderServiceFailTransactionRequestDto(transactionServiceTransferTransaction);
             failTransactionRequestPaymentProviderServiceDto.setMerchantId(merchantId);
-            failTransactionRequestPaymentProviderServiceDto.setOperation(Operation.DEPOSIT);
+            failTransactionRequestPaymentProviderServiceDto.setOperation(Operation.TRANSFER);
 
             try {
                 kafkaTemplate.send(paymentProviderServiceFailTransactionRequestTopic, failTransactionRequestPaymentProviderServiceDto).get();
@@ -684,7 +684,7 @@ public class PaymentProviderServiceSuccessResponseCreateTransactionHandler {
                     .getTopic("payment_provider_service_cancel_transaction_request");
 
             PaymentProviderServiceCancelTransactionRequestDto cancelTransactionRequestPaymentProviderServiceDto = paymentProviderTransactionDtoMapper.toPaymentProviderServiceCancelTransactionRequestDto(transactionServiceTransferTransaction);
-            cancelTransactionRequestPaymentProviderServiceDto.setOperation(Operation.DEPOSIT);
+            cancelTransactionRequestPaymentProviderServiceDto.setOperation(Operation.TRANSFER);
             cancelTransactionRequestPaymentProviderServiceDto.setMerchantId(merchantId);
 
             try {

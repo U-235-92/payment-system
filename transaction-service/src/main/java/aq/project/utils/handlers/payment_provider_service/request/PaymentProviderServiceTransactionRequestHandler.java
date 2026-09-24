@@ -5,6 +5,7 @@ import aq.project.dto.TransactionStatus;
 import aq.project.entities.payment_provider_service.PaymentProviderServiceTransactionRequest;
 import aq.project.entities.transaction_service.TransactionServiceDepositTransaction;
 import aq.project.exceptions.NotFoundTopicException;
+import aq.project.repositories.payment_provider_service.PaymentProviderServiceTransactionRequestRepository;
 import aq.project.repositories.transaction_service.TransactionServiceDepositTransactionRepository;
 import aq.project.utils.mappers.PaymentProviderTransactionDtoMapper;
 import aq.project.utils.properties.PaymentProviderServiceKafkaProperties;
@@ -45,6 +46,8 @@ public class PaymentProviderServiceTransactionRequestHandler {
     private final PaymentProviderServiceKafkaProperties paymentProviderServiceKafkaProperties;
 
     private final TransactionServiceDepositTransactionRepository transactionServiceDepositTransactionRepository;
+
+    private final PaymentProviderServiceTransactionRequestRepository paymentProviderServiceTransactionRequestRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handlePaymentProviderServiceCreateTransactionRequest(
@@ -111,6 +114,9 @@ public class PaymentProviderServiceTransactionRequestHandler {
 //              TODO: в будущем добавить логику асинхронной отправки сообщения в kafka для сервиса [webhook-service] для уведомления пользователя о результате обработки транзакции
         } finally {
             paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setProcessed(true);
+
+            paymentProviderServiceTransactionRequestRepository.save(paymentProviderServiceTransactionRequest);
+
             applicationMetricsRegistry.finishTimer(sample, action);
             span.end();
         }

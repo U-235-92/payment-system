@@ -9,6 +9,10 @@ spring:
   profiles:
     active:
       - dev
+  task:
+    scheduling:
+      pool:
+        size: 5 # 1 for [payment provider service] scheduler and 3 for [wallet-service] scheduler + 1 additional
   security:
     oauth2:
       resourceserver:
@@ -48,7 +52,7 @@ spring:
         spring:
           json:
             trusted:
-              packages: "aq.project.messages"
+              packages: "aq.project.dto"
 management:
   opentelemetry:
     tracing:

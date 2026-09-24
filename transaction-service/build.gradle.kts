@@ -16,7 +16,7 @@ val artifact = "transaction-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "1.0.4-dev"
+val specificationArtifactVersion = "2.0.0-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -94,20 +94,20 @@ val dependencyVersionMap = mapOf(
 //	Mapping
 	"mapstruct" to "1.6.3",
 
+	//	Lombok MapStruct binding
+	"lombok-mapstruct-binding" to "0.2.0",
+
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
 
-//	Wallet service API specification
-	"wallet-service-api-specification" to "1.0.9-dev",
-
-//	Payment provider service API specification
-	"payment-provider-service-api-specification" to "1.0.12-dev",
-
-//	Resilience4j
+	//	Resilience4j
 	"resilience4j" to "2.4.0",
 
-//	Lombok MapStruct binding
-	"lombok-mapstruct-binding" to "0.2.0"
+//	Wallet service API specification
+	"wallet-service-api-specification" to "2.0.0-dev",
+
+//	Payment provider service API specification
+	"payment-provider-service-api-specification" to "2.0.0-dev"
 )
 
 dependencies {

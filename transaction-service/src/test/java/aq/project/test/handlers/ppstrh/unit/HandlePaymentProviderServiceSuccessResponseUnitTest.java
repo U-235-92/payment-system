@@ -4,6 +4,7 @@ import aq.project.dto.TransactionStatus;
 import aq.project.entities.payment_provider_service.PaymentProviderServiceTransactionRequest;
 import aq.project.entities.transaction_service.TransactionServiceDepositTransaction;
 import aq.project.exceptions.NotFoundTopicException;
+import aq.project.repositories.payment_provider_service.PaymentProviderServiceTransactionRequestRepository;
 import aq.project.repositories.transaction_service.TransactionServiceDepositTransactionRepository;
 import aq.project.utils.handlers.payment_provider_service.request.PaymentProviderServiceTransactionRequestHandler;
 import aq.project.utils.mappers.PaymentProviderTransactionDtoMapper;
@@ -50,6 +51,9 @@ public class HandlePaymentProviderServiceSuccessResponseUnitTest {
 
     @Mock
     private PaymentProviderServiceKafkaProperties paymentProviderServiceKafkaProperties;
+
+    @Mock
+    private PaymentProviderServiceTransactionRequestRepository paymentProviderServiceTransactionRequestRepository;
 
     @InjectMocks
     private PaymentProviderServiceTransactionRequestHandler paymentProviderServiceTransactionRequestHandler;

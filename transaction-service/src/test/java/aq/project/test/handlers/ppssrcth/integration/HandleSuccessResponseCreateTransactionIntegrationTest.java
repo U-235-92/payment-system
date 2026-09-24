@@ -104,7 +104,8 @@ public class HandleSuccessResponseCreateTransactionIntegrationTest {
         successHandleTransactionDto.setOperation(Operation.DEPOSIT);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> paymentProviderServiceSuccessResponseCreateTransactionHandler.handleSuccessResponseCreateTransactionOnPaymentProviderService(successHandleTransactionDto));
+        Assertions.assertDoesNotThrow(() -> paymentProviderServiceSuccessResponseCreateTransactionHandler
+                .handleSuccessResponseCreateTransactionOnPaymentProviderService(successHandleTransactionDto));
         Assertions.assertTrue(walletServiceDepositTransactionRequestRepository.findById(savedTransactionServiceDepositTransactionId).isPresent());
     }
 
@@ -127,7 +128,8 @@ public class HandleSuccessResponseCreateTransactionIntegrationTest {
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> paymentProviderServiceSuccessResponseCreateTransactionHandler.handleSuccessResponseCreateTransactionOnPaymentProviderService(successHandleTransactionDto));
+                () -> paymentProviderServiceSuccessResponseCreateTransactionHandler
+                        .handleSuccessResponseCreateTransactionOnPaymentProviderService(successHandleTransactionDto));
     }
 
     @Test
@@ -137,6 +139,7 @@ public class HandleSuccessResponseCreateTransactionIntegrationTest {
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> paymentProviderServiceSuccessResponseCreateTransactionHandler.handleSuccessResponseCreateTransactionOnPaymentProviderService(successHandleTransactionDto));
+                () -> paymentProviderServiceSuccessResponseCreateTransactionHandler
+                        .handleSuccessResponseCreateTransactionOnPaymentProviderService(successHandleTransactionDto));
     }
 }

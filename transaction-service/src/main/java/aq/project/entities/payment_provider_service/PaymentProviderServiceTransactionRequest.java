@@ -9,11 +9,13 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
+@ToString
 @Getter @Setter
 @NoArgsConstructor
 @Table(name = "payment_provider_service_transaction_requests")

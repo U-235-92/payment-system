@@ -247,7 +247,7 @@ public class HandleSuccessResponseCreateDepositTransactionUnitTest {
         Assertions.assertDoesNotThrow(
                 () -> paymentProviderServiceSuccessResponseCreateTransactionHandler
                         .handleSuccessResponseCreateTransactionOnPaymentProviderService(
-                                successHandleTransactionDto));
+                               successHandleTransactionDto));
 
         Mockito.verify(walletServiceDepositTransactionRequestRepository, Mockito.never())
                 .save(Mockito.any());

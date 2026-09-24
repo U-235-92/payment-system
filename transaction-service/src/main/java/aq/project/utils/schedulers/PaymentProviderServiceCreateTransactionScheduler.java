@@ -25,9 +25,12 @@ public class PaymentProviderServiceCreateTransactionScheduler {
     )
     @Transactional
     public void scheduleHandleCreateTransactionOnPaymentProviderService() {
-        List<PaymentProviderServiceTransactionRequest> transactionRequests = paymentProviderServiceTransactionRequestRepository.findUnprocessedRequests();
+        List<PaymentProviderServiceTransactionRequest> transactionRequests = paymentProviderServiceTransactionRequestRepository
+                .findUnprocessedRequests();
+
         for(PaymentProviderServiceTransactionRequest transactionRequest : transactionRequests) {
-            paymentProviderServiceTransactionRequestHandler.handlePaymentProviderServiceCreateTransactionRequest(transactionRequest);
+            paymentProviderServiceTransactionRequestHandler
+                    .handlePaymentProviderServiceCreateTransactionRequest(transactionRequest);
         }
     }
 }

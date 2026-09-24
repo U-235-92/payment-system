@@ -5,11 +5,27 @@ participant transaction_service_db
 participant kafka
 
 alt получение ответа об успешной обработке создания транзакции сервисом [wallet_service]
-	note right transaction_service
-	    Используется метод-обработчик отмеченный как @KafkaListener
-	end note
 	transaction_service -> kafka : Получение ответа обработки создания транзакции сервисом [wallet_service], извлечение id транзакции;
-	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service], отметить ее статус как [COMPLETED], сохранить измененение;
+	transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service];
+	alt сущность транзакции сервиса [transaction_service] найдена
+		transaction_service -> transaction_service : Проверка статуса сущности транзакции сервиса [transaction_service];
+		alt статус сущности транзакции сервиса [transaction_service] [PENDING]
+			transaction_service -> transaction_service_db : Изменить статус сущности транзакции сервиса [transaction_service] как [COMPLETED], сохранить изменения;
+		else статус сущности транзакции сервиса [transaction_service] не [FAILED]
+			transaction_service -> kafka : Отправка запроса на fail транзакции в сервис [wallet_service], дождаться ответа;
+			alt ответ kafka успешный
+				transaction_service -> kafka : Отправка запроса на fail транзакции в сервис [payment_provider_service], дождаться ответа;
+				alt ответ kafka успешный
+					transaction_service -> transaction_service : Логирование события;
+				else ответ kafka с ошибкой
+					transaction_service -> transaction_service : Логирование события;
+				end
+			else ответ kafka с ошибкой
+				
+			end
+		end
+	else сущность транзакции сервиса [transaction_service] не найдена
+	end
 	transaction_service -> kafka : Отправка события в kafka для [webhook_service] о результате работы транзакции;
 end
 

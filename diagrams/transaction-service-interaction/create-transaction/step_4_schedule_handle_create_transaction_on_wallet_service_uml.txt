@@ -29,7 +29,7 @@ alt обработка события создания транзакции пл
 			transaction_service -> transaction_service_db : Извлечение сущности транзакции сервиса [transaction_service], отметить ее статус как [FAILED], сохранить измененение;
 			transaction_service -> kafka : Отправка события в kafka для [webhook_service] о результате работы транзакции;
 		end
-	else ответот kafka без ошибки
+	else ответ от kafka без ошибки
 		transaction_service -> transaction_service_db : Отметить статус извлеченной сущности создания транзакции сервиса [wallet_service] как isProcessed = true, сохранить измененение;
 	end
 end

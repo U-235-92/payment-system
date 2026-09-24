@@ -338,9 +338,9 @@ components:
       bearerFormat: JWT
 
   schemas:
-######################################
-# TRANSACTION SERVICE API COMPONENTS #
-######################################
+    ######################################
+    # TRANSACTION SERVICE API COMPONENTS #
+    ######################################
     TransactionServiceDepositTransactionRequestDto:
       type: object
       required: [ walletId, traceId, amount, currencyCode, conversionRate, notificationUrl ]

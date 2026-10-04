@@ -17,7 +17,7 @@ extra["springCloudVersion"] = "2025.1.2"
 /////////////////////////////////////
 // BLOCK OF BUILD SCRIPT VARIABLES //
 /////////////////////////////////////
-val artifact = "payment-provider-service"
+val artifact = "payment-service"
 
 val specificationArtifactVersion = "2.0.0-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"

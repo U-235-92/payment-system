@@ -1,0 +1,186 @@
+openapi: 3.1.0
+info:
+  title: Payment Service API
+  description: Common payment-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8087
+  - url: http://payment-service:8087
+
+paths:
+  /api/v1/payment/get-payment-methods/{currencyCode}/{countryCode}:
+    get:
+      summary: Get list of payment methods for described currency code and country code
+      security:
+        - basicAuth: [ ]
+      operationId: getPaymentMethods
+      tags:
+        - Payment
+      parameters:
+        - name: currencyCode
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{3}$'
+            minLength: 3
+            maxLength: 3
+        - name: countryCode
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{2}$'
+            minLength: 2
+            maxLength: 2
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      responses:
+        200:
+          description: List of payment methods for described currency code and country code
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentServicePaymentMethodResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/payment/create-payment:
+    post:
+      summary: Create a new payment
+      security:
+        - basicAuth: [ ]
+      operationId: createPayment
+      tags:
+        - Payment
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentServiceCreatePaymentRequestDto"
+      responses:
+        200:
+          description: Payment response DTO which describes result of handle payment request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentServiceCreatePaymentResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+tags:
+  - name: Payment
+    description: Describes operations with payments
+
+components:
+  schemas:
+    PaymentServicePaymentMethodResponseDto:
+      type: object
+      required: [ payment_method_id, name, provider_method_type, image_url, description, placeholder, data_type, validation_type, validation_rule, default_value, values_options, trace_id ]
+      properties:
+        payment_method_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        provider_method_type:
+          type: string
+        image_url:
+          type: string
+        description:
+          type: string
+        placeholder:
+          type: string
+        data_type:
+          type: string
+        validation_type:
+          type: string
+        validation_rule:
+          type: string
+        default_value:
+          type: string
+        values_options:
+          type: array
+          items:
+            type: string
+        trace_id:
+          type: string
+
+    PaymentServiceCreatePaymentRequestDto:
+      type: object
+      required: [ transaction_id, payment_method_id, amount, currency_code, user_fields, trace_id ]
+      properties:
+        transaction_id:
+          type: string
+          format: uuid
+        payment_method_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: decimal
+        currency_code:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          minLength: 3
+          maxLength: 3
+        user_fields:
+          type: object
+          additionalProperties:
+            type: string
+        trace_id:
+          type: string
+
+    PaymentServiceCreatePaymentResponseDto:
+      type: object
+      required: [ transaction_id, payment_id, payment_status, trace_id ]
+      properties:
+        transaction_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+        payment_status:
+          enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]
+        trace_id:
+          type: string
+
+    ErrorDto:
+      type: object
+      required: [ http_status, message ]
+      properties:
+        http_status:
+          type: integer
+          format: int32
+        message:
+          type: string

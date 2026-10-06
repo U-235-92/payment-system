@@ -4,9 +4,15 @@
 Container(individuals_api_service, "individuals-api", "сервис-шлюз, принимает и обрабатывает пользовательские запросы")
 Container(transaction_service, "transaction-service", "Оркестратор процессов, связанных с обработкой транзакций")
 Container(wallet_service, "wallet-service", "Выполняет операции с кошельками пользователей")
-Container(payment_provider_service, "payment-provider-service", "Принимает и обрабатывает запросы платежей")
+Container(payment_provider_service, "payment-provider-service", "Обрабатывает запросы платежей")
 Container(webhook_service, "webhook-service", "Обработчик обратных вызовов уведомлений о результате выполнения транзакции")
 Container(kafka, "kafka", "Шина обмена данных между сервисами")
+Container(payment_service, "payment-service", "Принимает запросы платежей, определяет допустимые операции платежей для разных стран и валют")
+
+ContainerDb(payment_service_db, "payment-service-db")
+ContainerDb(payment_provider_service_db, "payment-provider-service-db")
+ContainerDb(wallet_service_db, "wallet-service-db")
+ContainerDb(transaction_service_db, "transaction-service-db")
 
 Rel(individuals_api_service, transaction_service, событие, создание транзакции)
 Rel(transaction_service, kafka, событие, отправка события создания транзакции)
@@ -15,8 +21,15 @@ Rel(kafka, payment_provider_service, событие, чтение и обраб�
 Rel(payment_provider_service, kafka, событие, отправка результата обработки события создания транзакции)
 Rel(kafka, wallet_service, событие, чтение и обработка входящего события создания транзакции)
 Rel(wallet_service, kafka, событие, отправка результата обработки события создания транзакции)
+Rel(wallet_service, wallet_service_db, JPA, SQL)
 Rel(transaction_service, webhook_service, событие, уведомление о событии результата обработки транзакции)
+Rel(transaction_service, transaction_service_db, JPA, SQL)
 Rel(webhook_service, kafka, событие, отправка уведомления о результате выполнения транзакции)
 Rel(kafka, individuals_api_service, событие, чтение результата выполнение транзакции и оповещение пользователя)
-
+Rel(individuals_api_service, payment_service, запрос, создание платежа)
+Rel(payment_service, payment_provider_service, запрос, создание платежа)
+Rel(payment_service, payment_service_db, JPA, SQL)
+Rel(payment_provider_service, payment_service, ответ, ответ на запрос создания платежа)
+Rel(payment_provider_service, payment_provider_service_db, JPA, SQL)
+Rel(payment_service, individuals_api_service, ответ, ответ на запрос создания платежа)
 @enduml

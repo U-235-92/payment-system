@@ -1,0 +1,89 @@
+@startuml
+
+actor user
+participant individuals_api_service
+participant transaction_service
+participant transaction_service_db
+participant kafka
+participant payment_service
+participant payment_service_db
+participant payment_provider_service
+participant payment_provider_service_db
+participant notification_service
+
+alt создание_транзакции
+
+	user -> individuals_api_service : Запрос [создание_транзакции];
+	individuals_api_service -> transaction_service : Запрос [создание_транзакции];
+	
+	alt успешное выполнение операции на стороне [transaction_service]
+	
+		transaction_service -> transaction_service_db : Сохранение сущности транзакции сервиса [transaction_service], генерация ID транзакции;
+		transaction_service -> kafka : Запрос на обработку операции [создание_транзакции] в состоянии [PENDING];
+		transaction_service --> individuals_api_service : Возврат сгенерированного ID транзакции;
+		
+		alt успешное выполнение операции на стороне [individuals_api_service]
+		
+			individuals_api_service -> individuals_api_service : Включение полученного ID транзакции в DTO заппроса [создание_платежа];
+			individuals_api_service -> payment_service : Отправка REST-запроса [создание_платежа];
+			
+				alt успешное выполнение операции на стороне [payment_service]
+				
+					payment_service -> payment_service_db : Сохранение полученного запроса [создание_платежа] в состоянии [PENDING];
+					payment_service -> payment_provider_service : Отправка REST-запроса [создание_платежа];
+					
+					alt успешное выполнение операции на стороне [payment_provider_service]
+						
+						payment_provider_service -> payment_provider_service_db : Сохранение полученного запроса [создание_платежа] в состоянии [PENDING], генерация ID платежа;
+						payment_provider_service --> payment_service : ID платежа;
+						
+						alt успешное выполнение операции на стороне [payment_service]
+							
+							payment_service -> payment_provider_service_db : Сохранение ранее созданной сущности платежа с включенной в нее полученного ID платежа;
+							payment_service --> individuals_api_service : ID платежа;
+							individuals_api_service --> user : ID платежа, ID транзакции;
+							
+						else выполнение операции завершилось ошибкой на стороне [payment_service]
+							
+							payment_service -> payment_service_db : Сохранение ранее полученного запроса [создание_платежа] в состоянии [FAILED];
+							payment_service -> payment_provider_service : Отправка REST-запроса [создание_платежа] в состояние [FAILED] с полученным ранее ID платежа;
+							
+							alt успешное выполнение операции на стороне [payment_provider_service]
+							
+								payment_provider_service -> payment_provider_service_db : Сохранение ранее полученного запроса [создание_платежа] в состоянии [FAILED];
+								payment_service --> individuals_api_service : Возврат ErrorDto с информацией о возникшей неполадке;
+								individuals_api_service -> transaction_service : Инициирование процедуры отмены ранее запущенной операции [создание_транзакции] с переводом последней в состояние [FAILED];
+								individuals_api_service --> user : Возврат ErrorDto с информацией о возникшей неполадке;
+								
+							else выполнение операции завершилось ошибкой на стороне [payment_provider_service]
+							
+								payment_service --> individuals_api_service : Возврат ErrorDto с информацией о возникшей неполадке;
+								individuals_api_service -> transaction_service : Инициирование процедуры отмены ранее запущенной операции [создание_транзакции] с переводом последней в состояние [FAILED];
+								individuals_api_service --> user : Возврат ErrorDto с информацией о возникшей неполадке;
+							end
+						end
+					else выполнение операции завершилось ошибкой на стороне [payment_provider_service]
+						
+						payment_service -> payment_service_db : Сохранение ранее полученного запроса [создание_платежа] в состоянии [FAILED];
+						payment_service --> individuals_api_service : Возврат ErrorDto с информацией о возникшей неполадке;
+						individuals_api_service -> transaction_service : Инициирование процедуры отмены ранее запущенной операции [создание_транзакции] с переводом последней в состояние [FAILED];
+						individuals_api_service --> user : Возврат ErrorDto с информацией о возникшей неполадке;
+					end
+				else выполнение операции завершилось ошибкой
+				
+					individuals_api_service -> transaction_service : Инициирование процедуры отмены ранее запущенной операции [создание_транзакции] с переводом последней в состояние [FAILED];
+					individuals_api_service --> user : Возврат ErrorDto с информацией о возникшей неполадке;
+				end
+		else выполнение операции завершилось ошибкой на стороне [individuals_api_service]
+		
+			individuals_api_service -> transaction_service : Инициирование процедуры отмены ранее запущенной операции [создание_транзакции] с переводом последней в состояние [FAILED];
+			individuals_api_service --> user : Возврат ErrorDto с информацией о возникшей неполадке;
+		end
+	else выполнение операции завершилось ошибкой на стороне [transaction_service]
+	
+		transaction_service --> individuals_api_service : Возврат ErrorDto с информацией о возникшей неполадке;
+		individuals_api_service --> user : Возврат ErrorDto с информацией о возникшей неполадке;
+	end
+end
+
+@enduml

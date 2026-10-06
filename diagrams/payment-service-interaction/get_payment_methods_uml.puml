@@ -1,0 +1,19 @@
+@startuml
+
+actor individuals_api_service
+participant payment_service
+participant payment_service_db
+
+alt запрос метода оплаты
+	individuals_api_service -> payment_service : Отправка rest-запроса [получить метод оплаты];
+	payment_service -> payment_service_db : Извлечение доступного метода оплаты;
+	alt метод оплаты присутствует
+		payment_service -> individuals_api_service : Вернуть извлеченный метод оплаты по входным данным;
+	else метод оплаты отсутствует
+		payment_service -> individuals_api_service : Запрошенный метод оплаты по входным данным отсутствует;
+	else ошибка в процессе выполнения операции
+		payment_service -> individuals_api_service : Ошибка в процессе выполнения операции;
+	end
+end
+
+@enduml

@@ -24,3 +24,11 @@ CREATE TABLE transactions (
     notification_url VARCHAR(2048),
     metadata_id BIGINT REFERENCES transaction_metadata(id)
 );
+
+CREATE TABLE payments (
+    id UUID PRIMARY KEY,
+    transaction_id UUID NOT NULL REFERENCES transactions(id) UNIQUE,
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);

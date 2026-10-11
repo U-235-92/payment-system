@@ -31,12 +31,12 @@ paths:
           required: true
           schema:
             type: string
-            pattern: '^[A-Z]{2}$'
-            minLength: 2
-            maxLength: 2
+            pattern: '^[A-Z]{3}$'
+            minLength: 3
+            maxLength: 3
         - name: x-trace-id
           in: header
-          required: false
+          required: true
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -54,7 +54,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentServiceErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -85,15 +85,13 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PaymentServiceCreatePaymentResponseDto"
+                $ref: "#/components/schemas/PaymentServiceCreatePaymentResponseDto"
         400:
           description: Malformed request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentServiceErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -105,15 +103,13 @@ components:
   schemas:
     PaymentServicePaymentMethodResponseDto:
       type: object
-      required: [ payment_method_id, name, provider_method_type, image_url, description, placeholder, data_type, validation_type, validation_rule, default_value, values_options, trace_id ]
+      required: [ payment_method_id, payment_method_type, image_url, description, placeholder, data_type, validation_type, validation_rule, default_value, values_options ]
       properties:
         payment_method_id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        provider_method_type:
-          type: string
+          type: integer
+          format: int64
+        payment_method_type:
+          $ref: "#/components/schemas/PaymentType"
         image_url:
           type: string
         description:
@@ -132,8 +128,6 @@ components:
           type: array
           items:
             type: string
-        trace_id:
-          type: string
 
     PaymentServiceCreatePaymentRequestDto:
       type: object
@@ -143,11 +137,12 @@ components:
           type: string
           format: uuid
         payment_method_id:
-          type: string
-          format: uuid
+          type: integer
+          format: int64
         amount:
           type: number
           format: decimal
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
         currency_code:
           type: string
           pattern: '^[A-Z]{3}$'
@@ -162,7 +157,7 @@ components:
 
     PaymentServiceCreatePaymentResponseDto:
       type: object
-      required: [ transaction_id, payment_id, payment_status, trace_id ]
+      required: [ transaction_id, payment_id, payment_status ]
       properties:
         transaction_id:
           type: string
@@ -171,16 +166,22 @@ components:
           type: string
           format: uuid
         payment_status:
-          enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]
+          $ref: "#/components/schemas/PaymentStatus"
+
+    PaymentServiceErrorDto:
+      type: object
+      required: [ message ]
+      properties:
+        message:
+          type: string
         trace_id:
           type: string
-
-    ErrorDto:
-      type: object
-      required: [ http_status, message ]
-      properties:
         http_status:
           type: integer
           format: int32
-        message:
-          type: string
+
+    PaymentStatus:
+      enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]
+
+    PaymentType:
+      enum: [ "CARD", "BANK_TRANSFER", "CASH" ]

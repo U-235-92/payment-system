@@ -1,3 +1,80 @@
+logging:
+  level:
+    root: info
+
+server:
+  port: 8087
+
 spring:
   application:
     name: payment-service
+  profiles:
+    active:
+      - dev
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/payment-system
+            token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
+        registration:
+          keycloak:
+            client-id: payment-service
+            client-secret: H4fnQQwfECigQWB6UWgzI6255oYZjYgb
+            admin-id: payment-system-admin-cli
+            admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # OTEL collector URI
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: payment-service
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+
+resilience4j:
+  ratelimiter:
+    instances:
+      create-payment-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-payment-methods-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+  circuitbreaker:
+    instances:
+      create-payment-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+service:
+  payment-provider-service:
+    name: payment-provider-service
+    uri: http://localhost:8086
+  payment-service:
+    merchant-id: payment-service
+    merchant-secret: $Ecr3t58

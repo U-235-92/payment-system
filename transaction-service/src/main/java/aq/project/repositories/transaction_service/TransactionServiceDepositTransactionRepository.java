@@ -5,5 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
 
-public interface TransactionServiceDepositTransactionRepository extends CrudRepository<TransactionServiceDepositTransaction, UUID> {
+public interface TransactionServiceDepositTransactionRepository extends
+        CrudRepository<TransactionServiceDepositTransaction, UUID> {
 }

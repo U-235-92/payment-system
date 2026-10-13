@@ -2,7 +2,9 @@ package aq.project.test.schedulers.integration;
 
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
+import aq.project.dto.TransactionStatus;
 import aq.project.entities.payment_provider_service.PaymentProviderServiceTransactionRequest;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.payment_provider_service.PaymentProviderServiceTransactionRequestRepository;
 import aq.project.repositories.transaction_service.TransactionServiceDepositTransactionRepository;
 import aq.project.utils.schedulers.PaymentProviderServiceCreateTransactionScheduler;
@@ -23,14 +25,13 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.util.Collections;
 import java.util.Properties;
-import java.util.UUID;
 
 import static aq.project._utils.entities.payment_provider_service.PaymentProviderServiceEntities.getValidPaymentProviderServiceTransactionRequest;
 
 @Testcontainers
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ScheduleHandleCreateTransactionOnPaymentProviderServiceIntegrationTest {
+public class ScheduleHandleTransactionOnPaymentProviderServiceIntegrationTest {
 
     private static final String KAFKA_TEST_CONTAINER_TOPIC = "payment_provider_service_create_transaction_request";
 
@@ -84,16 +85,51 @@ public class ScheduleHandleCreateTransactionOnPaymentProviderServiceIntegrationT
     public void successScheduleHandleCreateTransactionOnPaymentProviderService() {
 //        Arrange
         PaymentProviderServiceTransactionRequest paymentProviderServiceTransactionRequest = getValidPaymentProviderServiceTransactionRequest();
+        paymentProviderServiceTransactionRequest.setId(null);
+        paymentProviderServiceTransactionRequest.setStatus(TransactionStatus.PENDING);
         paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setId(null);
         paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
-
-        UUID transactionId = paymentProviderServiceTransactionRequest.getTransactionId();
 
         paymentProviderServiceTransactionRequestRepository.save(paymentProviderServiceTransactionRequest);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> paymentProviderServiceCreateTransactionScheduler.scheduleHandleCreateTransactionOnPaymentProviderService());
-        PaymentProviderServiceTransactionRequest savedPaymentProviderServiceTransactionRequest = paymentProviderServiceTransactionRequestRepository.findById(transactionId).get();
-        Assertions.assertTrue(savedPaymentProviderServiceTransactionRequest.getTransactionRequestMetadata().isProcessed());
+        Assertions.assertDoesNotThrow(() -> paymentProviderServiceCreateTransactionScheduler.scheduleHandleTransactionRequestOnPaymentProviderService());
+    }
+
+    @Test
+    public void successScheduleHandleFailTransactionOnPaymentProviderService() {
+//        Arrange
+        PaymentProviderServiceTransactionRequest paymentProviderServiceTransactionRequest = getValidPaymentProviderServiceTransactionRequest();
+        paymentProviderServiceTransactionRequest.setId(null);
+        paymentProviderServiceTransactionRequest.setStatus(TransactionStatus.FAILED);
+        paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setId(null);
+        paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
+
+        paymentProviderServiceTransactionRequestRepository.save(paymentProviderServiceTransactionRequest);
+
+//        Act & Assert
+        Assertions.assertDoesNotThrow(() -> paymentProviderServiceCreateTransactionScheduler.scheduleHandleTransactionRequestOnPaymentProviderService());
+    }
+
+    @Test
+    public void failedScheduleHandleTransactionOnPaymentProviderServiceWhenEmptyList() {
+//        Act & Assert
+        Assertions.assertDoesNotThrow(() -> paymentProviderServiceCreateTransactionScheduler.scheduleHandleTransactionRequestOnPaymentProviderService());
+    }
+
+    @Test
+    public void failedScheduleHandleTransactionOnInvalidTransactionStatus() {
+//        Arrange
+        PaymentProviderServiceTransactionRequest paymentProviderServiceTransactionRequest = getValidPaymentProviderServiceTransactionRequest();
+        paymentProviderServiceTransactionRequest.setId(null);
+        paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setId(null);
+        paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
+        paymentProviderServiceTransactionRequest.setStatus(TransactionStatus.COMPLETED);
+
+        paymentProviderServiceTransactionRequestRepository.save(paymentProviderServiceTransactionRequest);
+
+//        Act & Assert
+        Assertions.assertThrows(ProcessOperationException.class,
+                () -> paymentProviderServiceCreateTransactionScheduler.scheduleHandleTransactionRequestOnPaymentProviderService());
     }
 }

@@ -44,7 +44,21 @@ public class WithdrawTransactionRestController implements WithdrawTransactionRes
             String authorization
     ) {
         setUpTraceContext(xTraceId);
+
         return ResponseEntity.ok(withdrawTransactionService.getTransactionStatus(id));
+    }
+
+    @Override
+    public ResponseEntity<Void> failWithdrawTransaction(
+            UUID id,
+            String xTraceId,
+            String authorization
+    ) {
+        setUpTraceContext(xTraceId);
+
+        withdrawTransactionService.failTransaction(id);
+
+        return ResponseEntity.ok().build();
     }
 
     private void setUpTraceContext(String xTraceId) {

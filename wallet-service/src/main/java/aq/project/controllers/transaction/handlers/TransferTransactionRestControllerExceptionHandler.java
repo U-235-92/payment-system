@@ -1,7 +1,7 @@
 package aq.project.controllers.handlers;
 
-import aq.project.controllers.transaction.WithdrawTransactionRestController;
-import aq.project.dto.ErrorDto;
+import aq.project.controllers.transaction.TransferTransactionRestController;
+import aq.project.dto.WalletServiceErrorDto;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
@@ -15,58 +15,68 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static aq.project.controllers.handlers._ErrorResponseEntityFactory.getErrorResponseEntity;
+
 @Slf4j
 @RequiredArgsConstructor
-@RestControllerAdvice(basePackageClasses = WithdrawTransactionRestController.class)
-public class WithdrawTransactionRestControllerExceptionHandler {
+@RestControllerAdvice(basePackageClasses = TransferTransactionRestController.class)
+public class TransferTransactionRestControllerExceptionHandler {
 
     private final ControllerExceptionLogger controllerExceptionLogger;
 
 //    Project's exception handlers
     @ExceptionHandler(DuplicateTransactionHandleException.class)
-    public ResponseEntity<ErrorDto> onDuplicateTransactionHandleException(DuplicateTransactionHandleException e) {
+    public ResponseEntity<WalletServiceErrorDto> onDuplicateTransactionHandleException(DuplicateTransactionHandleException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<WalletServiceErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(EntityConstraintsException.class)
-    public ResponseEntity<ErrorDto> onEntityConstraintsException(EntityConstraintsException e) {
+    public ResponseEntity<WalletServiceErrorDto> onEntityConstraintsException(EntityConstraintsException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
 //    Non project's exception handlers
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDto> onConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<WalletServiceErrorDto> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDto> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<WalletServiceErrorDto> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorDto> onIllegalStateException(IllegalStateException e) {
+    public ResponseEntity<WalletServiceErrorDto> onIllegalStateException(IllegalStateException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDto(status, e.getMessage()));
-    }
 
-    private ErrorDto getErrorDto(HttpStatus httpStatus, String message) {
-        return new ErrorDto().httpStatus(httpStatus.value()).message(message);
+        controllerExceptionLogger.logException(e, status);
+
+        return getErrorResponseEntity(status, e);
     }
 }

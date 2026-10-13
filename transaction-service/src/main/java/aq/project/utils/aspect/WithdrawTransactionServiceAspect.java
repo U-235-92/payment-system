@@ -85,4 +85,32 @@ public class WithdrawTransactionServiceAspect {
                 false
         );
     }
+
+    @Around("execution(* aq.project.services.WithdrawTransactionService.failTransaction(..)) && args(transactionId)")
+    public void failTransaction(
+            ProceedingJoinPoint pjp,
+            @NotNull UUID transactionId
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "fail-withdraw-transaction";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+        String preMainLogicLogMessage = "Received request to fail withdraw transaction";
+        String postSuccessMainLogicCallLogMessage = "Success handle of request to fail withdraw transaction";
+        String postFailureMainLogicCallLogMessage = "Error occurred during handle of request to fail withdraw transaction";
+
+//        Handler logic call
+        serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                preMainLogicLogMessage,
+                postSuccessMainLogicCallLogMessage,
+                postFailureMainLogicCallLogMessage,
+                null,
+                null,
+                null,
+                false
+        );
+    }
 }

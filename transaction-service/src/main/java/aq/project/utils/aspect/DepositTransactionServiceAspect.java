@@ -85,4 +85,32 @@ public class DepositTransactionServiceAspect {
                 false
         );
     }
+
+    @Around("execution(* aq.project.services.DepositTransactionService.failTransaction(..)) && args(transactionId)")
+    public void failTransaction(
+            ProceedingJoinPoint pjp,
+            @NotNull UUID transactionId
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "fail-deposit-transaction";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+        String preMainLogicLogMessage = "Received request to fail deposit transaction";
+        String postSuccessMainLogicCallLogMessage = "Success handle of request to fail deposit transaction";
+        String postFailureMainLogicCallLogMessage = "Error occurred during handle of request to fail deposit transaction";
+
+//        Handler logic call
+        serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                preMainLogicLogMessage,
+                postSuccessMainLogicCallLogMessage,
+                postFailureMainLogicCallLogMessage,
+                null,
+                null,
+                null,
+                false
+        );
+    }
 }

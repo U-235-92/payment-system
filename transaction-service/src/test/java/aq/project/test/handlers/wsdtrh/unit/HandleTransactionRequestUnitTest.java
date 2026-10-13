@@ -97,7 +97,7 @@ public class HandleTransactionRequestUnitTest {
                 .thenReturn(completableFuture);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
         Assertions.assertTrue(walletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
         Assertions.assertEquals(TransactionStatus.PENDING, transactionServiceDepositTransaction.getStatus());
 
@@ -123,7 +123,7 @@ public class HandleTransactionRequestUnitTest {
                 .thenReturn(completableFuture);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
         Assertions.assertTrue(walletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
 
         Mockito.verify(kafkaTemplate, Mockito.times(1))
@@ -152,7 +152,7 @@ public class HandleTransactionRequestUnitTest {
                 .thenReturn(completableFuture);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
         Assertions.assertTrue(walletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
         Assertions.assertEquals(TransactionStatus.FAILED, transactionServiceDepositTransaction.getStatus());
 
@@ -182,7 +182,7 @@ public class HandleTransactionRequestUnitTest {
                 .thenReturn(completableFuture);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
         Assertions.assertTrue(walletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
         Assertions.assertEquals(TransactionStatus.CANCELED, transactionServiceDepositTransaction.getStatus());
 
@@ -206,7 +206,7 @@ public class HandleTransactionRequestUnitTest {
                 .thenReturn(Optional.of(transactionServiceDepositTransaction));
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
         Assertions.assertTrue(walletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
         Assertions.assertEquals(TransactionStatus.COMPLETED, transactionServiceDepositTransaction.getStatus());
     }
@@ -235,7 +235,7 @@ public class HandleTransactionRequestUnitTest {
                 .thenReturn(completableFuture);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
         Assertions.assertTrue(walletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
         Assertions.assertEquals(TransactionStatus.FAILED, transactionServiceDepositTransaction.getStatus());
 
@@ -272,7 +272,7 @@ public class HandleTransactionRequestUnitTest {
                 .thenThrow(ExecutionException.class);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
         Assertions.assertTrue(walletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
         Assertions.assertEquals(TransactionStatus.FAILED, transactionServiceDepositTransaction.getStatus());
 

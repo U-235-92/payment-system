@@ -1,5 +1,6 @@
 package aq.project.entities.wallet_service;
 
+import aq.project.dto.TransactionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,10 @@ import java.util.UUID;
 public class WalletServiceWithdrawTransactionRequest {
 
     @Id
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @NotNull
     @Column(name = "transaction_id", nullable = false)
     private UUID transactionId;
@@ -39,6 +44,11 @@ public class WalletServiceWithdrawTransactionRequest {
     @Positive
     @Column(name = "conversion_rate", nullable = false)
     private BigDecimal conversionRate;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private TransactionStatus status;
 
     @JoinColumn(name = "metadata_id")
     @OneToOne(cascade = CascadeType.ALL)

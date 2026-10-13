@@ -3,6 +3,7 @@ package aq.project._utils.entities.payment_provider_service;
 import aq.project.dto.PaymentProviderServiceErrorHandleTransactionDto;
 import aq.project.dto.Operation;
 import aq.project.dto.PaymentProviderServiceSuccessHandleTransactionDto;
+import aq.project.dto.TransactionStatus;
 import aq.project.entities.payment_provider_service.PaymentProviderServiceTransactionRequest;
 import aq.project.entities.payment_provider_service.PaymentProviderServiceTransactionRequestMetadata;
 import lombok.AccessLevel;
@@ -23,9 +24,11 @@ public abstract class PaymentProviderServiceEntities {
         metadata.setTraceId(UUID.randomUUID().toString());
 
         PaymentProviderServiceTransactionRequest transactionRequest = new PaymentProviderServiceTransactionRequest();
+        transactionRequest.setId(1L);
         transactionRequest.setTransactionId(UUID.randomUUID());
         transactionRequest.setMerchantId(UUID.randomUUID().toString());
         transactionRequest.setOperation(Operation.DEPOSIT);
+        transactionRequest.setStatus(TransactionStatus.PENDING);
         transactionRequest.setAmount(BigDecimal.valueOf(100));
         transactionRequest.setCurrencyCode("USD");
         transactionRequest.setNotificationUrl("https://www.example.aq");
@@ -44,6 +47,7 @@ public abstract class PaymentProviderServiceEntities {
         transactionRequest.setTransactionId(UUID.randomUUID());
         transactionRequest.setMerchantId(null); // null invalid value
         transactionRequest.setOperation(Operation.DEPOSIT);
+        transactionRequest.setStatus(TransactionStatus.PENDING);
         transactionRequest.setAmount(BigDecimal.valueOf(-100)); // negative amount value
         transactionRequest.setCurrencyCode("TEST"); // invalid currency code
         transactionRequest.setNotificationUrl("https://www.example.aq");

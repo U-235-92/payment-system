@@ -3,7 +3,9 @@ package aq.project.utils.handlers.wallet_service.request;
 import aq.project.dto.*;
 import aq.project.entities.transaction_service.TransactionServiceDepositTransaction;
 import aq.project.entities.wallet_service.WalletServiceDepositTransactionRequest;
+import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.NotFoundTopicException;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.transaction_service.TransactionServiceDepositTransactionRepository;
 import aq.project.repositories.wallet_service.WalletServiceDepositTransactionRequestRepository;
 import aq.project.utils.mappers.PaymentProviderTransactionDtoMapper;
@@ -61,14 +63,64 @@ public class WalletServiceDepositTransactionRequestHandler {
     private final WalletServiceDepositTransactionRequestRepository walletServiceDepositTransactionRequestRepository;
 
     @Transactional
-    public void handleTransactionRequest(
+    public void handleFailTransactionRequest(
+            @NotNull @Valid WalletServiceDepositTransactionRequest walletServiceDepositTransactionRequest
+    ) {
+        UUID transactionId = walletServiceDepositTransactionRequest.getTransactionId();
+
+        String traceId = walletServiceDepositTransactionRequest.getTransactionRequestMetadata().getTraceId();
+        Operation operation = Operation.DEPOSIT;
+        String action = String.format("schedule-fail-%s-transaction-request-by-wallet-service", operation.name().toLowerCase());
+        String tracerName = serviceName + "." + action + "-tracer";
+
+        Tracer tracer = openTelemetry.getTracer(tracerName);
+        Span span = tracer.spanBuilder(action).startSpan();
+
+        String spanId = span.getSpanContext().getSpanId();
+        String logMessageOnReceive = String.format(
+                "Schedule handle [deposit] transaction with id: [%s] by [wallet-service]",
+                transactionId);
+
+        log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logMessageOnReceive);
+
+        Timer.Sample sample = applicationMetricsRegistry.startTimer();
+
+        try(Scope scope = span.makeCurrent()) {
+            TransactionServiceDepositTransaction transactionServiceDepositTransaction = transactionServiceDepositTransactionRepository
+                    .findById(transactionId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("%s transaction with id: [%s] not found", operation, transactionId)));
+
+            TransactionStatus currentTransactionStatus = transactionServiceDepositTransaction.getStatus();
+            TransactionStatus targetTransactionStatus = TransactionStatus.FAILED;
+
+            switch (currentTransactionStatus) {
+                case PENDING, COMPLETED -> sendFailTransactionRequestPaymentProviderServiceDtoToKafka(
+                        transactionServiceDepositTransaction, traceId, spanId, action);
+
+                default -> throw new ProcessOperationException(
+                        String.format(
+                                "Attempt to change status of: [%s] transaction with id: [%s] " +
+                                "from: [%s] to: [%s] which is prohibited",
+                                operation, transactionId, currentTransactionStatus, targetTransactionStatus));
+            }
+        } finally {
+            walletServiceDepositTransactionRequest.getTransactionRequestMetadata().setProcessed(true);
+            walletServiceDepositTransactionRequestRepository.save(walletServiceDepositTransactionRequest);
+            applicationMetricsRegistry.finishTimer(sample, action);
+            span.end();
+        }
+    }
+
+    @Transactional
+    public void handleCreateTransactionRequest(
             @NotNull @Valid WalletServiceDepositTransactionRequest walletServiceDepositTransactionRequest
     ) {
         UUID transactionId = walletServiceDepositTransactionRequest.getTransactionId();
 
         String traceId = walletServiceDepositTransactionRequest.getTransactionRequestMetadata().getTraceId();
         String operation = Operation.DEPOSIT.name().toLowerCase();
-        String action = String.format("schedule-%s-transaction-request-by-wallet-service", operation);
+        String action = String.format("schedule-create-%s-transaction-request-by-wallet-service", operation);
         String tracerName = serviceName + "." + action + "-tracer";
 
         Tracer tracer = openTelemetry.getTracer(tracerName);

@@ -5,13 +5,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface WalletServiceTransferTransactionRequestRepository extends CrudRepository<WalletServiceTransferTransactionRequest, UUID> {
+public interface WalletServiceTransferTransactionRequestRepository extends
+        CrudRepository<WalletServiceTransferTransactionRequest, Long> {
 
     @Query(
-            "SELECT request FROM WalletServiceTransferTransactionRequest request " +
-                    "WHERE request.transactionRequestMetadata.isProcessed = false"
+            "SELECT request " +
+            "FROM WalletServiceTransferTransactionRequest request " +
+            "WHERE request.transactionRequestMetadata.isProcessed = false"
     )
     List<WalletServiceTransferTransactionRequest> findUnprocessedRequests();
 }

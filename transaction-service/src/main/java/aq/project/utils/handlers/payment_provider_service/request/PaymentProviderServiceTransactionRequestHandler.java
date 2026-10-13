@@ -1,6 +1,7 @@
 package aq.project.utils.handlers.payment_provider_service.request;
 
 import aq.project.dto.PaymentProviderServiceCreateTransactionRequestDto;
+import aq.project.dto.PaymentProviderServiceFailTransactionRequestDto;
 import aq.project.dto.TransactionStatus;
 import aq.project.entities.payment_provider_service.PaymentProviderServiceTransactionRequest;
 import aq.project.entities.transaction_service.TransactionServiceDepositTransaction;
@@ -70,7 +71,8 @@ public class PaymentProviderServiceTransactionRequestHandler {
 
         log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logMessageOnReceive);
 
-        PaymentProviderServiceCreateTransactionRequestDto createTransactionRequestPaymentProviderServiceDto = paymentProviderTransactionDtoMapper.toPaymentProviderServiceCreateTransactionRequestDto(paymentProviderServiceTransactionRequest);
+        PaymentProviderServiceCreateTransactionRequestDto createTransactionRequestPaymentProviderServiceDto = paymentProviderTransactionDtoMapper
+                .toPaymentProviderServiceCreateTransactionRequestDto(paymentProviderServiceTransactionRequest);
 
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
         try(Scope scope = span.makeCurrent()) {
@@ -89,7 +91,7 @@ public class PaymentProviderServiceTransactionRequestHandler {
         } catch (ExecutionException | InterruptedException | NotFoundTopicException e) {
             String logMessageOnError = String.format(
                     "Error occurred while schedule handle creation of %s transaction with id: [%s] " +
-                            "on payment provider service",
+                    "on payment provider service",
                     operation, transactionId);
 
             log.error("[{}-{}][{} -> {}]: {}. Exception: {}",
@@ -97,7 +99,83 @@ public class PaymentProviderServiceTransactionRequestHandler {
 
             applicationMetricsRegistry.countAction(false, action);
 
-            Optional<TransactionServiceDepositTransaction> transactionServiceDepositTransactionOptional = transactionServiceDepositTransactionRepository.findById(transactionId);
+            Optional<TransactionServiceDepositTransaction> transactionServiceDepositTransactionOptional = transactionServiceDepositTransactionRepository
+                    .findById(transactionId);
+
+            if(transactionServiceDepositTransactionOptional.isPresent()) {
+                TransactionServiceDepositTransaction transactionServiceDepositTransaction = transactionServiceDepositTransactionOptional.get();
+                transactionServiceDepositTransaction.setStatus(TransactionStatus.FAILED);
+
+                transactionServiceDepositTransactionRepository.save(transactionServiceDepositTransaction);
+            } else {
+                String onErrorLogMessage = String.format(
+                        "Error occurred while handle transaction with id: [%s]. Transaction wasn't found",
+                        transactionId);
+
+                log.error("[{}-{}][{} -> {}]: {}.", traceId, spanId, serviceName, action, onErrorLogMessage);
+            }
+//              TODO: в будущем добавить логику асинхронной отправки сообщения в kafka для сервиса [webhook-service] для уведомления пользователя о результате обработки транзакции
+        } finally {
+            paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setProcessed(true);
+
+            paymentProviderServiceTransactionRequestRepository.save(paymentProviderServiceTransactionRequest);
+
+            applicationMetricsRegistry.finishTimer(sample, action);
+            span.end();
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handlePaymentProviderServiceFailTransactionRequest(
+            PaymentProviderServiceTransactionRequest paymentProviderServiceTransactionRequest
+    ) {
+        String traceId = paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().getTraceId();
+        String operation = paymentProviderServiceTransactionRequest.getOperation().getValue().toLowerCase();
+        String action = String.format("schedule-handle-fail-%s-transaction-on-payment-provider-service", operation);
+        String tracerName = serviceName + "." + action + "-tracer";
+
+        UUID transactionId = paymentProviderServiceTransactionRequest.getTransactionId();
+
+        Tracer tracer = openTelemetry.getTracer(tracerName);
+        Span span = tracer.spanBuilder(action).startSpan();
+
+        String spanId = span.getSpanContext().getSpanId();
+        String logMessageOnReceive = String.format(
+                "Start scheduled handle of fail %s transaction with id: [%s] on payment provider service",
+                operation, transactionId);
+
+        log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logMessageOnReceive);
+
+        PaymentProviderServiceFailTransactionRequestDto failTransactionRequestPaymentProviderServiceDto = paymentProviderTransactionDtoMapper
+                .toPaymentProviderServiceFailTransactionRequestDto(paymentProviderServiceTransactionRequest);
+
+        Timer.Sample sample = applicationMetricsRegistry.startTimer();
+        try(Scope scope = span.makeCurrent()) {
+            String paymentProviderServiceFailTransactionRequestTopic = paymentProviderServiceKafkaProperties
+                    .getTopic("payment_provider_service_fail_transaction_request");
+
+            kafkaTemplate.send(paymentProviderServiceFailTransactionRequestTopic, failTransactionRequestPaymentProviderServiceDto).get();
+
+            String logMessageOnSuccess = String.format(
+                    "Success scheduled handle of fail %s transaction with id: [%s] on payment provider service",
+                    operation, transactionId);
+
+            log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logMessageOnSuccess);
+
+            applicationMetricsRegistry.countAction(true, action);
+        } catch (ExecutionException | InterruptedException | NotFoundTopicException e) {
+            String logMessageOnError = String.format(
+                    "Error occurred while schedule handle of fail %s transaction with id: [%s] " +
+                    "on payment provider service",
+                    operation, transactionId);
+
+            log.error("[{}-{}][{} -> {}]: {}. Exception: {}",
+                    traceId, spanId, serviceName, action, logMessageOnError, e.getMessage());
+
+            applicationMetricsRegistry.countAction(false, action);
+
+            Optional<TransactionServiceDepositTransaction> transactionServiceDepositTransactionOptional = transactionServiceDepositTransactionRepository
+                    .findById(transactionId);
 
             if(transactionServiceDepositTransactionOptional.isPresent()) {
                 TransactionServiceDepositTransaction transactionServiceDepositTransaction = transactionServiceDepositTransactionOptional.get();

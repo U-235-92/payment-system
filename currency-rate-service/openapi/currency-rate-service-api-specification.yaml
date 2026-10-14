@@ -74,13 +74,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/CurrencyRateServiceErrorDto'
           description: Курс не найден
         400:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/CurrencyRateServiceErrorDto'
           description: Ошибка запроса
 
   /api/v1/currency-rate/get-currencies:
@@ -185,7 +185,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/CurrencyRateServiceErrorDto'
           description: Ошибка запроса
 
   /api/v1/currency-rate/get-rate-provider-info/{code}:
@@ -227,7 +227,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/CurrencyRateServiceErrorDto'
           description: Ошибка запроса
 
 tags:
@@ -242,15 +242,17 @@ components:
       bearerFormat: JWT
 
   schemas:
-    ErrorDto:
+    CurrencyRateServiceErrorDto:
       type: object
-      required: [ http_status, message ]
+      required: [ message ]
       properties:
+        message:
+          type: string
+        trace_id:
+          type: string
         http_status:
           type: integer
           format: int32
-        message:
-          type: string
 
     RateResponse:
       type: object

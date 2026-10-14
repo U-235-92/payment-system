@@ -11,7 +11,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
 @Configuration
 @RequiredArgsConstructor
 @ImportHttpServices(group = "currency-rate-service", types = FrankfurterRateProviderClient.class)
-public class RestClientConfiguration {
+public class ClientConfiguration {
 
     @Value("${application.client.frankfurter.base-url}")
     private String currencyRateServiceBaseUrl;

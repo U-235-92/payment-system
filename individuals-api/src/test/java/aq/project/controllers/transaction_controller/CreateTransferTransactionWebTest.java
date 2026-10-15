@@ -146,6 +146,7 @@ public class CreateTransferTransactionWebTest {
         PaymentServiceCreatePaymentResponseDto paymentServiceCreatePaymentResponseDto = getValidPaymentServiceCreatePaymentResponseDto();
 
         String jwt = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
         String transactionRequestSenderWalletId = transactionRequestDto.getSenderWalletId().toString();
         String transactionRequestRecipientWalletId = transactionRequestDto.getRecipientWalletId().toString();
         String transactionRequestCurrencyCode = transactionRequestDto.getCurrencyCode();

@@ -147,6 +147,7 @@ public class CreateWithdrawTransactionWebTest {
         PaymentServiceCreatePaymentResponseDto paymentServiceCreatePaymentResponseDto = getValidPaymentServiceCreatePaymentResponseDto();
 
         String jwt = keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue().block();
+
         String transactionRequestWalletId = transactionRequestDto.getWalletId().toString();
         String transactionRequestCurrencyCode = transactionRequestDto.getCurrencyCode();
 

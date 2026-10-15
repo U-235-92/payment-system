@@ -80,7 +80,7 @@ public class WithdrawTransactionService {
                                 .flatMap(walletServiceWalletCurrencyCode -> getConversionRate(requestTransactionCurrencyCode, walletServiceWalletCurrencyCode))
                                     .flatMap(conversionRate -> createWithdrawTransaction(traceId, jwtHeader, conversionRate, transactionRequest)
                                             .flatMap(transactionId -> paymentApiClient.createPayment(getPaymentServiceCreatePaymentRequestDtoMono(transactionId, traceId, transactionRequest), traceId, jwtHeader)
-                                                    .flatMap(paymentServiceResponse -> getTransactionId(transactionId))
+                                                    .flatMap(paymentServiceResponse -> Mono.just(transactionId))
                                                     .doOnError(paymentServiceException -> rollbackCreateTransaction(transactionId, traceId, jwtHeader))))));
     }
 
@@ -202,12 +202,6 @@ public class WithdrawTransactionService {
         dto.setTraceId(traceId);
 
         return Mono.just(dto);
-    }
-
-    private Mono<UUID> getTransactionId(
-            UUID transactionId
-    ) {
-        return Mono.just(transactionId);
     }
 
     private void rollbackCreateTransaction(

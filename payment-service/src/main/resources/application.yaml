@@ -77,4 +77,4 @@ service:
     uri: http://localhost:8086
   payment-service:
     merchant-id: payment-service
-    merchant-secret: $Ecr3t58
+    merchant-secret: secret

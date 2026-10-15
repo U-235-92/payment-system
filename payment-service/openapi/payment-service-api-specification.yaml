@@ -40,6 +40,12 @@ paths:
           schema:
             type: string
           description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT
       responses:
         200:
           description: List of payment methods for described currency code and country code
@@ -73,6 +79,12 @@ paths:
           schema:
             type: string
           description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT
       requestBody:
         required: true
         content:

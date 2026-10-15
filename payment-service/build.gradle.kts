@@ -22,7 +22,7 @@ val artifact = "payment-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "2.0.0-dev"
+val specificationArtifactVersion = "2.1.0-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"

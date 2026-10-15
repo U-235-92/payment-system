@@ -23,7 +23,8 @@ public class PaymentRestController implements PaymentRestControllerApi {
     @Override
     public ResponseEntity<PaymentServiceCreatePaymentResponseDto> createPayment(
             PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
-            String xTraceId
+            String xTraceId,
+            String authorization
     ) {
         setUpTraceContext(paymentServiceCreatePaymentRequestDto.getTraceId());
 
@@ -35,7 +36,8 @@ public class PaymentRestController implements PaymentRestControllerApi {
     public ResponseEntity<List<PaymentServicePaymentMethodResponseDto>> getPaymentMethods(
             String currencyCode,
             String countryCode,
-            String xTraceId
+            String xTraceId,
+            String authorization
     ) {
         setUpTraceContext(xTraceId);
 

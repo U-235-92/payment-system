@@ -32,7 +32,7 @@ public class WithdrawTransactionServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.transactions.WithdrawTransactionService.createWithdrawTransaction(..)) && args(transactionRequest)")
+    @Around("execution(* aq.project.services.transaction_service.WithdrawTransactionService.createWithdrawTransaction(..)) && args(transactionRequest)")
     public Mono<UUID> createWithdrawTransaction(
             ProceedingJoinPoint pjp,
             @NotNull @Valid IndividualsApiServiceWithdrawTransactionRequestDto transactionRequest
@@ -73,7 +73,7 @@ public class WithdrawTransactionServiceAspect {
         };
     }
 
-    @Around("execution(* aq.project.services.transactions.WithdrawTransactionService.getWithdrawTransactionStatus(..)) && args(transactionId)")
+    @Around("execution(* aq.project.services.transaction_service.WithdrawTransactionService.getWithdrawTransactionStatus(..)) && args(transactionId)")
     public Mono<TransactionStatus> getWithdrawTransactionStatus(
             ProceedingJoinPoint pjp,
             @NotNull UUID transactionId

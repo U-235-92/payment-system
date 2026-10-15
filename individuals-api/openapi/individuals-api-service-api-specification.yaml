@@ -39,13 +39,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/deposit/status/{transactionId}:
@@ -75,13 +75,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/deposit/create:
@@ -111,13 +111,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/transfer/status/{transactionId}:
@@ -147,13 +147,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/transfer/create:
@@ -183,13 +183,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/withdraw/status/{transactionId}:
@@ -219,13 +219,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/withdraw/create:
@@ -255,13 +255,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/user/create-user:
@@ -290,13 +290,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/user/login-user:
@@ -325,13 +325,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/user/update-user:
@@ -356,13 +356,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/user/delete-user-by-keycloak-id/{keycloakId}:
@@ -385,13 +385,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/create:
@@ -421,13 +421,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/info/{walletId}:
@@ -457,13 +457,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/currency-rate/get-rate:
@@ -518,13 +518,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Курс не найден
         400:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Ошибка запроса
 
   /api/v1/currency-rate/get-currencies:
@@ -590,7 +590,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Returns ErrorDto if any 4xx client error was occurred
 
   /api/v1/currency-rate/get-rate-provider-info/{code}:
@@ -620,8 +620,51 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Returns ErrorDto if any 4xx client error was occurred
+
+  /api/v1/payment/get-payment-methods/{currencyCode}/{countryCode}:
+    get:
+      summary: Get list of payment methods for described currency code and country code
+      security:
+        - basicAuth: [ ]
+      operationId: getPaymentMethods
+      tags:
+        - Payment
+      parameters:
+        - name: currencyCode
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{3}$'
+            minLength: 3
+            maxLength: 3
+        - name: countryCode
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{3}$'
+            minLength: 3
+            maxLength: 3
+      responses:
+        200:
+          description: List of payment methods for described currency code and country code
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentServicePaymentMethodResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
 
 ########
 # TAGS #
@@ -658,21 +701,25 @@ components:
     ##########################################
     IndividualsApiServiceDepositTransactionRequestDto:
       type: object
-      required: [ wallet_id, currency_code, amount ]
+      required: [ wallet_id, payment_method_id, currency_code, amount ]
       properties:
         wallet_id:
           type: string
           format: uuid
+        payment_method_id:
+          type: integer
+          format: int64
         currency_code:
           type: string
           pattern: '^[A-Z]{3}$'
         amount:
           type: string
           format: decimal
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
 
     IndividualsApiServiceTransferTransactionRequestDto:
       type: object
-      required: [ sender_wallet_id, recipient_wallet_id, currency_code, amount ]
+      required: [ sender_wallet_id, recipient_wallet_id, payment_method_id, currency_code, amount ]
       properties:
         sender_wallet_id:
           type: string
@@ -680,26 +727,34 @@ components:
         recipient_wallet_id:
           type: string
           format: uuid
+        payment_method_id:
+          type: integer
+          format: int64
         currency_code:
           type: string
           pattern: '^[A-Z]{3}$'
         amount:
           type: string
           format: decimal
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
 
     IndividualsApiServiceWithdrawTransactionRequestDto:
       type: object
-      required: [ wallet_id, currency_code, amount ]
+      required: [ wallet_id, payment_method_id, currency_code, amount ]
       properties:
         wallet_id:
           type: string
           format: uuid
+        payment_method_id:
+          type: integer
+          format: int64
         currency_code:
           type: string
           pattern: '^[A-Z]{3}$'
         amount:
           type: string
           format: decimal
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
 
     UserInfoResponseDto:
       type: object
@@ -770,15 +825,17 @@ components:
           type: string
           example: Bearer [token]
 
-    ErrorDto:
+    IndividualsApiServiceErrorDto:
       type: object
-      required: [ http_status, message ]
+      required: [ message ]
       properties:
+        message:
+          type: string
+        trace_id:
+          type: string
         http_status:
           type: integer
           format: int32
-        message:
-          type: string
 
     CurrencyCodeDefinition:
       type: string
@@ -865,3 +922,9 @@ components:
 
     CardExpirationDateDefinition:
       $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardExpirationDateDefinition"
+
+    ##################################
+    # PAYMENT SERVICE API COMPONENTS #
+    ##################################
+    PaymentServicePaymentMethodResponseDto:
+      $ref: "./payment-service-api-specification.yaml#/components/schemas/PaymentServicePaymentMethodResponseDto"

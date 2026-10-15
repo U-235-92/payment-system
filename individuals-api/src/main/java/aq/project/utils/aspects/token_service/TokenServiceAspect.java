@@ -29,7 +29,8 @@ public class TokenServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.tokens.TokenService.refreshUserJwt(..)) && args(dto)")
+    @Around("execution(* aq.project.services.token_service.TokenService.refreshUserJwt(..)) " +
+            "&& args(dto)")
     public Mono<ResponseTokenDto> refreshUserJwt(
             ProceedingJoinPoint pjp,
             @NotNull @Valid RefreshTokenDto dto

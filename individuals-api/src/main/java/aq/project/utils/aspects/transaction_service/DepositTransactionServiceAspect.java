@@ -32,7 +32,7 @@ public class DepositTransactionServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.transactions.DepositTransactionService.createDepositTransaction(..)) && args(transactionRequest)")
+    @Around("execution(* aq.project.services.transaction_service.DepositTransactionService.createDepositTransaction(..)) && args(transactionRequest)")
     public Mono<UUID> createDepositTransaction(
             ProceedingJoinPoint pjp,
             @NotNull @Valid IndividualsApiServiceDepositTransactionRequestDto transactionRequest
@@ -73,7 +73,7 @@ public class DepositTransactionServiceAspect {
         };
     }
 
-    @Around("execution(* aq.project.services.transactions.DepositTransactionService.getDepositTransactionStatus(..)) && args(transactionId)")
+    @Around("execution(* aq.project.services.transaction_service.DepositTransactionService.getDepositTransactionStatus(..)) && args(transactionId)")
     public Mono<TransactionStatus> getDepositTransactionStatus(
             ProceedingJoinPoint pjp,
             @NotNull UUID transactionId

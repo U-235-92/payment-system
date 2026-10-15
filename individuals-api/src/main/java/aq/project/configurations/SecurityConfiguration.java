@@ -13,6 +13,7 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 
 import static aq.project.controller.DepositTransactionRestControllerApi.PATH_CREATE_DEPOSIT_TRANSACTION;
 import static aq.project.controller.DepositTransactionRestControllerApi.PATH_GET_DEPOSIT_TRANSACTION_STATUS;
+import static aq.project.controller.PaymentRestControllerApi.PATH_GET_PAYMENT_METHODS;
 import static aq.project.controller.RateRestControllerApi.*;
 import static aq.project.controller.TokenRestControllerApi.PATH_REFRESH_TOKEN;
 import static aq.project.controller.TransferTransactionRestControllerApi.PATH_CREATE_TRANSFER_TRANSACTION;
@@ -70,7 +71,9 @@ public class SecurityConfiguration {
                         .pathMatchers(HttpMethod.GET, PATH_GET_CURRENCIES).authenticated()
                         .pathMatchers(HttpMethod.GET, PATH_GET_CURRENCY_INFO.replace("{code}", "*")).authenticated()
                         .pathMatchers(HttpMethod.GET, PATH_GET_RATE_PROVIDERS).authenticated()
-                        .pathMatchers(HttpMethod.GET, PATH_GET_RATE_PROVIDER_INFO.replace("{code}", "*")).authenticated())
+                        .pathMatchers(HttpMethod.GET, PATH_GET_RATE_PROVIDER_INFO.replace("{code}", "*")).authenticated()
+
+                        .pathMatchers(HttpMethod.GET, PATH_GET_PAYMENT_METHODS.replace("{currencyCode}/{countryCode}", "*/*")).authenticated())
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .oauth2Client(Customizer.withDefaults())

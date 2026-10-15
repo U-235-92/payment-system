@@ -30,7 +30,7 @@ public class UserServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.users.UserService.createUser(..)) && args(dto)")
+    @Around("execution(* aq.project.services.user_service.UserService.createUser(..)) && args(dto)")
     public Mono<ResponseTokenDto> createUser(
             ProceedingJoinPoint pjp,
             @Valid CreateUserDto dto
@@ -84,7 +84,7 @@ public class UserServiceAspect {
         return string == null || string.trim().isEmpty();
     }
 
-    @Around("execution(* aq.project.services.users.UserService.loginUser(..)) && args(dto)")
+    @Around("execution(* aq.project.services.user_service.UserService.loginUser(..)) && args(dto)")
     public Mono<ResponseTokenDto> loginUser(
             ProceedingJoinPoint pjp,
             @Valid LoginUserDto dto
@@ -116,7 +116,7 @@ public class UserServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.users.UserService.updateUser(..)) && args(dto)")
+    @Around("execution(* aq.project.services.user_service.UserService.updateUser(..)) && args(dto)")
     public Mono<Void> updateUser(
             ProceedingJoinPoint pjp,
             @Valid UpdateUserDto dto
@@ -148,7 +148,7 @@ public class UserServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.users.UserService.deleteUserByKeycloakId(..)) && args(keycloakId)")
+    @Around("execution(* aq.project.services.user_service.UserService.deleteUserByKeycloakId(..)) && args(keycloakId)")
     public Mono<Void> deleteUserByKeycloakId(
             ProceedingJoinPoint pjp,
             @NotBlank @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") String keycloakId
@@ -179,7 +179,7 @@ public class UserServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.users.UserService.getUserInfoResponseDTO(..)) && args(authentication)")
+    @Around("execution(* aq.project.services.user_service.UserService.getUserInfoResponseDTO(..)) && args(authentication)")
     public Mono<UserInfoResponseDto> getUserInfo(
             ProceedingJoinPoint pjp,
             Authentication authentication

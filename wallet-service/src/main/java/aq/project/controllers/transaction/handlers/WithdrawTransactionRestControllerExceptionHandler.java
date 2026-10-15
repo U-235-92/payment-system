@@ -1,4 +1,4 @@
-package aq.project.controllers.handlers;
+package aq.project.controllers.transaction.handlers;
 
 import aq.project.controllers.transaction.WithdrawTransactionRestController;
 import aq.project.dto.WalletServiceErrorDto;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static aq.project.controllers.handlers._ErrorResponseEntityFactory.getErrorResponseEntity;
+import static aq.project.controllers._utils._ErrorResponseEntityFactory.getErrorResponseEntity;
 
 @Slf4j
 @RequiredArgsConstructor

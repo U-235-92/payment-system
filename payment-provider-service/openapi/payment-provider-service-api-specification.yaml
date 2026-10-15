@@ -58,7 +58,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -102,7 +102,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
         403:
@@ -134,7 +134,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
         401:
           description: Unauthorized (invalid credentials)
         409:
@@ -142,7 +142,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
 
   /api/v1/payment/create-payment:
     post:
@@ -183,7 +183,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -222,7 +222,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -409,8 +409,8 @@ components:
           type: string
           format: uuid
         payment_method_id:
-          type: string
-          format: uuid
+          type: integer
+          format: int64
         trace_id:
           type: string
 
@@ -442,15 +442,17 @@ components:
         trace_id:
           type: string
 
-    ErrorDto:
+    PaymentProviderServiceErrorDto:
       type: object
-      required: [ http_status, message ]
+      required: [ message ]
       properties:
+        message:
+          type: string
+        trace_id:
+          type: string
         http_status:
           type: integer
           format: int32
-        message:
-          type: string
 
     CurrencyCodeDefinition:
       type: string

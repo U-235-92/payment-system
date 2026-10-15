@@ -18,7 +18,7 @@ public abstract class PaymentServiceEntities {
     public static PaymentProviderServiceCreatePaymentRequestDto getValidPaymentProviderServiceCreatePaymentRequestDto() {
         PaymentProviderServiceCreatePaymentRequestDto dto = new PaymentProviderServiceCreatePaymentRequestDto();
         dto.setTransactionId(UUID.randomUUID());
-        dto.setPaymentMethodId(UUID.randomUUID());
+        dto.setPaymentMethodId(1L);
         dto.setTraceId(UUID.randomUUID().toString());
         return dto;
     }
@@ -26,7 +26,7 @@ public abstract class PaymentServiceEntities {
     public static PaymentProviderServiceCreatePaymentRequestDto getInvalidPaymentProviderServiceCreatePaymentRequestDto() {
         PaymentProviderServiceCreatePaymentRequestDto dto = new PaymentProviderServiceCreatePaymentRequestDto();
         dto.setTransactionId(null);
-        dto.setPaymentMethodId(UUID.randomUUID());
+        dto.setPaymentMethodId(1L);
         dto.setTraceId(UUID.randomUUID().toString());
         return dto;
     }

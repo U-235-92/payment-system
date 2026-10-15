@@ -70,6 +70,10 @@ resilience4j:
 
 service:
   payment-provider-service:
+    retry:
+      get-transaction:
+        retry-period: 1500
+        max-retry-count: 5
     scheduler:
       handle_create_transaction:
         rate: 5000

@@ -1,7 +1,8 @@
 package aq.project.controllers.handlers;
 
 import aq.project.controllers.PaymentRestController;
-import aq.project.dto.ErrorDto;
+import aq.project.dto.PaymentProviderServiceErrorDto;
+import aq.project.exceptions.EntityAlreadyExistsException;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.exceptions.ProhibitedOperationException;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static aq.project.controllers._utils._ErrorResponseEntityFactory.getErrorResponseEntity;
+
 @RequiredArgsConstructor
 @RestControllerAdvice(basePackageClasses = { PaymentRestController.class })
 public class PaymentRestControllerExceptionHandler {
@@ -20,43 +23,58 @@ public class PaymentRestControllerExceptionHandler {
     private final ControllerExceptionLogger controllerExceptionLogger;
 
 //    Project's exception handlers
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
+    @ExceptionHandler(EntityAlreadyExistsException.class)
+    public ResponseEntity<PaymentProviderServiceErrorDto> onEntityAlreadyExistsException(EntityAlreadyExistsException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
+    }
+    
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<PaymentProviderServiceErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        controllerExceptionLogger.logException(e, status);
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(ProhibitedOperationException.class)
-    public ResponseEntity<ErrorDto> onProhibitedOperationException(ProhibitedOperationException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onProhibitedOperationException(ProhibitedOperationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(FallbackOperationException.class)
-    public ResponseEntity<ErrorDto> onFallbackOperationException(FallbackOperationException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onFallbackOperationException(FallbackOperationException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
 //    Non project's exception handlers
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDto> onConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorDto> onRuntimeException(RuntimeException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onRuntimeException(RuntimeException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
-    }
 
-    private ErrorDto getErrorDTO(HttpStatus httpStatus, String message) {
-        return new ErrorDto().httpStatus(httpStatus.value()).message(message);
+        controllerExceptionLogger.logException(e, status);
+
+        return getErrorResponseEntity(status, e);
     }
 }

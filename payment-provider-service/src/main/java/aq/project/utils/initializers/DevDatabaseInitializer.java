@@ -25,15 +25,29 @@ public class DevDatabaseInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        Merchant merchant = getDevMerchant();
-        merchantRepository.save(merchant);
+        Merchant transactionServiceMerchant = getTransactionServiceMerchant();
+        Merchant paymentServiceMerchant = getPaymentServiceMerchant();
+
+        merchantRepository.save(transactionServiceMerchant);
+        merchantRepository.save(paymentServiceMerchant);
     }
 
-    private Merchant getDevMerchant() {
+    private Merchant getTransactionServiceMerchant() {
         Merchant merchant = new Merchant();
         merchant.setId("transaction-service");
         merchant.setSecretKey(passwordEncoder.encode("secret"));
         merchant.setName("transaction-service");
+        merchant.setCreatedAt(OffsetDateTime.now());
+        merchant.setUpdatedAt(OffsetDateTime.now());
+        merchant.setRole(UserRole.USER);
+        return merchant;
+    }
+
+    private Merchant getPaymentServiceMerchant() {
+        Merchant merchant = new Merchant();
+        merchant.setId("payment-service");
+        merchant.setSecretKey(passwordEncoder.encode("secret"));
+        merchant.setName("payment-service");
         merchant.setCreatedAt(OffsetDateTime.now());
         merchant.setUpdatedAt(OffsetDateTime.now());
         merchant.setRole(UserRole.USER);

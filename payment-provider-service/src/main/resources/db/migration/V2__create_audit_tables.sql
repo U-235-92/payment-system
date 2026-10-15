@@ -52,8 +52,6 @@ CREATE TABLE payments_aud (
     rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
     revtype SMALLINT,
     transaction_id UUID,
-    amount NUMERIC(18, 2),
-    currency VARCHAR(3),
     status VARCHAR(20),
     created_at TIMESTAMP,
     updated_at TIMESTAMP,

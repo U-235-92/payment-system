@@ -15,7 +15,7 @@ alt создание_транзакции
 
 	user -> individuals_api_service : Запрос [создание_транзакции];
 	individuals_api_service -> transaction_service : Запрос [создание_транзакции];
-	
+
 	alt успешное выполнение операции на стороне [transaction_service]
 	
 		transaction_service -> transaction_service_db : Сохранение сущности транзакции сервиса [transaction_service], генерация ID транзакции;
@@ -24,7 +24,7 @@ alt создание_транзакции
 		
 		alt успешное выполнение операции на стороне [individuals_api_service]
 		
-			individuals_api_service -> individuals_api_service : Включение полученного ID транзакции в DTO заппроса [создание_платежа];
+			individuals_api_service -> individuals_api_service : Включение полученного ID транзакции в DTO запроса [создание_платежа];
 			individuals_api_service -> payment_service : Отправка REST-запроса [создание_платежа];
 			
 				alt успешное выполнение операции на стороне [payment_service]

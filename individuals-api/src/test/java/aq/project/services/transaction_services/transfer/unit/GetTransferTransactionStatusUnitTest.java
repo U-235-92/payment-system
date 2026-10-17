@@ -6,7 +6,7 @@ import aq.project.services.currency_rate_service.CurrencyRateService;
 import aq.project.services.transaction_service.TransferTransactionService;
 import aq.project.services.wallet_service.WalletService;
 import aq.project.transaction_service.TransferTransactionApiClient;
-import aq.project.utils.mappers.TransferTransactionMapper;
+import aq.project.utils.mappers.transaction.TransferTransactionMapper;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

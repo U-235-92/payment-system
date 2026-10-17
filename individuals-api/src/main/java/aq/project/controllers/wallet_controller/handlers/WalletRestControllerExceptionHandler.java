@@ -3,7 +3,6 @@ package aq.project.controllers.wallet_controller.handlers;
 import aq.project.controllers.wallet_controller.WalletRestController;
 import aq.project.dto.IndividualsApiServiceErrorDto;
 import aq.project.exceptions.FallbackOperationException;
-import aq.project.exceptions.WalletException;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +23,6 @@ public class WalletRestControllerExceptionHandler {
     private final ControllerExceptionLogger controllerExceptionLogger;
 
 //    Project specific exceptions
-    @ExceptionHandler(value = WalletException.class)
-    public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onWalletException(WalletException exc) {
-        HttpStatus status = HttpStatus.valueOf(exc.getHttpStatusCode());
-
-        controllerExceptionLogger.logException(exc, status);
-
-        return Mono.just(getErrorResponseEntity(status, exc));
-    }
 
     @ExceptionHandler(value = FallbackOperationException.class)
     public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onFallbackOperationException(FallbackOperationException exc) {

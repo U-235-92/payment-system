@@ -13,8 +13,6 @@
 ##########################
 # PEROSON-SERVICE IGNORE #
 ##########################
-**/openapi/person-service/src/main/java/aq/project/dto/**
-!**/openapi/person-service/src/main/java/aq/project/dto/PersonServiceErrorDto.java
 
 ##############################
 # TRANSACTION-SERVICE IGNORE #

@@ -37,15 +37,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateIndividualDataDto"
+              $ref: "#/components/schemas/PersonServiceCreatePersonRequestDto"
               description: Represents data for creating a new person
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UuidDefinition"
-          description: Returns an ID of created person
+                type: string
+                format: uuid
+          description: Returns an UUID of created person
         400:
           content:
             application/json:
@@ -64,21 +65,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
-  /api/v1/person/delete-person-by-keycloak-id/{keycloakId}:
+
+  /api/v1/person/delete-person/{personKeycloakId}:
     delete:
       security:
-        - BearerAuth: []
+        - BearerAuth: [ ]
       operationId: deletePersonByKeycloakId
       tags:
         - Person
-      summary: Delete a person by given ID
+      summary: Delete a person by given UUID
       parameters:
-        - name: keycloakId
+        - name: personKeycloakId
           in: path
           required: true
           description: Parameter is represented a valid UUID that describes a person ID
           schema:
-            $ref: "#/components/schemas/UuidDefinition"
+            type: string
+            format: uuid
         - name: x-trace-id
           in: header
           required: true
@@ -104,7 +107,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
-  /api/v1/person/undo-delete-person-by-keycloak-id:
+
+  /api/v1/person/undo-delete-person:
     post:
       security:
         - BearerAuth: []
@@ -130,7 +134,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UndoOperationDto"
+              $ref: "#/components/schemas/PersonServiceUndoRequestDto"
               description: Represents data of undo operation
       responses:
         400:
@@ -171,7 +175,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateIndividualDataDto"
+              $ref: "#/components/schemas/PersonServiceUpdatePersonRequestDto"
               description: Represents data for updating a person
       responses:
         200:
@@ -214,7 +218,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UndoOperationDto"
+              $ref: "#/components/schemas/PersonServiceUndoRequestDto"
               description: Represents data of undo operation
       responses:
         400:
@@ -229,21 +233,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
-  /api/v1/person/get-person-by-keycloak-id/{keycloakId}:
+  /api/v1/person/get-person-info/{personKeycloakId}:
     get:
       security:
-        - BearerAuth: []
-      operationId: getPersonByKeycloakId
+        - BearerAuth: [ ]
+      operationId: getPersonInfo
       tags:
         - Person
       summary: Get person info by given ID
       parameters:
-        - name: keycloakId
+        - name: personKeycloakId
           in: path
           required: true
           description: Parameter is represented a valid UUID that describes a person ID
           schema:
-            $ref: "#/components/schemas/UuidDefinition"
+            type: string
+            format: uuid
         - name: x-trace-id
           in: header
           required: true
@@ -261,7 +266,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualDataResponseDto"
+                $ref: "#/components/schemas/PersonServicePersonInfoResponseDto"
           description: Returns current info of person by given ID
         400:
           content:
@@ -288,7 +293,7 @@ components:
       bearerFormat: JWT
 
   schemas:
-    IndividualDataResponseDto:
+    PersonServicePersonInfoResponseDto:
       type: object
       required: [ first_name, last_name, email, phone_number, passport_number, address ]
       properties:
@@ -303,14 +308,14 @@ components:
         passport_number:
           type: string
         address:
-          $ref: "#/components/schemas/AddressDto"
+          $ref: "#/components/schemas/PersonServiceAddressDto"
 
-    AddressDto:
+    PersonServiceAddressDto:
       type: object
       required: [ country, state, city, address, zip_code ]
       properties:
         country:
-          $ref: "#/components/schemas/CountryDto"
+          $ref: "#/components/schemas/PersonServiceCountryDto"
         state:
           type: string
         city:
@@ -320,7 +325,7 @@ components:
         zip_code:
           type: string
 
-    CountryDto:
+    PersonServiceCountryDto:
       type: object
       required: [ name, code ]
       properties:
@@ -328,73 +333,70 @@ components:
           type: string
         code:
           type: string
+          pattern: '^[A-Z]{3}$'
 
-    CreateIndividualDataDto:
+    PersonServiceCreatePersonRequestDto:
       type: object
       required: [ first_name, last_name, email, phone_number, passport_number, address ]
       properties:
-        keycloak_user_id:
+        person_keycloak_id:
           type: string
+          format: uuid
         first_name:
           type: string
         last_name:
           type: string
-        email:
-          type: string
-        phone_number:
-          type: string
-        passport_number:
-          type: string
-        active:
-          type: boolean
-          default: true
-        address:
-          $ref: "#/components/schemas/AddressDto"
-
-    UpdateIndividualDataDto:
-      type: object
-      required: [ keycloak_user_id, first_name, last_name, phone_number, passport_number, address ]
-      properties:
-        keycloak_user_id:
-          type: string
-        first_name:
-          type: string
-        last_name:
-          type: string
-        phone_number:
-          type: string
-        passport_number:
-          type: string
-        active:
-          type: boolean
-          default: true
-        address:
-          $ref: "#/components/schemas/AddressDto"
-
-    LoginUserDto:
-      type: object
-      required: [ email, password ]
-      properties:
         email:
           type: string
           format: email
-        password:
+        phone_number:
           type: string
+        passport_number:
+          type: string
+        active:
+          type: boolean
+          default: true
+        address:
+          $ref: "#/components/schemas/PersonServiceAddressDto"
 
-    UndoOperationDto:
+    PersonServiceUpdatePersonRequestDto:
       type: object
-      required: [ operation, payload ]
+      required: [ person_keycloak_id, first_name, last_name, phone_number, passport_number, address ]
+      properties:
+        person_keycloak_id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        passport_number:
+          type: string
+        active:
+          type: boolean
+          default: true
+        address:
+          $ref: "#/components/schemas/PersonServiceAddressDto"
+
+    PersonServiceUndoRequestDto:
+      type: object
+      required: [ id, person_id, operation, timestamp, description ]
       properties:
         id:
           type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
         operation:
-          enum:
-            - undo_update_person
-            - undo_delete_person
-        payload:
-          type: object
-          additionalProperties:
-            type: string
+          $ref: "#/components/schemas/UndoOperation"
+        timestamp:
+          type: integer
+          format: int64
+        description:
+          type: string
 
     PersonServiceErrorDto:
       type: object
@@ -408,6 +410,5 @@ components:
           type: integer
           format: int32
 
-    UuidDefinition:
-      type: string
-      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    UndoOperation:
+      enum: [ update_person, delete_person ]

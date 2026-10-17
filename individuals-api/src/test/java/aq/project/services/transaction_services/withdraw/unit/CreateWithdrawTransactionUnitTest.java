@@ -9,7 +9,7 @@ import aq.project.services.currency_rate_service.CurrencyRateService;
 import aq.project.services.transaction_service.WithdrawTransactionService;
 import aq.project.services.wallet_service.WalletService;
 import aq.project.transaction_service.WithdrawTransactionApiClient;
-import aq.project.utils.mappers.WithdrawTransactionMapper;
+import aq.project.utils.mappers.transaction.WithdrawTransactionMapper;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,8 +1,8 @@
 package aq.project.services.token_service;
 
 import aq.project.clients.KeycloakServiceClientFacade;
-import aq.project.dto.RefreshTokenDto;
-import aq.project.dto.ResponseTokenDto;
+import aq.project.dto.IndividualsApiServiceTokenRequestDto;
+import aq.project.dto.IndividualsApiServiceTokenResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -13,7 +13,9 @@ public class TokenService {
 
     private final KeycloakServiceClientFacade keycloakServiceClientFacade;
 
-    public Mono<ResponseTokenDto> refreshUserJwt(RefreshTokenDto dto) {
-        return keycloakServiceClientFacade.refreshUserJwt(dto);
+    public Mono<IndividualsApiServiceTokenResponseDto> refreshUserJwt(
+            IndividualsApiServiceTokenRequestDto individualsApiServiceTokenRequestDto
+    ) {
+        return keycloakServiceClientFacade.refreshJwt(individualsApiServiceTokenRequestDto);
     }
 }

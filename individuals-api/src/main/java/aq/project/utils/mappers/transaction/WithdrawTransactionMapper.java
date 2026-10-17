@@ -1,4 +1,4 @@
-package aq.project.utils.mappers;
+package aq.project.utils.mappers.transaction;
 
 import aq.project.dto.IndividualsApiServiceWithdrawTransactionRequestDto;
 import aq.project.dto.PaymentServiceCreatePaymentRequestDto;

@@ -10,7 +10,7 @@ import aq.project.payment_service.PaymentApiClient;
 import aq.project.services.currency_rate_service.CurrencyRateService;
 import aq.project.services.wallet_service.WalletService;
 import aq.project.transaction_service.TransferTransactionApiClient;
-import aq.project.utils.mappers.TransferTransactionMapper;
+import aq.project.utils.mappers.transaction.TransferTransactionMapper;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.ConstraintViolationException;

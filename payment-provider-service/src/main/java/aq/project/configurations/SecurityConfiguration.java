@@ -24,6 +24,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import static aq.project.controller.AdminRestControllerApi.PATH_REGISTER_MERCHANT;
+import static aq.project.controller.PaymentRestControllerApi.PATH_CREATE_PAYMENT;
+import static aq.project.controller.PaymentRestControllerApi.PATH_FAIL_PAYMENT;
 import static aq.project.controller.TransactionRestControllerApi.PATH_GET_TRANSACTION_INFO;
 import static aq.project.controller.TransactionRestControllerApi.PATH_GET_TRANSACTION_LIST;
 
@@ -58,7 +60,11 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(customizer -> customizer
                     .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_INFO.replace("{id}", "*")).hasRole(UserRole.USER.getValue())
                     .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_LIST).hasRole(UserRole.USER.getValue())
+
                     .requestMatchers(HttpMethod.POST, PATH_REGISTER_MERCHANT).hasRole(UserRole.ADMIN.getValue())
+
+                    .requestMatchers(HttpMethod.POST, PATH_CREATE_PAYMENT).hasRole(UserRole.USER.getValue())
+                    .requestMatchers(HttpMethod.POST, PATH_FAIL_PAYMENT).hasRole(UserRole.USER.getValue())
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new AuthenticationHeaderFilter(), BasicAuthenticationFilter.class)

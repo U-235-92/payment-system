@@ -1,8 +1,11 @@
 package aq.project.utils.schedulers;
 
+import aq.project.dto.Operation;
+import aq.project.dto.TransactionStatus;
 import aq.project.entities.wallet_service.WalletServiceDepositTransactionRequest;
 import aq.project.entities.wallet_service.WalletServiceTransferTransactionRequest;
 import aq.project.entities.wallet_service.WalletServiceWithdrawTransactionRequest;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.wallet_service.WalletServiceDepositTransactionRequestRepository;
 import aq.project.repositories.wallet_service.WalletServiceTransferTransactionRequestRepository;
 import aq.project.repositories.wallet_service.WalletServiceWithdrawTransactionRequestRepository;
@@ -10,6 +13,7 @@ import aq.project.utils.handlers.wallet_service.request.WalletServiceDepositTran
 import aq.project.utils.handlers.wallet_service.request.WalletServiceTransferTransactionRequestHandler;
 import aq.project.utils.handlers.wallet_service.request.WalletServiceWithdrawTransactionRequestHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class WalletServiceCreateTransactionScheduler {
+
+    @Value("${service.wallet-service.name}")
+    private String walletServiceName;
 
     private final WalletServiceDepositTransactionRequestRepository walletServiceDepositTransactionRequestRepository;
     private final WalletServiceWithdrawTransactionRequestRepository walletServiceWithdrawTransactionRequestRepository;
@@ -34,10 +41,28 @@ public class WalletServiceCreateTransactionScheduler {
             timeUnit = TimeUnit.SECONDS
     )
     @Transactional
-    public void scheduleHandleCreateDepositTransactionOnWalletService() {
-        List<WalletServiceDepositTransactionRequest> transactionRequests = walletServiceDepositTransactionRequestRepository.findUnprocessedRequests();
+    public void scheduleHandleDepositTransactionOnWalletService() {
+        List<WalletServiceDepositTransactionRequest> transactionRequests = walletServiceDepositTransactionRequestRepository
+                .findUnprocessedRequests();
+
         for(WalletServiceDepositTransactionRequest transactionRequest : transactionRequests) {
-            walletServiceDepositTransactionRequestHandler.handleTransactionRequest(transactionRequest);
+            Long requestId = transactionRequest.getId();
+            TransactionStatus transactionStatus = transactionRequest.getStatus();
+
+            Operation operation = Operation.DEPOSIT;
+
+            switch (transactionStatus) {
+                case PENDING -> walletServiceDepositTransactionRequestHandler
+                        .handleCreateTransactionRequest(transactionRequest);
+
+                case FAILED ->  walletServiceDepositTransactionRequestHandler
+                        .handleFailTransactionRequest(transactionRequest);
+
+                default -> throw new ProcessOperationException(String.format(
+                        "Attempt to schedule [%s] transaction request with id: [%s] in status: [%s] " +
+                        "for service: [%s] which is prohibited",
+                        operation, requestId, transactionStatus, walletServiceName));
+            }
         }
     }
 
@@ -46,10 +71,28 @@ public class WalletServiceCreateTransactionScheduler {
             timeUnit = TimeUnit.SECONDS
     )
     @Transactional
-    public void scheduleHandleCreateWithdrawTransactionOnWalletService() {
-        List<WalletServiceWithdrawTransactionRequest> transactionRequests = walletServiceWithdrawTransactionRequestRepository.findUnprocessedRequests();
+    public void scheduleHandleWithdrawTransactionOnWalletService() {
+        List<WalletServiceWithdrawTransactionRequest> transactionRequests = walletServiceWithdrawTransactionRequestRepository
+                .findUnprocessedRequests();
+
         for(WalletServiceWithdrawTransactionRequest transactionRequest : transactionRequests) {
-            walletServiceWithdrawTransactionRequestHandler.handleTransactionRequest(transactionRequest);
+            Long requestId = transactionRequest.getId();
+            TransactionStatus transactionStatus = transactionRequest.getStatus();
+
+            Operation operation = Operation.WITHDRAW;
+
+            switch (transactionStatus) {
+                case PENDING -> walletServiceWithdrawTransactionRequestHandler
+                        .handleCreateTransactionRequest(transactionRequest);
+
+                case FAILED -> walletServiceWithdrawTransactionRequestHandler
+                        .handleFailTransactionRequest(transactionRequest);
+
+                default -> throw new ProcessOperationException(String.format(
+                        "Attempt to schedule [%s] transaction request with id: [%s] in status: [%s] " +
+                        "for service: [%s] which is prohibited",
+                        operation, requestId, transactionStatus, walletServiceName));
+            }
         }
     }
 
@@ -58,10 +101,28 @@ public class WalletServiceCreateTransactionScheduler {
             timeUnit = TimeUnit.SECONDS
     )
     @Transactional
-    public void scheduleHandleCreateTransferTransactionOnWalletService() {
-        List<WalletServiceTransferTransactionRequest> transactionRequests = walletServiceTransferTransactionRequestRepository.findUnprocessedRequests();
+    public void scheduleHandleTransferTransactionOnWalletService() {
+        List<WalletServiceTransferTransactionRequest> transactionRequests = walletServiceTransferTransactionRequestRepository
+                .findUnprocessedRequests();
+
         for(WalletServiceTransferTransactionRequest transactionRequest : transactionRequests) {
-            walletServiceTransferTransactionRequestHandler.handleTransactionRequest(transactionRequest);
+            Long requestId = transactionRequest.getId();
+            TransactionStatus transactionStatus = transactionRequest.getStatus();
+
+            Operation operation = Operation.TRANSFER;
+
+            switch (transactionStatus) {
+                case PENDING -> walletServiceTransferTransactionRequestHandler
+                        .handleCreateTransactionRequest(transactionRequest);
+
+                case FAILED -> walletServiceTransferTransactionRequestHandler
+                        .handleFailTransactionRequest(transactionRequest);
+
+                default -> throw new ProcessOperationException(String.format(
+                        "Attempt to schedule [%s] transaction request with id: [%s] in status: [%s] " +
+                        "for service: [%s] which is prohibited",
+                        operation, requestId, transactionStatus, walletServiceName));
+            }
         }
     }
 }

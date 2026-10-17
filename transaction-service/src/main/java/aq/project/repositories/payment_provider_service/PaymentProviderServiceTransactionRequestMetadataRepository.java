@@ -3,5 +3,6 @@ package aq.project.repositories.payment_provider_service;
 import aq.project.entities.payment_provider_service.PaymentProviderServiceTransactionRequestMetadata;
 import org.springframework.data.repository.CrudRepository;
 
-public interface PaymentProviderServiceTransactionRequestMetadataRepository extends CrudRepository<PaymentProviderServiceTransactionRequestMetadata, Long> {
+public interface PaymentProviderServiceTransactionRequestMetadataRepository extends
+        CrudRepository<PaymentProviderServiceTransactionRequestMetadata, Long> {
 }

@@ -37,6 +37,10 @@ resilience4j:
         limit-refresh-period: 1s
         limit-for-period: 1
 
+      get-payment-methods-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
 individuals-api:
   test:
     actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)

@@ -75,6 +75,7 @@ sourceSets {
 			srcDir("${openApiSpecificationBuildPath}/person-service/src/main/java")
 			srcDir("${openApiSpecificationBuildPath}/transaction-service/src/main/java")
 			srcDir("${openApiSpecificationBuildPath}/wallet-service/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/payment-service/src/main/java")
 		}
 	}
 }
@@ -116,16 +117,19 @@ val dependencyVersionMap = mapOf(
 	"resilience4j" to "2.4.0",
 
 //	Currency rate service API specification
-	"currency-rate-service-api-specification" to "2.0.0-dev",
+	"currency-rate-service-api-specification" to "2.1.0-dev",
 
 //	Person service API specification
-	"person-service-api-specification" to "2.0.0-dev",
+	"person-service-api-specification" to "2.3.0-dev",
 
 //	Transaction service API specification
-	"transaction-service-api-specification" to "2.0.0-dev",
+	"transaction-service-api-specification" to "2.2.0-dev",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "2.0.0-dev"
+	"wallet-service-api-specification" to "2.1.0-dev",
+
+//	Payment service API specification
+	"payment-service-api-specification" to "2.1.0-dev"
 )
 
 dependencies {
@@ -203,6 +207,9 @@ dependencies {
 
 //	Wallet service api
 	"apiSpec"("aq.payment-system:wallet-service-api-specification:${dependencyVersionMap.getValue("wallet-service-api-specification")}")
+
+//	Payment service api
+	"apiSpec"("aq.payment-system:payment-service-api-specification:${dependencyVersionMap.getValue("payment-service-api-specification")}")
 }
 
 tasks.withType<Test> {

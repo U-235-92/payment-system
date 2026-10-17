@@ -45,7 +45,21 @@ public class DepositTransactionRestController implements DepositTransactionRestC
             String authorization
     ) {
         setUpTraceContext(xTraceId);
+
         return ResponseEntity.ok(depositTransactionService.getTransactionStatus(id));
+    }
+
+    @Override
+    public ResponseEntity<Void> failDepositTransaction(
+            UUID id,
+            String xTraceId,
+            String authorization
+    ) {
+        setUpTraceContext(xTraceId);
+
+        depositTransactionService.failTransaction(id);
+
+        return ResponseEntity.ok().build();
     }
 
     private void setUpTraceContext(String xTraceId) {

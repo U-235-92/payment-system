@@ -1,6 +1,7 @@
 package aq.project.entities.payment_provider_service;
 
 import aq.project.dto.Operation;
+import aq.project.dto.TransactionStatus;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -22,8 +23,12 @@ import java.util.UUID;
 public class PaymentProviderServiceTransactionRequest {
 
     @Id
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @NotNull
-    @Column(name = "transaction_id")
+    @Column(name = "transaction_id", nullable = false)
     private UUID transactionId;
 
     @NotBlank
@@ -50,6 +55,11 @@ public class PaymentProviderServiceTransactionRequest {
     @Nullable
     @Column(name = "description")
     private String description;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private TransactionStatus status;
 
     @JoinColumn(name = "metadata_id")
     @OneToOne(cascade = CascadeType.ALL)

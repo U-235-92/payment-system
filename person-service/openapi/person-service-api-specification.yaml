@@ -50,19 +50,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         409:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
   /api/v1/person/delete-person-by-keycloak-id/{keycloakId}:
     delete:
@@ -96,13 +96,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
   /api/v1/person/undo-delete-person-by-keycloak-id:
     post:
@@ -137,13 +137,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
   /api/v1/person/update-person:
     patch:
@@ -180,13 +180,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
   /api/v1/person/undo-update-person:
     post:
@@ -221,13 +221,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
   /api/v1/person/get-person-by-keycloak-id/{keycloakId}:
     get:
@@ -267,13 +267,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PersonServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
 tags:
@@ -396,15 +396,17 @@ components:
           additionalProperties:
             type: string
 
-    ErrorDto:
+    PersonServiceErrorDto:
       type: object
-      required: [ http_status, message ]
+      required: [ message ]
       properties:
+        message:
+          type: string
+        trace_id:
+          type: string
         http_status:
           type: integer
           format: int32
-        message:
-          type: string
 
     UuidDefinition:
       type: string

@@ -44,7 +44,21 @@ public class TransferTransactionRestController implements TransferTransactionRes
             String authorization
     ) {
         setUpTraceContext(xTraceId);
+
         return ResponseEntity.ok(transferTransactionService.getTransactionStatus(id));
+    }
+
+    @Override
+    public ResponseEntity<Void> failTransferTransaction(
+            UUID id,
+            String xTraceId,
+            String authorization
+    ) {
+        setUpTraceContext(xTraceId);
+
+        transferTransactionService.failTransaction(id);
+
+        return ResponseEntity.ok().build();
     }
 
     private void setUpTraceContext(String xTraceId) {

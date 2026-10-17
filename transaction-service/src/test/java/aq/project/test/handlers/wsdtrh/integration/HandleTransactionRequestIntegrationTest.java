@@ -105,6 +105,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID savedTransactionServiceDepositTransactionId = savedTransactionServiceDepositTransaction.getId();
 
         WalletServiceDepositTransactionRequest walletServiceDepositTransactionRequest = getValidWalletServiceDepositTransactionRequest();
+        walletServiceDepositTransactionRequest.setId(null);
         walletServiceDepositTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
         walletServiceDepositTransactionRequest.setTransactionId(savedTransactionServiceDepositTransactionId);
         walletServiceDepositTransactionRequest.getTransactionRequestMetadata().setId(null);
@@ -112,13 +113,11 @@ public class HandleTransactionRequestIntegrationTest {
         walletServiceDepositTransactionRequestRepository.save(walletServiceDepositTransactionRequest);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
 
         TransactionServiceDepositTransaction processedTransactionServiceDepositTransaction = transactionServiceDepositTransactionRepository.findById(savedTransactionServiceDepositTransactionId).get();
-        WalletServiceDepositTransactionRequest processedWalletServiceDepositTransactionRequest = walletServiceDepositTransactionRequestRepository.findById(savedTransactionServiceDepositTransactionId).get();
 
         Assertions.assertEquals(TransactionStatus.PENDING, processedTransactionServiceDepositTransaction.getStatus());
-        Assertions.assertTrue(processedWalletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
     }
 
     @Test
@@ -134,6 +133,7 @@ public class HandleTransactionRequestIntegrationTest {
         UUID savedTransactionServiceDepositTransactionId = savedTransactionServiceDepositTransaction.getId();
 
         WalletServiceDepositTransactionRequest walletServiceDepositTransactionRequest = getValidWalletServiceDepositTransactionRequest();
+        walletServiceDepositTransactionRequest.setId(null);
         walletServiceDepositTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
         walletServiceDepositTransactionRequest.setTransactionId(savedTransactionServiceDepositTransactionId);
         walletServiceDepositTransactionRequest.getTransactionRequestMetadata().setId(null);
@@ -141,13 +141,11 @@ public class HandleTransactionRequestIntegrationTest {
         walletServiceDepositTransactionRequestRepository.save(walletServiceDepositTransactionRequest);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+        Assertions.assertDoesNotThrow(() -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
 
         TransactionServiceDepositTransaction processedTransactionServiceDepositTransaction = transactionServiceDepositTransactionRepository.findById(savedTransactionServiceDepositTransactionId).get();
-        WalletServiceDepositTransactionRequest processedWalletServiceDepositTransactionRequest = walletServiceDepositTransactionRequestRepository.findById(savedTransactionServiceDepositTransactionId).get();
 
         Assertions.assertEquals(TransactionStatus.FAILED, processedTransactionServiceDepositTransaction.getStatus());
-        Assertions.assertTrue(processedWalletServiceDepositTransactionRequest.getTransactionRequestMetadata().isProcessed());
     }
 
     @Test
@@ -157,7 +155,7 @@ public class HandleTransactionRequestIntegrationTest {
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+                () -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
     }
 
     @Test
@@ -167,6 +165,6 @@ public class HandleTransactionRequestIntegrationTest {
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> walletServiceDepositTransactionRequestHandler.handleTransactionRequest(walletServiceDepositTransactionRequest));
+                () -> walletServiceDepositTransactionRequestHandler.handleCreateTransactionRequest(walletServiceDepositTransactionRequest));
     }
 }

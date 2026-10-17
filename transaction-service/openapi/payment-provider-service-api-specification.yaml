@@ -58,7 +58,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -102,7 +102,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
         403:
@@ -134,7 +134,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
         401:
           description: Unauthorized (invalid credentials)
         409:
@@ -142,13 +142,97 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
+
+  /api/v1/payment/create-payment:
+    post:
+      summary: Create a new payment
+      security:
+        - basicAuth: [ ]
+      operationId: createPayment
+      tags:
+        - Payment
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentProviderServiceCreatePaymentRequestDto"
+      responses:
+        200:
+          description: Payment response DTO which describes result of handle payment request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentProviderServiceCreatePaymentResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/payment/fail-payment:
+    post:
+      summary: Fail a payment
+      security:
+        - basicAuth: [ ]
+      operationId: failPayment
+      tags:
+        - Payment
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentProviderServiceFailPaymentRequestDto"
+      responses:
+        200:
+          description: Payment's status was marked as [FAILED]
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentProviderServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
 
 tags:
   - name: Transaction
     description: Describes operations with transactions
   - name: Admin
     description: Administrative operations
+  - name: Payment
+    description: Describes operations with payments
 
 components:
   securitySchemes:
@@ -317,15 +401,58 @@ components:
         role:
           $ref: "#/components/schemas/UserRole"
 
-    ErrorDto:
+    PaymentProviderServiceCreatePaymentRequestDto:
       type: object
-      required: [ http_status, message ]
+      required: [ transaction_id, payment_method_id, trace_id ]
       properties:
+        transaction_id:
+          type: string
+          format: uuid
+        payment_method_id:
+          type: integer
+          format: int64
+        trace_id:
+          type: string
+
+    PaymentProviderServiceFailPaymentRequestDto:
+      type: object
+      required: [ transaction_id, payment_id, trace_id ]
+      properties:
+        transaction_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+        trace_id:
+          type: string
+
+    PaymentProviderServiceCreatePaymentResponseDto:
+      type: object
+      required: [ transaction_id, payment_id, payment_status, trace_id ]
+      properties:
+        transaction_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+        payment_status:
+          $ref: "#/components/schemas/PaymentStatus"
+        trace_id:
+          type: string
+
+    PaymentProviderServiceErrorDto:
+      type: object
+      required: [ message ]
+      properties:
+        message:
+          type: string
+        trace_id:
+          type: string
         http_status:
           type: integer
           format: int32
-        message:
-          type: string
 
     CurrencyCodeDefinition:
       type: string
@@ -333,11 +460,14 @@ components:
       minLength: 3
       maxLength: 3
 
-    TransactionStatus:
-      enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED", "REQUIRED_MANUAL_HANDLE", "MARKED_FAILED", "MARKED_CANCELED" ]
-
     UserRole:
       enum: [ "ADMIN", "USER" ]
 
     Operation:
       enum: [ "DEPOSIT", "WITHDRAW", "TRANSFER" ]
+
+    TransactionStatus:
+      enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED", "REQUIRED_MANUAL_HANDLE", "MARKED_FAILED", "MARKED_CANCELED" ]
+
+    PaymentStatus:
+      enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]

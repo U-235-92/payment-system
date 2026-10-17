@@ -47,3 +47,6 @@ application:
   currency-rate-service:
     name: ${CURRENCY_RATE_SERVICE_NAME}
     uri: ${CURRENCY_RATE_SERVICE_URI}
+  payment-service:
+    name: ${PAYMENT_SERVICE_NAME}
+    uri: ${PAYMENT_SERVICE_URI}

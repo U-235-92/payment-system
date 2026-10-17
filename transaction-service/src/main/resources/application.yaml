@@ -80,15 +80,21 @@ resilience4j:
         max-concurrent-calls: 100
       get-deposit-transaction-status-bulkhead:
         max-concurrent-calls: 100
+      fail-deposit-transaction-bulkhead:
+        max-concurrent-calls: 100
 
       create-withdraw-transaction-bulkhead:
         max-concurrent-calls: 100
       get-withdraw-transaction-status-bulkhead:
         max-concurrent-calls: 100
+      fail-withdraw-transaction-bulkhead:
+        max-concurrent-calls: 100
 
       create-transfer-transaction-bulkhead:
         max-concurrent-calls: 100
       get-transfer-transaction-status-bulkhead:
+        max-concurrent-calls: 100
+      fail-transfer-transaction-bulkhead:
         max-concurrent-calls: 100
 
   ratelimiter:
@@ -99,6 +105,9 @@ resilience4j:
       get-deposit-transaction-status-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
+      fail-deposit-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
       create-withdraw-transaction-rate-limiter:
         limit-refresh-period: 1s
@@ -106,11 +115,17 @@ resilience4j:
       get-withdraw-transaction-status-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
+      fail-withdraw-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
       create-transfer-transaction-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
       get-transfer-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      fail-transfer-transaction-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
 

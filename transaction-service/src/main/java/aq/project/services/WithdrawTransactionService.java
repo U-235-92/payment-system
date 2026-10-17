@@ -4,10 +4,14 @@ import aq.project.dto.Operation;
 import aq.project.dto.TransactionStatus;
 import aq.project.entities.payment_provider_service.PaymentProviderServiceTransactionRequest;
 import aq.project.entities.transaction_service.TransactionServiceWithdrawTransaction;
+import aq.project.entities.wallet_service.WalletServiceWithdrawTransactionRequest;
 import aq.project.exceptions.EntityNotFoundException;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.payment_provider_service.PaymentProviderServiceTransactionRequestRepository;
 import aq.project.repositories.transaction_service.TransactionServiceWithdrawTransactionRepository;
+import aq.project.repositories.wallet_service.WalletServiceWithdrawTransactionRequestRepository;
 import aq.project.utils.mappers.PaymentProviderTransactionDtoMapper;
+import aq.project.utils.mappers.WalletServiceTransactionDtoMapper;
 import aq.project.utils.resilence.Fallback;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -27,9 +31,11 @@ public class WithdrawTransactionService {
     private String merchantId;
 
     private final PaymentProviderTransactionDtoMapper paymentProviderTransactionDtoMapper = PaymentProviderTransactionDtoMapper.INSTANCE;
+    private final WalletServiceTransactionDtoMapper walletServiceTransactionDtoMapper = WalletServiceTransactionDtoMapper.INSTANCE;
 
     private final TransactionServiceWithdrawTransactionRepository transactionServiceWithdrawTransactionRepository;
     private final PaymentProviderServiceTransactionRequestRepository paymentProviderServiceTransactionRequestRepository;
+    private final WalletServiceWithdrawTransactionRequestRepository walletServiceWithdrawTransactionRequestRepository;
 
     private final Fallback fallback;
 
@@ -149,5 +155,92 @@ public class WithdrawTransactionService {
         fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
+    }
+
+    @Bulkhead(
+            name = "fail-withdraw-transaction-bulkhead",
+            type = Bulkhead.Type.SEMAPHORE,
+            fallbackMethod = "failTransactionBulkheadFallback"
+    )
+    @RateLimiter(
+            name = "fail-withdraw-transaction-rate-limiter",
+            fallbackMethod = "failTransactionRateLimiterFallback"
+    )
+    @Transactional
+    public void failTransaction(
+            UUID transactionId
+    ) {
+        TransactionServiceWithdrawTransaction transaction = transactionServiceWithdrawTransactionRepository
+                .findById(transactionId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Transaction with id: [%s] not found", transactionId)));
+
+        TransactionStatus currentTransactionStatus = transaction.getStatus();
+        TransactionStatus targetTransactionStatus = TransactionStatus.FAILED;
+
+        Operation operation = Operation.WITHDRAW;
+
+        switch (currentTransactionStatus) {
+            case PENDING, COMPLETED -> transaction.setStatus(targetTransactionStatus);
+
+            default -> throw new ProcessOperationException(
+                    String.format(
+                            "Attempt to change status of: [%s] transaction with id: [%s] " +
+                            "from: [%s] to: [%s] which is prohibited",
+                            operation, transactionId, currentTransactionStatus, targetTransactionStatus));
+        }
+
+        PaymentProviderServiceTransactionRequest paymentProviderServiceTransactionRequest = paymentProviderTransactionDtoMapper
+                .toPaymentProviderServiceTransactionRequest(transaction);
+        paymentProviderServiceTransactionRequest.setMerchantId(merchantId);
+        paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
+        paymentProviderServiceTransactionRequest.setOperation(operation);
+        paymentProviderServiceTransactionRequest.setStatus(targetTransactionStatus);
+
+        WalletServiceWithdrawTransactionRequest walletServiceWithdrawTransactionRequest = walletServiceTransactionDtoMapper
+                .toWalletServiceWithdrawTransactionRequest(transaction);
+        walletServiceWithdrawTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
+        walletServiceWithdrawTransactionRequest.setStatus(targetTransactionStatus);
+
+        paymentProviderServiceTransactionRequestRepository.save(paymentProviderServiceTransactionRequest);
+        walletServiceWithdrawTransactionRequestRepository.save(walletServiceWithdrawTransactionRequest);
+    }
+
+    public void failTransactionBulkheadFallback(
+            UUID transactionId,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException
+                || exception instanceof ProcessOperationException)
+            throw exception;
+
+        Operation operation = Operation.WITHDRAW;
+
+        String action = "fail-transaction";
+        String message = String.format(
+                "Exception occurred during fail of [%s] transaction with transaction id: [%s]. " +
+                "Exception message: %s",
+                operation, transactionId, exception.getMessage());
+
+        fallback.handleBulkheadFallback(action, message, exception);
+    }
+
+    public void failTransactionRateLimiterFallback(
+            UUID transactionId,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException
+                || exception instanceof ProcessOperationException)
+            throw exception;
+
+        Operation operation = Operation.WITHDRAW;
+
+        String action = "fail-transaction";
+        String message = String.format(
+                "Exception occurred during fail of [%s] transaction with transaction id: [%s]. " +
+                "Exception message: %s",
+                operation, transactionId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
     }
 }

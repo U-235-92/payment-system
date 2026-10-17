@@ -83,6 +83,7 @@ public class HandlePaymentProviderServiceSuccessResponseIntegrationTest {
     public void successHandlePaymentProviderServiceTransactionRequest() {
     //        Arrange
         PaymentProviderServiceTransactionRequest paymentProviderServiceTransactionRequest = getValidPaymentProviderServiceTransactionRequest();
+        paymentProviderServiceTransactionRequest.setId(null);
         paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setId(null);
         paymentProviderServiceTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
 

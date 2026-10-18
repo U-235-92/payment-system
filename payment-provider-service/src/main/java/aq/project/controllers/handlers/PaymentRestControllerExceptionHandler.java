@@ -5,7 +5,7 @@ import aq.project.dto.PaymentProviderServiceErrorDto;
 import aq.project.exceptions.EntityAlreadyExistsException;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.FallbackOperationException;
-import aq.project.exceptions.ProhibitedOperationException;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class PaymentRestControllerExceptionHandler {
 //    Project's exception handlers
     @ExceptionHandler(EntityAlreadyExistsException.class)
     public ResponseEntity<PaymentProviderServiceErrorDto> onEntityAlreadyExistsException(EntityAlreadyExistsException e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status = HttpStatus.CONFLICT;
 
         controllerExceptionLogger.logException(e, status);
 
@@ -41,8 +41,8 @@ public class PaymentRestControllerExceptionHandler {
         return getErrorResponseEntity(status, e);
     }
 
-    @ExceptionHandler(ProhibitedOperationException.class)
-    public ResponseEntity<PaymentProviderServiceErrorDto> onProhibitedOperationException(ProhibitedOperationException e) {
+    @ExceptionHandler(ProcessOperationException.class)
+    public ResponseEntity<PaymentProviderServiceErrorDto> onProhibitedOperationException(ProcessOperationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);

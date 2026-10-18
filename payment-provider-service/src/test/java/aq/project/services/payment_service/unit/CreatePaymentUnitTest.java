@@ -5,10 +5,12 @@ import aq.project.entities.Payment;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityAlreadyExistsException;
 import aq.project.exceptions.EntityNotFoundException;
+import aq.project.exceptions.ForeignMerchantException;
 import aq.project.repositories.PaymentRepository;
 import aq.project.repositories.TransactionRepository;
 import aq.project.services.PaymentService;
 import aq.project.utils.mappers.PaymentMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
@@ -27,6 +32,8 @@ import static aq.project._utils.entities.PaymentServiceEntities.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CreatePaymentUnitTest {
+
+    private static final String TEST_MERCHANT_ID = "test-merchant-id";
 
     @Spy
     private PaymentMapper paymentMapper = PaymentMapper.INSTANCE;
@@ -45,6 +52,20 @@ public class CreatePaymentUnitTest {
         ReflectionTestUtils.setField(paymentService, "maxGetTransactionRetryCount", 3);
     }
 
+    @BeforeEach
+    void setUpSecurity() {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        Authentication auth = Mockito.mock(Authentication.class);
+        Mockito.when(auth.getPrincipal()).thenReturn(TEST_MERCHANT_ID);
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+    }
+
+    @AfterEach
+    void tearDownSecurity() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     public void successCreatePayment() {
 //        Arrange
@@ -52,6 +73,7 @@ public class CreatePaymentUnitTest {
 
         PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto = getValidPaymentProviderServiceCreatePaymentRequestDto();
         paymentProviderServiceCreatePaymentRequestDto.setTransactionId(transactionId);
+        paymentProviderServiceCreatePaymentRequestDto.setMerchantId(TEST_MERCHANT_ID);
 
         Transaction transaction = getValidTransaction();
         transaction.setId(transactionId);
@@ -81,6 +103,7 @@ public class CreatePaymentUnitTest {
 
         PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto = getValidPaymentProviderServiceCreatePaymentRequestDto();
         paymentProviderServiceCreatePaymentRequestDto.setTransactionId(transactionId);
+        paymentProviderServiceCreatePaymentRequestDto.setMerchantId(TEST_MERCHANT_ID);
 
         Transaction transaction = getValidTransaction();
         transaction.setId(transactionId);
@@ -105,6 +128,7 @@ public class CreatePaymentUnitTest {
 
         PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto = getValidPaymentProviderServiceCreatePaymentRequestDto();
         paymentProviderServiceCreatePaymentRequestDto.setTransactionId(transactionId);
+        paymentProviderServiceCreatePaymentRequestDto.setMerchantId(TEST_MERCHANT_ID);
 
         Transaction transaction = getValidTransaction();
         transaction.setId(transactionId);
@@ -122,5 +146,25 @@ public class CreatePaymentUnitTest {
                 () -> paymentService.createPayment(paymentProviderServiceCreatePaymentRequestDto));
 
         Mockito.verify(paymentRepository, Mockito.never()).save(Mockito.any(Payment.class));
+    }
+
+    @Test
+    public void failCreatePaymentOnNotEqualsMerchantId() {
+//        Arrange
+        UUID transactionId = UUID.randomUUID();
+
+        PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto = getValidPaymentProviderServiceCreatePaymentRequestDto();
+        paymentProviderServiceCreatePaymentRequestDto.setTransactionId(transactionId);
+        paymentProviderServiceCreatePaymentRequestDto.setMerchantId("another-test-merchant-id");
+
+        Transaction transaction = getValidTransaction();
+        transaction.setId(transactionId);
+
+        Payment payment = getValidPayment();
+        payment.setTransaction(transaction);
+
+//        Act & Assert
+        Assertions.assertThrows(ForeignMerchantException.class,
+                () -> paymentService.createPayment(paymentProviderServiceCreatePaymentRequestDto));
     }
 }

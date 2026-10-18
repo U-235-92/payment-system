@@ -8,7 +8,8 @@ import aq.project.entities.Payment;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityAlreadyExistsException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ProhibitedOperationException;
+import aq.project.exceptions.ForeignMerchantException;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.PaymentRepository;
 import aq.project.repositories.TransactionRepository;
 import aq.project.utils.mappers.PaymentMapper;
@@ -16,6 +17,8 @@ import aq.project.utils.resilence.Fallback;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +50,17 @@ public class PaymentService {
     public PaymentProviderServiceCreatePaymentResponseDto createPayment(
             PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto
     ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String currentMerchantName = authentication.getPrincipal().toString();
+        String requestMerchantName = paymentProviderServiceCreatePaymentRequestDto.getMerchantId();
+
+        if(!currentMerchantName.equals(requestMerchantName))
+            throw new ForeignMerchantException(String.format(
+                    "Received invalid request with merchant id: [%s] " +
+                    "to create payment for current merchant with id: [%s] " +
+                    "which is prohibited", requestMerchantName, currentMerchantName));
+
         UUID transactionId = paymentProviderServiceCreatePaymentRequestDto.getTransactionId();
         String traceId = paymentProviderServiceCreatePaymentRequestDto.getTraceId();
 
@@ -129,18 +143,45 @@ public class PaymentService {
     public void failPayment(
             PaymentProviderServiceFailPaymentRequestDto paymentProviderServiceFailPaymentRequestDto
     ) {
-        UUID paymentId = paymentProviderServiceFailPaymentRequestDto.getPaymentId();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Payment with id [%s] not found", paymentId)));
+        String currentMerchantName = authentication.getPrincipal().toString();
+        String requestMerchantName = paymentProviderServiceFailPaymentRequestDto.getMerchantId();
+
+        if(!currentMerchantName.equals(requestMerchantName))
+            throw new ForeignMerchantException(String.format(
+                    "Received invalid request with merchant id: [%s] " +
+                    "to fail payment for current merchant with id: [%s] " +
+                    "which is prohibited", requestMerchantName, currentMerchantName));
+
+        UUID paymentId = paymentProviderServiceFailPaymentRequestDto.getPaymentId();
+        UUID transactionId = paymentProviderServiceFailPaymentRequestDto.getTransactionId();
+
+        Payment payment;
+
+        if(paymentId != null) {
+            payment = paymentRepository.findById(paymentId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Payment with id [%s] not found", paymentId)));
+
+            if(!payment.getTransaction().getId().equals(transactionId))
+                throw new ProcessOperationException(String.format(
+                        "Received request with payment id: [%s] contains transaction id: [%s] " +
+                                "which is unknown for this payment id", paymentId, transactionId));
+
+        } else {
+            payment = paymentRepository.findByTransactionId(transactionId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Payment for transaction with id [%s] not found", transactionId)));
+        }
 
         PaymentStatus currentPaymentStatus = payment.getStatus();
         PaymentStatus targetPaymentStatus = PaymentStatus.FAILED;
 
         switch (currentPaymentStatus) {
             case PENDING, COMPLETED -> payment.setStatus(targetPaymentStatus);
-            default -> throw new ProhibitedOperationException(
+
+            default -> throw new ProcessOperationException(
                     String.format(
                             "Attempt of changing payment status for payment with id: [%s] from: [%s] to [%s] " +
                             "which is prohibited operation",

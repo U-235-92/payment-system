@@ -12,9 +12,14 @@ import aq.project.services.PaymentService;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -30,6 +35,8 @@ import static aq.project._utils.entities.PaymentServiceEntities.*;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CreatePaymentIntegrationTest {
+
+    private static final String TEST_MERCHANT_ID = "test-merchant-id";
 
     @Container
     private static final PostgreSQLContainer POSTGRESQL_CONTAINER = Containers.POSTGRESQL_CONTAINER;
@@ -49,6 +56,20 @@ public class CreatePaymentIntegrationTest {
         ContainerPropertiesConfigurer.registerApplicationContextPostgresqlContainerProperties(registry, POSTGRESQL_CONTAINER);
     }
 
+    @BeforeEach
+    void setUpSecurity() {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        Authentication auth = Mockito.mock(Authentication.class);
+        Mockito.when(auth.getPrincipal()).thenReturn(TEST_MERCHANT_ID);
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+    }
+
+    @AfterEach
+    void tearDownSecurity() {
+        SecurityContextHolder.clearContext();
+    }
+
     @AfterEach
     public void tearDownRepositories() {
         paymentRepository.deleteAll();
@@ -60,6 +81,7 @@ public class CreatePaymentIntegrationTest {
     public void successCreatePayment() {
 //        Arrange
         Merchant merchant = getValidMerchant();
+        merchant.setId(TEST_MERCHANT_ID);
 
         Transaction transaction = getValidTransaction();
         transaction.setMerchant(merchant);
@@ -70,6 +92,7 @@ public class CreatePaymentIntegrationTest {
 
         PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto = getValidPaymentProviderServiceCreatePaymentRequestDto();
         paymentProviderServiceCreatePaymentRequestDto.setTransactionId(savedTransaction.getId());
+        paymentProviderServiceCreatePaymentRequestDto.setMerchantId(TEST_MERCHANT_ID);
 
 //        Act & Asset
         Assertions.assertDoesNotThrow(() -> paymentService.createPayment(paymentProviderServiceCreatePaymentRequestDto));

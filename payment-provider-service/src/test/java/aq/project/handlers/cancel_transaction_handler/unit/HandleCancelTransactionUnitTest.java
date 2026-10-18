@@ -5,8 +5,8 @@ import aq.project.dto.TransactionStatus;
 import aq.project.entities.Merchant;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ForeignMerchantTransactionException;
-import aq.project.exceptions.ProhibitedOperationException;
+import aq.project.exceptions.ForeignMerchantException;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.MerchantRepository;
 import aq.project.repositories.TransactionRepository;
 import aq.project.utils.handlers.CancelTransactionHandler;
@@ -139,7 +139,7 @@ public class HandleCancelTransactionUnitTest {
                 .thenReturn(true);
 
 //        Act & Assert
-        Assertions.assertThrows(ForeignMerchantTransactionException.class,
+        Assertions.assertThrows(ForeignMerchantException.class,
                 () -> cancelTransactionHandler.handleCancelTransaction(requestDto));
         Assertions.assertEquals(TransactionStatus.PENDING, transaction.getStatus());
     }
@@ -166,7 +166,7 @@ public class HandleCancelTransactionUnitTest {
                 .thenReturn(true);
 
 //        Act & Assert
-        Assertions.assertThrows(ProhibitedOperationException.class,
+        Assertions.assertThrows(ProcessOperationException.class,
                 () -> cancelTransactionHandler.handleCancelTransaction(requestDto));
         Assertions.assertEquals(TransactionStatus.FAILED, transaction.getStatus());
     }

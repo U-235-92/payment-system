@@ -19,7 +19,7 @@ extra["springCloudVersion"] = "2025.1.2"
 /////////////////////////////////////
 val artifact = "payment-provider-service"
 
-val specificationArtifactVersion = "2.3.1-dev"
+val specificationArtifactVersion = "2.4.1-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"

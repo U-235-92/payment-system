@@ -1,7 +1,7 @@
 package aq.project.exceptions;
 
-public class ProhibitedOperationException extends RuntimeException {
-    public ProhibitedOperationException(String message) {
+public class ProcessOperationException extends RuntimeException {
+    public ProcessOperationException(String message) {
         super(message);
     }
 }

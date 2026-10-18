@@ -4,7 +4,7 @@ import aq.project.dto.PaymentProviderServiceTransactionInfoResponseDto;
 import aq.project.entities.Merchant;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ForeignMerchantTransactionException;
+import aq.project.exceptions.ForeignMerchantException;
 import aq.project.repositories.MerchantRepository;
 import aq.project.repositories.TransactionRepository;
 import aq.project.utils.mappers.TransactionMapper;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
                             String.format("Transaction with id [%s] not found", transactionId)));
 
             if(!transaction.getMerchant().getId().equals(merchantId))
-                throw new ForeignMerchantTransactionException(
+                throw new ForeignMerchantException(
                     String.format("Transaction with id [%s] belongs to another merchant", transactionId));
 
         return transactionMapper.toTransactionResponseDto(transaction);

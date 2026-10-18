@@ -20,6 +20,7 @@ public abstract class PaymentServiceEntities {
         dto.setTransactionId(UUID.randomUUID());
         dto.setPaymentMethodId(1L);
         dto.setTraceId(UUID.randomUUID().toString());
+        dto.setMerchantId("test-merchant");
         return dto;
     }
 
@@ -28,6 +29,7 @@ public abstract class PaymentServiceEntities {
         dto.setTransactionId(null);
         dto.setPaymentMethodId(1L);
         dto.setTraceId(UUID.randomUUID().toString());
+        dto.setMerchantId("test-merchant");
         return dto;
     }
 
@@ -36,6 +38,7 @@ public abstract class PaymentServiceEntities {
         dto.setTransactionId(UUID.randomUUID());
         dto.setPaymentId(UUID.randomUUID());
         dto.setTraceId(UUID.randomUUID().toString());
+        dto.setMerchantId("test-merchant");
         return dto;
     }
 
@@ -44,6 +47,7 @@ public abstract class PaymentServiceEntities {
         dto.setTransactionId(null);
         dto.setPaymentId(null);
         dto.setTraceId(UUID.randomUUID().toString());
+        dto.setMerchantId("test-merchant");
         return dto;
     }
 

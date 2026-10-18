@@ -4,7 +4,7 @@ import aq.project.controllers.TransactionRestController;
 import aq.project.dto.PaymentProviderServiceErrorDto;
 import aq.project.exceptions.AbsentPropertyException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ForeignMerchantTransactionException;
+import aq.project.exceptions.ForeignMerchantException;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +33,8 @@ public class TransactionRestControllerExceptionHandler {
         return getErrorResponseEntity(status, e);
     }
 
-    @ExceptionHandler(ForeignMerchantTransactionException.class)
-    public ResponseEntity<PaymentProviderServiceErrorDto> onForeignMerchantTransactionException(ForeignMerchantTransactionException e) {
+    @ExceptionHandler(ForeignMerchantException.class)
+    public ResponseEntity<PaymentProviderServiceErrorDto> onForeignMerchantTransactionException(ForeignMerchantException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         
         controllerExceptionLogger.logException(e, status);

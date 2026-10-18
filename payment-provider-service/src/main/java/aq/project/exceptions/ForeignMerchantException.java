@@ -1,7 +1,7 @@
 package aq.project.exceptions;
 
-public class ForeignMerchantTransactionException extends RuntimeException {
-    public ForeignMerchantTransactionException(String message) {
+public class ForeignMerchantException extends RuntimeException {
+    public ForeignMerchantException(String message) {
         super(message);
     }
 }

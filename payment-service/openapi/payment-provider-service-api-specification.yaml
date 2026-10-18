@@ -138,7 +138,7 @@ paths:
         401:
           description: Unauthorized (invalid credentials)
         409:
-          description: Merchant with specified merchantId already exists
+          description: Merchant with specified merchant_id already exists
           content:
             application/json:
               schema:
@@ -243,25 +243,25 @@ components:
   schemas:
     PaymentProviderServiceCreateTransactionRequestDto:
       type: object
-      required: [ transactionId, merchantId, traceId, operation, amount, currencyCode, notificationUrl, timestamp ]
+      required: [ transaction_id, merchant_id, trace_id, operation, amount, currency_code, notification_url, timestamp ]
       properties:
-        transactionId:
+        transaction_id:
           type: string
           format: uuid
-        merchantId:
+        merchant_id:
           type: string
-        traceId:
+        trace_id:
           type: string
         operation:
           $ref: "#/components/schemas/Operation"
         amount:
           type: number
           format: decimal
-        currencyCode:
+        currency_code:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
         description:
           type: string
-        notificationUrl:
+        notification_url:
           type: string
         timestamp:
           type: string
@@ -269,57 +269,57 @@ components:
 
     PaymentProviderServiceFailTransactionRequestDto:
       type: object
-      required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
+      required: [ transaction_id, merchant_id, trace_id, notification_url, operation ]
       properties:
-        transactionId:
+        transaction_id:
           type: string
           format: uuid
-        merchantId:
+        merchant_id:
           type: string
-        traceId:
+        trace_id:
           type: string
-        notificationUrl:
+        notification_url:
           type: string
         operation:
           $ref: "#/components/schemas/Operation"
 
     PaymentProviderServiceCancelTransactionRequestDto:
       type: object
-      required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
+      required: [ transaction_id, merchant_id, trace_id, notification_url, operation ]
       properties:
-        transactionId:
+        transaction_id:
           type: string
           format: uuid
-        merchantId:
+        merchant_id:
           type: string
-        traceId:
+        trace_id:
           type: string
-        notificationUrl:
+        notification_url:
           type: string
         operation:
           $ref: "#/components/schemas/Operation"
 
     PaymentProviderServiceTransactionInfoResponseDto:
       type: object
-      required: [ transactionId, merchantId, traceId, notificationUrl, operation, amount, currencyCode, transactionStatus, timestamp ]
+      required: [ transaction_id, merchant_id, trace_id, notification_url, operation, amount, currency_code, transaction_status, timestamp ]
       properties:
-        transactionId:
+        transaction_id:
           type: string
           format: uuid
-        merchantId:
+        merchant_id:
           type: string
-        traceId:
+        trace_id:
           type: string
-        notificationUrl:
+        notification_url:
           type: string
         operation:
           $ref: "#/components/schemas/Operation"
         amount:
           type: number
           format: decimal
-        currencyCode:
+        currency_code:
           $ref: "#/components/schemas/CurrencyCodeDefinition"
-        transactionStatus:
+        transaction_status:
           $ref: "#/components/schemas/TransactionStatus"
         timestamp:
           type: string
@@ -329,16 +329,16 @@ components:
 
     PaymentProviderServiceSuccessHandleTransactionDto:
       type: object
-      required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
+      required: [ transaction_id, merchant_id, trace_id, notification_url, operation ]
       properties:
-        transactionId:
+        transaction_id:
           type: string
           format: uuid
-        merchantId:
+        merchant_id:
           type: string
-        traceId:
+        trace_id:
           type: string
-        notificationUrl:
+        notification_url:
           type: string
         operation:
           $ref: "#/components/schemas/Operation"
@@ -347,16 +347,16 @@ components:
 
     PaymentProviderServiceErrorHandleTransactionDto:
       type: object
-      required: [ transactionId, merchantId, traceId, notificationUrl, operation ]
+      required: [ transaction_id, merchant_id, trace_id, notification_url, operation ]
       properties:
-        transactionId:
+        transaction_id:
           type: string
           format: uuid
-        merchantId:
+        merchant_id:
           type: string
-        traceId:
+        trace_id:
           type: string
-        notificationUrl:
+        notification_url:
           type: string
         operation:
           $ref: "#/components/schemas/Operation"
@@ -365,9 +365,9 @@ components:
 
     MerchantRegistrationRequestDto:
       type: object
-      required: [ merchantId, secretKey, name, role ]
+      required: [ merchant_id, secretKey, name, role ]
       properties:
-        merchantId:
+        merchant_id:
           type: string
           maxLength: 50
           pattern: '^[a-zA-Z0-9_-]{3,50}$'
@@ -386,9 +386,9 @@ components:
 
     MerchantRegistrationResponseDto:
       type: object
-      required: [ merchantId, name, createdAt, updatedAt, role ]
+      required: [ merchant_id, name, createdAt, updatedAt, role ]
       properties:
-        merchantId:
+        merchant_id:
           type: string
         name:
           type: string
@@ -403,7 +403,7 @@ components:
 
     PaymentProviderServiceCreatePaymentRequestDto:
       type: object
-      required: [ transaction_id, payment_method_id, trace_id ]
+      required: [ transaction_id, payment_method_id, trace_id, merchant_id ]
       properties:
         transaction_id:
           type: string
@@ -413,10 +413,12 @@ components:
           format: int64
         trace_id:
           type: string
+        merchant_id:
+          type: string
 
     PaymentProviderServiceFailPaymentRequestDto:
       type: object
-      required: [ transaction_id, payment_id, trace_id ]
+      required: [ transaction_id, trace_id, merchant_id ]
       properties:
         transaction_id:
           type: string
@@ -425,6 +427,8 @@ components:
           type: string
           format: uuid
         trace_id:
+          type: string
+        merchant_id:
           type: string
 
     PaymentProviderServiceCreatePaymentResponseDto:

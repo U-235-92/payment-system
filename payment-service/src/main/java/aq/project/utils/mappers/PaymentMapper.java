@@ -35,6 +35,7 @@ public interface PaymentMapper {
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "paymentMethodId", source = "paymentMethodId")
     @Mapping(target = "traceId", source = "traceId")
+    @Mapping(target = "merchantId", ignore = true)
     PaymentProviderServiceCreatePaymentRequestDto toPaymentProviderServiceCreatePaymentRequestDto(PaymentServiceCreatePaymentRequestDto dto);
 
     @Mapping(target = "paymentMethodId", source = "id")
@@ -82,4 +83,11 @@ public interface PaymentMapper {
         return paymentMethod.getRequiredFields()
                 .getDefaultValue();
     }
+
+    @Mapping(target = "transactionId", source = "transactionId")
+    @Mapping(target = "paymentId", ignore = true)
+    @Mapping(target = "traceId", source = "traceId")
+    @Mapping(target = "merchantId", ignore = true)
+    PaymentProviderServiceFailPaymentRequestDto toPaymentProviderServiceFailPaymentRequestDto(
+            PaymentServiceCreatePaymentRequestDto dto);
 }

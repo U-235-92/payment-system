@@ -112,7 +112,7 @@ val dependencyVersionMap = mapOf(
 	"spring-data-envers" to "4.0.4",
 
 //	Payment provider service API specification
-	"payment-provider-service-api-specification" to "2.3.1-dev"
+	"payment-provider-service-api-specification" to "2.4.1-dev"
 )
 
 dependencies {

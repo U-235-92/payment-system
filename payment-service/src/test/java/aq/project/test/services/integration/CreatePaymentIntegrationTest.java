@@ -23,6 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -40,7 +41,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static aq.project._utils.entities.PaymentServiceEntities.*;
-import static aq.project.controller.PaymentRestControllerApi.PATH_CREATE_PAYMENT;
 
 @Testcontainers
 @DirtiesContext
@@ -58,6 +58,11 @@ public class CreatePaymentIntegrationTest {
             .limit(26)
             .map(Character::toString)
             .toArray(String[]::new);
+
+    @Value("${service.payment-provider-service.endpoints.create-payment}")
+    private String createPaymentOnPaymentProviderServiceEndpoint;
+    @Value("${service.payment-provider-service.endpoints.fail-payment}")
+    private String failPaymentOnPaymentProviderServiceEndpoint;
 
     @Container
     private static final PostgreSQLContainer POSTGRESQL_CONTAINER = Containers.POSTGRESQL_CONTAINER;
@@ -110,6 +115,11 @@ public class CreatePaymentIntegrationTest {
 
         PaymentMethodRequiredField newPaymentMethodRequiredField = getValidPaymentMethodRequiredField();
         newPaymentMethodRequiredField.setId(null);
+        newPaymentMethodRequiredField.setCountryAlpha3Code(genRandomString(UPPERCASE_ALPHABET, 3));
+        newPaymentMethodRequiredField.setCurrencyCode(genRandomString(UPPERCASE_ALPHABET, 3));
+        newPaymentMethodRequiredField.setName(genRandomString(UPPERCASE_ALPHABET, 10));
+        newPaymentMethodRequiredField.setLanguage(genRandomString(LOWERCASE_ALPHABET, 2));
+
         PaymentMethodRequiredField savedPaymentMethodRequiredField = paymentMethodRequiredFieldRepository
                 .save(newPaymentMethodRequiredField);
 
@@ -130,7 +140,7 @@ public class CreatePaymentIntegrationTest {
 
         String json = objectMapper.writeValueAsString(paymentProviderServiceCreatePaymentResponseDto);
 
-        paymentProviderMockService.stubFor(WireMock.post(PATH_CREATE_PAYMENT)
+        paymentProviderMockService.stubFor(WireMock.post(createPaymentOnPaymentProviderServiceEndpoint)
                 .willReturn(WireMock.okJson(json)));
 
 //        Act & Assert
@@ -146,7 +156,7 @@ public class CreatePaymentIntegrationTest {
     }
 
     @Test
-    public void failCreatePaymentOn4xxErrorResponse() {
+    public void failCreatePaymentOnPaymentProviderService4xxErrorResponse() {
 //        Arrange
         int statusCode = 400;
 
@@ -159,6 +169,11 @@ public class CreatePaymentIntegrationTest {
 
         PaymentMethodRequiredField newPaymentMethodRequiredField = getValidPaymentMethodRequiredField();
         newPaymentMethodRequiredField.setId(null);
+        newPaymentMethodRequiredField.setCountryAlpha3Code(genRandomString(UPPERCASE_ALPHABET, 3));
+        newPaymentMethodRequiredField.setCurrencyCode(genRandomString(UPPERCASE_ALPHABET, 3));
+        newPaymentMethodRequiredField.setName(genRandomString(UPPERCASE_ALPHABET, 10));
+        newPaymentMethodRequiredField.setLanguage(genRandomString(LOWERCASE_ALPHABET, 2));
+
         PaymentMethodRequiredField savedPaymentMethodRequiredField = paymentMethodRequiredFieldRepository
                 .save(newPaymentMethodRequiredField);
 
@@ -177,8 +192,11 @@ public class CreatePaymentIntegrationTest {
 
         String json = objectMapper.writeValueAsString(errorDto);
 
-        paymentProviderMockService.stubFor(WireMock.post(PATH_CREATE_PAYMENT)
+        paymentProviderMockService.stubFor(WireMock.post(createPaymentOnPaymentProviderServiceEndpoint)
                 .willReturn(WireMock.status(statusCode).withBody(json)));
+
+        paymentProviderMockService.stubFor(WireMock.post(failPaymentOnPaymentProviderServiceEndpoint)
+                .willReturn(WireMock.ok()));
 
 //        Act & Assert
         Assertions.assertThrows(ClientHttpException.class,
@@ -194,7 +212,7 @@ public class CreatePaymentIntegrationTest {
     }
 
     @Test
-    public void failCreatePaymentOn5xxErrorResponse() {
+    public void failCreatePaymentOnPaymentProviderService5xxErrorResponse() {
 //        Arrange
         int statusCode = 500;
 
@@ -202,11 +220,17 @@ public class CreatePaymentIntegrationTest {
 
         PaymentMethodDefinition newPaymentMethodDefinition = getValidPaymentMethodDefinition();
         newPaymentMethodDefinition.setId(null);
+
         PaymentMethodDefinition savedPaymentMethodDefinition = paymentMethodDefinitionRepository
                 .save(newPaymentMethodDefinition);
 
         PaymentMethodRequiredField newPaymentMethodRequiredField = getValidPaymentMethodRequiredField();
         newPaymentMethodRequiredField.setId(null);
+        newPaymentMethodRequiredField.setCountryAlpha3Code(genRandomString(UPPERCASE_ALPHABET, 3));
+        newPaymentMethodRequiredField.setCurrencyCode(genRandomString(UPPERCASE_ALPHABET, 3));
+        newPaymentMethodRequiredField.setName(genRandomString(UPPERCASE_ALPHABET, 10));
+        newPaymentMethodRequiredField.setLanguage(genRandomString(LOWERCASE_ALPHABET, 2));
+
         PaymentMethodRequiredField savedPaymentMethodRequiredField = paymentMethodRequiredFieldRepository
                 .save(newPaymentMethodRequiredField);
 
@@ -225,8 +249,11 @@ public class CreatePaymentIntegrationTest {
 
         String json = objectMapper.writeValueAsString(errorDto);
 
-        paymentProviderMockService.stubFor(WireMock.post(PATH_CREATE_PAYMENT)
+        paymentProviderMockService.stubFor(WireMock.post(createPaymentOnPaymentProviderServiceEndpoint)
                 .willReturn(WireMock.status(statusCode).withBody(json)));
+
+        paymentProviderMockService.stubFor(WireMock.post(failPaymentOnPaymentProviderServiceEndpoint)
+                .willReturn(WireMock.ok()));
 
 //        Act & Assert
         Assertions.assertThrows(ServiceHttpException.class,
@@ -242,18 +269,24 @@ public class CreatePaymentIntegrationTest {
     }
 
     @Test
-    public void failCreatePaymentOnFailedPaymentStatusResponse() {
+    public void failCreatePaymentOnFailedPaymentStatusPaymentProviderServiceResponse() {
 //        Arrange
         UUID transactionId = UUID.randomUUID();
         UUID paymentId = UUID.randomUUID();
 
         PaymentMethodDefinition newPaymentMethodDefinition = getValidPaymentMethodDefinition();
         newPaymentMethodDefinition.setId(null);
+
         PaymentMethodDefinition savedPaymentMethodDefinition = paymentMethodDefinitionRepository
                 .save(newPaymentMethodDefinition);
 
         PaymentMethodRequiredField newPaymentMethodRequiredField = getValidPaymentMethodRequiredField();
         newPaymentMethodRequiredField.setId(null);
+        newPaymentMethodRequiredField.setCountryAlpha3Code(genRandomString(UPPERCASE_ALPHABET, 3));
+        newPaymentMethodRequiredField.setCurrencyCode(genRandomString(UPPERCASE_ALPHABET, 3));
+        newPaymentMethodRequiredField.setName(genRandomString(UPPERCASE_ALPHABET, 10));
+        newPaymentMethodRequiredField.setLanguage(genRandomString(LOWERCASE_ALPHABET, 2));
+
         PaymentMethodRequiredField savedPaymentMethodRequiredField = paymentMethodRequiredFieldRepository
                 .save(newPaymentMethodRequiredField);
 
@@ -275,7 +308,7 @@ public class CreatePaymentIntegrationTest {
 
         String json = objectMapper.writeValueAsString(paymentProviderServiceCreatePaymentResponseDto);
 
-        paymentProviderMockService.stubFor(WireMock.post(PATH_CREATE_PAYMENT)
+        paymentProviderMockService.stubFor(WireMock.post(createPaymentOnPaymentProviderServiceEndpoint)
                 .willReturn(WireMock.okJson(json)));
 
 //        Act & Assert
@@ -360,7 +393,7 @@ public class CreatePaymentIntegrationTest {
 
             String json = objectMapper.writeValueAsString(paymentProviderServiceCreatePaymentResponseDto);
 
-            paymentProviderMockService.stubFor(WireMock.post(PATH_CREATE_PAYMENT)
+            paymentProviderMockService.stubFor(WireMock.post(createPaymentOnPaymentProviderServiceEndpoint)
                     .willReturn(WireMock.okJson(json)));
 
 //        Act & Assert

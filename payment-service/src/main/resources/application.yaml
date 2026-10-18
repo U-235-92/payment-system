@@ -71,10 +71,30 @@ resilience4j:
         slow-call-duration-threshold: 10s
         slow-call-rate-threshold: 50
 
+      fail-payment-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+  retry:
+    instances:
+      fail-payment-retry:
+        max-attempts: 3
+        wait-duration: 500ms
+        fail-after-max-attempts: true
+        exponential-backoff-multiplier: 1.5
+
 service:
   payment-provider-service:
     name: payment-provider-service
     uri: http://localhost:8086
+    endpoints:
+      fail-payment: "/api/v1/payment/fail-payment"
+      create-payment: "/api/v1/payment/create-payment"
+
   payment-service:
     merchant-id: payment-service
     merchant-secret: secret

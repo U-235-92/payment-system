@@ -64,20 +64,37 @@ public class PaymentService {
 
         switch(receivedPaymentStatus) {
             case COMPLETED, PENDING -> {
-                UUID receivedPaymentId = paymentResponseDto.getPaymentId();
+                try {
+                    UUID receivedPaymentId = paymentResponseDto.getPaymentId();
 
-                createdPayment.setPaymentId(receivedPaymentId);
+                    createdPayment.setPaymentId(receivedPaymentId);
+                    createdPayment.setStatus(receivedPaymentStatus);
+
+                    paymentRepository.save(createdPayment);
+
+                    return paymentMapper.toPaymentServiceCreatePaymentResponseDto(createdPayment);
+
+                } catch (Exception onPaymentServiceException) {
+                    try {
+                        paymentProviderServiceHandler.failPayment(paymentServiceCreatePaymentRequestDto);
+                        throw onPaymentServiceException;
+
+                    } catch (Exception onPaymentProviderServiceException) {
+                        onPaymentProviderServiceException.initCause(onPaymentServiceException);
+                        throw onPaymentProviderServiceException;
+                    }
+                }
+            }
+            default -> {
                 createdPayment.setStatus(receivedPaymentStatus);
 
                 paymentRepository.save(createdPayment);
 
-                return paymentMapper.toPaymentServiceCreatePaymentResponseDto(createdPayment);
+                throw new ProcessOperationException(String.format(
+                        "Fail while creating payment for transaction with id: [%s] on [%s] side: " +
+                                "received response with: [%s] payment status",
+                        transactionId, paymentProviderServiceName, receivedPaymentStatus));
             }
-            default ->
-                    throw new ProcessOperationException(String.format(
-                            "Fail while creating payment for transaction with id: [%s] on [%s] side: " +
-                            "received response with: [%s] payment status",
-                            transactionId, paymentProviderServiceName, receivedPaymentStatus));
         }
     }
 

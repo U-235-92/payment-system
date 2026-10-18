@@ -3,6 +3,9 @@ package aq.project.utils.aspects;
 import aq.project.dto.PaymentServiceCreatePaymentRequestDto;
 import aq.project.dto.PaymentServiceCreatePaymentResponseDto;
 import aq.project.dto.PaymentServicePaymentMethodResponseDto;
+import aq.project.exceptions.ClientHttpException;
+import aq.project.exceptions.ServiceHttpException;
+import aq.project.utils.handlers.PaymentProviderServiceHandler;
 import aq.project.utils.handlers.PaymentServiceHandler;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.Valid;
@@ -35,6 +38,8 @@ public class PaymentServiceAspect {
     private final ServiceAspectHandler serviceAspectHandler;
 
     private final PaymentServiceHandler paymentServiceHandler;
+
+    private final PaymentProviderServiceHandler paymentProviderServiceHandler;
 
     @Around(
             value = "execution(* aq.project.services.PaymentService.createPayment(..)) " +
@@ -81,9 +86,13 @@ public class PaymentServiceAspect {
             PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
             Exception exception
     ) {
-        UUID transactionId = paymentServiceCreatePaymentRequestDto.getTransactionId();
+        if(exception instanceof ClientHttpException || exception instanceof ServiceHttpException) {
+            UUID transactionId = paymentServiceCreatePaymentRequestDto.getTransactionId();
 
-        paymentServiceHandler.setPaymentOnFailStatus(transactionId);
+            paymentServiceHandler.setPaymentOnFailStatus(transactionId);
+
+            paymentProviderServiceHandler.failPayment(paymentServiceCreatePaymentRequestDto);
+        }
     }
 
     @Around(

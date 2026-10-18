@@ -47,7 +47,7 @@ public class PaymentRestControllerExceptionHandler {
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
     public ResponseEntity<?> onEntityAlreadyExistsException(EntityAlreadyExistsException e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status = HttpStatus.CONFLICT;
 
         controllerExceptionLogger.logException(e, status);
 

@@ -81,7 +81,7 @@ public class WithdrawTransactionService {
                                     .flatMap(conversionRate -> createWithdrawTransaction(traceId, jwtHeader, conversionRate, transactionRequest)
                                             .flatMap(transactionId -> paymentApiClient.createPayment(getPaymentServiceCreatePaymentRequestDtoMono(transactionId, traceId, transactionRequest), traceId, jwtHeader)
                                                     .flatMap(paymentServiceResponse -> Mono.just(transactionId))
-                                                    .doOnError(paymentServiceException -> rollbackCreateTransaction(transactionId, traceId, jwtHeader))))));
+                                                    .onErrorResume(paymentServiceException -> rollbackCreateTransaction(transactionId, traceId, jwtHeader, paymentServiceException))))));
     }
 
     private Mono<UUID> createWithdrawTransactionFallback(
@@ -204,12 +204,15 @@ public class WithdrawTransactionService {
         return Mono.just(dto);
     }
 
-    private void rollbackCreateTransaction(
+    private Mono<UUID> rollbackCreateTransaction(
             UUID transactionId,
             String traceId,
-            String authorization
+            String authorization,
+            Throwable throwable
     ) {
-        withdrawTransactionApiClient.failWithdrawTransaction(transactionId, traceId, authorization);
+        return withdrawTransactionApiClient.failWithdrawTransaction(transactionId, traceId, authorization)
+                .doOnError(Mono::error)
+                .then(Mono.error(throwable));
     }
 
     @RateLimiter(

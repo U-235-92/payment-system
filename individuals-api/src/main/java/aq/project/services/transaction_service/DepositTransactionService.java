@@ -81,7 +81,7 @@ public class DepositTransactionService {
                                         .flatMap(conversionRate -> createDepositTransaction(traceId, jwtHeader, conversionRate, transactionRequest)
                                                 .flatMap(transactionId -> paymentApiClient.createPayment(getPaymentServiceCreatePaymentRequestDtoMono(transactionId, traceId, transactionRequest), traceId, jwtHeader)
                                                         .flatMap(paymentServiceResponse -> Mono.just(transactionId))
-                                                        .doOnError(paymentServiceException -> rollbackCreateTransaction(transactionId, traceId, jwtHeader))))));
+                                                        .onErrorResume(paymentServiceException -> rollbackCreateTransaction(transactionId, traceId, jwtHeader, paymentServiceException))))));
     }
 
     private Mono<UUID> createDepositTransactionFallback(
@@ -202,12 +202,15 @@ public class DepositTransactionService {
         return Mono.just(dto);
     }
 
-    private void rollbackCreateTransaction(
+    private Mono<UUID> rollbackCreateTransaction(
             UUID transactionId,
             String traceId,
-            String authorization
+            String authorization,
+            Throwable throwable
     ) {
-        depositTransactionApiClient.failDepositTransaction(transactionId, traceId, authorization);
+        return depositTransactionApiClient.failDepositTransaction(transactionId, traceId, authorization)
+                .doOnError(Mono::error)
+                .then(Mono.error(throwable));
     }
 
     @RateLimiter(

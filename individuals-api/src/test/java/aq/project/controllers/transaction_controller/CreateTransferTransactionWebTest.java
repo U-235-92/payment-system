@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.matching.UrlPattern;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,8 @@ public class CreateTransferTransactionWebTest {
     private String walletServiceGetWalletCurrencyEndpoint;
     @Value("${application.transaction-service.endpoints.create-transfer-transaction}")
     private String transactionServiceCreateTransferTransactionEndpoint;
+    @Value("${application.transaction-service.endpoints.fail-transfer-transaction}")
+    private String transactionServiceFailTransferTransactionEndpoint;
     @Value("${application.payment-service.endpoints.create-payment}")
     private String paymentServiceCreatePaymentEndpoint;
 
@@ -97,7 +100,6 @@ public class CreateTransferTransactionWebTest {
         RateResponse rateResponse = getValidRateResponse();
 
         IndividualsApiServiceTransferTransactionRequestDto transactionRequestDto = getValidIndividualsApiServiceTransferTransactionRequestDto();
-
         PaymentServiceCreatePaymentResponseDto paymentServiceCreatePaymentResponseDto = getValidPaymentServiceCreatePaymentResponseDto();
 
         String transactionRequestSenderWalletId = transactionRequestDto.getSenderWalletId().toString();
@@ -111,9 +113,6 @@ public class CreateTransferTransactionWebTest {
         String currencyRateServiceGetRateEndpoint = String.format(
                 "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
 
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
-
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
         walletServiceMock.stubFor(WireMock.get(walletServiceGetRecipientWalletCurrencyEndpoint)
@@ -121,6 +120,9 @@ public class CreateTransferTransactionWebTest {
 
         currencyRateServiceMock.stubFor(WireMock.get(currencyRateServiceGetRateEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
+        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
+                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
 
         paymentServiceMock.stubFor(WireMock.post(paymentServiceCreatePaymentEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(paymentServiceCreatePaymentResponseDto)));
@@ -158,9 +160,6 @@ public class CreateTransferTransactionWebTest {
         String currencyRateServiceGetRateEndpoint = String.format(
                 "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
 
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
-
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
         walletServiceMock.stubFor(WireMock.get(walletServiceGetRecipientWalletCurrencyEndpoint)
@@ -168,6 +167,9 @@ public class CreateTransferTransactionWebTest {
 
         currencyRateServiceMock.stubFor(WireMock.get(currencyRateServiceGetRateEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
+        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
+                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
 
         paymentServiceMock.stubFor(WireMock.post(paymentServiceCreatePaymentEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(paymentServiceCreatePaymentResponseDto)));
@@ -199,9 +201,6 @@ public class CreateTransferTransactionWebTest {
                 "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestSenderWalletId);
         String walletServiceGetRecipientWalletCurrencyEndpoint = String.format(
                 "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestRecipientWalletId);
-
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
 
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.badRequest()
@@ -238,9 +237,6 @@ public class CreateTransferTransactionWebTest {
                 "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestSenderWalletId);
         String walletServiceGetRecipientWalletCurrencyEndpoint = String.format(
                 "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestRecipientWalletId);
-
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
 
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.serverError()
@@ -281,9 +277,6 @@ public class CreateTransferTransactionWebTest {
         String currencyRateServiceGetRateEndpoint = String.format(
                 "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
 
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
-
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
         walletServiceMock.stubFor(WireMock.get(walletServiceGetRecipientWalletCurrencyEndpoint)
@@ -323,9 +316,6 @@ public class CreateTransferTransactionWebTest {
                 "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestRecipientWalletId);
         String currencyRateServiceGetRateEndpoint = String.format(
                 "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
-
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
 
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
@@ -369,11 +359,6 @@ public class CreateTransferTransactionWebTest {
         String currencyRateServiceGetRateEndpoint = String.format(
                 "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
 
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(WireMock.badRequest()
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(transactionServiceErrorDtoJson)));
-
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
         walletServiceMock.stubFor(WireMock.get(walletServiceGetRecipientWalletCurrencyEndpoint)
@@ -381,6 +366,11 @@ public class CreateTransferTransactionWebTest {
 
         currencyRateServiceMock.stubFor(WireMock.get(currencyRateServiceGetRateEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
+        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
+                .willReturn(WireMock.badRequest()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(transactionServiceErrorDtoJson)));
 
 //        Act & Assert
         webTestClient.post()
@@ -414,11 +404,6 @@ public class CreateTransferTransactionWebTest {
         String currencyRateServiceGetRateEndpoint = String.format(
                 "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
 
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(WireMock.serverError()
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(transactionServiceErrorDtoJson)));
-
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
         walletServiceMock.stubFor(WireMock.get(walletServiceGetRecipientWalletCurrencyEndpoint)
@@ -426,6 +411,11 @@ public class CreateTransferTransactionWebTest {
 
         currencyRateServiceMock.stubFor(WireMock.get(currencyRateServiceGetRateEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
+        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
+                .willReturn(WireMock.serverError()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(transactionServiceErrorDtoJson)));
 
 //        Act & Assert
         webTestClient.post()
@@ -459,9 +449,6 @@ public class CreateTransferTransactionWebTest {
         String currencyRateServiceGetRateEndpoint = String.format(
                 "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
 
-        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
-                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
-
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
         walletServiceMock.stubFor(WireMock.get(walletServiceGetRecipientWalletCurrencyEndpoint)
@@ -469,6 +456,12 @@ public class CreateTransferTransactionWebTest {
 
         currencyRateServiceMock.stubFor(WireMock.get(currencyRateServiceGetRateEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
+        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
+                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
+
+        transactionServiceMock.stubFor(WireMock.post(new UrlPattern(WireMock.containing(transactionServiceFailTransferTransactionEndpoint), false))
+                .willReturn(WireMock.ok()));
 
         paymentServiceMock.stubFor(WireMock.post(paymentServiceCreatePaymentEndpoint)
                 .willReturn(WireMock.badRequest()
@@ -507,8 +500,56 @@ public class CreateTransferTransactionWebTest {
         String currencyRateServiceGetRateEndpoint = String.format(
                 "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
 
+        walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
+                .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
+        walletServiceMock.stubFor(WireMock.get(walletServiceGetRecipientWalletCurrencyEndpoint)
+                .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
+
+        currencyRateServiceMock.stubFor(WireMock.get(currencyRateServiceGetRateEndpoint)
+                .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
         transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
+
+        transactionServiceMock.stubFor(WireMock.post(new UrlPattern(WireMock.containing(transactionServiceFailTransferTransactionEndpoint), false))
+                .willReturn(WireMock.ok()));
+
+        paymentServiceMock.stubFor(WireMock.post(paymentServiceCreatePaymentEndpoint)
+                .willReturn(WireMock.serverError()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(paymentServiceErrorDtoJson)));
+
+//        Act & Assert
+        webTestClient.post()
+                .uri(PATH_CREATE_TRANSFER_TRANSACTION)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(transactionRequestDto)
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
+    }
+
+    @Test
+    @WithMockUser(username = "user", password = "pass")
+    public void failCreateTransferTransactionOnPaymentServiceErrorResponseAndTransactionService4xxErrorResponseOnFailTransaction() throws JsonProcessingException {
+//        Arrange
+        RateResponse rateResponse = getValidRateResponse();
+
+        IndividualsApiServiceTransferTransactionRequestDto transactionRequestDto = getValidIndividualsApiServiceTransferTransactionRequestDto();
+
+        String paymentServiceErrorDtoJson = objectMapper.writeValueAsString(getPaymentServiceErrorDto());
+
+        String transactionRequestSenderWalletId = transactionRequestDto.getSenderWalletId().toString();
+        String transactionRequestRecipientWalletId = transactionRequestDto.getRecipientWalletId().toString();
+        String transactionRequestCurrencyCode = transactionRequestDto.getCurrencyCode();
+
+        String walletServiceGetSenderWalletCurrencyEndpoint = String.format(
+                "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestSenderWalletId);
+        String walletServiceGetRecipientWalletCurrencyEndpoint = String.format(
+                "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestRecipientWalletId);
+        String currencyRateServiceGetRateEndpoint = String.format(
+                "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
 
         walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
                 .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
@@ -517,6 +558,63 @@ public class CreateTransferTransactionWebTest {
 
         currencyRateServiceMock.stubFor(WireMock.get(currencyRateServiceGetRateEndpoint)
                 .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
+        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
+                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
+
+        transactionServiceMock.stubFor(WireMock.post(new UrlPattern(WireMock.containing(transactionServiceFailTransferTransactionEndpoint), false))
+                .willReturn(WireMock.badRequest()));
+
+        paymentServiceMock.stubFor(WireMock.post(paymentServiceCreatePaymentEndpoint)
+                .willReturn(WireMock.badRequest()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(paymentServiceErrorDtoJson)));
+
+//        Act & Assert
+        webTestClient.post()
+                .uri(PATH_CREATE_TRANSFER_TRANSACTION)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(transactionRequestDto)
+                .exchange()
+                .expectStatus()
+                .is4xxClientError();
+    }
+
+    @Test
+    @WithMockUser(username = "user", password = "pass")
+    public void failCreateTransferTransactionOnPaymentServiceErrorResponseAndTransactionService5xxErrorResponseOnFailTransaction() throws JsonProcessingException {
+//        Arrange
+        RateResponse rateResponse = getValidRateResponse();
+
+        IndividualsApiServiceTransferTransactionRequestDto transactionRequestDto = getValidIndividualsApiServiceTransferTransactionRequestDto();
+
+        String paymentServiceErrorDtoJson = objectMapper.writeValueAsString(getPaymentServiceErrorDto());
+
+        String transactionRequestSenderWalletId = transactionRequestDto.getSenderWalletId().toString();
+        String transactionRequestRecipientWalletId = transactionRequestDto.getRecipientWalletId().toString();
+        String transactionRequestCurrencyCode = transactionRequestDto.getCurrencyCode();
+
+        String walletServiceGetSenderWalletCurrencyEndpoint = String.format(
+                "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestSenderWalletId);
+        String walletServiceGetRecipientWalletCurrencyEndpoint = String.format(
+                "%s/%s", this.walletServiceGetWalletCurrencyEndpoint, transactionRequestRecipientWalletId);
+        String currencyRateServiceGetRateEndpoint = String.format(
+                "%s?from=%s&to=%s", this.currencyRateServiceGetRateEndpoint, transactionRequestCurrencyCode, transactionRequestCurrencyCode);
+
+        walletServiceMock.stubFor(WireMock.get(walletServiceGetSenderWalletCurrencyEndpoint)
+                .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
+        walletServiceMock.stubFor(WireMock.get(walletServiceGetRecipientWalletCurrencyEndpoint)
+                .willReturn(WireMock.ok(transactionRequestCurrencyCode)));
+
+        currencyRateServiceMock.stubFor(WireMock.get(currencyRateServiceGetRateEndpoint)
+                .willReturn(ResponseDefinitionBuilder.okForJson(rateResponse)));
+
+        transactionServiceMock.stubFor(WireMock.post(transactionServiceCreateTransferTransactionEndpoint)
+                .willReturn(ResponseDefinitionBuilder.okForJson(UUID.randomUUID().toString())));
+
+        transactionServiceMock.stubFor(WireMock.post(new UrlPattern(WireMock.containing(transactionServiceFailTransferTransactionEndpoint), false))
+                .willReturn(WireMock.serverError()));
 
         paymentServiceMock.stubFor(WireMock.post(paymentServiceCreatePaymentEndpoint)
                 .willReturn(WireMock.serverError()

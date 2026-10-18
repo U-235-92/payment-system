@@ -169,6 +169,10 @@ application:
       create-transfer-transaction: /api/v1/transaction/transfer/create
       create-withdraw-transaction: /api/v1/transaction/withdraw/create
 
+      fail-deposit-transaction: /api/v1/transaction/deposit/fail
+      fail-transfer-transaction: /api/v1/transaction/transfer/fail
+      fail-withdraw-transaction: /api/v1/transaction/withdraw/fail
+
   currency-rate-service:
     name: currency-rate-service
     uri: http://localhost:8085

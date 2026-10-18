@@ -84,7 +84,7 @@ public class TransferTransactionService {
                                                         .flatMap(recipientConversionRate -> createTransferTransaction(traceId, jwtHeader, senderConversionRate, recipientConversionRate, transactionRequest)
                                                                 .flatMap(transactionId -> paymentApiClient.createPayment(getPaymentServiceCreatePaymentRequestDtoMono(transactionId, traceId, transactionRequest), traceId, jwtHeader)
                                                                         .flatMap(paymentServiceResponse -> Mono.just(transactionId))
-                                                                        .doOnError(paymentServiceException -> rollbackCreateTransaction(transactionId, traceId, jwtHeader)))))))));
+                                                                        .onErrorResume(paymentServiceException -> rollbackCreateTransaction(transactionId, traceId, jwtHeader, paymentServiceException)))))))));
     }
 
     private Mono<UUID> createTransferTransactionFallback(
@@ -217,12 +217,15 @@ public class TransferTransactionService {
         return Mono.just(dto);
     }
 
-    private void rollbackCreateTransaction(
+    private Mono<UUID> rollbackCreateTransaction(
             UUID transactionId,
             String traceId,
-            String authorization
+            String authorization,
+            Throwable throwable
     ) {
-        transferTransactionApiClient.failTransferTransaction(transactionId, traceId, authorization);
+        return transferTransactionApiClient.failTransferTransaction(transactionId, traceId, authorization)
+                .doOnError(Mono::error)
+                .then(Mono.error(throwable));
     }
 
     @RateLimiter(

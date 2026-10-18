@@ -94,9 +94,11 @@ public class PersonService {
         return fetchTraceId()
                 .flatMap(traceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
                         .flatMap(jwtHeader -> keycloakServiceClientFacade.createPerson(jwtHeader, individualsApiServiceCreatePersonRequestDto)
+                                .doOnError(Mono::error)
                                 .flatMap(personKeycloakId -> createPersonOnPersonService(traceId, jwtHeader, personKeycloakId, individualsApiServiceCreatePersonRequestDto)
                                         .onErrorResume(personServiceException -> keycloakServiceClientFacade.undoCreatePerson(jwtHeader, personKeycloakId)
-                                                .then())
+                                                .doOnError(Mono::error)
+                                                .then(Mono.error(personServiceException)))
                                         .then(keycloakServiceClientFacade.loginPerson(email, password)))));
     }
 
@@ -149,8 +151,11 @@ public class PersonService {
         return fetchTraceId()
                 .flatMap(traceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
                         .flatMap(jwtHeader -> updatePersonOnPersonService(traceId, jwtHeader, individualsApiServiceUpdatePersonRequestDto)
+                                .doOnError(Mono::error)
                                 .then(keycloakServiceClientFacade.updatePerson(jwtHeader, individualsApiServiceUpdatePersonRequestDto)
-                                        .onErrorResume(keycloakServiceException -> undoUpdatePersonOnPersonService(traceId, jwtHeader, individualsApiServiceUpdatePersonRequestDto)))))
+                                        .onErrorResume(keycloakServiceException -> undoUpdatePersonOnPersonService(traceId, jwtHeader, individualsApiServiceUpdatePersonRequestDto)
+                                                .doOnError(Mono::error)
+                                                .then(Mono.error(keycloakServiceException))))))
                 .then();
     }
 
@@ -218,9 +223,12 @@ public class PersonService {
         return fetchTraceId()
                 .flatMap(traceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
                         .flatMap(jwtHeader -> personApiClient.deletePersonByKeycloakId(personKeycloakId, traceId, jwtHeader)
+                                .doOnError(Mono::error)
                                 .then(keycloakServiceClientFacade.deletePerson(jwtHeader, personKeycloakId)
-                                        .onErrorResume(keycloakServiceException -> undoDeletePersonOnPersonService(traceId, jwtHeader, personKeycloakId)))))
-                .then();
+                                        .onErrorResume(keycloakServiceException -> undoDeletePersonOnPersonService(traceId, jwtHeader, personKeycloakId)
+                                                .doOnError(Mono::error)
+                                                .then(Mono.error(keycloakServiceException)))))
+                .then());
     }
 
     private Mono<Void> deleteFallback(

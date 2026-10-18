@@ -5,7 +5,6 @@ import aq.project.entities.transaction_service.TransactionServiceTransferTransac
 import aq.project.entities.wallet_service.WalletServiceTransferTransactionRequest;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.NotFoundTopicException;
-import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.transaction_service.TransactionServiceTransferTransactionRepository;
 import aq.project.repositories.wallet_service.WalletServiceTransferTransactionRequestRepository;
 import aq.project.utils.mappers.PaymentProviderTransactionDtoMapper;
@@ -91,24 +90,52 @@ public class WalletServiceTransferTransactionRequestHandler {
                     .orElseThrow(() -> new EntityNotFoundException(
                             String.format("%s transaction with id: [%s] not found", operation, transactionId)));
 
-            TransactionStatus currentTransactionStatus = transactionServiceTransferTransaction.getStatus();
-            TransactionStatus targetTransactionStatus = TransactionStatus.FAILED;
+            sendFailTransactionRequestWalletServiceDtoToKafka(
+                    transactionServiceTransferTransaction, traceId, spanId, action);
 
-            switch (currentTransactionStatus) {
-                case PENDING, COMPLETED -> sendFailTransactionRequestPaymentProviderServiceDtoToKafka(
-                        transactionServiceTransferTransaction, traceId, spanId, action);
-
-                default -> throw new ProcessOperationException(
-                        String.format(
-                                "Attempt to change status of: [%s] transaction with id: [%s] " +
-                                "from: [%s] to: [%s] which is prohibited",
-                                operation, transactionId, currentTransactionStatus, targetTransactionStatus));
-            }
         } finally {
             walletServiceTransferTransactionRequest.getTransactionRequestMetadata().setProcessed(true);
             walletServiceTransferTransactionRequestRepository.save(walletServiceTransferTransactionRequest);
             applicationMetricsRegistry.finishTimer(sample, action);
             span.end();
+        }
+    }
+
+    private void sendFailTransactionRequestWalletServiceDtoToKafka(
+            TransactionServiceTransferTransaction transactionServiceTransferTransaction,
+            String traceId,
+            String spanId,
+            String action
+    ) {
+        UUID transactionId = transactionServiceTransferTransaction.getId();
+
+        try {
+            String walletServiceFailTransactionRequestTopic = walletServiceKafkaProperties
+                    .getTopic("wallet_service_fail_transfer_transaction_request");
+
+            WalletServiceFailTransactionRequestDto walletServiceFailTransactionRequestDto = walletServiceTransactionDtoMapper
+                    .toWalletServiceFailTransactionRequestDto(transactionServiceTransferTransaction);
+
+            try {
+                kafkaTemplate.send(walletServiceFailTransactionRequestTopic, walletServiceFailTransactionRequestDto).get();
+
+            } catch (ExecutionException | InterruptedException ex) {
+                String logMessageOnError = String.format(
+                        "Error occurred while sending fail [transfer] transaction request with transaction id: [%s] " +
+                                "to kafka-topic: [%s] for service: [%s]",
+                        transactionId, walletServiceFailTransactionRequestTopic, walletServiceName);
+
+                log.error("[{}-{}][{} -> {}]: {}. Exception: {}",
+                        traceId, spanId, serviceName, action, logMessageOnError, ex.getMessage());
+            }
+        } catch (NotFoundTopicException e) {
+            String logMessageOnError = String.format(
+                    "Error occurred while sending fail [transfer] transaction request with transaction id: [%s] " +
+                            "to kafka-topic: [%s] for service: [%s]. Topic with name: [%s] wasn't found",
+                    transactionId, e.getTopic(), walletServiceName, e.getTopic());
+
+            log.error("[{}-{}][{} -> {}]: {}",
+                    traceId, spanId, serviceName, action, logMessageOnError);
         }
     }
 

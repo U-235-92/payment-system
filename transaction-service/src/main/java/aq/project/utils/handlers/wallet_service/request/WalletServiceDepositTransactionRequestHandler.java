@@ -5,7 +5,6 @@ import aq.project.entities.transaction_service.TransactionServiceDepositTransact
 import aq.project.entities.wallet_service.WalletServiceDepositTransactionRequest;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.NotFoundTopicException;
-import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.transaction_service.TransactionServiceDepositTransactionRepository;
 import aq.project.repositories.wallet_service.WalletServiceDepositTransactionRequestRepository;
 import aq.project.utils.mappers.PaymentProviderTransactionDtoMapper;
@@ -91,24 +90,52 @@ public class WalletServiceDepositTransactionRequestHandler {
                     .orElseThrow(() -> new EntityNotFoundException(
                             String.format("%s transaction with id: [%s] not found", operation, transactionId)));
 
-            TransactionStatus currentTransactionStatus = transactionServiceDepositTransaction.getStatus();
-            TransactionStatus targetTransactionStatus = TransactionStatus.FAILED;
+            sendFailTransactionRequestWalletServiceDtoToKafka(
+                    transactionServiceDepositTransaction, traceId, spanId, action);
 
-            switch (currentTransactionStatus) {
-                case PENDING, COMPLETED -> sendFailTransactionRequestPaymentProviderServiceDtoToKafka(
-                        transactionServiceDepositTransaction, traceId, spanId, action);
-
-                default -> throw new ProcessOperationException(
-                        String.format(
-                                "Attempt to change status of: [%s] transaction with id: [%s] " +
-                                "from: [%s] to: [%s] which is prohibited",
-                                operation, transactionId, currentTransactionStatus, targetTransactionStatus));
-            }
         } finally {
             walletServiceDepositTransactionRequest.getTransactionRequestMetadata().setProcessed(true);
             walletServiceDepositTransactionRequestRepository.save(walletServiceDepositTransactionRequest);
             applicationMetricsRegistry.finishTimer(sample, action);
             span.end();
+        }
+    }
+
+    private void sendFailTransactionRequestWalletServiceDtoToKafka(
+            TransactionServiceDepositTransaction transactionServiceDepositTransaction,
+            String traceId,
+            String spanId,
+            String action
+    ) {
+        UUID transactionId = transactionServiceDepositTransaction.getId();
+
+        try {
+            String walletServiceFailTransactionRequestTopic = walletServiceKafkaProperties
+                    .getTopic("wallet_service_fail_deposit_transaction_request");
+
+            WalletServiceFailTransactionRequestDto walletServiceFailTransactionRequestDto = walletServiceTransactionDtoMapper
+                    .toWalletServiceFailTransactionRequestDto(transactionServiceDepositTransaction);
+
+            try {
+                kafkaTemplate.send(walletServiceFailTransactionRequestTopic, walletServiceFailTransactionRequestDto).get();
+
+            } catch (ExecutionException | InterruptedException ex) {
+                String logMessageOnError = String.format(
+                        "Error occurred while sending fail [deposit] transaction request with transaction id: [%s] " +
+                                "to kafka-topic: [%s] for service: [%s]",
+                        transactionId, walletServiceFailTransactionRequestTopic, walletServiceName);
+
+                log.error("[{}-{}][{} -> {}]: {}. Exception: {}",
+                        traceId, spanId, serviceName, action, logMessageOnError, ex.getMessage());
+            }
+        } catch (NotFoundTopicException e) {
+            String logMessageOnError = String.format(
+                    "Error occurred while sending fail [deposit] transaction request with transaction id: [%s] " +
+                            "to kafka-topic: [%s] for service: [%s]. Topic with name: [%s] wasn't found",
+                    transactionId, e.getTopic(), walletServiceName, e.getTopic());
+
+            log.error("[{}-{}][{} -> {}]: {}",
+                    traceId, spanId, serviceName, action, logMessageOnError);
         }
     }
 
@@ -210,6 +237,7 @@ public class WalletServiceDepositTransactionRequestHandler {
                 kafkaTemplate.send(walletServiceDepositTransactionRequestTopic, depositTransactionRequestWalletServiceDto).get();
 
                 applicationMetricsRegistry.countAction(true, action);
+
             } catch (InterruptedException | ExecutionException e) {
                 String logMessageOnError = String.format(
                         "Error occurred while sending [deposit] transaction with id: [%s] to kafka-topic: [%s] for service: [%s]",
@@ -329,6 +357,7 @@ public class WalletServiceDepositTransactionRequestHandler {
 
             try {
                 kafkaTemplate.send(paymentProviderServiceFailTransactionRequestTopic, paymentProviderServiceFailTransactionRequestDto).get();
+
             } catch (ExecutionException | InterruptedException ex) {
                 String logMessageOnError = String.format(
                         "Error occurred while sending fail [deposit] transaction request with transaction id: [%s] " +
@@ -367,6 +396,7 @@ public class WalletServiceDepositTransactionRequestHandler {
 
             try {
                 kafkaTemplate.send(paymentProviderServiceFailTransactionRequestTopic, paymentProviderServiceFailTransactionRequestDto).get();
+
             } catch (ExecutionException | InterruptedException ex) {
                 String logMessageOnError = String.format(
                         "Error occurred while sending fail [deposit] transaction request with transaction id: [%s] " +
@@ -405,6 +435,7 @@ public class WalletServiceDepositTransactionRequestHandler {
 
             try {
                 kafkaTemplate.send(paymentProviderServiceCancelTransactionRequestTopic, paymentProviderServiceCancelTransactionRequestDto).get();
+
             } catch (ExecutionException | InterruptedException ex) {
                 String logMessageOnError = String.format(
                         "Error occurred while sending cancel [deposit] transaction request with transaction id: [%s] " +

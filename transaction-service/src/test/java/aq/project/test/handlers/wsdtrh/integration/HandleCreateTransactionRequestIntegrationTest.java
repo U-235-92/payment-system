@@ -35,7 +35,7 @@ import static aq.project._utils.entities.wallet_service.WalletServiceEntities.ge
 @Testcontainers
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class HandleTransactionRequestIntegrationTest {
+public class HandleCreateTransactionRequestIntegrationTest {
 
     @Container
     private static final PostgreSQLContainer POSTGRESQL_CONTAINER = Containers.POSTGRESQL_CONTAINER;
@@ -100,7 +100,8 @@ public class HandleTransactionRequestIntegrationTest {
         transactionServiceDepositTransaction.setId(null);
         transactionServiceDepositTransaction.getTransactionMetadata().setId(null);
 
-        TransactionServiceDepositTransaction savedTransactionServiceDepositTransaction = transactionServiceDepositTransactionRepository.save(transactionServiceDepositTransaction);
+        TransactionServiceDepositTransaction savedTransactionServiceDepositTransaction = transactionServiceDepositTransactionRepository
+                .save(transactionServiceDepositTransaction);
 
         UUID savedTransactionServiceDepositTransactionId = savedTransactionServiceDepositTransaction.getId();
 

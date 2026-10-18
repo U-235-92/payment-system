@@ -38,7 +38,7 @@ import static aq.project._utils.entities.transaction_service.DepositTransactionS
 import static aq.project._utils.entities.wallet_service.WalletServiceEntities.getValidWalletServiceDepositTransactionRequest;
 
 @ExtendWith(MockitoExtension.class)
-public class HandleTransactionRequestUnitTest {
+public class HandleCreateTransactionRequestUnitTest {
 
     @Spy
     private WalletServiceTransactionDtoMapper walletServiceTransactionDtoMapper = WalletServiceTransactionDtoMapper.INSTANCE;

@@ -96,10 +96,10 @@ public interface PaymentProviderTransactionDtoMapper {
             PaymentProviderServiceTransactionRequest transactionRequest);
 
     @Mapping(target = "transactionId", source = "transactionId")
-    @Mapping(target = "merchantId", ignore = true)
+    @Mapping(target = "merchantId", source = "merchantId")
     @Mapping(target = "traceId", expression = "java(toTraceId(transactionRequest))")
-    @Mapping(target = "notificationUrl", ignore = true)
-    @Mapping(target = "operation", ignore = true)
+    @Mapping(target = "notificationUrl", source = "notificationUrl")
+    @Mapping(target = "operation", source = "operation")
     PaymentProviderServiceFailTransactionRequestDto toPaymentProviderServiceFailTransactionRequestDto(
             PaymentProviderServiceTransactionRequest transactionRequest);
 

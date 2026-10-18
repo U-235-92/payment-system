@@ -75,6 +75,7 @@ public class PaymentProviderServiceTransactionRequestHandler {
                 .toPaymentProviderServiceCreateTransactionRequestDto(paymentProviderServiceTransactionRequest);
 
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
+
         try(Scope scope = span.makeCurrent()) {
             String paymentProviderServiceCreateTransactionRequestTopic = paymentProviderServiceKafkaProperties
                     .getTopic("payment_provider_service_create_transaction_request");
@@ -88,6 +89,7 @@ public class PaymentProviderServiceTransactionRequestHandler {
             log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logMessageOnSuccess);
 
             applicationMetricsRegistry.countAction(true, action);
+
         } catch (ExecutionException | InterruptedException | NotFoundTopicException e) {
             String logMessageOnError = String.format(
                     "Error occurred while schedule handle creation of %s transaction with id: [%s] " +
@@ -107,6 +109,7 @@ public class PaymentProviderServiceTransactionRequestHandler {
                 transactionServiceDepositTransaction.setStatus(TransactionStatus.FAILED);
 
                 transactionServiceDepositTransactionRepository.save(transactionServiceDepositTransaction);
+
             } else {
                 String onErrorLogMessage = String.format(
                         "Error occurred while handle transaction with id: [%s]. Transaction wasn't found",
@@ -150,6 +153,7 @@ public class PaymentProviderServiceTransactionRequestHandler {
                 .toPaymentProviderServiceFailTransactionRequestDto(paymentProviderServiceTransactionRequest);
 
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
+
         try(Scope scope = span.makeCurrent()) {
             String paymentProviderServiceFailTransactionRequestTopic = paymentProviderServiceKafkaProperties
                     .getTopic("payment_provider_service_fail_transaction_request");
@@ -163,6 +167,7 @@ public class PaymentProviderServiceTransactionRequestHandler {
             log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logMessageOnSuccess);
 
             applicationMetricsRegistry.countAction(true, action);
+
         } catch (ExecutionException | InterruptedException | NotFoundTopicException e) {
             String logMessageOnError = String.format(
                     "Error occurred while schedule handle of fail %s transaction with id: [%s] " +
@@ -182,6 +187,7 @@ public class PaymentProviderServiceTransactionRequestHandler {
                 transactionServiceDepositTransaction.setStatus(TransactionStatus.FAILED);
 
                 transactionServiceDepositTransactionRepository.save(transactionServiceDepositTransaction);
+
             } else {
                 String onErrorLogMessage = String.format(
                         "Error occurred while handle transaction with id: [%s]. Transaction wasn't found",

@@ -85,6 +85,7 @@ public class CreatePaymentIntegrationTest {
 
         Transaction transaction = getValidTransaction();
         transaction.setMerchant(merchant);
+        transaction.getMerchant().setId(TEST_MERCHANT_ID);
 
         merchantRepository.save(merchant);
 

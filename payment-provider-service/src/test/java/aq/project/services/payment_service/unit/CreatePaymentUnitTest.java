@@ -77,6 +77,7 @@ public class CreatePaymentUnitTest {
 
         Transaction transaction = getValidTransaction();
         transaction.setId(transactionId);
+        transaction.getMerchant().setId(TEST_MERCHANT_ID);
 
         Payment payment = getValidPayment();
         payment.setTransaction(transaction);
@@ -162,6 +163,30 @@ public class CreatePaymentUnitTest {
 
         Payment payment = getValidPayment();
         payment.setTransaction(transaction);
+
+//        Act & Assert
+        Assertions.assertThrows(ForeignMerchantException.class,
+                () -> paymentService.createPayment(paymentProviderServiceCreatePaymentRequestDto));
+    }
+
+    @Test
+    public void failCreatePaymentOnRequestMerchantIdNotEqualsPaymentMerchantId() {
+//        Arrange
+        UUID transactionId = UUID.randomUUID();
+
+        PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto = getValidPaymentProviderServiceCreatePaymentRequestDto();
+        paymentProviderServiceCreatePaymentRequestDto.setTransactionId(transactionId);
+        paymentProviderServiceCreatePaymentRequestDto.setMerchantId(TEST_MERCHANT_ID);
+
+        Transaction transaction = getValidTransaction();
+        transaction.setId(transactionId);
+        transaction.getMerchant().setId("another-test-merchant-id");
+
+        Payment payment = getValidPayment();
+        payment.setTransaction(transaction);
+
+        Mockito.when(transactionRepository.findById(Mockito.any(UUID.class)))
+                .thenReturn(Optional.of(transaction));
 
 //        Act & Assert
         Assertions.assertThrows(ForeignMerchantException.class,

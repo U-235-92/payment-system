@@ -93,6 +93,7 @@ public class FailPaymentIntegrationTest {
         Transaction transaction = getValidTransaction();
         transaction.setId(transactionId);
         transaction.setMerchant(merchant);
+        transaction.getMerchant().setId(TEST_MERCHANT_ID);
 
         Payment payment = getValidPayment();
         payment.setId(paymentId);

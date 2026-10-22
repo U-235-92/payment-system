@@ -52,14 +52,10 @@ public class PaymentService {
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String currentMerchantName = authentication.getPrincipal().toString();
-        String requestMerchantName = paymentProviderServiceCreatePaymentRequestDto.getMerchantId();
+        String authenticatedMerchantId = authentication.getPrincipal().toString();
+        String requestMerchantId = paymentProviderServiceCreatePaymentRequestDto.getMerchantId();
 
-        if(!currentMerchantName.equals(requestMerchantName))
-            throw new ForeignMerchantException(String.format(
-                    "Received invalid request with merchant id: [%s] " +
-                    "to create payment for current merchant with id: [%s] " +
-                    "which is prohibited", requestMerchantName, currentMerchantName));
+        checkPaymentOwner(requestMerchantId, authenticatedMerchantId);
 
         UUID transactionId = paymentProviderServiceCreatePaymentRequestDto.getTransactionId();
         String traceId = paymentProviderServiceCreatePaymentRequestDto.getTraceId();
@@ -71,6 +67,10 @@ public class PaymentService {
         Payment newPayment = paymentMapper.toPayment(paymentProviderServiceCreatePaymentRequestDto);
         newPayment.setId(UUID.randomUUID());
         newPayment.setTransaction(transaction);
+
+        String paymentMerchantId = newPayment.getTransaction().getMerchant().getId();
+
+        checkPaymentOwner(requestMerchantId, paymentMerchantId);
 
         Payment savedPayment = paymentRepository.save(newPayment);
         savedPayment.setStatus(PaymentStatus.COMPLETED);
@@ -145,35 +145,19 @@ public class PaymentService {
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String currentMerchantName = authentication.getPrincipal().toString();
-        String requestMerchantName = paymentProviderServiceFailPaymentRequestDto.getMerchantId();
+        String authenticatedMerchantId = authentication.getPrincipal().toString();
+        String requestMerchantId = paymentProviderServiceFailPaymentRequestDto.getMerchantId();
 
-        if(!currentMerchantName.equals(requestMerchantName))
-            throw new ForeignMerchantException(String.format(
-                    "Received invalid request with merchant id: [%s] " +
-                    "to fail payment for current merchant with id: [%s] " +
-                    "which is prohibited", requestMerchantName, currentMerchantName));
+        checkPaymentOwner(requestMerchantId, authenticatedMerchantId);
 
         UUID paymentId = paymentProviderServiceFailPaymentRequestDto.getPaymentId();
         UUID transactionId = paymentProviderServiceFailPaymentRequestDto.getTransactionId();
 
-        Payment payment;
+        Payment payment = getPayment(paymentId, transactionId);
 
-        if(paymentId != null) {
-            payment = paymentRepository.findById(paymentId)
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            String.format("Payment with id [%s] not found", paymentId)));
+        String paymentMerchantId = payment.getTransaction().getMerchant().getId();
 
-            if(!payment.getTransaction().getId().equals(transactionId))
-                throw new ProcessOperationException(String.format(
-                        "Received request with payment id: [%s] contains transaction id: [%s] " +
-                                "which is unknown for this payment id", paymentId, transactionId));
-
-        } else {
-            payment = paymentRepository.findByTransactionId(transactionId)
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            String.format("Payment for transaction with id [%s] not found", transactionId)));
-        }
+        checkPaymentOwner(requestMerchantId, paymentMerchantId);
 
         PaymentStatus currentPaymentStatus = payment.getStatus();
         PaymentStatus targetPaymentStatus = PaymentStatus.FAILED;
@@ -203,5 +187,40 @@ public class PaymentService {
                 paymentId, transactionId, exception.getMessage());
 
         fallback.handleRateLimiterFallback(action, message, exception);
+    }
+
+    private void checkPaymentOwner(
+            String requestMerchantId,
+            String currentMerchantId
+    ) {
+        if(!currentMerchantId.equals(requestMerchantId))
+            throw new ForeignMerchantException(String.format(
+                    "Received invalid request with merchant id: [%s] " +
+                    "to fail payment for current merchant with id: [%s] " +
+                    "which is prohibited", requestMerchantId, currentMerchantId));
+    }
+
+    private Payment getPayment(
+            UUID paymentId,
+            UUID transactionId
+    ) {
+        Payment payment;
+
+        if(paymentId != null) {
+            payment = paymentRepository.findById(paymentId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Payment with id [%s] not found", paymentId)));
+
+            if(!payment.getTransaction().getId().equals(transactionId))
+                throw new ProcessOperationException(String.format(
+                        "Received request with payment id: [%s] contains transaction id: [%s] " +
+                        "which is unknown for this payment id", paymentId, transactionId));
+
+        } else {
+            payment = paymentRepository.findByTransactionId(transactionId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Payment for transaction with id [%s] not found", transactionId)));
+        }
+        return payment;
     }
 }

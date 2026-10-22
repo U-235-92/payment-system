@@ -71,6 +71,7 @@ public class FailPaymentUnitTest {
 
         Transaction transaction = getValidTransaction();
         transaction.setId(transactionId);
+        transaction.getMerchant().setId(TEST_MERCHANT_ID);
 
         Payment payment = getValidPayment();
         payment.setTransaction(transaction);
@@ -108,6 +109,7 @@ public class FailPaymentUnitTest {
 
         Transaction transaction = getValidTransaction();
         transaction.setId(transactionId);
+        transaction.getMerchant().setId(TEST_MERCHANT_ID);
 
         Payment payment = getValidPayment();
         payment.setTransaction(transaction);
@@ -122,7 +124,7 @@ public class FailPaymentUnitTest {
     }
 
     @Test
-    public void failCreatePaymentOnNotEqualsMerchantId() {
+    public void failFailPaymentOnNotEqualsMerchantId() {
 //        Arrange
         UUID transactionId = UUID.randomUUID();
 
@@ -142,7 +144,7 @@ public class FailPaymentUnitTest {
     }
 
     @Test
-    public void failCreatePaymentOnNotEqualPaymentId() {
+    public void failFailPaymentOnNotEqualPaymentId() {
 //        Arrange
         PaymentProviderServiceFailPaymentRequestDto paymentProviderServiceFailPaymentRequestDto = getValidPaymentProviderServiceFailPaymentRequestDto();
         paymentProviderServiceFailPaymentRequestDto.setPaymentId(UUID.randomUUID());
@@ -160,6 +162,30 @@ public class FailPaymentUnitTest {
 
 //        Act & Assert
         Assertions.assertThrows(ProcessOperationException.class,
+                () -> paymentService.failPayment(paymentProviderServiceFailPaymentRequestDto));
+    }
+
+    @Test
+    public void failFailPaymentOnRequestMerchantIdNotEqualsPaymentMerchantId() {
+//        Arrange
+        UUID transactionId = UUID.randomUUID();
+
+        PaymentProviderServiceFailPaymentRequestDto paymentProviderServiceFailPaymentRequestDto = getValidPaymentProviderServiceFailPaymentRequestDto();
+        paymentProviderServiceFailPaymentRequestDto.setTransactionId(transactionId);
+        paymentProviderServiceFailPaymentRequestDto.setMerchantId(TEST_MERCHANT_ID);
+
+        Transaction transaction = getValidTransaction();
+        transaction.setId(transactionId);
+        transaction.getMerchant().setId("another-test-merchant-id");
+
+        Payment payment = getValidPayment();
+        payment.setTransaction(transaction);
+
+        Mockito.when(paymentRepository.findById(Mockito.any(UUID.class)))
+                .thenReturn(Optional.of(payment));
+
+//        Act & Assert
+        Assertions.assertThrows(ForeignMerchantException.class,
                 () -> paymentService.failPayment(paymentProviderServiceFailPaymentRequestDto));
     }
 }

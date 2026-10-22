@@ -2,7 +2,6 @@ package aq.project.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,11 +22,6 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @NotNull
-    @JoinColumn(name = "country_id", nullable = false)
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    private Country country;
 
     @NotBlank
     @Size(max = 64)
@@ -58,10 +52,11 @@ public class Address {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
         Address address1 = (Address) o;
-        return Objects.equals(country, address1.country) &&
-                Objects.equals(state, address1.state) &&
+        return Objects.equals(state, address1.state) &&
                 Objects.equals(city, address1.city) &&
                 Objects.equals(address, address1.address) &&
                 Objects.equals(zip, address1.zip);
@@ -69,6 +64,6 @@ public class Address {
 
     @Override
     public int hashCode() {
-        return Objects.hash(country, state, city, address, zip);
+        return Objects.hash(state, city, address, zip);
     }
 }

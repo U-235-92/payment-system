@@ -1,10 +1,9 @@
 package aq.project.repositories;
 
 import aq.project.entities.Person;
-import aq.project.exceptions.NotFoundRevisionException;
+import aq.project.exceptions.EntityNotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,72 +20,63 @@ public class PersonRevisionRepositoryImpl implements PersonRevisionRepository {
     private ApplicationContext applicationContext;
 
     @Override
-    public List<Person> findRevisionsByKeycloakId(String keycloakId) {
-        EntityManager entityManager = createEntityManager();
-        try {
-            AuditReader reader = AuditReaderFactory.get(entityManager);
-            return reader.createQuery()
+    public Optional<Person> findUndoDeleteRevisionByPersonKeycloakId(String personKeycloakId) {
+        try(EntityManager entityManager = createEntityManager()) {
+            Person restoredPerson = (Person) AuditReaderFactory.get(entityManager).createQuery()
+                    .forRevisionsOfEntity(Person.class, true, true)
+                    .add(AuditEntity.revisionNumber().eq(getMaxRevisionNumber(personKeycloakId)))
+                    .getSingleResult();
+
+            return getOptionalPerson(personKeycloakId, restoredPerson);
+        }
+    }
+
+    @Override
+    public Optional<Person> findUndoUpdateRevisionByPersonKeycloakId(String personKeycloakId) {
+        try(EntityManager entityManager = createEntityManager()) {
+            Person restoredPerson = (Person) AuditReaderFactory.get(entityManager).createQuery()
+                    .forRevisionsOfEntity(Person.class, true, true)
+                    .add(AuditEntity.revisionNumber().eq(getMaxRevisionNumber(personKeycloakId) - 1))
+                    .getSingleResult();
+
+            return getOptionalPerson(personKeycloakId, restoredPerson);
+        }
+    }
+
+    private Integer getMaxRevisionNumber(String personKeycloakId) {
+        try(EntityManager entityManager = createEntityManager()) {
+            return (Integer) AuditReaderFactory.get(entityManager).createQuery()
+                    .forRevisionsOfEntity(Person.class, true, true)
+                    .add(AuditEntity.property("keycloakId").eq(personKeycloakId))
+                    .addProjection(AuditEntity.revisionNumber().max())
+                    .getSingleResult();
+        }
+    }
+
+    private Optional<Person> getOptionalPerson(
+            String personKeycloakId,
+            Person restoredPerson
+    ) {
+        return Optional.ofNullable(restoredPerson)
+                .map(person -> Optional.of(new Person(person)))
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Not found revision for person with keycloak id: [%s]", personKeycloakId)));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Person> findAllRevisionsByKeycloakId(String keycloakId) {
+        try(EntityManager entityManager = createEntityManager()) {
+            return AuditReaderFactory.get(entityManager).createQuery()
                     .forRevisionsOfEntity(Person.class, true, true)
                     .add(AuditEntity.property("keycloakId").eq(keycloakId))
                     .getResultList();
-        } finally {
-            entityManager.close();
         }
-    }
-
-    @Override
-    public Person findLastRevisionByKeycloakId(String keycloakId) throws NotFoundRevisionException {
-        EntityManager entityManager = createEntityManager();
-        try {
-            AuditReader reader = AuditReaderFactory.get(entityManager);
-            int lastRevisionId = getLastRevisionId(entityManager);
-            return new Person(Optional
-                    .of((Person) reader.createQuery()
-                            .forRevisionsOfEntity(Person.class, true, true)
-                            .add(AuditEntity.revisionNumber().eq(lastRevisionId))
-                            .getSingleResult())
-                    .get());
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    @Override
-    public Person findUndoRevisionByKeycloakId(String keycloakId) throws NotFoundRevisionException {
-        EntityManager entityManager = createEntityManager();
-        try {
-            AuditReader reader = AuditReaderFactory.get(entityManager);
-            int undoRevisionId = getLastRevisionId(entityManager) - 1;
-            if(undoRevisionId <= 1)
-                throw new NotFoundRevisionException("No undo revision found");
-            return new Person(Optional
-                    .ofNullable((Person) reader.createQuery()
-                            .forRevisionsOfEntity(Person.class, true, true)
-                            .add(AuditEntity.revisionNumber().eq(undoRevisionId))
-                            .getSingleResult())
-                    .orElseThrow(this::getLackRevisionException));
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    private int getLastRevisionId(EntityManager entityManager) throws NotFoundRevisionException {
-        AuditReader reader = AuditReaderFactory.get(entityManager);
-        return Optional
-                .ofNullable((Integer) reader.createQuery()
-                    .forRevisionsOfEntity(Person.class, true, true)
-                    .addProjection(AuditEntity.revisionNumber().max())
-                    .getSingleResult())
-                .orElseThrow(this::getLackRevisionException);
-    }
-
-    private NotFoundRevisionException getLackRevisionException() {
-        return new NotFoundRevisionException("Revision table is empty");
     }
 
     private EntityManager createEntityManager() {
-        EntityManagerFactory emf = (EntityManagerFactory)
-                applicationContext.getBean("entityManagerFactory", EntityManagerFactory.class);
+        EntityManagerFactory emf = applicationContext
+                .getBean("entityManagerFactory", EntityManagerFactory.class);
         return emf.createEntityManager();
     }
 }

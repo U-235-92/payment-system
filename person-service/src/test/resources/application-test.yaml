@@ -4,22 +4,45 @@ spring:
   flyway:
     enabled: true
     locations:
-      - classpath:db/test-migration
+      - classpath:test-migration
     create-schemas: true
     schemas:
       - person
       - public
       - service
   jpa:
-    generate-ddl: false
     show-sql: true
-#    properties: # красивый вывод sql запросов
-#      hibernate:
-#          format_sql: true
-#          type: trace
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
 logging:
   level:
     org:
       hibernate: info
+resilience4j:
+  ratelimiter:
+    instances:
+      create-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      update-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      undo-update-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      delete-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      undo-delete-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      get-person-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1

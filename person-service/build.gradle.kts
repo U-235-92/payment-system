@@ -18,7 +18,7 @@ extra["springCloudVersion"] = "2025.1.0"
 
 val artifact = "person-service"
 
-val specificationArtifactVersion = "2.1.0-dev"
+val specificationArtifactVersion = "3.0.0-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -73,6 +73,9 @@ val dependencyVersionMap = mapOf(
 //	Mapping
 	"mapstruct" to "1.6.3",
 
+//	Lombok MapStruct binding
+	"lombok-mapstruct-binding" to "0.2.0",
+
 //	Hibernate
 	"hibernate-envers" to "7.2.6.Final",
 
@@ -87,8 +90,12 @@ val dependencyVersionMap = mapOf(
 	"spring-boot-starter-aop" to "4.0.0-M2",
 	"spring-cloud-starter-openfeign" to "5.0.1",
 
+//	Resilience4j
+	"resilience4j" to "2.4.0",
+
 //	Test
 	"testcontainers" to "2.0.3",
+	"testcontainers-keycloak" to "4.1.1",
 
 //	OpenApi
 	"springdoc-openapi" to "3.0.2"
@@ -119,6 +126,12 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
 	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
 
+//	Lombok MapStruct binding
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
+
+//	Resilience4j
+	implementation("io.github.resilience4j:resilience4j-spring-boot4:${dependencyVersionMap.getValue("resilience4j")}")
+
 //	Test
 	testImplementation("org.testcontainers:testcontainers-postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
@@ -133,6 +146,7 @@ dependencies {
 	testImplementation("org.testcontainers:testcontainers-grafana")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.springframework.boot:spring-boot-starter-opentelemetry-test")
+	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 //	OpenApi

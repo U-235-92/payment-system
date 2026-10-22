@@ -25,7 +25,7 @@ public class PersonRestController implements PersonRestControllerApi {
             ServerWebExchange exchange
     ) {
         return individualsApiServiceCreatePersonRequestDtoMono
-                .flatMap(requestDto -> personService.create(requestDto)
+                .flatMap(requestDto -> personService.createPerson(requestDto)
                         .map(ResponseEntity::ok));
     }
 
@@ -34,7 +34,7 @@ public class PersonRestController implements PersonRestControllerApi {
             UUID personKeycloakId,
             ServerWebExchange exchange
     ) {
-        return personService.delete(personKeycloakId)
+        return personService.deletePerson(personKeycloakId)
                 .flatMap(responseDto -> Mono.just(ResponseEntity.ok(responseDto)));
     }
 
@@ -44,7 +44,7 @@ public class PersonRestController implements PersonRestControllerApi {
             ServerWebExchange exchange
     ) {
         return individualsApiServiceLoginPersonRequestDtoMono
-                .flatMap(requestDto -> personService.login(requestDto)
+                .flatMap(requestDto -> personService.loginPerson(requestDto)
                         .map(ResponseEntity::ok));
     }
 
@@ -54,7 +54,7 @@ public class PersonRestController implements PersonRestControllerApi {
             ServerWebExchange exchange
     ) {
         return individualsApiServiceUpdatePersonRequestDtoMono
-                .flatMap(requestDto -> personService.update(requestDto)
+                .flatMap(requestDto -> personService.updatePerson(requestDto)
                         .map(ResponseEntity::ok));
     }
 
@@ -63,6 +63,6 @@ public class PersonRestController implements PersonRestControllerApi {
             Authentication authentication,
             ServerWebExchange exchange
     ) {
-        return personService.getInfo(authentication).map(ResponseEntity::ok);
+        return personService.getPersonInfo(authentication).map(ResponseEntity::ok);
     }
 }

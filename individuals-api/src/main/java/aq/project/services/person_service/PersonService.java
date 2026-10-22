@@ -49,7 +49,7 @@ public class PersonService {
             name = "login-person-circuitbreaker",
             fallbackMethod = "loginFallback"
     )
-    public Mono<IndividualsApiServiceTokenResponseDto> login(
+    public Mono<IndividualsApiServiceTokenResponseDto> loginPerson(
             IndividualsApiServiceLoginPersonRequestDto individualsApiServiceLoginPersonRequestDto
     ) {
         String email = individualsApiServiceLoginPersonRequestDto.getEmail();
@@ -85,7 +85,7 @@ public class PersonService {
             name = "create-person-circuitbreaker",
             fallbackMethod = "createFallback"
     )
-    public Mono<IndividualsApiServiceTokenResponseDto> create(
+    public Mono<IndividualsApiServiceTokenResponseDto> createPerson(
             IndividualsApiServiceCreatePersonRequestDto individualsApiServiceCreatePersonRequestDto
     ) {
         String email = individualsApiServiceCreatePersonRequestDto.getEmail();
@@ -145,7 +145,7 @@ public class PersonService {
             name = "update-person-circuitbreaker",
             fallbackMethod = "updateFallback"
     )
-    public Mono<Void> update(
+    public Mono<Void> updatePerson(
             IndividualsApiServiceUpdatePersonRequestDto individualsApiServiceUpdatePersonRequestDto
     ) {
         return fetchTraceId()
@@ -197,16 +197,25 @@ public class PersonService {
     ) {
         UUID personKeycloakId = individualsApiServiceUpdatePersonRequestDto.getPersonKeycloakId();
 
-        UndoOperation undoOperation = UndoOperation.UPDATE_PERSON;
+        String description = String.format("Undo update person with keycloak id: [%s]", personKeycloakId);
 
-        String description = String.format(
-                "Undo [%s] with id: [%s]", undoOperation.getValue().toLowerCase(), personKeycloakId);
-
-        PersonServiceUndoRequestDto personServiceUndoRequestDto = getPersonServiceUndoRequestDto(
-                personKeycloakId, undoOperation, description);
+        PersonServiceUndoUpdatePersonRequestDto personServiceUndoRequestDto = getPersonServiceUndoUpdateRequestDto(
+                personKeycloakId, description);
 
         return personApiClient.undoUpdatePerson(traceId, Mono.just(personServiceUndoRequestDto), authorization)
                 .flatMap(personServiceResponse -> Mono.just(personServiceResponse.getStatusCode()));
+    }
+
+    private PersonServiceUndoUpdatePersonRequestDto getPersonServiceUndoUpdateRequestDto(
+            UUID personKeycloakId,
+            String description
+    ) {
+        PersonServiceUndoUpdatePersonRequestDto personServiceUndoRequestDto = new PersonServiceUndoUpdatePersonRequestDto();
+
+        personServiceUndoRequestDto.setPersonKeycloakId(personKeycloakId);
+        personServiceUndoRequestDto.setDescription(description);
+
+        return personServiceUndoRequestDto;
     }
 
     @RateLimiter(
@@ -217,12 +226,12 @@ public class PersonService {
             name = "delete-person-circuitbreaker",
             fallbackMethod = "deleteFallback"
     )
-    public Mono<Void> delete(
+    public Mono<Void> deletePerson(
             UUID personKeycloakId
     ) {
         return fetchTraceId()
                 .flatMap(traceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                        .flatMap(jwtHeader -> personApiClient.deletePersonByKeycloakId(personKeycloakId, traceId, jwtHeader)
+                        .flatMap(jwtHeader -> personApiClient.deletePerson(personKeycloakId, traceId, jwtHeader)
                                 .doOnError(Mono::error)
                                 .then(keycloakServiceClientFacade.deletePerson(jwtHeader, personKeycloakId)
                                         .onErrorResume(keycloakServiceException -> undoDeletePersonOnPersonService(traceId, jwtHeader, personKeycloakId)
@@ -254,29 +263,22 @@ public class PersonService {
             String authorization,
             UUID personKeycloakId
     ) {
-        UndoOperation undoOperation = UndoOperation.DELETE_PERSON;
+        String description = String.format("Undo delete person with id: [%s]", personKeycloakId);
 
-        String description = String.format(
-                "Undo [%s] with id: [%s]", undoOperation.getValue().toLowerCase(), personKeycloakId);
-
-        PersonServiceUndoRequestDto personServiceUndoRequestDto = getPersonServiceUndoRequestDto(
-                personKeycloakId, undoOperation, description);
+        PersonServiceUndoDeletePersonRequestDto personServiceUndoRequestDto = getPersonServiceUndoDeleteRequestDto(
+                personKeycloakId, description);
 
         return personApiClient.undoDeletePerson(traceId, Mono.just(personServiceUndoRequestDto), authorization)
                 .flatMap(personServiceResponse -> Mono.just(personServiceResponse.getStatusCode()));
     }
 
-    private PersonServiceUndoRequestDto getPersonServiceUndoRequestDto(
+    private PersonServiceUndoDeletePersonRequestDto getPersonServiceUndoDeleteRequestDto(
             UUID personKeycloakId,
-            UndoOperation undoOperation,
             String description
     ) {
-        PersonServiceUndoRequestDto personServiceUndoRequestDto = new PersonServiceUndoRequestDto();
+        PersonServiceUndoDeletePersonRequestDto personServiceUndoRequestDto = new PersonServiceUndoDeletePersonRequestDto();
 
-        personServiceUndoRequestDto.setId(UUID.randomUUID());
-        personServiceUndoRequestDto.setPersonId(personKeycloakId);
-        personServiceUndoRequestDto.setOperation(undoOperation);
-        personServiceUndoRequestDto.setTimestamp(System.currentTimeMillis());
+        personServiceUndoRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceUndoRequestDto.setDescription(description);
 
         return personServiceUndoRequestDto;
@@ -290,7 +292,7 @@ public class PersonService {
             name = "get-person-info-circuitbreaker",
             fallbackMethod = "getInfoFallback"
     )
-    public Mono<IndividualsApiServicePersonInfoResponseDto> getInfo(
+    public Mono<IndividualsApiServicePersonInfoResponseDto> getPersonInfo(
             Authentication authentication
     ) {
         return getIndividualsApiServicePersonInfoResponseDto(authentication)
@@ -371,7 +373,7 @@ public class PersonService {
     ) {
         PersonServiceAddressDto addressDto = personServicePersonInfoResponseDto.getAddress();
 
-        PersonServiceCountryDto countryDto = addressDto.getCountry();
+        PersonServiceCountryDto countryDto = personServicePersonInfoResponseDto.getCountry();
 
         String firstName = personServicePersonInfoResponseDto.getFirstName();
         String lastName = personServicePersonInfoResponseDto.getLastName();

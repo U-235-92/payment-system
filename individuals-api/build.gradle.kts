@@ -120,7 +120,7 @@ val dependencyVersionMap = mapOf(
 	"currency-rate-service-api-specification" to "2.1.0-dev",
 
 //	Person service API specification
-	"person-service-api-specification" to "2.3.0-dev",
+	"person-service-api-specification" to "3.0.0-dev",
 
 //	Transaction service API specification
 	"transaction-service-api-specification" to "2.2.0-dev",

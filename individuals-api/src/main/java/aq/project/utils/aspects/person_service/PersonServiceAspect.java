@@ -31,9 +31,9 @@ public class PersonServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.person_service.PersonService.login(..)) " +
+    @Around("execution(* aq.project.services.person_service.PersonService.loginPerson(..)) " +
             "&& args(individualsApiServiceLoginPersonRequestDto)")
-    public Mono<IndividualsApiServiceTokenResponseDto> login(
+    public Mono<IndividualsApiServiceTokenResponseDto> loginPerson(
             ProceedingJoinPoint pjp,
             @Valid IndividualsApiServiceLoginPersonRequestDto individualsApiServiceLoginPersonRequestDto
     ) throws Throwable {
@@ -61,9 +61,9 @@ public class PersonServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.person_service.PersonService.create(..)) " +
+    @Around("execution(* aq.project.services.person_service.PersonService.createPerson(..)) " +
             "&& args(individualsApiServiceCreatePersonRequestDto)")
-    public Mono<IndividualsApiServiceTokenResponseDto> create(
+    public Mono<IndividualsApiServiceTokenResponseDto> createPerson(
             ProceedingJoinPoint pjp,
             @Valid IndividualsApiServiceCreatePersonRequestDto individualsApiServiceCreatePersonRequestDto
     ) throws Throwable {
@@ -105,9 +105,9 @@ public class PersonServiceAspect {
         };
     }
 
-    @Around("execution(* aq.project.services.person_service.PersonService.update(..)) " +
+    @Around("execution(* aq.project.services.person_service.PersonService.updatePerson(..)) " +
             "&& args(individualsApiServiceUpdatePersonRequestDto)")
-    public Mono<Void> update(
+    public Mono<Void> updatePerson(
             ProceedingJoinPoint pjp,
             @Valid IndividualsApiServiceUpdatePersonRequestDto individualsApiServiceUpdatePersonRequestDto
     ) throws Throwable {
@@ -135,9 +135,9 @@ public class PersonServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.person_service.PersonService.delete(..)) " +
+    @Around("execution(* aq.project.services.person_service.PersonService.deletePerson(..)) " +
             "&& args(personKeycloakId)")
-    public Mono<Void> delete(
+    public Mono<Void> deletePerson(
             ProceedingJoinPoint pjp,
             @NotNull UUID personKeycloakId
     ) throws Throwable {
@@ -164,9 +164,9 @@ public class PersonServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.person_service.PersonService.getInfo(..)) " +
+    @Around("execution(* aq.project.services.person_service.PersonService.getPersonInfo(..)) " +
             "&& args(authentication)")
-    public Mono<IndividualsApiServicePersonInfoResponseDto> getInfo(
+    public Mono<IndividualsApiServicePersonInfoResponseDto> getPersonInfo(
             ProceedingJoinPoint pjp,
             @NotNull Authentication authentication
     ) throws Throwable {

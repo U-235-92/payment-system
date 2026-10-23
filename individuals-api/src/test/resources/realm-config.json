@@ -501,6 +501,26 @@
       }
     },
     {
+      "id": "d3b2ab28-2d69-479c-8e93-6bc9753e3313",
+      "username": "test",
+      "email": "test@mail.aq",
+      "firstName": "Test",
+      "lastName": "Test",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123"
+        }
+      ],
+      "clientRoles": {
+        "account": [
+          "view-profile",
+          "manage-account"
+        ]
+      }
+    },
+    {
       "id": "89631508-9dba-41b6-b8a1-722b0aa00380",
       "username": "service-account-payment-system-admin-cli",
       "emailVerified": false,

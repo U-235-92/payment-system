@@ -41,7 +41,7 @@ public class CreateTransactionIntegrationTest {
     private PaymentProviderServiceTransactionRequestRepository paymentProviderServiceTransactionRequestRepository;
 
     @Autowired
-    private DepositTransactionService transactionService;
+    private DepositTransactionService depositTransactionService;
 
     @DynamicPropertySource
     static void setUpContainerProperties(DynamicPropertyRegistry registry) {
@@ -64,8 +64,8 @@ public class CreateTransactionIntegrationTest {
         transaction.getTransactionMetadata().setTimestamp(null);
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> transactionService.createTransaction(transaction));
-        Assertions.assertNotNull(transactionService.createTransaction(transaction));
+        Assertions.assertDoesNotThrow(() -> depositTransactionService.createTransaction(transaction));
+        Assertions.assertNotNull(depositTransactionService.createTransaction(transaction));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class CreateTransactionIntegrationTest {
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> transactionService.createTransaction(transaction));
+                () -> depositTransactionService.createTransaction(transaction));
     }
 
     @Test
@@ -87,6 +87,6 @@ public class CreateTransactionIntegrationTest {
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
-                () -> transactionService.createTransaction(transaction));
+                () -> depositTransactionService.createTransaction(transaction));
     }
 }

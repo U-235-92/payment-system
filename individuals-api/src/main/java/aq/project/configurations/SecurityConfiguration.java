@@ -13,11 +13,12 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 
 import static aq.project.controller.DepositTransactionRestControllerApi.PATH_CREATE_DEPOSIT_TRANSACTION;
 import static aq.project.controller.DepositTransactionRestControllerApi.PATH_GET_DEPOSIT_TRANSACTION_STATUS;
+import static aq.project.controller.PaymentRestControllerApi.PATH_GET_PAYMENT_METHODS;
+import static aq.project.controller.PersonRestControllerApi.*;
 import static aq.project.controller.RateRestControllerApi.*;
 import static aq.project.controller.TokenRestControllerApi.PATH_REFRESH_TOKEN;
 import static aq.project.controller.TransferTransactionRestControllerApi.PATH_CREATE_TRANSFER_TRANSACTION;
 import static aq.project.controller.TransferTransactionRestControllerApi.PATH_GET_TRANSFER_TRANSACTION_STATUS;
-import static aq.project.controller.UserRestControllerApi.*;
 import static aq.project.controller.WalletRestControllerApi.PATH_CREATE_WALLET;
 import static aq.project.controller.WalletRestControllerApi.PATH_GET_WALLET_INFO;
 import static aq.project.controller.WithdrawTransactionRestControllerApi.PATH_CREATE_WITHDRAW_TRANSACTION;
@@ -47,11 +48,11 @@ public class SecurityConfiguration {
         return http
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/api/v1/**"))
                 .authorizeExchange(customizer -> customizer
-                        .pathMatchers(HttpMethod.POST, PATH_CREATE_USER).permitAll()
-                        .pathMatchers(HttpMethod.POST, PATH_LOGIN_USER).permitAll()
-                        .pathMatchers(HttpMethod.PATCH, PATH_UPDATE_USER).authenticated()
-                        .pathMatchers(HttpMethod.DELETE, PATH_DELETE_USER_BY_KEYCLOAK_ID.replace("{keycloakId}", "*")).authenticated()
-                        .pathMatchers(HttpMethod.GET, "/api/v1/user/get-user-info").authenticated()
+                        .pathMatchers(HttpMethod.POST, PATH_CREATE_PERSON).permitAll()
+                        .pathMatchers(HttpMethod.POST, PATH_LOGIN_PERSON).permitAll()
+                        .pathMatchers(HttpMethod.PATCH, PATH_UPDATE_PERSON).authenticated()
+                        .pathMatchers(HttpMethod.DELETE, PATH_DELETE_PERSON.replace("{personKeycloakId}", "*")).authenticated()
+                        .pathMatchers(HttpMethod.GET, "/api/v1/person/get-person-info").authenticated()
 
                         .pathMatchers(HttpMethod.POST, PATH_REFRESH_TOKEN).authenticated()
 
@@ -70,7 +71,9 @@ public class SecurityConfiguration {
                         .pathMatchers(HttpMethod.GET, PATH_GET_CURRENCIES).authenticated()
                         .pathMatchers(HttpMethod.GET, PATH_GET_CURRENCY_INFO.replace("{code}", "*")).authenticated()
                         .pathMatchers(HttpMethod.GET, PATH_GET_RATE_PROVIDERS).authenticated()
-                        .pathMatchers(HttpMethod.GET, PATH_GET_RATE_PROVIDER_INFO.replace("{code}", "*")).authenticated())
+                        .pathMatchers(HttpMethod.GET, PATH_GET_RATE_PROVIDER_INFO.replace("{code}", "*")).authenticated()
+
+                        .pathMatchers(HttpMethod.GET, PATH_GET_PAYMENT_METHODS.replace("{currencyCode}/{countryCode}", "*/*")).authenticated())
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .oauth2Client(Customizer.withDefaults())

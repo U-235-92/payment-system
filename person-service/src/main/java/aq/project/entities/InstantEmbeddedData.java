@@ -5,27 +5,21 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 
 @Getter
 @ToString
 @Embeddable
 public class InstantEmbeddedData {
 
-    @Column(name = "created", nullable = false)
-    private long created;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt;
 
-    @Column(name = "updated", nullable = false)
-    private long updated;
-
-    public InstantEmbeddedData() {
-        super();
-        created = Instant.now().toEpochMilli();
-        updated = created;
-    }
-
-    public void setUpdated(Instant instant) {
-        this.updated = Instant.from(instant).toEpochMilli();
-    }
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt;
 }

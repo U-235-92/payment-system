@@ -3,7 +3,7 @@ package aq.project.services.transaction_service.unit;
 import aq.project.dto.PaymentProviderServiceTransactionInfoResponseDto;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ForeignMerchantTransactionException;
+import aq.project.exceptions.ForeignMerchantException;
 import aq.project.repositories.TransactionRepository;
 import aq.project.services.TransactionService;
 import aq.project.utils.mappers.TransactionMapper;
@@ -75,7 +75,7 @@ public class GetTransactionInfoUnitTest {
         Mockito.when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
 
 //        Act & Assert
-        Assertions.assertThrows(ForeignMerchantTransactionException.class,
+        Assertions.assertThrows(ForeignMerchantException.class,
                 () -> transactionService.getTransactionInfo(transactionId, merchantId));
     }
 }

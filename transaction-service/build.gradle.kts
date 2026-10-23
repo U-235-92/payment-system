@@ -16,7 +16,7 @@ val artifact = "transaction-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "2.0.0-dev"
+val specificationArtifactVersion = "2.2.0-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -104,17 +104,17 @@ val dependencyVersionMap = mapOf(
 	"resilience4j" to "2.4.0",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "2.0.0-dev",
+	"wallet-service-api-specification" to "2.1.0-dev",
 
 //	Payment provider service API specification
-	"payment-provider-service-api-specification" to "2.0.0-dev"
+	"payment-provider-service-api-specification" to "2.3.1-dev"
 )
 
 dependencies {
 //	Spring web
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 
-//	Spring kafka
+//	Spring Kafka
 	implementation("org.springframework.boot:spring-boot-starter-kafka")
 
 //	Spring AOP

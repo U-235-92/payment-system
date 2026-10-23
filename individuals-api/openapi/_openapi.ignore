@@ -8,18 +8,23 @@
 # CURRENCY-RATE-SERVICE IGNORE #
 ################################
 **/openapi/currency-rate-service/src/main/java/aq/project/dto/**
+!**/openapi/currency-rate-service/src/main/java/aq/project/dto/CurrencyRateServiceErrorDto.java
 
 ##########################
 # PEROSON-SERVICE IGNORE #
 ##########################
-**/openapi/person-service/src/main/java/aq/project/dto/**
 
 ##############################
 # TRANSACTION-SERVICE IGNORE #
 ##############################
-**/openapi/transaction-service/src/main/java/aq/project/dto/ErrorDto.java
 
 #########################
 # WALLET-SERVICE IGNORE #
 #########################
 **/openapi/wallet-service/src/main/java/aq/project/dto/**
+!**/openapi/wallet-service/src/main/java/aq/project/dto/WalletServiceErrorDto.java
+
+##########################
+# PAYMENT-SERVICE IGNORE #
+##########################
+**/openapi/payment-service/src/main/java/aq/project/dto/PaymentServicePaymentMethodResponseDto.java

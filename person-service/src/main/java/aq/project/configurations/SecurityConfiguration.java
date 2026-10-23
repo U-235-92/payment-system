@@ -38,7 +38,7 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    @Profile("prod")
+    @Profile({ "test", "prod" })
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/api/v1/**")
@@ -46,11 +46,11 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers(HttpMethod.POST, PATH_CREATE_PERSON).authenticated()
-                        .requestMatchers(HttpMethod.DELETE, PATH_DELETE_PERSON_BY_KEYCLOAK_ID.replace("{keycloakId}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.DELETE, PATH_DELETE_PERSON.replace("{personKeycloakId}", "*")).authenticated()
                         .requestMatchers(HttpMethod.POST, PATH_UNDO_DELETE_PERSON).authenticated()
                         .requestMatchers(HttpMethod.PATCH, PATH_UPDATE_PERSON).authenticated()
                         .requestMatchers(HttpMethod.POST, PATH_UNDO_UPDATE_PERSON).authenticated()
-                        .requestMatchers(HttpMethod.GET, PATH_GET_PERSON_BY_KEYCLOAK_ID.replace("{keycloakId}", "*")).authenticated())
+                        .requestMatchers(HttpMethod.GET, PATH_GET_PERSON_INFO.replace("{personKeycloakId}", "*")).authenticated())
                 .build();
     }
 

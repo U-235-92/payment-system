@@ -1,7 +1,9 @@
 package aq.project.controllers.handlers;
 
-import aq.project.dto.ErrorDto;
-import aq.project.exceptions.*;
+import aq.project.dto.PersonServiceErrorDto;
+import aq.project.exceptions.EntityAlreadyExistException;
+import aq.project.exceptions.EntityNotFoundException;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -21,98 +23,93 @@ public class PersonRestControllerExceptionHandler {
     
     private final ControllerExceptionLogger controllerExceptionLogger;
 
-    @ExceptionHandler(UserExistsException.class)
-    public ResponseEntity<ErrorDto> onUserExistsException(UserExistsException e) {
+//    Project specific exceptions
+    @ExceptionHandler(EntityAlreadyExistException.class)
+    public ResponseEntity<PersonServiceErrorDto> onEntityAlreadyExistException(EntityAlreadyExistException e) {
         HttpStatus status = HttpStatus.CONFLICT;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
-    @ExceptionHandler(UserNotExistsException.class)
-    public ResponseEntity<ErrorDto> onUserNotExistsException(UserNotExistsException e) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<PersonServiceErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
-    @ExceptionHandler(CountryNotExistsException.class)
-    public ResponseEntity<ErrorDto> onCountryNotExistsException(CountryNotExistsException e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+    @ExceptionHandler(ProcessOperationException.class)
+    public ResponseEntity<PersonServiceErrorDto> onProcessOperationException(ProcessOperationException e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
+//    Non project specific exceptions
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDto> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<PersonServiceErrorDto> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDto> onConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<PersonServiceErrorDto> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorDto> onMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+    public ResponseEntity<PersonServiceErrorDto> onMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorDto> onHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<PersonServiceErrorDto> onHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorDto> onIllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<PersonServiceErrorDto> onIllegalArgumentException(IllegalArgumentException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
-    }
 
-    @ExceptionHandler(NotFoundRevisionException.class)
-    public ResponseEntity<ErrorDto> onNotFoundRevisionException(NotFoundRevisionException e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
-    }
 
-    @ExceptionHandler(IllegalUndoOperationPayloadPropertyException.class)
-    public ResponseEntity<ErrorDto> onIllegalUndoOperationPayloadPropertyException(IllegalUndoOperationPayloadPropertyException e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorDto> onRuntimeException(RuntimeException e) {
+    public ResponseEntity<PersonServiceErrorDto> onRuntimeException(RuntimeException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
-    @ExceptionHandler(NotExpectedUndoOperationCallException.class)
-    public ResponseEntity<ErrorDto> onNotExpectedUndoOperationCallException(NotExpectedUndoOperationCallException e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
-    }
-
-    @ExceptionHandler(NotFoundUndoOperationCallException.class)
-    public ResponseEntity<ErrorDto> onNotFoundUndoOperationCallException(NotFoundUndoOperationCallException e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status.value()).body(getErrorDto(status, e.getMessage()));
-    }
-
-    private ErrorDto getErrorDto(HttpStatus httpStatus, String message) {
-        return new ErrorDto().httpStatus(httpStatus.value()).message(message);
+    private ResponseEntity<PersonServiceErrorDto> getErrorResponseEntity(HttpStatus status, Exception e) {
+        return ResponseEntity.status(status)
+                .body(new PersonServiceErrorDto()
+                        .httpStatus(status.value())
+                        .message(e.getMessage()));
     }
 }

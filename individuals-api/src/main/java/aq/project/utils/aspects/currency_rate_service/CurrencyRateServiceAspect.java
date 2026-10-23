@@ -35,7 +35,8 @@ public class CurrencyRateServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.currency_rate.CurrencyRateService.getCurrencies(..)) && args()")
+    @Around("execution(* aq.project.services.currency_rate_service.CurrencyRateService.getCurrencies(..)) " +
+            "&& args()")
     public Mono<Flux<CurrencyResponse>> getCurrencies(
             ProceedingJoinPoint pjp
     ) throws Throwable {
@@ -59,7 +60,8 @@ public class CurrencyRateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.currency_rate.CurrencyRateService.getCurrencyInfo(..)) && args(code)")
+    @Around("execution(* aq.project.services.currency_rate_service.CurrencyRateService.getCurrencyInfo(..)) " +
+            "&& args(code)")
     public Mono<CurrencyResponse> getCurrencyInfo(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String code
@@ -90,7 +92,8 @@ public class CurrencyRateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.currency_rate.CurrencyRateService.getRate(..)) && args(from, to, provider, date)")
+    @Around("execution(* aq.project.services.currency_rate_service.CurrencyRateService.getRate(..)) " +
+            "&& args(from, to, provider, date)")
     public Mono<RateResponse> getRate(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String from,
@@ -128,7 +131,8 @@ public class CurrencyRateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.currency_rate.CurrencyRateService.getRateProviderInfo(..)) && args(code)")
+    @Around("execution(* aq.project.services.currency_rate_service.CurrencyRateService.getRateProviderInfo(..)) " +
+            "&& args(code)")
     public Mono<RateProviderResponse> getRateProviderInfo(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 10) @Pattern(regexp = "^[A-Z]{3,10}$") String code
@@ -159,7 +163,8 @@ public class CurrencyRateServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.currency_rate.CurrencyRateService.getRateProviders(..)) && args()")
+    @Around("execution(* aq.project.services.currency_rate_service.CurrencyRateService.getRateProviders(..)) " +
+            "&& args()")
     public Mono<Flux<RateProviderResponse>> getRateProviders(
             ProceedingJoinPoint pjp
     ) throws Throwable {

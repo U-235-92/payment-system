@@ -26,26 +26,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RefreshTokenDto"
+              $ref: "#/components/schemas/IndividualsApiServiceTokenRequestDto"
               description: Represents data of refresh token
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseTokenDto"
+                $ref: "#/components/schemas/IndividualsApiServiceTokenResponseDto"
           description: Returns updated pair of access & refresh tokens
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/deposit/status/{transactionId}:
@@ -75,13 +75,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/deposit/create:
@@ -111,13 +111,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/transfer/status/{transactionId}:
@@ -147,13 +147,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/transfer/create:
@@ -183,13 +183,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/withdraw/status/{transactionId}:
@@ -219,13 +219,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/transaction/withdraw/create:
@@ -255,100 +255,100 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/user/create-user:
+  /api/v1/person/create-person:
     post:
       security:
         - BearerAuth: [ ]
-      operationId: createUser
+      operationId: createPerson
       tags:
-        - User
-      summary: Handle incoming create user request
+        - Person
+      summary: Handle incoming create person request
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateUserDto"
+              $ref: "#/components/schemas/IndividualsApiServiceCreatePersonRequestDto"
               description: Represents data of create user request
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseTokenDto"
+                $ref: "#/components/schemas/IndividualsApiServiceTokenResponseDto"
           description: Returns pairs of access & refresh tokens which are represented created user
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/user/login-user:
+  /api/v1/person/login-person:
     post:
       security:
         - BearerAuth: [ ]
-      operationId: loginUser
+      operationId: loginPerson
       tags:
-        - User
-      summary: Handle incoming login user request
+        - Person
+      summary: Handle incoming login person request
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginUserDto"
+              $ref: "#/components/schemas/IndividualsApiServiceLoginPersonRequestDto"
               description: Represents data of login user request
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseTokenDto"
+                $ref: "#/components/schemas/IndividualsApiServiceTokenResponseDto"
           description: Returns pairs of access & refresh tokens which are represented login user
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/user/update-user:
+  /api/v1/person/update-person:
     patch:
       security:
         - BearerAuth: [ ]
-      operationId: updateUser
+      operationId: updatePerson
       tags:
-        - User
-      summary: Handle incoming update user request
+        - Person
+      summary: Handle incoming update person request
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateUserDto"
-              description: Represents data of update user request
+              $ref: "#/components/schemas/IndividualsApiServiceUpdatePersonRequestDto"
+              description: Represents data of update person request
       responses:
         200:
           description: Returns OK status code if operation was successful
@@ -356,42 +356,43 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/user/delete-user-by-keycloak-id/{keycloakId}:
+  /api/v1/person/delete-person/{personKeycloakId}:
     delete:
       security:
         - BearerAuth: [ ]
-      operationId: deleteUserByKeycloakId
+      operationId: deletePerson
       tags:
-        - User
-      summary: Delete a user by given ID
+        - Person
+      summary: Delete a person by given keycloak UUID
       parameters:
-        - name: keycloakId
+        - name: personKeycloakId
           in: path
           required: true
-          description: Parameter is represented a valid UUID that describes a user ID
+          description: Parameter is represented a valid UUID that describes a person ID
           schema:
-            $ref: "#/components/schemas/UuidDefinition"
+            type: string
+            format: uuid
       responses:
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/create:
@@ -421,13 +422,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/info/{walletId}:
@@ -457,13 +458,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/currency-rate/get-rate:
@@ -518,13 +519,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Курс не найден
         400:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Ошибка запроса
 
   /api/v1/currency-rate/get-currencies:
@@ -590,7 +591,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Returns ErrorDto if any 4xx client error was occurred
 
   /api/v1/currency-rate/get-rate-provider-info/{code}:
@@ -620,8 +621,51 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorDto'
+                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Returns ErrorDto if any 4xx client error was occurred
+
+  /api/v1/payment/get-payment-methods/{currencyCode}/{countryCode}:
+    get:
+      summary: Get list of payment methods for described currency code and country code
+      security:
+        - basicAuth: [ ]
+      operationId: getPaymentMethods
+      tags:
+        - Payment
+      parameters:
+        - name: currencyCode
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{3}$'
+            minLength: 3
+            maxLength: 3
+        - name: countryCode
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{3}$'
+            minLength: 3
+            maxLength: 3
+      responses:
+        200:
+          description: List of payment methods for described currency code and country code
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentServicePaymentMethodResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
 
 ########
 # TAGS #
@@ -635,8 +679,8 @@ tags:
     description: Describes operations with transfer transactions
   - name: WithdrawTransaction
     description: Describes operations with withdraw transactions
-  - name: User
-    description: Describes operations with users
+  - name: Person
+    description: Describes operations with persons
   - name: Wallet
     description: Describes operations with wallets
   - name: Rate
@@ -658,21 +702,25 @@ components:
     ##########################################
     IndividualsApiServiceDepositTransactionRequestDto:
       type: object
-      required: [ wallet_id, currency_code, amount ]
+      required: [ wallet_id, payment_method_id, currency_code, amount ]
       properties:
         wallet_id:
           type: string
           format: uuid
+        payment_method_id:
+          type: integer
+          format: int64
         currency_code:
           type: string
           pattern: '^[A-Z]{3}$'
         amount:
           type: string
           format: decimal
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
 
     IndividualsApiServiceTransferTransactionRequestDto:
       type: object
-      required: [ sender_wallet_id, recipient_wallet_id, currency_code, amount ]
+      required: [ sender_wallet_id, recipient_wallet_id, payment_method_id, currency_code, amount ]
       properties:
         sender_wallet_id:
           type: string
@@ -680,155 +728,245 @@ components:
         recipient_wallet_id:
           type: string
           format: uuid
+        payment_method_id:
+          type: integer
+          format: int64
         currency_code:
           type: string
           pattern: '^[A-Z]{3}$'
         amount:
           type: string
           format: decimal
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
 
     IndividualsApiServiceWithdrawTransactionRequestDto:
       type: object
-      required: [ wallet_id, currency_code, amount ]
+      required: [ wallet_id, payment_method_id, currency_code, amount ]
       properties:
         wallet_id:
           type: string
           format: uuid
+        payment_method_id:
+          type: integer
+          format: int64
         currency_code:
           type: string
           pattern: '^[A-Z]{3}$'
         amount:
           type: string
           format: decimal
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
 
-    UserInfoResponseDto:
+    IndividualsApiServiceLoginPersonRequestDto:
       type: object
-      required: [ keycloak_user_id, email, roles, created, individual_data ]
+      required: [ email, password ]
       properties:
-        keycloak_user_id:
-          $ref: "#/components/schemas/UuidDefinition"
         email:
           type: string
+          x-extra-annotations:
+            - "@jakarta.validation.constraints.Email"
+            - "@jakarta.validation.constraints.NotBlank"
+        password:
+          type: string
+
+    IndividualsApiServicePersonInfoResponseDto:
+      type: object
+      required: [ person_keycloak_id, first_name, last_name, phone_number, passport_number, email,
+                  country_name, country_code, state, city, address, zip_code, roles, created_at ]
+      properties:
+        person_keycloak_id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        last_name:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        phone_number:
+          type: string
+          pattern: '^[0-9]{11}$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        passport_number:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        email:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Email"
+        country_name:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        country_code:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        state:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        city:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        address:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        zip_code:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         roles:
           type: array
           items:
             type: string
-        created:
+        created_at:
           type: string
           format: date-time
-        individual_data:
-          $ref: "#/components/schemas/IndividualDataResponseDto"
 
-    CreateUserDto:
+    IndividualsApiServiceCreatePersonRequestDto:
       type: object
-      required: [ username, password, confirm_password, individual_data ]
+      required: [ username, password, confirm_password, first_name, last_name, email, phone_number, passport_number,
+                  country_name, country_code, state, city, address, zip_code ]
       properties:
-        keycloak_user_id:
+        person_keycloak_id:
           type: string
+          format: uuid
         username:
           type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         password:
           type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         confirm_password:
           type: string
-        individual_data:
-          $ref: "#/components/schemas/CreateIndividualDataDto"
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        first_name:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        last_name:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        email:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Email"
+        phone_number:
+          type: string
+          pattern: '^[0-9]{11}$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        passport_number:
+          type: string
+        country_name:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        country_code:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        state:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        city:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        address:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        zip_code:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        active:
+          type: boolean
+          default: true
 
-    UpdateUserDto:
+    IndividualsApiServiceUpdatePersonRequestDto:
       type: object
-      required: [ keycloak_user_id, password, confirm_password, individual_data ]
+      required: [ person_keycloak_id, password, confirm_password, first_name, last_name, phone_number, passport_number,
+                  country_name, country_code, state, city, address, zip_code, active ]
       properties:
-        keycloak_user_id:
-          $ref: "#/components/schemas/UuidDefinition"
+        person_keycloak_id:
+          type: string
+          format: uuid
         password:
           type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         confirm_password:
           type: string
-        individual_data:
-          $ref: "#/components/schemas/UpdateIndividualDataDto"
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        first_name:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        last_name:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        phone_number:
+          type: string
+          pattern: '^[0-9]{11}$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        passport_number:
+          type: string
+        country_name:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        country_code:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        state:
+          type: string
+        city:
+          type: string
+          pattern: '^[A-Z][a-z]*$'
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        address:
+          type: string
+        zip_code:
+          type: string
+        active:
+          type: boolean
 
-    RefreshTokenDto:
+    IndividualsApiServiceTokenRequestDto:
       type: object
       required: [ refresh_token ]
       properties:
         refresh_token:
           type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          description: Valid refresh JWT
 
-    ResponseTokenDto:
+    IndividualsApiServiceTokenResponseDto:
       type: object
-      required: [ keycloak_user_id, access_token, refresh_token, expires_in, token_type ]
+      required: [ person_keycloak_id, access_token, refresh_token, expires_in, token_type ]
       properties:
-        keycloak_user_id:
-          $ref: "#/components/schemas/UuidDefinition"
+        person_keycloak_id:
+          type: string
+          format: uuid
         access_token:
           type: string
         refresh_token:
           type: string
         expires_in:
-          type: long
+          type: integer
+          format: int64
         token_type:
           type: string
-          example: Bearer [token]
 
-    ErrorDto:
+    IndividualsApiServiceErrorDto:
       type: object
-      required: [ http_status, message ]
+      required: [ message ]
       properties:
+        message:
+          type: string
+        trace_id:
+          type: string
         http_status:
           type: integer
           format: int32
-        message:
-          type: string
-
-    CurrencyCodeDefinition:
-      type: string
-      pattern: '^[A-Z]{3}$'
-      minLength: 3
-      maxLength: 3
-
-    UuidDefinition:
-      type: string
-      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-
-    #################################
-    # PERSON SERVICE API COMPONENTS #
-    #################################
-    UpdateIndividualDataDto:
-      allOf:
-        - $ref: "./person-service-api-specification.yaml#/components/schemas/UpdateIndividualDataDto"
-      properties:
-        address:
-          $ref: "#/components/schemas/AddressDto"
-
-    LoginUserDto:
-      $ref: "./person-service-api-specification.yaml#/components/schemas/LoginUserDto"
-
-    IndividualDataResponseDto:
-      allOf:
-        - $ref: "./person-service-api-specification.yaml#/components/schemas/IndividualDataResponseDto"
-      properties:
-        address:
-          $ref: "#/components/schemas/AddressDto"
-
-    AddressDto:
-      allOf:
-        - $ref: "./person-service-api-specification.yaml#/components/schemas/AddressDto"
-      properties:
-        country:
-          $ref: "#/components/schemas/CountryDto"
-
-    CountryDto:
-      $ref: "./person-service-api-specification.yaml#/components/schemas/CountryDto"
-
-    UndoOperationDto:
-      $ref: "./person-service-api-specification.yaml#/components/schemas/UndoOperationDto"
-
-    CreateIndividualDataDto:
-      allOf:
-        - $ref: "./person-service-api-specification.yaml#/components/schemas/CreateIndividualDataDto"
-      properties:
-        address:
-          $ref: "#/components/schemas/AddressDto"
 
     ########################################
     # CURRENCY RATE SERVICE API COMPONENTS #
@@ -865,3 +1003,9 @@ components:
 
     CardExpirationDateDefinition:
       $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardExpirationDateDefinition"
+
+    ##################################
+    # PAYMENT SERVICE API COMPONENTS #
+    ##################################
+    PaymentServicePaymentMethodResponseDto:
+      $ref: "./payment-service-api-specification.yaml#/components/schemas/PaymentServicePaymentMethodResponseDto"

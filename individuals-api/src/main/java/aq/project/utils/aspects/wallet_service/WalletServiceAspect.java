@@ -1,7 +1,6 @@
 package aq.project.utils.aspects.wallet_service;
 
 import aq.project.dto.CreateWalletRequestDto;
-import aq.project.dto.IndividualsApiServiceDepositTransactionRequestDto;
 import aq.project.dto.WalletInfoResponseDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.ConstraintViolationException;
@@ -33,7 +32,7 @@ public class WalletServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.wallets.WalletService.createWallet(..)) && args(dto)")
+    @Around("execution(* aq.project.services.wallet_service.WalletService.createWallet(..)) && args(dto)")
     public Mono<String> createWallet(
             ProceedingJoinPoint pjp,
             @NotNull @Valid CreateWalletRequestDto dto
@@ -82,7 +81,7 @@ public class WalletServiceAspect {
         };
     }
 
-    @Around("execution(* aq.project.services.wallets.WalletService.getWalletInfo(..)) && args(walletId)")
+    @Around("execution(* aq.project.services.wallet_service.WalletService.getWalletInfo(..)) && args(walletId)")
     public Mono<WalletInfoResponseDto> getWalletInfo(
             ProceedingJoinPoint pjp,
             @NotNull UUID walletId
@@ -113,7 +112,7 @@ public class WalletServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.wallets.WalletService.getWalletCurrencyCode(..)) && args(walletId)")
+    @Around("execution(* aq.project.services.wallet_service.WalletService.getWalletCurrencyCode(..)) && args(walletId)")
     public Mono<String> getWalletCurrencyCode(
             ProceedingJoinPoint pjp,
             @NotNull UUID walletId

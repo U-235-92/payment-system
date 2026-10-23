@@ -5,10 +5,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface PaymentProviderServiceTransactionRequestRepository extends
-        CrudRepository<PaymentProviderServiceTransactionRequest, UUID> {
+        CrudRepository<PaymentProviderServiceTransactionRequest, Long> {
 
     @Query(
             "SELECT request FROM PaymentProviderServiceTransactionRequest request " +

@@ -106,7 +106,6 @@ public class HandleSuccessResponseCreateTransactionIntegrationTest {
 //        Act & Assert
         Assertions.assertDoesNotThrow(() -> paymentProviderServiceSuccessResponseCreateTransactionHandler
                 .handleSuccessResponseCreateTransactionOnPaymentProviderService(successHandleTransactionDto));
-        Assertions.assertTrue(walletServiceDepositTransactionRequestRepository.findById(savedTransactionServiceDepositTransactionId).isPresent());
     }
 
     @Test

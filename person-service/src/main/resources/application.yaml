@@ -21,4 +21,29 @@ management:
           - prometheus
           - info
           - health
+resilience4j:
+  ratelimiter:
+    instances:
+      create-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
+      update-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      undo-update-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      delete-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      undo-delete-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-person-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100

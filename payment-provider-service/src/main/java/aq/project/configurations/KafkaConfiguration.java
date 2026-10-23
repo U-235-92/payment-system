@@ -33,8 +33,8 @@ public class KafkaConfiguration {
         DefaultErrorHandler handler = new DefaultErrorHandler(deadLetterPublishingRecoverer, backOff());
         handler.addNotRetryableExceptions(EntityAlreadyExistsException.class);
         handler.addNotRetryableExceptions(EntityNotFoundException.class);
-        handler.addNotRetryableExceptions(ProhibitedOperationException.class);
-        handler.addNotRetryableExceptions(ForeignMerchantTransactionException.class);
+        handler.addNotRetryableExceptions(ProcessOperationException.class);
+        handler.addNotRetryableExceptions(ForeignMerchantException.class);
         handler.addNotRetryableExceptions(DeserializationException.class);
         handler.addNotRetryableExceptions(ExecutionException.class);
         handler.addNotRetryableExceptions(InterruptedException.class);

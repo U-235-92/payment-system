@@ -1,0 +1,226 @@
+package aq.project.services;
+
+import aq.project.dto.PaymentProviderServiceCreatePaymentRequestDto;
+import aq.project.dto.PaymentProviderServiceCreatePaymentResponseDto;
+import aq.project.dto.PaymentProviderServiceFailPaymentRequestDto;
+import aq.project.dto.PaymentStatus;
+import aq.project.entities.Payment;
+import aq.project.entities.Transaction;
+import aq.project.exceptions.EntityAlreadyExistsException;
+import aq.project.exceptions.EntityNotFoundException;
+import aq.project.exceptions.ForeignMerchantException;
+import aq.project.exceptions.ProcessOperationException;
+import aq.project.repositories.PaymentRepository;
+import aq.project.repositories.TransactionRepository;
+import aq.project.utils.mappers.PaymentMapper;
+import aq.project.utils.resilence.Fallback;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+@Service
+@RequiredArgsConstructor
+public class PaymentService {
+
+    @Value("${service.payment-provider-service.retry.get-transaction.retry-period}")
+    private long getTransactionRetryPeriod;
+    @Value("${service.payment-provider-service.retry.get-transaction.max-retry-count}")
+    private int maxGetTransactionRetryCount;
+
+    private final PaymentMapper paymentMapper = PaymentMapper.INSTANCE;
+
+    private final PaymentRepository paymentRepository;
+    private final TransactionRepository transactionRepository;
+
+    private final Fallback fallback;
+
+    @Transactional
+    @RateLimiter(
+            name = "create-payment-rate-limiter",
+            fallbackMethod = "createPaymentRateLimiterFallback"
+    )
+    public PaymentProviderServiceCreatePaymentResponseDto createPayment(
+            PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String authenticatedMerchantId = authentication.getPrincipal().toString();
+        String requestMerchantId = paymentProviderServiceCreatePaymentRequestDto.getMerchantId();
+
+        checkPaymentOwner(requestMerchantId, authenticatedMerchantId);
+
+        UUID transactionId = paymentProviderServiceCreatePaymentRequestDto.getTransactionId();
+        String traceId = paymentProviderServiceCreatePaymentRequestDto.getTraceId();
+
+        checkPaymentAlreadyExistForTransaction(transactionId);
+
+        Transaction transaction = getTransaction(transactionId);
+
+        Payment newPayment = paymentMapper.toPayment(paymentProviderServiceCreatePaymentRequestDto);
+        newPayment.setId(UUID.randomUUID());
+        newPayment.setTransaction(transaction);
+
+        String paymentMerchantId = newPayment.getTransaction().getMerchant().getId();
+
+        checkPaymentOwner(requestMerchantId, paymentMerchantId);
+
+        Payment savedPayment = paymentRepository.save(newPayment);
+        savedPayment.setStatus(PaymentStatus.COMPLETED);
+
+        PaymentProviderServiceCreatePaymentResponseDto dto = paymentMapper.toPaymentProviderServiceCreatePaymentResponseDto(savedPayment);
+        dto.setTraceId(traceId);
+
+        return dto;
+    }
+
+    private PaymentProviderServiceCreatePaymentResponseDto createPaymentRateLimiterFallback(
+            PaymentProviderServiceCreatePaymentRequestDto paymentProviderServiceCreatePaymentRequestDto,
+            Exception exception
+    ) {
+        UUID transactionId = paymentProviderServiceCreatePaymentRequestDto.getTransactionId();
+
+        String action = "create-payment";
+        String message = String.format(
+                "Exception occurred during creating of payment for transaction with id: [%s]. Exception message: %s",
+                transactionId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+
+        return null;
+    }
+
+    private void checkPaymentAlreadyExistForTransaction(UUID transactionId) {
+        if(paymentRepository.findByTransactionId(transactionId).isPresent())
+            throw new EntityAlreadyExistsException(String.format(
+                    "Payment for transaction with id: [%s] is already exist", transactionId));
+    }
+
+
+    private Transaction getTransaction(UUID transactionId) {
+        int attempt = 0;
+        Optional<Transaction> transactionOptional;
+
+        while(true) {
+            attempt++;
+            transactionOptional = transactionRepository.findById(transactionId);
+
+            if(transactionOptional.isPresent())
+                break;
+
+            if(attempt >= maxGetTransactionRetryCount)
+                throw new EntityNotFoundException(
+                        String.format("Transaction with id [%s] not found", transactionId));
+
+            pause(attempt);
+        }
+        return transactionOptional.get();
+    }
+
+    private void pause(
+            int attempt
+    ) {
+        try {
+            long pause = getTransactionRetryPeriod * attempt;
+            TimeUnit.MILLISECONDS.sleep(pause);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Transactional
+    @RateLimiter(
+            name = "fail-payment-rate-limiter",
+            fallbackMethod = "failPaymentRateLimiterFallback"
+    )
+    public void failPayment(
+            PaymentProviderServiceFailPaymentRequestDto paymentProviderServiceFailPaymentRequestDto
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String authenticatedMerchantId = authentication.getPrincipal().toString();
+        String requestMerchantId = paymentProviderServiceFailPaymentRequestDto.getMerchantId();
+
+        checkPaymentOwner(requestMerchantId, authenticatedMerchantId);
+
+        UUID paymentId = paymentProviderServiceFailPaymentRequestDto.getPaymentId();
+        UUID transactionId = paymentProviderServiceFailPaymentRequestDto.getTransactionId();
+
+        Payment payment = getPayment(paymentId, transactionId);
+
+        String paymentMerchantId = payment.getTransaction().getMerchant().getId();
+
+        checkPaymentOwner(requestMerchantId, paymentMerchantId);
+
+        PaymentStatus currentPaymentStatus = payment.getStatus();
+        PaymentStatus targetPaymentStatus = PaymentStatus.FAILED;
+
+        switch (currentPaymentStatus) {
+            case PENDING, COMPLETED -> payment.setStatus(targetPaymentStatus);
+
+            default -> throw new ProcessOperationException(
+                    String.format(
+                            "Attempt of changing payment status for payment with id: [%s] from: [%s] to [%s] " +
+                            "which is prohibited operation",
+                            paymentId, currentPaymentStatus, targetPaymentStatus));
+        }
+    }
+
+    private void failPaymentRateLimiterFallback(
+            PaymentProviderServiceFailPaymentRequestDto paymentProviderServiceFailPaymentRequestDto,
+            Exception exception
+    ) {
+        UUID paymentId = paymentProviderServiceFailPaymentRequestDto.getPaymentId();
+        UUID transactionId = paymentProviderServiceFailPaymentRequestDto.getTransactionId();
+
+        String action = "fail-payment";
+        String message = String.format(
+                "Exception occurred during fail of payment with id: [%s] for transaction with id: [%s]. " +
+                "Exception message: %s",
+                paymentId, transactionId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+    }
+
+    private void checkPaymentOwner(
+            String requestMerchantId,
+            String currentMerchantId
+    ) {
+        if(!currentMerchantId.equals(requestMerchantId))
+            throw new ForeignMerchantException(String.format(
+                    "Received invalid request with merchant id: [%s] " +
+                    "to fail payment for current merchant with id: [%s] " +
+                    "which is prohibited", requestMerchantId, currentMerchantId));
+    }
+
+    private Payment getPayment(
+            UUID paymentId,
+            UUID transactionId
+    ) {
+        Payment payment;
+
+        if(paymentId != null) {
+            payment = paymentRepository.findById(paymentId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Payment with id [%s] not found", paymentId)));
+
+            if(!payment.getTransaction().getId().equals(transactionId))
+                throw new ProcessOperationException(String.format(
+                        "Received request with payment id: [%s] contains transaction id: [%s] " +
+                        "which is unknown for this payment id", paymentId, transactionId));
+
+        } else {
+            payment = paymentRepository.findByTransactionId(transactionId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Payment for transaction with id [%s] not found", transactionId)));
+        }
+        return payment;
+    }
+}

@@ -50,12 +50,15 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers(HttpMethod.POST, PATH_CREATE_DEPOSIT_TRANSACTION).authenticated()
+                        .requestMatchers(HttpMethod.POST, PATH_FAIL_DEPOSIT_TRANSACTION.replace("{id}", "*")).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_DEPOSIT_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
 
                         .requestMatchers(HttpMethod.POST, PATH_CREATE_TRANSFER_TRANSACTION).authenticated()
+                        .requestMatchers(HttpMethod.POST, PATH_FAIL_TRANSFER_TRANSACTION.replace("{id}", "*")).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_TRANSFER_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
 
                         .requestMatchers(HttpMethod.POST, PATH_CREATE_WITHDRAW_TRANSACTION).authenticated()
+                        .requestMatchers(HttpMethod.POST, PATH_FAIL_WITHDRAW_TRANSACTION.replace("{id}", "*")).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_WITHDRAW_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
                 .addFilterBefore(new HeaderValidatorHttpFilter(), BasicAuthenticationFilter.class)
                 .build();

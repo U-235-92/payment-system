@@ -7,8 +7,8 @@ import aq.project.dto.TransactionStatus;
 import aq.project.entities.Merchant;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ForeignMerchantTransactionException;
-import aq.project.exceptions.ProhibitedOperationException;
+import aq.project.exceptions.ForeignMerchantException;
+import aq.project.exceptions.ProcessOperationException;
 import aq.project.repositories.MerchantRepository;
 import aq.project.repositories.TransactionRepository;
 import aq.project.utils.handlers.FailTransactionHandler;
@@ -143,7 +143,7 @@ public class HandleFailTransactionIntegrationTest {
         transactionRepository.save(transaction);
 
 //        Act & Assert
-        Assertions.assertThrows(ForeignMerchantTransactionException.class,
+        Assertions.assertThrows(ForeignMerchantException.class,
                 () -> failTransactionHandler.handleFailTransaction(requestDto));
     }
 
@@ -172,7 +172,7 @@ public class HandleFailTransactionIntegrationTest {
         transactionRepository.save(transaction);
 
 //        Act & Assert
-        Assertions.assertThrows(ProhibitedOperationException.class,
+        Assertions.assertThrows(ProcessOperationException.class,
                 () -> failTransactionHandler.handleFailTransaction(requestDto));
 
         Transaction savedTransaction = transactionRepository.findAll().iterator().next();

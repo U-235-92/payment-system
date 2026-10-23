@@ -56,8 +56,24 @@ management:
           - prometheus
           - info
           - health
+
+resilience4j:
+  ratelimiter:
+    instances:
+      fail-payment-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      create-payment-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
 service:
   payment-provider-service:
+    retry:
+      get-transaction:
+        retry-period: 1500
+        max-retry-count: 5
     scheduler:
       handle_create_transaction:
         rate: 5000

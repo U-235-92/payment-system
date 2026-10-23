@@ -19,11 +19,13 @@ public interface WalletServiceTransactionDtoMapper {
 
     WalletServiceTransactionDtoMapper INSTANCE = Mappers.getMapper(WalletServiceTransactionDtoMapper.class);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "amount", source = "amount")
     @Mapping(target = "currencyCode", source = "currencyCode")
     @Mapping(target = "conversionRate", source = "conversionRate")
+    @Mapping(target = "status", ignore = true)
     @Mapping(target = "transactionRequestMetadata", expression = "java(toTransactionRequestMetadata(transaction))")
     WalletServiceDepositTransactionRequest toWalletServiceDepositTransactionRequest(
             TransactionServiceDepositTransaction transaction);
@@ -37,11 +39,13 @@ public interface WalletServiceTransactionDtoMapper {
         return metadata;
     }
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "amount", source = "amount")
     @Mapping(target = "currencyCode", source = "currencyCode")
     @Mapping(target = "conversionRate", source = "conversionRate")
+    @Mapping(target = "status", ignore = true)
     @Mapping(target = "transactionRequestMetadata", expression = "java(toTransactionRequestMetadata(transaction))")
     WalletServiceWithdrawTransactionRequest toWalletServiceWithdrawTransactionRequest(
             TransactionServiceWithdrawTransaction transaction);
@@ -55,6 +59,7 @@ public interface WalletServiceTransactionDtoMapper {
         return metadata;
     }
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "senderWalletId", source = "senderWalletId")
     @Mapping(target = "recipientWalletId", source = "recipientWalletId")
@@ -62,6 +67,7 @@ public interface WalletServiceTransactionDtoMapper {
     @Mapping(target = "currencyCode", source = "currencyCode")
     @Mapping(target = "senderConversionRate", source = "senderConversionRate")
     @Mapping(target = "recipientConversionRate", source = "recipientConversionRate")
+    @Mapping(target = "status", ignore = true)
     @Mapping(target = "transactionRequestMetadata", expression = "java(toTransactionRequestMetadata(transaction))")
     WalletServiceTransferTransactionRequest toWalletServiceTransferTransactionRequest(
             TransactionServiceTransferTransaction transaction);

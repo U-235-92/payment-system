@@ -6,9 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public interface CountryRepository extends JpaRepository<Country, Integer> {
+public interface CountryRepository extends JpaRepository<Country, String> {
 
     @Query("SELECT c FROM Country c WHERE c.code = :code")
     Optional<Country> findByCountryCode(@Param("code") String code);

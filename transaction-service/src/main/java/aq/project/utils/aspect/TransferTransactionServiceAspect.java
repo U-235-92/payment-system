@@ -85,4 +85,32 @@ public class TransferTransactionServiceAspect {
                 false
         );
     }
+
+    @Around("execution(* aq.project.services.TransferTransactionService.failTransaction(..)) && args(transactionId)")
+    public void failTransaction(
+            ProceedingJoinPoint pjp,
+            @NotNull UUID transactionId
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "fail-transfer-transaction";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+        String preMainLogicLogMessage = "Received request to fail transfer transaction";
+        String postSuccessMainLogicCallLogMessage = "Success handle of request to fail transfer transaction";
+        String postFailureMainLogicCallLogMessage = "Error occurred during handle of request to fail transfer transaction";
+
+//        Handler logic call
+        serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                preMainLogicLogMessage,
+                postSuccessMainLogicCallLogMessage,
+                postFailureMainLogicCallLogMessage,
+                null,
+                null,
+                null,
+                false
+        );
+    }
 }

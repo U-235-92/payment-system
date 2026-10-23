@@ -186,8 +186,10 @@ public class PaymentProviderServiceSuccessResponseCreateTransactionHandler {
     ) {
         UUID transactionId = transactionServiceDepositTransaction.getId();
 
-        WalletServiceDepositTransactionRequest walletServiceDepositTransactionRequest = walletServiceTransactionDtoMapper.toWalletServiceDepositTransactionRequest(transactionServiceDepositTransaction);
+        WalletServiceDepositTransactionRequest walletServiceDepositTransactionRequest = walletServiceTransactionDtoMapper
+                .toWalletServiceDepositTransactionRequest(transactionServiceDepositTransaction);
         walletServiceDepositTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
+        walletServiceDepositTransactionRequest.setStatus(TransactionStatus.PENDING);
 
         walletServiceDepositTransactionRequestRepository.save(walletServiceDepositTransactionRequest);
 
@@ -382,8 +384,10 @@ public class PaymentProviderServiceSuccessResponseCreateTransactionHandler {
     ) {
         UUID transactionId = transactionServiceWithdrawTransaction.getId();
 
-        WalletServiceWithdrawTransactionRequest walletServiceWithdrawTransactionRequest = walletServiceTransactionDtoMapper.toWalletServiceWithdrawTransactionRequest(transactionServiceWithdrawTransaction);
+        WalletServiceWithdrawTransactionRequest walletServiceWithdrawTransactionRequest = walletServiceTransactionDtoMapper
+                .toWalletServiceWithdrawTransactionRequest(transactionServiceWithdrawTransaction);
         walletServiceWithdrawTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
+        walletServiceWithdrawTransactionRequest.setStatus(TransactionStatus.PENDING);
 
         walletServiceWithdrawTransactionRequestRepository.save(walletServiceWithdrawTransactionRequest);
 
@@ -579,8 +583,10 @@ public class PaymentProviderServiceSuccessResponseCreateTransactionHandler {
     ) {
         UUID transactionId = transactionServiceTransferTransaction.getId();
 
-        WalletServiceTransferTransactionRequest walletServiceTransferTransactionRequest = walletServiceTransactionDtoMapper.toWalletServiceTransferTransactionRequest(transactionServiceTransferTransaction);
+        WalletServiceTransferTransactionRequest walletServiceTransferTransactionRequest = walletServiceTransactionDtoMapper
+                .toWalletServiceTransferTransactionRequest(transactionServiceTransferTransaction);
         walletServiceTransferTransactionRequest.getTransactionRequestMetadata().setProcessed(false);
+        walletServiceTransferTransactionRequest.setStatus(TransactionStatus.PENDING);
 
         walletServiceTransferTransactionRequestRepository.save(walletServiceTransferTransactionRequest);
 

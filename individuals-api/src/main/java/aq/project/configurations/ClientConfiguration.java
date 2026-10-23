@@ -49,7 +49,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public KeycloakServiceClient keycloakServiceWebClient() {
+    public KeycloakServiceClient keycloakServiceWebClient(Environment env) {
         WebClient webClient = WebClient.builder()
                 .baseUrl(keycloakServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxKeycloakServiceErrorResponse)
@@ -58,6 +58,7 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
                 .exchangeAdapter(WebClientAdapter.create(webClient))
+                .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
         return factory.createClient(KeycloakServiceClient.class);
@@ -76,7 +77,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public PersonApiClient personApiClient(Environment env) {
+    public PersonApiClient personApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(personServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxPersonServiceErrorResponse)
@@ -85,7 +86,6 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
                 .exchangeAdapter(WebClientAdapter.create(webClient))
-                .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
         return factory.createClient(PersonApiClient.class);
@@ -110,7 +110,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public RateApiClient rateApiClient(Environment env) {
+    public RateApiClient rateApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(currencyRateServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxCurrencyRateServiceErrorResponse)
@@ -119,7 +119,6 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
                 .exchangeAdapter(WebClientAdapter.create(webClient))
-                .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
         return factory.createClient(RateApiClient.class);
@@ -144,7 +143,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public DepositTransactionApiClient depositTransactionApiClient(Environment env) {
+    public DepositTransactionApiClient depositTransactionApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(transactionServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxTransactionServiceErrorResponse)
@@ -153,14 +152,13 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
                 .exchangeAdapter(WebClientAdapter.create(webClient))
-                .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
         return factory.createClient(DepositTransactionApiClient.class);
     }
 
     @Bean
-    public TransferTransactionApiClient transferTransactionApiClient(Environment env) {
+    public TransferTransactionApiClient transferTransactionApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(transactionServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxTransactionServiceErrorResponse)
@@ -169,14 +167,13 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
                 .exchangeAdapter(WebClientAdapter.create(webClient))
-                .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
         return factory.createClient(TransferTransactionApiClient.class);
     }
 
     @Bean
-    public WithdrawTransactionApiClient withdrawTransactionApiClient(Environment env) {
+    public WithdrawTransactionApiClient withdrawTransactionApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(transactionServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxTransactionServiceErrorResponse)
@@ -185,7 +182,6 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
                 .exchangeAdapter(WebClientAdapter.create(webClient))
-                .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
         return factory.createClient(WithdrawTransactionApiClient.class);
@@ -210,7 +206,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public WalletApiClient walletApiClient(Environment env) {
+    public WalletApiClient walletApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(walletServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxWalletServiceErrorResponse)
@@ -219,7 +215,6 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
                 .exchangeAdapter(WebClientAdapter.create(webClient))
-                .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
         return factory.createClient(WalletApiClient.class);
@@ -244,7 +239,7 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public PaymentApiClient paymentApiClient(Environment env) {
+    public PaymentApiClient paymentApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(paymentServiceBaseUrl)
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxPaymentServiceErrorResponse)
@@ -253,7 +248,6 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
                 .exchangeAdapter(WebClientAdapter.create(webClient))
-                .embeddedValueResolver(env::resolvePlaceholders)
                 .build();
 
         return factory.createClient(PaymentApiClient.class);

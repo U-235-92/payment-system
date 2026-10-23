@@ -3,11 +3,14 @@ package aq.project.controllers.person_controller;
 import aq.project.controller.PersonRestControllerApi;
 import aq.project.dto.*;
 import aq.project.services.person_service.PersonService;
+import com.nimbusds.jwt.JWTParser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -31,11 +34,18 @@ public class PersonRestController implements PersonRestControllerApi {
 
     @Override
     public Mono<ResponseEntity<Void>> deletePerson(
-            UUID personKeycloakId,
+            UUID requestPersonKeycloakId,
             ServerWebExchange exchange
     ) {
-        return personService.deletePerson(personKeycloakId)
-                .flatMap(responseDto -> Mono.just(ResponseEntity.ok(responseDto)));
+        try {
+            UUID jwtPersonKeycloakId = getJwtPersonKeycloakId(exchange);
+
+            return personService.deletePerson(jwtPersonKeycloakId, requestPersonKeycloakId)
+                    .flatMap(responseDto -> Mono.just(ResponseEntity.ok(responseDto)));
+
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
     }
 
     @Override
@@ -50,19 +60,45 @@ public class PersonRestController implements PersonRestControllerApi {
 
     @Override
     public Mono<ResponseEntity<Void>> updatePerson(
-            Mono<IndividualsApiServiceUpdatePersonRequestDto> individualsApiServiceUpdatePersonRequestDtoMono,
+            Mono<IndividualsApiServiceUpdatePersonRequestDto> updatePersonRequestDtoMono,
             ServerWebExchange exchange
     ) {
-        return individualsApiServiceUpdatePersonRequestDtoMono
-                .flatMap(requestDto -> personService.updatePerson(requestDto)
-                        .map(ResponseEntity::ok));
+        try {
+            UUID jwtPersonKeycloakId = getJwtPersonKeycloakId(exchange);
+
+            return updatePersonRequestDtoMono
+                    .flatMap(requestDto -> personService
+                            .updatePerson(jwtPersonKeycloakId, requestDto)
+                            .map(ResponseEntity::ok));
+
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
     }
 
     @GetMapping("/api/v1/person/get-person-info")
     public Mono<ResponseEntity<IndividualsApiServicePersonInfoResponseDto>> getPersonInfo(
-            Authentication authentication,
-            ServerWebExchange exchange
+            Authentication authentication
     ) {
-        return personService.getPersonInfo(authentication).map(ResponseEntity::ok);
+        return personService.getPersonInfo(authentication)
+                .map(ResponseEntity::ok);
+    }
+
+    private UUID getJwtPersonKeycloakId(
+            ServerWebExchange exchange
+    ) throws Exception {
+        String jwt = exchange.getRequest()
+                .getHeaders()
+                .getFirst("Authorization");
+
+        if(jwt != null && jwt.startsWith("Bearer "))
+            return UUID.fromString(JWTParser.parse(jwt.substring(7))
+                    .getJWTClaimsSet()
+                    .getSubject());
+
+        else
+            throw new HttpClientErrorException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Received request to update person with invalid Authorization header value");
     }
 }

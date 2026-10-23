@@ -10,17 +10,20 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 @Aspect
+@Order(1)
 @Component
 @Validated
 @RequiredArgsConstructor
@@ -32,15 +35,15 @@ public class PersonServiceAspect {
     private final ServiceAspectHandler serviceAspectHandler;
 
     @Around("execution(* aq.project.services.person_service.PersonService.loginPerson(..)) " +
-            "&& args(individualsApiServiceLoginPersonRequestDto)")
+            "&& args(loginPersonRequestDto)")
     public Mono<IndividualsApiServiceTokenResponseDto> loginPerson(
             ProceedingJoinPoint pjp,
-            @Valid IndividualsApiServiceLoginPersonRequestDto individualsApiServiceLoginPersonRequestDto
+            @NotNull @Valid IndividualsApiServiceLoginPersonRequestDto loginPersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "login-person";
         String tracerName = serviceName + "." + actionName + "-tracer";
-        String loginUserEmail = individualsApiServiceLoginPersonRequestDto.getEmail();
+        String loginUserEmail = loginPersonRequestDto.getEmail();
         String preMainLogicLogMessage = String
                 .format("Received request to login person with email: [%s]", loginUserEmail);
         String postSuccessMainLogicCallLogMessage = String
@@ -62,15 +65,15 @@ public class PersonServiceAspect {
     }
 
     @Around("execution(* aq.project.services.person_service.PersonService.createPerson(..)) " +
-            "&& args(individualsApiServiceCreatePersonRequestDto)")
+            "&& args(createPersonRequestDto)")
     public Mono<IndividualsApiServiceTokenResponseDto> createPerson(
             ProceedingJoinPoint pjp,
-            @Valid IndividualsApiServiceCreatePersonRequestDto individualsApiServiceCreatePersonRequestDto
+            @NotNull @Valid IndividualsApiServiceCreatePersonRequestDto createPersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "create-person";
         String tracerName = serviceName + "." + actionName + "-tracer";
-        String createUserEmail = individualsApiServiceCreatePersonRequestDto.getEmail();
+        String createUserEmail = createPersonRequestDto.getEmail();
         String preMainLogicLogMessage = String
                 .format("Received request to create person with email: [%s]", createUserEmail);
         String postSuccessMainLogicCallLogMessage = String
@@ -87,7 +90,7 @@ public class PersonServiceAspect {
                 preMainLogicLogMessage,
                 postSuccessMainLogicCallLogMessage,
                 postFailureMainLogicCallLogMessage,
-                checkConstraints(individualsApiServiceCreatePersonRequestDto)
+                checkConstraints(createPersonRequestDto)
         );
     }
 
@@ -97,7 +100,7 @@ public class PersonServiceAspect {
         return () -> {
             String password = individualsApiServiceCreatePersonRequestDto.getPassword();
             String confirmPassword = individualsApiServiceCreatePersonRequestDto.getConfirmPassword();
-            
+
             if (!password.equals(confirmPassword))
                 throw new ConstraintViolationException("Input password and it's confirmation do not match.", null);
 
@@ -106,15 +109,16 @@ public class PersonServiceAspect {
     }
 
     @Around("execution(* aq.project.services.person_service.PersonService.updatePerson(..)) " +
-            "&& args(individualsApiServiceUpdatePersonRequestDto)")
+            "&& args(jwtPersonKeycloakId, updatePersonRequestDto)")
     public Mono<Void> updatePerson(
             ProceedingJoinPoint pjp,
-            @Valid IndividualsApiServiceUpdatePersonRequestDto individualsApiServiceUpdatePersonRequestDto
+            @NotNull UUID jwtPersonKeycloakId,
+            @NotNull @Valid IndividualsApiServiceUpdatePersonRequestDto updatePersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "update-person";
         String tracerName = serviceName + "." + actionName + "-tracer";
-        UUID updateUserKeycloakId = individualsApiServiceUpdatePersonRequestDto.getPersonKeycloakId();
+        UUID updateUserKeycloakId = updatePersonRequestDto.getPersonKeycloakId();
         String preMainLogicLogMessage = String
                 .format("Received request to update person with id: [%s]", updateUserKeycloakId);
         String postSuccessMainLogicCallLogMessage = String
@@ -136,20 +140,21 @@ public class PersonServiceAspect {
     }
 
     @Around("execution(* aq.project.services.person_service.PersonService.deletePerson(..)) " +
-            "&& args(personKeycloakId)")
+            "&& args(jwtPersonKeycloakId, requestPersonKeycloakId)")
     public Mono<Void> deletePerson(
             ProceedingJoinPoint pjp,
-            @NotNull UUID personKeycloakId
+            @NotNull UUID jwtPersonKeycloakId,
+            @NotNull UUID requestPersonKeycloakId
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "delete-person";
         String tracerName = serviceName + "." + actionName + "-tracer";
         String preMainLogicLogMessage = String
-                .format("Received request to delete person with id: [%s]", personKeycloakId);
+                .format("Received request to delete person with id: [%s]", requestPersonKeycloakId);
         String postSuccessMainLogicCallLogMessage = String
-                .format("Success handle request to delete person with id: [%s]", personKeycloakId);
+                .format("Success handle request to delete person with id: [%s]", requestPersonKeycloakId);
         String postFailureMainLogicCallLogMessage = String
-                .format("Error occurred during handle request to delete person with id: [%s]", personKeycloakId);
+                .format("Error occurred during handle request to delete person with id: [%s]", requestPersonKeycloakId);
 
 //        Handler logic call
         return serviceAspectHandler.handle(
@@ -170,12 +175,14 @@ public class PersonServiceAspect {
             ProceedingJoinPoint pjp,
             @NotNull Authentication authentication
     ) throws Throwable {
-//        Check for constraints
-        checkConstraints(authentication);
+        if(!(authentication.getPrincipal() instanceof Jwt jwt))
+            return Mono.error(new HttpClientErrorException(
+                    HttpStatus.UNAUTHORIZED, "Access denied. Valid JWT required."));
+
 //        Prepare handler metadata
         String actionName = "get-person-info";
         String tracerName = serviceName + "." + actionName + "-tracer";
-        String email = ((Jwt) authentication).getClaim("email");
+        String email = jwt.getClaim("email");
         String preMainLogicLogMessage = String.format(
                 "Received request to get person info with email: [%s]",
                 email);
@@ -197,19 +204,5 @@ public class PersonServiceAspect {
                 postFailureMainLogicCallLogMessage,
                 null
         );
-    }
-
-    private void checkConstraints(Authentication authentication) {
-        if(authentication == null) {
-            throw new ConstraintViolationException("Access denied. Received request hasn't got valid access token", null);
-        }
-
-        if(authentication.getPrincipal() instanceof Jwt jwt) {
-            if(Instant.now().isAfter(jwt.getExpiresAt())) {
-                throw new ConstraintViolationException("Access denied. Access token was expired.", null);
-            }
-        } else {
-            throw new ConstraintViolationException("Access denied. Only valid JWT access token required.", null);
-        }
     }
 }

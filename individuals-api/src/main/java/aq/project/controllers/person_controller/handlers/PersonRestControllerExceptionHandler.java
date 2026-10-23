@@ -2,7 +2,9 @@ package aq.project.controllers.person_controller.handlers;
 
 import aq.project.controllers.person_controller.PersonRestController;
 import aq.project.dto.IndividualsApiServiceErrorDto;
+import aq.project.exceptions.FallbackOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +25,18 @@ public class PersonRestControllerExceptionHandler {
     private final ControllerExceptionLogger controllerExceptionLogger;
 
 //    Project specific exceptions
+    @ExceptionHandler(value = FallbackOperationException.class)
+    public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onFallbackOperationException(FallbackOperationException exc) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        controllerExceptionLogger.logException(exc, status);
+
+        return Mono.just(getErrorResponseEntity(status, exc));
+    }
 
 //    Non-project specific exceptions
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onIllegalArgumentException(IllegalArgumentException exc) {
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onConstraintViolationException(ConstraintViolationException exc) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(exc, status);

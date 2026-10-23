@@ -6,6 +6,7 @@ import aq.project.exceptions.FallbackOperationException;
 import aq.project.payment_service.PaymentApiClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,9 @@ public class PaymentService {
             String countryCode,
             Exception exception
     ) {
+        if(exception instanceof ConstraintViolationException)
+            return Mono.error(() -> exception);
+
         return Mono.deferContextual(context -> {
             String traceId = context.getOrDefault(X_TRACE_ID_HEADER, genTraceId());
             String action = "get-payment-methods-fallback";

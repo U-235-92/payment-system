@@ -93,9 +93,10 @@ public class WalletServiceWithdrawTransactionRequestHandler {
             sendFailTransactionRequestWalletServiceDtoToKafka(
                     transactionServiceWithdrawTransaction, traceId, spanId, action);
 
-        } finally {
             walletServiceWithdrawTransactionRequest.getTransactionRequestMetadata().setProcessed(true);
             walletServiceWithdrawTransactionRequestRepository.save(walletServiceWithdrawTransactionRequest);
+
+        } finally {
             applicationMetricsRegistry.finishTimer(sample, action);
             span.end();
         }

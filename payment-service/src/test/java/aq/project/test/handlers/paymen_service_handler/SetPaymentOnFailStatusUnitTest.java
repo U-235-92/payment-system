@@ -1,4 +1,4 @@
-package aq.project.test.handlers.paymen_service;
+package aq.project.test.handlers.paymen_service_handler;
 
 import aq.project.dto.PaymentStatus;
 import aq.project.entities.Payment;
@@ -41,7 +41,7 @@ public class SetPaymentOnFailStatusUnitTest {
                 .thenReturn(Optional.of(payment));
 
 //        Act & Assert
-        Assertions.assertDoesNotThrow(() -> paymentServiceHandler.setPaymentOnFailStatus(transactionId));
+        Assertions.assertDoesNotThrow(() -> paymentServiceHandler.failPayment(transactionId));
 
         Mockito.verify(paymentRepository, Mockito.times(1))
                 .save(Mockito.any(Payment.class));
@@ -61,7 +61,7 @@ public class SetPaymentOnFailStatusUnitTest {
 
 //        Act & Assert
         Assertions.assertThrows(EntityNotFoundException.class,
-                () -> paymentServiceHandler.setPaymentOnFailStatus(transactionId));
+                () -> paymentServiceHandler.failPayment(transactionId));
 
         Mockito.verify(paymentRepository, Mockito.never())
                 .save(Mockito.any(Payment.class));
@@ -81,7 +81,7 @@ public class SetPaymentOnFailStatusUnitTest {
 
 //        Act & Assert
         Assertions.assertThrows(ProhibitedOperationException.class,
-                () -> paymentServiceHandler.setPaymentOnFailStatus(transactionId));
+                () -> paymentServiceHandler.failPayment(transactionId));
 
         Mockito.verify(paymentRepository, Mockito.never())
                 .save(Mockito.any(Payment.class));

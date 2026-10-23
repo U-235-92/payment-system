@@ -1,11 +1,13 @@
 package aq.project.services;
 
-import aq.project.dto.*;
+import aq.project.dto.PaymentServiceCreatePaymentRequestDto;
+import aq.project.dto.PaymentServiceCreatePaymentResponseDto;
+import aq.project.dto.PaymentServicePaymentMethodResponseDto;
 import aq.project.entities.Payment;
 import aq.project.entities.PaymentMethod;
 import aq.project.exceptions.*;
 import aq.project.repositories.PaymentMethodRepository;
-import aq.project.repositories.PaymentRepository;
+import aq.project.utils.handlers.PaymentHandler;
 import aq.project.utils.handlers.PaymentProviderServiceHandler;
 import aq.project.utils.handlers.PaymentServiceHandler;
 import aq.project.utils.mappers.PaymentMapper;
@@ -13,9 +15,7 @@ import aq.project.utils.resilence.Fallback;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +26,14 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class PaymentService {
 
-    @Value("${service.payment-provider-service.name}")
-    private String paymentProviderServiceName;
-
     private final PaymentMapper paymentMapper = PaymentMapper.INSTANCE;
 
-    private final PaymentRepository paymentRepository;
     private final PaymentMethodRepository paymentMethodRepository;
 
     private final PaymentServiceHandler paymentServiceHandler;
     private final PaymentProviderServiceHandler paymentProviderServiceHandler;
+
+    private final PaymentHandler paymentHandler;
 
     private final Fallback fallback;
 
@@ -47,54 +45,22 @@ public class PaymentService {
             name = "create-payment-circuitbreaker",
             fallbackMethod = "createPaymentFallback"
     )
-    @Transactional(
-            noRollbackFor = ProcessOperationException.class
-    )
     public PaymentServiceCreatePaymentResponseDto createPayment(
             PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto
     ) {
-        UUID transactionId = paymentServiceCreatePaymentRequestDto.getTransactionId();
+        try {
+            Payment createdPayment = paymentHandler.createPayment(paymentServiceCreatePaymentRequestDto);
 
-        Payment createdPayment = paymentServiceHandler.createPayment(paymentServiceCreatePaymentRequestDto);
+            return paymentMapper.toPaymentServiceCreatePaymentResponseDto(createdPayment);
 
-        PaymentProviderServiceCreatePaymentResponseDto paymentResponseDto = paymentProviderServiceHandler
-                .createPayment(paymentServiceCreatePaymentRequestDto);
+        } catch (Exception e) {
+            UUID transactionId = paymentServiceCreatePaymentRequestDto.getTransactionId();
 
-        PaymentStatus receivedPaymentStatus = paymentResponseDto.getPaymentStatus();
+            paymentServiceHandler.failPayment(transactionId);
 
-        switch(receivedPaymentStatus) {
-            case COMPLETED, PENDING -> {
-                try {
-                    UUID receivedPaymentId = paymentResponseDto.getPaymentId();
+            paymentProviderServiceHandler.failPayment(paymentServiceCreatePaymentRequestDto);
 
-                    createdPayment.setPaymentId(receivedPaymentId);
-                    createdPayment.setStatus(receivedPaymentStatus);
-
-                    paymentRepository.save(createdPayment);
-
-                    return paymentMapper.toPaymentServiceCreatePaymentResponseDto(createdPayment);
-
-                } catch (Exception onPaymentServiceException) {
-                    try {
-                        paymentProviderServiceHandler.failPayment(paymentServiceCreatePaymentRequestDto);
-                        throw onPaymentServiceException;
-
-                    } catch (Exception onPaymentProviderServiceException) {
-                        onPaymentProviderServiceException.initCause(onPaymentServiceException);
-                        throw onPaymentProviderServiceException;
-                    }
-                }
-            }
-            default -> {
-                createdPayment.setStatus(receivedPaymentStatus);
-
-                paymentRepository.save(createdPayment);
-
-                throw new ProcessOperationException(String.format(
-                        "Fail while creating payment for transaction with id: [%s] on [%s] side: " +
-                                "received response with: [%s] payment status",
-                        transactionId, paymentProviderServiceName, receivedPaymentStatus));
-            }
+            throw e;
         }
     }
 

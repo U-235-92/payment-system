@@ -3,8 +3,6 @@ package aq.project.utils.aspects;
 import aq.project.dto.PaymentServiceCreatePaymentRequestDto;
 import aq.project.dto.PaymentServiceCreatePaymentResponseDto;
 import aq.project.dto.PaymentServicePaymentMethodResponseDto;
-import aq.project.exceptions.ClientHttpException;
-import aq.project.exceptions.ServiceHttpException;
 import aq.project.utils.handlers.PaymentProviderServiceHandler;
 import aq.project.utils.handlers.PaymentServiceHandler;
 import aq.project.utils.telemetry.ServiceAspectHandler;
@@ -14,7 +12,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,24 +72,6 @@ public class PaymentServiceAspect {
                 null,
                 null
         );
-    }
-
-    @AfterThrowing(
-            value = "execution(* aq.project.services.PaymentService.createPayment(..)) " +
-                    "&& args(paymentServiceCreatePaymentRequestDto)",
-            throwing = "exception"
-    )
-    public void createPayment(
-            PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
-            Exception exception
-    ) {
-        if(exception instanceof ClientHttpException || exception instanceof ServiceHttpException) {
-            UUID transactionId = paymentServiceCreatePaymentRequestDto.getTransactionId();
-
-            paymentServiceHandler.setPaymentOnFailStatus(transactionId);
-
-            paymentProviderServiceHandler.failPayment(paymentServiceCreatePaymentRequestDto);
-        }
     }
 
     @Around(

@@ -1,4 +1,4 @@
-package aq.project.test.handlers.paymen_service;
+package aq.project.test.handlers.paymen_service_handler;
 
 import aq.project.dto.PaymentProviderServiceCreatePaymentResponseDto;
 import aq.project.dto.PaymentServiceCreatePaymentRequestDto;

@@ -52,7 +52,7 @@ public class PaymentServiceHandler {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void setPaymentOnFailStatus(
+    public void failPayment(
             UUID transactionId
     ) {
         Payment payment = paymentRepository.findByTransactionId(transactionId)

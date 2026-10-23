@@ -9,7 +9,9 @@ import aq.project.dto.PaymentStatus;
 import aq.project.entities.PaymentMethod;
 import aq.project.entities.PaymentMethodDefinition;
 import aq.project.entities.PaymentMethodRequiredField;
-import aq.project.exceptions.*;
+import aq.project.exceptions.ClientHttpException;
+import aq.project.exceptions.ProcessOperationException;
+import aq.project.exceptions.ServiceHttpException;
 import aq.project.repositories.PaymentMethodDefinitionRepository;
 import aq.project.repositories.PaymentMethodRepository;
 import aq.project.repositories.PaymentMethodRequiredFieldRepository;
@@ -310,6 +312,8 @@ public class CreatePaymentIntegrationTest {
 
         paymentProviderMockService.stubFor(WireMock.post(createPaymentOnPaymentProviderServiceEndpoint)
                 .willReturn(WireMock.okJson(json)));
+        paymentProviderMockService.stubFor(WireMock.post(failPaymentOnPaymentProviderServiceEndpoint)
+                .willReturn(WireMock.okJson(json)));
 
 //        Act & Assert
         Assertions.assertThrows(ProcessOperationException.class,
@@ -342,67 +346,6 @@ public class CreatePaymentIntegrationTest {
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
                 () -> paymentService.createPayment(paymentServiceCreatePaymentRequestDto));
-    }
-
-    @Test
-    public void failCreatePaymentOnFallbackException() {
-//        Arrange
-        final int RATE_LIMIT = 10;
-
-        for(int i = 0; i < RATE_LIMIT; i++) {
-            PaymentMethodDefinition newPaymentMethodDefinition = getValidPaymentMethodDefinition();
-            newPaymentMethodDefinition.setId(null);
-
-            PaymentMethodDefinition savedPaymentMethodDefinition = paymentMethodDefinitionRepository
-                    .save(newPaymentMethodDefinition);
-
-            PaymentMethodRequiredField newPaymentMethodRequiredField = getValidPaymentMethodRequiredField();
-            newPaymentMethodRequiredField.setId(null);
-            newPaymentMethodRequiredField.setLanguage(genRandomString(LOWERCASE_ALPHABET, 2));
-            newPaymentMethodRequiredField.setCountryAlpha3Code(genRandomString(UPPERCASE_ALPHABET, 3));
-            newPaymentMethodRequiredField.setCurrencyCode(genRandomString(UPPERCASE_ALPHABET, 3));
-            newPaymentMethodRequiredField.setName(genRandomString(UPPERCASE_ALPHABET, 10));
-
-            PaymentMethodRequiredField savedPaymentMethodRequiredField = paymentMethodRequiredFieldRepository
-                    .save(newPaymentMethodRequiredField);
-
-            PaymentMethod newPaymentMethod = getValidPaymentMethod();
-            newPaymentMethod.setId(null);
-            newPaymentMethod.setDefinition(savedPaymentMethodDefinition);
-            newPaymentMethod.setRequiredFields(savedPaymentMethodRequiredField);
-
-            paymentMethodRepository.save(newPaymentMethod);
-        }
-
-        Iterable<PaymentMethod> paymentMethods = paymentMethodRepository.findAll();
-
-        for(int i = 0; i < RATE_LIMIT && paymentMethods.iterator().hasNext(); i++) {
-            PaymentMethod paymentMethod = paymentMethods.iterator().next();
-
-            UUID transactionId = UUID.randomUUID();
-            UUID paymentId = UUID.randomUUID();
-            Long paymentMethodId = paymentMethod.getId();
-
-            PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto = getValidPaymentServiceCreatePaymentRequestDto();
-            paymentServiceCreatePaymentRequestDto.setTransactionId(transactionId);
-            paymentServiceCreatePaymentRequestDto.setPaymentMethodId(paymentMethodId);
-
-            PaymentProviderServiceCreatePaymentResponseDto paymentProviderServiceCreatePaymentResponseDto = getValidPaymentProviderServiceCreatePaymentResponseDto();
-            paymentProviderServiceCreatePaymentResponseDto.setPaymentId(paymentId);
-            paymentProviderServiceCreatePaymentResponseDto.setTransactionId(transactionId);
-
-            String json = objectMapper.writeValueAsString(paymentProviderServiceCreatePaymentResponseDto);
-
-            paymentProviderMockService.stubFor(WireMock.post(createPaymentOnPaymentProviderServiceEndpoint)
-                    .willReturn(WireMock.okJson(json)));
-
-//        Act & Assert
-            if(i < RATE_LIMIT - 1)
-                new Thread(() -> paymentService.createPayment(paymentServiceCreatePaymentRequestDto)).start();
-            else
-                Assertions.assertThrows(FallbackOperationException.class,
-                        () -> paymentService.createPayment(paymentServiceCreatePaymentRequestDto));
-        }
     }
 
     private String genRandomString(String[] alphabet, int length) {

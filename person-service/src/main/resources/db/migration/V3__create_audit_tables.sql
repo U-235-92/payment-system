@@ -12,13 +12,14 @@ CREATE TABLE public.revinfo (
 );
 
 CREATE TABLE person.countries_aud (
-    code VARCHAR(3) NOT NULL,
+    id SERIAL NOT NULL,
     rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
     revtype SMALLINT,
+    created BIGINT,
+    updated BIGINT,
     name VARCHAR(64),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    PRIMARY KEY (rev, code)
+    code VARCHAR(3),
+    PRIMARY KEY (rev, id)
 );
 
 CREATE TABLE person.addresses_aud (
@@ -27,10 +28,11 @@ CREATE TABLE person.addresses_aud (
     revtype SMALLINT,
     address VARCHAR(128),
     city VARCHAR(64),
+    created BIGINT,
+    updated BIGINT,
     state VARCHAR(64),
     zip_code VARCHAR(32),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
+    country_id INTEGER,
     PRIMARY KEY (rev, id)
 );
 
@@ -39,25 +41,24 @@ CREATE TABLE person.individuals_aud (
     rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
     revtype SMALLINT,
     email VARCHAR(1024),
+    created BIGINT,
+    updated BIGINT,
     passport_number VARCHAR(32),
     phone_number VARCHAR(32),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
     PRIMARY KEY (rev, id)
 );
 
 CREATE TABLE person.users_aud (
     id UUID NOT NULL,
+    keycloak_id VARCHAR(36),
     rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
     revtype SMALLINT,
-    keycloak_id VARCHAR(36),
-    country_code VARCHAR(3),
+    first_name VARCHAR(32),
+    created BIGINT,
+    updated BIGINT,
+    active BOOLEAN,
+    last_name VARCHAR(32),
     address_id UUID,
     individual_id UUID,
-    first_name VARCHAR(32),
-    last_name VARCHAR(32),
-    active BOOLEAN,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
     PRIMARY KEY (rev, id)
 );

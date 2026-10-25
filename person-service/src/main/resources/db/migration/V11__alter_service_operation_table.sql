@@ -1,0 +1,1 @@
+ALTER TABLE service.service_operations ALTER COLUMN timestamp TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(timestamp / 1000.0);

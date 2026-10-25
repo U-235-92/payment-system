@@ -46,14 +46,3 @@ CREATE TABLE transactions_aud (
     metadata_id BIGINT,
     PRIMARY KEY (rev, id)
 );
-
-CREATE TABLE payments_aud (
-    id UUID,
-    rev INTEGER NOT NULL REFERENCES public.revinfo(rev),
-    revtype SMALLINT,
-    transaction_id UUID,
-    status VARCHAR(20),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    PRIMARY KEY (rev, id)
-);

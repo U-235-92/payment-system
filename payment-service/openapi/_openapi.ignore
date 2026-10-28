@@ -1,0 +1,15 @@
+###################################
+# PAYMENT-PROVIDER-SERVICE IGNORE #
+###################################
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/AdminApiClient.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/MerchantRegistrationRequestDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/MerchantRegistrationResponseDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/PaymentProviderServiceCancelTransactionRequestDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/PaymentProviderServiceCreateTransactionRequestDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/PaymentProviderServiceErrorHandleTransactionDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/PaymentProviderServiceSuccessHandleTransactionDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/PaymentProviderServiceTransactionInfoResponseDto.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/TransactionStatus.java
+**/openapi/payment-provider-service/src/main/java/aq/project/dto/PaymentStatus.java
+**/openapi/payment-provider-service/src/main/java/aq/project/payment_provider_service/TransactionApiClient.java
+**/openapi/payment-provider-service/src/main/java/aq/project/payment_provider_service/AdminApiClient.java

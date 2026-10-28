@@ -4,7 +4,7 @@ import aq.project.dto.PaymentProviderServiceTransactionInfoResponseDto;
 import aq.project.entities.Merchant;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ForeignMerchantTransactionException;
+import aq.project.exceptions.ForeignMerchantException;
 import aq.project.repositories.MerchantRepository;
 import aq.project.repositories.TransactionRepository;
 import aq.project.utils.mappers.TransactionMapper;
@@ -18,27 +18,27 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class TransactionService {
+    @Slf4j
+    @Service
+    @RequiredArgsConstructor
+    public class TransactionService {
 
-    private final TransactionMapper transactionMapper = TransactionMapper.INSTANCE;
+        private final TransactionMapper transactionMapper = TransactionMapper.INSTANCE;
 
-    private final TransactionRepository transactionRepository;
-    private final MerchantRepository merchantRepository;
+        private final TransactionRepository transactionRepository;
+        private final MerchantRepository merchantRepository;
 
-    @Transactional(readOnly = true)
-    public PaymentProviderServiceTransactionInfoResponseDto getTransactionInfo(
-            UUID transactionId,
-            String merchantId
-    ) {
-        Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Transaction with id [%s] not found", transactionId)));
+        @Transactional(readOnly = true)
+        public PaymentProviderServiceTransactionInfoResponseDto getTransactionInfo(
+                UUID transactionId,
+                String merchantId
+        ) {
+            Transaction transaction = transactionRepository.findById(transactionId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("Transaction with id [%s] not found", transactionId)));
 
-        if(!transaction.getMerchant().getId().equals(merchantId))
-            throw new ForeignMerchantTransactionException(
+            if(!transaction.getMerchant().getId().equals(merchantId))
+                throw new ForeignMerchantException(
                     String.format("Transaction with id [%s] belongs to another merchant", transactionId));
 
         return transactionMapper.toTransactionResponseDto(transaction);

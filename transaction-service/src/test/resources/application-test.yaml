@@ -9,7 +9,8 @@ spring:
     baseline-on-migrate: true
     default-schema: public
     create-schemas: true
-    locations: 'classpath:db/migration'
+    locations:
+      - classpath:test-migration
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -28,15 +29,21 @@ resilience4j:
         max-concurrent-calls: 5
       get-deposit-transaction-status-bulkhead:
         max-concurrent-calls: 5
+      fail-deposit-transaction-bulkhead:
+        max-concurrent-calls: 5
 
       create-withdraw-transaction-bulkhead:
         max-concurrent-calls: 5
       get-withdraw-transaction-status-bulkhead:
         max-concurrent-calls: 5
+      fail-withdraw-transaction-bulkhead:
+        max-concurrent-calls: 5
 
       create-transfer-transaction-bulkhead:
         max-concurrent-calls: 5
       get-transfer-transaction-status-bulkhead:
+        max-concurrent-calls: 5
+      fail-transfer-transaction-bulkhead:
         max-concurrent-calls: 5
 
   ratelimiter:
@@ -47,6 +54,9 @@ resilience4j:
       get-deposit-transaction-status-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 1
+      fail-deposit-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
 
       create-withdraw-transaction-rate-limiter:
         limit-refresh-period: 1s
@@ -54,10 +64,16 @@ resilience4j:
       get-withdraw-transaction-status-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 1
+      fail-withdraw-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
 
       create-transfer-transaction-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 1
       get-transfer-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+      fail-transfer-transaction-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 1

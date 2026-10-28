@@ -1,16 +1,17 @@
 package aq.project.utils.telemetry;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import reactor.core.publisher.Mono;
 
 import java.security.SecureRandom;
 
 import static aq.project.utils.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class TracePropagator {
 
-    private TracePropagator() { super(); }
-
-    private static String genTraceId() {
+    public static String genTraceId() {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[16];
         random.nextBytes(bytes);

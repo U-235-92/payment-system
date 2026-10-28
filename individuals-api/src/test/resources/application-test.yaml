@@ -37,7 +37,31 @@ resilience4j:
         limit-refresh-period: 1s
         limit-for-period: 1
 
+      get-payment-methods-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      login-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      create-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      update-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      delete-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      get-person-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
 individuals-api:
   test:
-    actual-user-keycloak-id: 3d76d2cb-1ba8-4cce-87fe-84ff9a2d9885 # Copied from realm-config.json (User Alice)
-    unknown-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407
+    valid-test-user-keycloak-id: d3b2ab28-2d69-479c-8e93-6bc9753e3313 # See realm-config.json file by using: [Ctrl + F -> "username": "test"]
+    invalid-test-user-keycloak-id: c0391ed2-80b5-400c-8fd2-4d3foobar407 # Fake user uuid (user with this ID not exists)

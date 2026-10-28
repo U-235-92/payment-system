@@ -53,7 +53,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -61,7 +61,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/deposit/status/{id}:
@@ -103,7 +103,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -111,7 +111,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/deposit/fail/{id}:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: failDepositTransaction
+      tags:
+        - DepositTransaction
+      summary: Mark transaction as failed by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            type: string
+            format: uuid
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          description: Returns OK 200 response in case successful handle of operation
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/transfer/create:
@@ -154,7 +200,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -162,7 +208,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/transfer/status/{id}:
@@ -204,7 +250,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -212,7 +258,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/transfer/fail/{id}:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: failTransferTransaction
+      tags:
+        - TransferTransaction
+      summary: Mark transaction as failed by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            type: string
+            format: uuid
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          description: Returns OK 200 response in case successful handle of operation
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/withdraw/create:
@@ -255,7 +347,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -263,7 +355,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/withdraw/status/{id}:
@@ -305,7 +397,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -313,7 +405,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/withdraw/fail/{id}:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: failWithdrawTransaction
+      tags:
+        - WithdrawTransaction
+      summary: Mark transaction as failed by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            type: string
+            format: uuid
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: JWT доступа к ресурсу
+      responses:
+        200:
+          description: Returns OK 200 response in case successful handle of operation
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if error was occurred on service side
 
 ########
@@ -338,9 +476,9 @@ components:
       bearerFormat: JWT
 
   schemas:
-######################################
-# TRANSACTION SERVICE API COMPONENTS #
-######################################
+    ######################################
+    # TRANSACTION SERVICE API COMPONENTS #
+    ######################################
     TransactionServiceDepositTransactionRequestDto:
       type: object
       required: [ walletId, traceId, amount, currencyCode, conversionRate, notificationUrl ]
@@ -407,15 +545,17 @@ components:
         notificationUrl:
           type: string
 
-    ErrorDto:
+    TransactionServiceErrorDto:
       type: object
-      required: [ http_status, message ]
+      required: [ message ]
       properties:
+        message:
+          type: string
+        trace_id:
+          type: string
         http_status:
           type: integer
           format: int32
-        message:
-          type: string
 
     TransactionStatus:
       enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]

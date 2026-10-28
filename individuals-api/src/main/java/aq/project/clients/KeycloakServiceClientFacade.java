@@ -1,16 +1,19 @@
 package aq.project.clients;
 
-import aq.project.dto.CreateUserDto;
-import aq.project.dto.RefreshTokenDto;
-import aq.project.dto.ResponseTokenDto;
-import aq.project.dto.UpdateUserDto;
+import aq.project.dto.IndividualsApiServiceCreatePersonRequestDto;
+import aq.project.dto.IndividualsApiServiceTokenRequestDto;
+import aq.project.dto.IndividualsApiServiceTokenResponseDto;
+import aq.project.dto.IndividualsApiServiceUpdatePersonRequestDto;
 import aq.project.repositories.JwtRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
 
@@ -34,48 +37,81 @@ public class KeycloakServiceClientFacade {
 
     private final JwtRepository jwtRepository;
 
-    private final WebClient webClient;
+    private final WebClient keycloakWebClient;
+
+    private final ObjectMapper objectMapper;
 
     public KeycloakServiceClientFacade(
             KeycloakServiceClient keycloakServiceClient,
             JwtRepository jwtRepository,
-            @Qualifier("keycloakWebClient") WebClient webClient
+            @Qualifier("keycloakWebClient") WebClient keycloakWebClient,
+            ObjectMapper objectMapper
     ) {
         this.keycloakServiceClient = keycloakServiceClient;
         this.jwtRepository = jwtRepository;
-        this.webClient = webClient;
+        this.keycloakWebClient = keycloakWebClient;
+        this.objectMapper = objectMapper;
     }
 
-    public Mono<ResponseTokenDto> refreshUserJwt(RefreshTokenDto refreshTokenDto) {
-        return keycloakServiceClient.refreshUserJwt(clientId, clientSecret, tokenEndpoint, refreshTokenDto, webClient);
+    public Mono<IndividualsApiServiceTokenResponseDto> refreshJwt(
+            IndividualsApiServiceTokenRequestDto individualsApiServiceTokenRequestDto
+    ) {
+        return keycloakServiceClient
+                .refreshUserJwt(
+                        clientId, clientSecret, tokenEndpoint, individualsApiServiceTokenRequestDto, keycloakWebClient);
     }
 
     public Mono<String> getAdminJwt() {
-        return keycloakServiceClient.getAdminJwt(jwtRepository, adminId, adminSecret, tokenEndpoint, webClient);
+        return keycloakServiceClient
+                .getAdminJwt(
+                        jwtRepository, adminId, adminSecret, tokenEndpoint, keycloakWebClient, objectMapper);
     }
 
     public Mono<String> getAdminJwtAsAuthorizationHeaderValue() {
-        return keycloakServiceClient.getAdminJwt(jwtRepository, adminId, adminSecret, tokenEndpoint, webClient)
+        return keycloakServiceClient
+                .getAdminJwt(jwtRepository, adminId, adminSecret, tokenEndpoint, keycloakWebClient, objectMapper)
                 .map(jwt -> String.format("%s %s", BEARER.getValue(), jwt));
     }
 
-    public Mono<String> createUser(String adminJwtAuthorizationValue, CreateUserDto createUserDto) {
-        return keycloakServiceClient.createUser(adminJwtAuthorizationValue, adminEndpoint, createUserDto, webClient);
+    public Mono<UUID> createPerson(
+            String adminJwtAuthorizationValue,
+            IndividualsApiServiceCreatePersonRequestDto individualsApiServiceCreatePersonRequestDto
+    ) {
+        return keycloakServiceClient
+                .createUser(
+                        adminJwtAuthorizationValue, adminEndpoint, individualsApiServiceCreatePersonRequestDto, keycloakWebClient);
     }
 
-    public Mono<HttpStatusCode> undoCreateUser(String adminJwtAuthorizationValue, String keycloakUserId) {
-        return keycloakServiceClient.undoCreateUser(adminJwtAuthorizationValue, keycloakUserId);
+    public Mono<HttpStatusCode> undoCreatePerson(
+            String adminJwtAuthorizationValue,
+            UUID personKeycloakId
+    ) {
+        return keycloakServiceClient
+                .undoCreateUser(adminJwtAuthorizationValue, personKeycloakId);
     }
 
-    public Mono<ResponseTokenDto> loginUser(String email, String password) {
-        return keycloakServiceClient.loginUser(email, password, clientId, clientSecret, tokenEndpoint, webClient);
+    public Mono<IndividualsApiServiceTokenResponseDto> loginPerson(
+            String email,
+            String password
+    ) {
+        return keycloakServiceClient
+                .loginUser(
+                        email, password, clientId, clientSecret, tokenEndpoint, keycloakWebClient, objectMapper);
     }
 
-    public Mono<HttpStatusCode> updateUser(String adminJwtAuthorizationValue, UpdateUserDto updateUserDTO) {
-        return keycloakServiceClient.updateUser(adminJwtAuthorizationValue, updateUserDTO);
+    public Mono<HttpStatusCode> updatePerson(
+            String adminJwtAuthorizationValue,
+            IndividualsApiServiceUpdatePersonRequestDto individualsApiServiceUpdatePersonRequestDto
+    ) {
+        return keycloakServiceClient
+                .updatePerson(adminJwtAuthorizationValue, individualsApiServiceUpdatePersonRequestDto);
     }
 
-    public Mono<HttpStatusCode> deleteUserByKeycloakId(String adminJwtAuthorizationValue, String keycloakUserId) {
-        return keycloakServiceClient.deleteUserByKeycloakId(adminJwtAuthorizationValue, keycloakUserId);
+    public Mono<HttpStatusCode> deletePerson(
+            String adminJwtAuthorizationValue,
+            UUID personKeycloakId
+    ) {
+        return keycloakServiceClient
+                .deleteUserByKeycloakId(adminJwtAuthorizationValue, personKeycloakId);
     }
 }

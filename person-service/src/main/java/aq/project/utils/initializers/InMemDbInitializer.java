@@ -19,9 +19,8 @@ public class InMemDbInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Country country = getTestCountry();
-        countryRepository.save(country);
-        personRepository.save(getTestPerson(country));
+        Country savedCountry = countryRepository.save(getTestCountry());
+        personRepository.save(getTestPerson(savedCountry));
     }
 
     private Country getTestCountry() {
@@ -33,12 +32,13 @@ public class InMemDbInitializer implements ApplicationRunner {
     }
 
     private Person getTestPerson(Country country) {
-        Address address = getValidAddresses(country);
+        Address address = getValidAddresses();
 
         Individual individual = getValidIndividual();
 
         Person alice = new Person();
         alice.setKeycloakId("c0391ed2-80b5-400c-8fd2-4d374acad407"); // Copied from Keycloak Admin-CLI (User Alice)
+        alice.setCountry(country);
         alice.setAddress(address);
         alice.setIndividual(individual);
         alice.setFirstName("Alice"); // Copied from Keycloak Admin-CLI (User Alice)
@@ -48,9 +48,8 @@ public class InMemDbInitializer implements ApplicationRunner {
         return alice;
     }
 
-    private Address getValidAddresses(Country country) {
+    private Address getValidAddresses() {
         Address address = new Address();
-        address.setCountry(country);
         address.setState("State");
         address.setCity("City");
         address.setAddress("Address");

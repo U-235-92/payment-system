@@ -1,15 +1,15 @@
 package aq.project.repositories;
 
 import aq.project.entities.Person;
-import aq.project.exceptions.NotFoundRevisionException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PersonRevisionRepository {
 
-    List<Person> findRevisionsByKeycloakId(String keycloakId);
+    List<Person> findAllRevisionsByKeycloakId(String keycloakId);
 
-    Person findLastRevisionByKeycloakId(String keycloakId) throws NotFoundRevisionException;
+    Optional<Person> findUndoDeleteRevisionByPersonKeycloakId(String personKeycloakId);
 
-    Person findUndoRevisionByKeycloakId(String keycloakId) throws NotFoundRevisionException;
+    Optional<Person> findUndoUpdateRevisionByPersonKeycloakId(String personKeycloakId);
 }

@@ -1,10 +1,10 @@
 package aq.project.controllers.handlers;
 
 import aq.project.controllers.TransactionRestController;
-import aq.project.dto.ErrorDto;
+import aq.project.dto.PaymentProviderServiceErrorDto;
 import aq.project.exceptions.AbsentPropertyException;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.ForeignMerchantTransactionException;
+import aq.project.exceptions.ForeignMerchantException;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static aq.project.controllers._utils._ErrorResponseEntityFactory.getErrorResponseEntity;
+
 @RequiredArgsConstructor
 @RestControllerAdvice(basePackageClasses = { TransactionRestController.class })
 public class TransactionRestControllerExceptionHandler {
@@ -23,56 +25,66 @@ public class TransactionRestControllerExceptionHandler {
 
 //    Project's exception handlers
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
-    @ExceptionHandler(ForeignMerchantTransactionException.class)
-    public ResponseEntity<ErrorDto> onForeignMerchantTransactionException(ForeignMerchantTransactionException e) {
+    @ExceptionHandler(ForeignMerchantException.class)
+    public ResponseEntity<PaymentProviderServiceErrorDto> onForeignMerchantTransactionException(ForeignMerchantException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(AbsentPropertyException.class)
-    public ResponseEntity<ErrorDto> onAbsentPropertyException(AbsentPropertyException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onAbsentPropertyException(AbsentPropertyException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
 //    Non project's exception handlers
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDto> onConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorDto> onRuntimeException(RuntimeException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onRuntimeException(RuntimeException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorDto> onUsernameNotFoundException(UsernameNotFoundException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onUsernameNotFoundException(UsernameNotFoundException e) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
+        
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorDto> onAuthenticationException(AuthenticationException e) {
+    public ResponseEntity<PaymentProviderServiceErrorDto> onAuthenticationException(AuthenticationException e) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
+        
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
-    }
 
-    private ErrorDto getErrorDTO(HttpStatus httpStatus, String message) {
-        return new ErrorDto().httpStatus(httpStatus.value()).message(message);
+        return getErrorResponseEntity(status, e);
     }
 }

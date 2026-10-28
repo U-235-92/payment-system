@@ -9,7 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PersonRepository extends JpaRepository<Person, UUID>, RevisionRepository<Person, UUID, Integer>, PersonRevisionRepository {
+public interface PersonRepository extends
+        JpaRepository<Person, UUID>, RevisionRepository<Person, UUID, Integer>,
+        PersonRevisionRepository {
 
     @Query("SELECT p FROM Person p JOIN p.individual i WHERE i.email = :email")
     Optional<Person> findByEmail(@Param("email") String email);

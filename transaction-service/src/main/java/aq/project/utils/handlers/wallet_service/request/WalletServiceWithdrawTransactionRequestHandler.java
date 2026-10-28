@@ -3,6 +3,7 @@ package aq.project.utils.handlers.wallet_service.request;
 import aq.project.dto.*;
 import aq.project.entities.transaction_service.TransactionServiceWithdrawTransaction;
 import aq.project.entities.wallet_service.WalletServiceWithdrawTransactionRequest;
+import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.NotFoundTopicException;
 import aq.project.repositories.transaction_service.TransactionServiceWithdrawTransactionRepository;
 import aq.project.repositories.wallet_service.WalletServiceWithdrawTransactionRequestRepository;
@@ -61,14 +62,93 @@ public class WalletServiceWithdrawTransactionRequestHandler {
     private final WalletServiceWithdrawTransactionRequestRepository walletServiceWithdrawTransactionRequestRepository;
 
     @Transactional
-    public void handleTransactionRequest(
+    public void handleFailTransactionRequest(
+            @NotNull @Valid WalletServiceWithdrawTransactionRequest walletServiceWithdrawTransactionRequest
+    ) {
+        UUID transactionId = walletServiceWithdrawTransactionRequest.getTransactionId();
+
+        String traceId = walletServiceWithdrawTransactionRequest.getTransactionRequestMetadata().getTraceId();
+        Operation operation = Operation.WITHDRAW;
+        String action = String.format("schedule-fail-%s-transaction-request-by-wallet-service", operation.name().toLowerCase());
+        String tracerName = serviceName + "." + action + "-tracer";
+
+        Tracer tracer = openTelemetry.getTracer(tracerName);
+        Span span = tracer.spanBuilder(action).startSpan();
+
+        String spanId = span.getSpanContext().getSpanId();
+        String logMessageOnReceive = String.format(
+                "Schedule handle [withdraw] transaction with id: [%s] by [wallet-service]",
+                transactionId);
+
+        log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, action, logMessageOnReceive);
+
+        Timer.Sample sample = applicationMetricsRegistry.startTimer();
+
+        try(Scope scope = span.makeCurrent()) {
+            TransactionServiceWithdrawTransaction transactionServiceWithdrawTransaction = transactionServiceWithdrawTransactionRepository
+                    .findById(transactionId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            String.format("%s transaction with id: [%s] not found", operation, transactionId)));
+
+            sendFailTransactionRequestWalletServiceDtoToKafka(
+                    transactionServiceWithdrawTransaction, traceId, spanId, action);
+
+            walletServiceWithdrawTransactionRequest.getTransactionRequestMetadata().setProcessed(true);
+            walletServiceWithdrawTransactionRequestRepository.save(walletServiceWithdrawTransactionRequest);
+
+        } finally {
+            applicationMetricsRegistry.finishTimer(sample, action);
+            span.end();
+        }
+    }
+
+    private void sendFailTransactionRequestWalletServiceDtoToKafka(
+            TransactionServiceWithdrawTransaction transactionServiceWithdrawTransaction,
+            String traceId,
+            String spanId,
+            String action
+    ) {
+        UUID transactionId = transactionServiceWithdrawTransaction.getId();
+
+        try {
+            String walletServiceFailTransactionRequestTopic = walletServiceKafkaProperties
+                    .getTopic("wallet_service_fail_withdraw_transaction_request");
+
+            WalletServiceFailTransactionRequestDto walletServiceFailTransactionRequestDto = walletServiceTransactionDtoMapper
+                    .toWalletServiceFailTransactionRequestDto(transactionServiceWithdrawTransaction);
+
+            try {
+                kafkaTemplate.send(walletServiceFailTransactionRequestTopic, walletServiceFailTransactionRequestDto).get();
+
+            } catch (ExecutionException | InterruptedException ex) {
+                String logMessageOnError = String.format(
+                        "Error occurred while sending fail [withdraw] transaction request with transaction id: [%s] " +
+                                "to kafka-topic: [%s] for service: [%s]",
+                        transactionId, walletServiceFailTransactionRequestTopic, walletServiceName);
+
+                log.error("[{}-{}][{} -> {}]: {}. Exception: {}",
+                        traceId, spanId, serviceName, action, logMessageOnError, ex.getMessage());
+            }
+        } catch (NotFoundTopicException e) {
+            String logMessageOnError = String.format(
+                    "Error occurred while sending fail [withdraw] transaction request with transaction id: [%s] " +
+                            "to kafka-topic: [%s] for service: [%s]. Topic with name: [%s] wasn't found",
+                    transactionId, e.getTopic(), walletServiceName, e.getTopic());
+
+            log.error("[{}-{}][{} -> {}]: {}",
+                    traceId, spanId, serviceName, action, logMessageOnError);
+        }
+    }
+
+    @Transactional
+    public void handleCreateTransactionRequest(
             @NotNull @Valid  WalletServiceWithdrawTransactionRequest walletServiceWithdrawTransactionRequest
     ) {
         UUID transactionId = walletServiceWithdrawTransactionRequest.getTransactionId();
 
         String traceId = walletServiceWithdrawTransactionRequest.getTransactionRequestMetadata().getTraceId();
         String operation = Operation.WITHDRAW.name().toLowerCase();
-        String action = String.format("schedule-%s-transaction-request-by-wallet-service", operation);
+        String action = String.format("schedule-create-%s-transaction-request-by-wallet-service", operation);
         String tracerName = serviceName + "." + action + "-tracer";
 
         Tracer tracer = openTelemetry.getTracer(tracerName);

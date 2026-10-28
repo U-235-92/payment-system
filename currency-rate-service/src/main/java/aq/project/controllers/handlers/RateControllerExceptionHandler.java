@@ -1,6 +1,6 @@
 package aq.project.controllers.handlers;
 
-import aq.project.dto.ErrorDto;
+import aq.project.dto.CurrencyRateServiceErrorDto;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.validation.ConstraintViolationException;
@@ -18,34 +18,45 @@ public class RateControllerExceptionHandler {
 
 //    Non project's exception handlers
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDto> onConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<CurrencyRateServiceErrorDto> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorDto> onIllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<CurrencyRateServiceErrorDto> onIllegalArgumentException(IllegalArgumentException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(JsonParseException.class)
-    public ResponseEntity<ErrorDto> onJsonParseException(JsonParseException e) {
+    public ResponseEntity<CurrencyRateServiceErrorDto> onJsonParseException(JsonParseException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorDto> onRuntimeException(RuntimeException e) {
+    public ResponseEntity<CurrencyRateServiceErrorDto> onRuntimeException(RuntimeException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
         controllerExceptionLogger.logException(e, status);
-        return ResponseEntity.status(status).body(getErrorDTO(status, e.getMessage()));
+
+        return getErrorResponseEntity(status, e);
     }
 
-    private ErrorDto getErrorDTO(HttpStatus httpStatus, String message) {
-        return new ErrorDto().httpStatus(httpStatus.value()).message(message);
+    private ResponseEntity<CurrencyRateServiceErrorDto> getErrorResponseEntity(HttpStatus httpStatus, Exception e) {
+        return ResponseEntity.status(httpStatus)
+                .body(new CurrencyRateServiceErrorDto()
+                        .httpStatus(httpStatus.value())
+                        .message(e.getMessage()));
     }
 }

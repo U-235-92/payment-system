@@ -32,7 +32,8 @@ public class TransferTransactionServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.transactions.TransferTransactionService.createTransferTransaction(..)) && args(transactionRequest)")
+    @Around("execution(* aq.project.services.transaction_service.TransferTransactionService.createTransferTransaction(..)) " +
+            "&& args(transactionRequest)")
     public Mono<UUID> createTransferTransaction(
             ProceedingJoinPoint pjp,
             @NotNull @Valid IndividualsApiServiceTransferTransactionRequestDto transactionRequest
@@ -73,7 +74,8 @@ public class TransferTransactionServiceAspect {
         };
     }
 
-    @Around("execution(* aq.project.services.transactions.TransferTransactionService.getTransferTransactionStatus(..)) && args(transactionId)")
+    @Around("execution(* aq.project.services.transaction_service.TransferTransactionService.getTransferTransactionStatus(..)) " +
+            "&& args(transactionId)")
     public Mono<TransactionStatus> getTransferTransactionStatus(
             ProceedingJoinPoint pjp,
             @NotNull UUID transactionId

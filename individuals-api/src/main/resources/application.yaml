@@ -86,6 +86,54 @@ resilience4j:
         slow-call-duration-threshold: 10s
         slow-call-rate-threshold: 50
 
+      get-payment-methods-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+      login-person-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+      create-person-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+      update-person-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+      delete-person-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+      get-person-info-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
   ratelimiter:
     instances:
       create-deposit-transaction-rate-limiter:
@@ -116,6 +164,30 @@ resilience4j:
         limit-refresh-period: 1s
         limit-for-period: 100
 
+      get-payment-methods-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      login-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      create-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      update-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      delete-person-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-person-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
 application:
   keycloak-service:
     name: keycloak-service
@@ -131,11 +203,11 @@ application:
     uri: http://localhost:8082
     endpoints:
       create-person: /api/v1/person/create-person
-      delete-person-by-keycloak-id: /api/v1/person/delete-person-by-keycloak-id
-      undo-delete-person-by-keycloak-id: /api/v1/person/undo-delete-person-by-keycloak-id
+      delete-person: /api/v1/person/delete-person
+      undo-delete-person: /api/v1/person/undo-delete-person
       update-person: /api/v1/person/update-person
       undo-update-person: /api/v1/person/undo-update-person
-      get-person-info-by-keycloak-id: /api/v1/person/get-person-by-keycloak-id
+      get-person-info: /api/v1/person/get-person-info
 
   wallet-service:
     name: wallet-service
@@ -157,6 +229,10 @@ application:
       create-transfer-transaction: /api/v1/transaction/transfer/create
       create-withdraw-transaction: /api/v1/transaction/withdraw/create
 
+      fail-deposit-transaction: /api/v1/transaction/deposit/fail
+      fail-transfer-transaction: /api/v1/transaction/transfer/fail
+      fail-withdraw-transaction: /api/v1/transaction/withdraw/fail
+
   currency-rate-service:
     name: currency-rate-service
     uri: http://localhost:8085
@@ -167,18 +243,25 @@ application:
       get-currencies: /api/v1/currency-rate/get-currencies
       get-currency: /api/v1/currency-rate/get-currency-info
 
+  payment-service:
+    name: payment-service
+    uri: http://localhost:8087
+    endpoints:
+      get-payment-methods: /api/v1/payment/get-payment-methods
+      create-payment: /api/v1/payment/create-payment
+
   individuals-api:
     endpoints:
 #      Notification:
       deposit-transaction-notification: /api/v1/deposit-transaction-notification
       transfer-transaction-notification: /api/v1/transfer-transaction-notification
       withdraw-transaction-notification: /api/v1/withdraw-transaction-notification
-#      User service operations:
-      create-user: /api/v1/user/create-user
-      login-user: /api/v1/user/login-user
-      update-user: /api/v1/user/update-user
-      delete-user-by-keycloak-id: /api/v1/user/delete-user-by-keycloak-id
-      get-user-info: /api/v1/user/get-user-info
+#      Person service operations:
+      create-person: /api/v1/person/create-person
+      login-person: /api/v1/person/login-person
+      update-person: /api/v1/person/update-person
+      delete-person: /api/v1/person/delete-person
+      get-person-info: /api/v1/person/get-person-info
 #      Token service operations:
       refresh-token: /api/v1/token/refresh-token
 #      Currency rate service operations:

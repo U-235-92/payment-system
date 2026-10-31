@@ -1,0 +1,28 @@
+@startuml
+
+actor transaction_service
+participant webhook_service
+database webhook_service_db
+queue kafka
+
+alt получение webhook-события
+	transaction_service -> webhook_service : Отправка события webhook [transaction status] POST /api/v1/webhook/transaction-service;
+	webhook_service -> webhook_service : Валидация полученного события webhook [transaction status] по токену доверенного источника;
+	
+	alt токен валиден
+		webhook_service -> webhook_service_db : Сохранить полученное webhook-событие [transaction status];
+		
+		alt outbox pattern
+			webhook_service -> webhook_service_db : Сохранить запрос на публикацию webhook-события;
+			webhook_service -> webhook_service_db : Извлечение сохраненного запроса;
+			webhook_service -> kafka : Публикация полученного webhook-события [transaction status] для сервиса уведомлений;
+		end
+		
+	else токен не валиден
+		webhook_service --> transaction_service : Ответ 401 Unauthorized;
+	end
+
+end
+
+
+@enduml

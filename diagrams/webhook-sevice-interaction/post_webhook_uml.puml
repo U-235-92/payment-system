@@ -11,7 +11,12 @@ alt получение webhook-события
 	
 	alt токен валиден
 		webhook_service -> webhook_service_db : Сохранить полученное webhook-событие [transaction status];
-		webhook_service -> kafka : Публикация полученного webhook-события [transaction status] для сервиса уведомлений;
+		
+		alt outbox pattern
+			webhook_service -> webhook_service_db : Сохранить запрос на публикацию webhook-события;
+			webhook_service -> webhook_service_db : Извлечение сохраненного запроса;
+			webhook_service -> kafka : Публикация полученного webhook-события [transaction status] для сервиса уведомлений;
+		end
 		
 	else токен не валиден
 		webhook_service --> transaction_service : Ответ 401 Unauthorized;

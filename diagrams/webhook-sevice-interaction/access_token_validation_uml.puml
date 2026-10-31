@@ -1,0 +1,28 @@
+@startuml
+
+actor transaction_service
+participant webhook_service
+database webhook_service_db
+participant webhook_service_http_filter
+
+alt валидация токена доверенного источника
+	transaction_service -> webhook_service : Отправка события webhook [transaction status] POST /api/v1/webhook/transaction-service;
+	webhook_service -> webhook_service_http_filter : Валидация запроса;
+	webhook_service_http_filter -> webhook_service_http_filter : Извлечение из запроса dto токена доверенного источника;
+	
+	alt токен присутствует в запросе, проверка @Validation dto токена успешна
+		webhook_service_http_filter -> webhook_service_http_filter : Рашифровка извлеченного токена при помощи секретного ключа, извлечение идентификатора достоверного источника из текущего токена;
+		webhook_service_http_filter -> webhook_service_db : Извлечение по полученному идентификатору записи достоверного источника;
+		
+		alt запись присутсвует
+			webhook_service_http_filter -> webhook_service : Передача запроса для дальнейшей обработки;
+		
+		else запись отсутсвует
+			webhook_service --> transaction_service : Ответ 401 Unauthorized;
+		end
+	else
+		webhook_service --> transaction_service : Ответ 401 Unauthorized;
+	end
+end
+
+@enduml

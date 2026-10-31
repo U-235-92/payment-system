@@ -5,15 +5,22 @@ database webhook_service_db
 queue kafka
 
 alt публикация webhook-события
-	webhook_service -> webhook_service_db : Извлечение необработанного сохраненного запроса webhook-события для заданного transaction-id, отсортированных по timestamp, обрабатывать самое свежее необработанное событие;
+	note right webhook_service
+		Извлечение необработанного сохраненного запроса webhook-события 
+		для заданного transaction-id, отсортированных по timestamp, 
+		обрабатывать самое свежее необработанное событие;
+	end note
+	webhook_service -> webhook_service_db : Извлечение необработанного webhook-события;
 	webhook_service -> kafka : Публикация webhook-события в брокер;
 	
-	alt успешная публикация
-		webhook_service -> webhook_service : Отметка извлеченного запроса webhook-события как processed;
-	
-	else неудачная публикация 
-		webhook_service -> webhook_service_db : Отметить все прочие полученные webhook-события для заданного transaction-id как processed, за исключением самого свежего, если List.size() извлеченных событий > 1;
-	end
+	note right webhook_service
+		<u>После успешной обработки запроса:</u> 
+		Отметить все прочие полученные webhook-события для заданного transaction-id как processed;
+		
+		<u>После неуспешной обработки запроса:</u>
+		Отметить все прочие полученные webhook-события для заданного transaction-id как processed, 
+		за исключением самого свежего, если List.size() извлеченных событий > 1;
+	end note
 end
 
 @enduml

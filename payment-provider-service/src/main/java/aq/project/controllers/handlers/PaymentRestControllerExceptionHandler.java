@@ -7,14 +7,13 @@ import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.exceptions.ProcessOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import static aq.project.controllers._utils._ErrorResponseEntityFactory.getErrorResponseEntity;
 
 @RequiredArgsConstructor
 @RestControllerAdvice(basePackageClasses = { PaymentRestController.class })
@@ -29,7 +28,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
     
     @ExceptionHandler(EntityNotFoundException.class)
@@ -38,7 +39,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(ProcessOperationException.class)
@@ -47,7 +50,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(FallbackOperationException.class)
@@ -56,7 +61,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
 //    Non project's exception handlers
@@ -66,7 +73,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -75,6 +84,15 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+    }
+
+    private PaymentProviderServiceErrorDto getPaymentProviderServiceErrorDto(HttpStatus httpStatus, Exception e) {
+        PaymentProviderServiceErrorDto dto = new PaymentProviderServiceErrorDto();
+        dto.setHttpStatus(httpStatus.value());
+        dto.setMessage(e.getMessage());
+        return dto;
     }
 }

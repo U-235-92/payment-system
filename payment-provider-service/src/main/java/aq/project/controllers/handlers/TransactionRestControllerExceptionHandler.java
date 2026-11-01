@@ -6,6 +6,7 @@ import aq.project.exceptions.AbsentPropertyException;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.ForeignMerchantException;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import static aq.project.controllers._utils._ErrorResponseEntityFactory.getErrorResponseEntity;
 
 @RequiredArgsConstructor
 @RestControllerAdvice(basePackageClasses = { TransactionRestController.class })
@@ -30,7 +29,9 @@ public class TransactionRestControllerExceptionHandler {
         
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(ForeignMerchantException.class)
@@ -39,7 +40,9 @@ public class TransactionRestControllerExceptionHandler {
         
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(AbsentPropertyException.class)
@@ -48,7 +51,9 @@ public class TransactionRestControllerExceptionHandler {
         
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
 //    Non project's exception handlers
@@ -58,7 +63,9 @@ public class TransactionRestControllerExceptionHandler {
         
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -67,7 +74,9 @@ public class TransactionRestControllerExceptionHandler {
         
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -76,7 +85,9 @@ public class TransactionRestControllerExceptionHandler {
         
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -85,6 +96,15 @@ public class TransactionRestControllerExceptionHandler {
         
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentProviderServiceErrorDto dto = getPaymentProviderServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+    }
+
+    private PaymentProviderServiceErrorDto getPaymentProviderServiceErrorDto(HttpStatus httpStatus, Exception e) {
+        PaymentProviderServiceErrorDto dto = new PaymentProviderServiceErrorDto();
+        dto.setHttpStatus(httpStatus.value());
+        dto.setMessage(e.getMessage());
+        return dto;
     }
 }

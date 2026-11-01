@@ -90,7 +90,10 @@ val dependencyVersionMap = mapOf(
 	"spring-data-envers" to "4.0.4",
 
 //	Lombok MapStruct binding
-	"lombok-mapstruct-binding" to "0.2.0"
+	"lombok-mapstruct-binding" to "0.2.0",
+
+//	CommonProjectUtils
+	"common-utils" to "1.1.0"
 )
 
 dependencies {
@@ -147,6 +150,9 @@ dependencies {
 	implementation("io.opentelemetry:opentelemetry-exporter-otlp")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
+
+//	Util
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 
 //	Test
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")

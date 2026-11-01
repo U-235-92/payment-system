@@ -6,6 +6,7 @@ import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.exceptions.ProcessOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +17,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.concurrent.ExecutionException;
-
-import static aq.project.controllers._utils._ErrorResponseEntityFactory.getErrorResponseEntity;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,7 +32,9 @@ public class DepositTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -42,7 +43,9 @@ public class DepositTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(FallbackOperationException.class)
@@ -51,7 +54,9 @@ public class DepositTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
 //    Non project's exception handlers
@@ -61,7 +66,9 @@ public class DepositTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -70,7 +77,9 @@ public class DepositTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(ExecutionException.class)
@@ -79,7 +88,9 @@ public class DepositTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(InterruptedException.class)
@@ -88,7 +99,9 @@ public class DepositTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -97,6 +110,15 @@ public class DepositTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+    }
+
+    private TransactionServiceErrorDto getTransactionServiceErrorDto(HttpStatus httpStatus, Exception e) {
+        TransactionServiceErrorDto dto = new TransactionServiceErrorDto();
+        dto.setHttpStatus(httpStatus.value());
+        dto.setMessage(e.getMessage());
+        return dto;
     }
 }

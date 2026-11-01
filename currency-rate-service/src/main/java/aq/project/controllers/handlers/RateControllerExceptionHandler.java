@@ -2,6 +2,7 @@ package aq.project.controllers.handlers;
 
 import aq.project.dto.CurrencyRateServiceErrorDto;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,9 @@ public class RateControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        CurrencyRateServiceErrorDto dto = getCurrencyRateServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -32,7 +35,9 @@ public class RateControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        CurrencyRateServiceErrorDto dto = getCurrencyRateServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(JsonParseException.class)
@@ -41,7 +46,9 @@ public class RateControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        CurrencyRateServiceErrorDto dto = getCurrencyRateServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -50,13 +57,15 @@ public class RateControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        CurrencyRateServiceErrorDto dto = getCurrencyRateServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
-    private ResponseEntity<CurrencyRateServiceErrorDto> getErrorResponseEntity(HttpStatus httpStatus, Exception e) {
-        return ResponseEntity.status(httpStatus)
-                .body(new CurrencyRateServiceErrorDto()
-                        .httpStatus(httpStatus.value())
-                        .message(e.getMessage()));
+    private CurrencyRateServiceErrorDto getCurrencyRateServiceErrorDto(HttpStatus httpStatus, Exception e) {
+        CurrencyRateServiceErrorDto dto = new CurrencyRateServiceErrorDto();
+        dto.setHttpStatus(httpStatus.value());
+        dto.setMessage(e.getMessage());
+        return dto;
     }
 }

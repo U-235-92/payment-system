@@ -4,6 +4,7 @@ import aq.project.controllers.PaymentRestController;
 import aq.project.dto.PaymentServiceErrorDto;
 import aq.project.exceptions.*;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentServiceErrorDto dto = getPaymentServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(ProcessOperationException.class)
@@ -33,7 +36,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentServiceErrorDto dto = getPaymentServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -42,7 +47,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentServiceErrorDto dto = getPaymentServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
@@ -51,7 +58,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentServiceErrorDto dto = getPaymentServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(FallbackOperationException.class)
@@ -60,7 +69,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentServiceErrorDto dto = getPaymentServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(ServiceHttpException.class)
@@ -69,7 +80,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentServiceErrorDto dto = getPaymentServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(ClientHttpException.class)
@@ -78,7 +91,9 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentServiceErrorDto dto = getPaymentServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
 //    Non project's exception handlers
@@ -88,13 +103,15 @@ public class PaymentRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PaymentServiceErrorDto dto = getPaymentServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
-    private ResponseEntity<?> getErrorResponseEntity(HttpStatus status, Exception e) {
-        return ResponseEntity.status(status)
-                .body(new PaymentServiceErrorDto()
-                        .httpStatus(status.value())
-                        .message(e.getMessage()));
+    private PaymentServiceErrorDto getPaymentServiceErrorDto(HttpStatus httpStatus, Exception e) {
+        PaymentServiceErrorDto dto = new PaymentServiceErrorDto();
+        dto.setHttpStatus(httpStatus.value());
+        dto.setMessage(e.getMessage());
+        return dto;
     }
 }

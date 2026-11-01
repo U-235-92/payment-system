@@ -112,7 +112,10 @@ val dependencyVersionMap = mapOf(
 	"spring-data-envers" to "4.0.4",
 
 //	Payment provider service API specification
-	"payment-provider-service-api-specification" to "2.4.1-dev"
+	"payment-provider-service-api-specification" to "2.4.1-dev",
+
+//	CommonProjectUtils
+	"common-utils" to "1.1.0"
 )
 
 dependencies {
@@ -190,6 +193,9 @@ dependencies {
 
 //	Payment provider service api
 	"apiSpec"("aq.payment-system:payment-provider-service-api-specification:${dependencyVersionMap.getValue("payment-provider-service-api-specification")}")
+
+//	Util
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 }
 
 dependencyManagement {

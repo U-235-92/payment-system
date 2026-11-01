@@ -4,6 +4,7 @@ import aq.project.controllers.payment_controller.PaymentServiceRestController;
 import aq.project.dto.IndividualsApiServiceErrorDto;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import reactor.core.publisher.Mono;
-
-import static aq.project.controllers._utils._ErrorResponseEntityFactory.getErrorResponseEntity;
 
 @RequiredArgsConstructor
 @RestControllerAdvice(basePackageClasses = PaymentServiceRestController.class)
@@ -29,7 +28,9 @@ public class PaymentServiceRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(exc, status);
 
-        return Mono.just(getErrorResponseEntity(status, exc));
+        IndividualsApiServiceErrorDto dto = getIndividualsApiServiceErrorDto(status, exc);
+
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(dto, status));
     }
 
 //    Non-project specific exceptions
@@ -39,7 +40,9 @@ public class PaymentServiceRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(exc, status);
 
-        return Mono.just(getErrorResponseEntity(status, exc));
+        IndividualsApiServiceErrorDto dto = getIndividualsApiServiceErrorDto(status, exc);
+
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(dto, status));
     }
 
     @ExceptionHandler(value = HttpClientErrorException.class)
@@ -48,7 +51,9 @@ public class PaymentServiceRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(exc, status);
 
-        return Mono.just(getErrorResponseEntity(status, exc));
+        IndividualsApiServiceErrorDto dto = getIndividualsApiServiceErrorDto(status, exc);
+
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(dto, status));
     }
 
     @ExceptionHandler(value = HttpServerErrorException.class)
@@ -57,6 +62,15 @@ public class PaymentServiceRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(exc, status);
 
-        return Mono.just(getErrorResponseEntity(status, exc));
+        IndividualsApiServiceErrorDto dto = getIndividualsApiServiceErrorDto(status, exc);
+
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(dto, status));
+    }
+
+    private IndividualsApiServiceErrorDto getIndividualsApiServiceErrorDto(HttpStatus httpStatus, Exception e) {
+        IndividualsApiServiceErrorDto dto = new IndividualsApiServiceErrorDto();
+        dto.setHttpStatus(httpStatus.value());
+        dto.setMessage(e.getMessage());
+        return dto;
     }
 }

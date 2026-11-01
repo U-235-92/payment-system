@@ -55,6 +55,15 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = System.getProperty("LOCAL_REPO_NAME")
+		url = uri(System.getProperty("LOCAL_REPO_URL"))
+		isAllowInsecureProtocol = true
+		credentials {
+			username = System.getProperty("LOCAL_REPO_USERNAME")
+			password = System.getProperty("LOCAL_REPO_PASSWORD")
+		}
+	}
 }
 
 springBoot {
@@ -95,7 +104,10 @@ val dependencyVersionMap = mapOf(
 	"atomikos" to "6.0.1",
 
 //	Lombok MapStruct binding
-	"lombok-mapstruct-binding" to "0.2.0"
+	"lombok-mapstruct-binding" to "0.2.0",
+
+//	CommonProjectUtils
+	"common-utils" to "1.1.0"
 )
 
 dependencies {
@@ -132,6 +144,7 @@ dependencies {
 //	Util
 	annotationProcessor("org.projectlombok:lombok")
 	compileOnly("org.projectlombok:lombok")
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 
 //	Mapping
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")

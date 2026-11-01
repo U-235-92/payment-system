@@ -6,6 +6,7 @@ import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import static aq.project.controllers._utils._ErrorResponseEntityFactory.getErrorResponseEntity;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,7 +30,9 @@ public class TransferTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        WalletServiceErrorDto dto = getWalletServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -40,7 +41,9 @@ public class TransferTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        WalletServiceErrorDto dto = getWalletServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(EntityConstraintsException.class)
@@ -49,7 +52,9 @@ public class TransferTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        WalletServiceErrorDto dto = getWalletServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
 //    Non project's exception handlers
@@ -59,7 +64,9 @@ public class TransferTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        WalletServiceErrorDto dto = getWalletServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -68,7 +75,9 @@ public class TransferTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        WalletServiceErrorDto dto = getWalletServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -77,6 +86,15 @@ public class TransferTransactionRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        WalletServiceErrorDto dto = getWalletServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+    }
+
+    private WalletServiceErrorDto getWalletServiceErrorDto(HttpStatus httpStatus, Exception e) {
+        WalletServiceErrorDto dto = new WalletServiceErrorDto();
+        dto.setHttpStatus(httpStatus.value());
+        dto.setMessage(e.getMessage());
+        return dto;
     }
 }

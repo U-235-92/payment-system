@@ -93,7 +93,7 @@ val dependencyVersionMap = mapOf(
 	"lombok-mapstruct-binding" to "0.2.0",
 
 //	CommonProjectUtils
-	"common-utils" to "1.1.0"
+	"common-utils" to "2.0.0"
 )
 
 dependencies {

@@ -16,8 +16,10 @@ import aq.project.services.wallet.WalletService;
 import aq.project.utils.handlers.TransactionHandler;
 import aq.project.utils.mappers.transaction.TransactionRequestMapper;
 import aq.project.utils.mappers.transaction.TransactionResponseMapper;
+import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.ApplicationMetricsRegistry;
 import aq.project.utils.telemetry.TraceContext;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.micrometer.core.instrument.Timer;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
@@ -78,6 +80,8 @@ public class TransferTransactionService {
     private final WalletService walletService;
 
     private final Validator validator;
+
+    private final Fallback fallback;
 
     @Transactional
     @KafkaListener(topics = "${service.kafka.topics.create_transfer_transaction_request.name}")
@@ -446,10 +450,32 @@ public class TransferTransactionService {
         }
     }
 
+    @RateLimiter(
+            name = "get-transfer-transaction-status",
+            fallbackMethod = "getTransactionStatusRateLimiterFallback"
+    )
     public TransactionStatus getTransactionStatus(UUID transactionId) {
         TransferTransaction transaction = transferTransactionRepository.findById(transactionId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("No transaction found with id: [%s]", transactionId)));
+
         return transaction.getStatus();
+    }
+
+    private TransactionStatus getTransactionStatusRateLimiterFallback(
+            UUID transactionId,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException)
+            throw exception;
+
+        String action = "get-transfer-transaction-status";
+        String message = String.format(
+                "Exception occurred during getting transfer transaction status for transaction with id: [%s]. " +
+                "Exception message: %s", transactionId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+
+        return null;
     }
 }

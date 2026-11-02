@@ -5,6 +5,7 @@ import aq.project.dto.WalletServiceErrorDto;
 import aq.project.exceptions.DuplicateTransactionHandleException;
 import aq.project.exceptions.EntityConstraintsException;
 import aq.project.exceptions.EntityNotFoundException;
+import aq.project.exceptions.FallbackOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
@@ -24,6 +25,17 @@ public class DepositTransactionRestControllerExceptionHandler {
     private final ControllerExceptionLogger controllerExceptionLogger;
 
 //    Project's exception handlers
+    @ExceptionHandler(FallbackOperationException.class)
+    public ResponseEntity<WalletServiceErrorDto> onFallbackOperationException(FallbackOperationException e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        controllerExceptionLogger.logException(e, status);
+
+        WalletServiceErrorDto dto = getWalletServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+    }
+
     @ExceptionHandler(DuplicateTransactionHandleException.class)
     public ResponseEntity<WalletServiceErrorDto> onDuplicateTransactionHandleException(DuplicateTransactionHandleException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;

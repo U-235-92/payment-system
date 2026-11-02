@@ -30,7 +30,9 @@ public class WalletRestController implements WalletRestControllerApi {
             String authorization
     ) {
         traceContext.setTraceId(xTraceId);
+
         UUID createdWalletId = walletService.createWallet(walletMapper.toWallet(createWalletRequestDTO));
+
         return ResponseEntity.ok(createdWalletId);
     }
 
@@ -41,7 +43,9 @@ public class WalletRestController implements WalletRestControllerApi {
             String authorization
     ) {
         traceContext.setTraceId(xTraceId);
+
         Wallet wallet = walletService.getWallet(id);
+
         return ResponseEntity.ok(walletMapper.toWalletInfoResponseDto(wallet));
     }
 
@@ -52,6 +56,7 @@ public class WalletRestController implements WalletRestControllerApi {
             String authorization
     ) {
         traceContext.setTraceId(xTraceId);
+
         return ResponseEntity.ok(walletService.getWalletCurrencyCode(id));
     }
 }

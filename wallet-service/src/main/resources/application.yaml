@@ -49,6 +49,32 @@ management:
           - prometheus
           - info
           - health
+resilience4j:
+  ratelimiter:
+    instances:
+      get-deposit-transaction-status:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-transfer-transaction-status:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-withdraw-transaction-status:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      create-wallet:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-wallet-info:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-wallet-currency-code:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 otel:
   instrumentation:
     annotations:

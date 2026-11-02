@@ -106,8 +106,11 @@ val dependencyVersionMap = mapOf(
 //	Lombok MapStruct binding
 	"lombok-mapstruct-binding" to "0.2.0",
 
+//	Resilience4j
+	"resilience4j" to "2.4.0",
+
 //	CommonProjectUtils
-	"common-utils" to "1.1.0"
+	"common-utils" to "2.0.0"
 )
 
 dependencies {
@@ -152,6 +155,9 @@ dependencies {
 
 //	Lombok MapStruct binding
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
+
+//	Resilience4j
+	implementation("io.github.resilience4j:resilience4j-spring-boot4:${dependencyVersionMap.getValue("resilience4j")}")
 
 //	Test
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")

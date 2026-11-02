@@ -1,6 +1,8 @@
 package aq.project.controllers.handlers;
 
 import aq.project.dto.CurrencyRateServiceErrorDto;
+import aq.project.exceptions.EntityNotFoundException;
+import aq.project.exceptions.FallbackOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -16,6 +18,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class RateControllerExceptionHandler {
 
     private final ControllerExceptionLogger controllerExceptionLogger;
+
+//    Project's exception handlers
+    @ExceptionHandler(FallbackOperationException.class)
+    public ResponseEntity<CurrencyRateServiceErrorDto> onFallbackOperationException(FallbackOperationException e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        controllerExceptionLogger.logException(e, status);
+
+        CurrencyRateServiceErrorDto dto = getCurrencyRateServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<CurrencyRateServiceErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        controllerExceptionLogger.logException(e, status);
+
+        CurrencyRateServiceErrorDto dto = getCurrencyRateServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+    }
 
 //    Non project's exception handlers
     @ExceptionHandler(ConstraintViolationException.class)

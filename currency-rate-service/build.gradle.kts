@@ -85,7 +85,7 @@ val dependencyVersionMap = mapOf(
 	"resilience4j" to "2.4.0",
 
 //	CommonProjectUtils
-	"common-utils" to "1.1.0"
+	"common-utils" to "2.0.0"
 )
 
 dependencies {

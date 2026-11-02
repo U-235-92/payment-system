@@ -1,6 +1,7 @@
 package aq.project.configurations;
 
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.ApplicationMetricsRegistry;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import aq.project.utils.telemetry.TraceContext;
@@ -40,6 +41,11 @@ public class ApplicationConfiguration {
     @Bean
     public ApplicationMetricsRegistry applicationMetricsRegistry() {
         return new ApplicationMetricsRegistry(serviceName);
+    }
+
+    @Bean
+    public Fallback fallback() {
+        return new Fallback(serviceName, openTelemetry, traceContext());
     }
 
     @Bean

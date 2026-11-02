@@ -7,14 +7,12 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @RequiredArgsConstructor
 public class Fallback {
 
-    @Value("${spring.application.name}")
-    private String serviceName;
+    private final String serviceName;
 
     private final OpenTelemetry openTelemetry;
 

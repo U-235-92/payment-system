@@ -115,7 +115,7 @@ val dependencyVersionMap = mapOf(
 	"payment-provider-service-api-specification" to "2.4.1-dev",
 
 //	CommonProjectUtils
-	"common-utils" to "1.1.0"
+	"common-utils" to "2.0.0"
 )
 
 dependencies {

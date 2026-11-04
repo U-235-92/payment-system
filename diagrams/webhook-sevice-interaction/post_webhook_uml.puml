@@ -1,28 +1,44 @@
 @startuml
 
 actor transaction_service
+queue kafka
+participant payment_provider_service
 participant webhook_service
 database webhook_service_db
-queue kafka
 
-alt получение webhook-события
-	transaction_service -> webhook_service : Отправка события webhook [transaction status] POST /api/v1/webhook/transaction-service;
-	webhook_service -> webhook_service : Валидация полученного события webhook [transaction status] по токену доверенного источника;
+alt POST webhook-события
+
+	transaction_service -> kafka : Публикация события [transaction];
+	payment_provider_service <- kafka : Извлечение опубликованного события [transaction], обработка;
+	payment_provider_service -> webhook_service : Отправка dto [webhook-payment-status] POST /api/v1/webhook/webhook-service;
+	
+	webhook_service -> webhook_service : Валидация полученного dto [webhook-payment-status] по токену доверенного источника;
 	
 	alt токен валиден
-		webhook_service -> webhook_service_db : Сохранить полученное webhook-событие [transaction status];
+			
+		alt @Transaction
 		
-		alt outbox pattern
-			webhook_service -> webhook_service_db : Сохранить запрос на публикацию webhook-события;
-			webhook_service -> webhook_service_db : Извлечение сохраненного запроса;
-			webhook_service -> kafka : Публикация полученного webhook-события [transaction status] для сервиса уведомлений;
+			webhook_service -> webhook_service : Преобразование dto [webhook-payment-status] в сущность outbox-записи;
+			webhook_service -> webhook_service_db : Сохранить полученную сущность outbox-записи;
+		end
+
+		alt @Transaction
+		
+			webhook_service <- webhook_service_db : Извлечение сохраненной сущности outbox-записи;
+			webhook_service -> webhook_service : Преобразование извлеченной сущности outbox-записи в kafka-сообщение [payment-status];
+			webhook_service -> kafka : Публикация полученного kafka-сообщения [payment-status];
 		end
 		
+		transaction_service <- kafka : Извлечение полученного kafka-сообщения [payment-status];
+		transaction_service -> transaction_service : Обработка извлеченного kafka-сообщения [payment-status];
+		
 	else токен не валиден
-		webhook_service --> transaction_service : Ответ 401 Unauthorized;
+	
+		webhook_service --> payment_provider_service : Ответ 401 Unauthorized;
+		payment_provider_service -> kafka : Публикация события [fail-transaction];
+		transaction_service <- kafka : Извлечение опубликованного события [fail-transaction];
+		transaction_service -> transaction_service : Обработка извлеченного события [fail-transaction];
 	end
-
 end
-
 
 @enduml

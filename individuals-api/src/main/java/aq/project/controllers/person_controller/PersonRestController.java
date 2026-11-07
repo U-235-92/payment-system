@@ -2,7 +2,7 @@ package aq.project.controllers.person_controller;
 
 import aq.project.controller.PersonRestControllerApi;
 import aq.project.dto.*;
-import aq.project.services.person_service.PersonService;
+import aq.project.services.PersonService;
 import com.nimbusds.jwt.JWTParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

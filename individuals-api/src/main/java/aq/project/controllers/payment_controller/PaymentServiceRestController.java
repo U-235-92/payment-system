@@ -2,7 +2,7 @@ package aq.project.controllers.payment_controller;
 
 import aq.project.controller.PaymentRestControllerApi;
 import aq.project.dto.PaymentServicePaymentMethodResponseDto;
-import aq.project.services.payment_service.PaymentService;
+import aq.project.services.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

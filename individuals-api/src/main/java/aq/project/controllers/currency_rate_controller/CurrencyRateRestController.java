@@ -4,7 +4,7 @@ import aq.project.controller.RateRestControllerApi;
 import aq.project.dto.CurrencyResponse;
 import aq.project.dto.RateProviderResponse;
 import aq.project.dto.RateResponse;
-import aq.project.services.currency_rate_service.CurrencyRateService;
+import aq.project.services.CurrencyRateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,0 +1,20 @@
+@startuml
+
+actor individuals_api
+
+participant transaction_service
+participant transaction_service_db
+
+alt status_transaction
+	
+	note right individuals_api
+		type: [ deposit, withdrawal, transfer ]
+	end note
+	
+	individuals_api -> transaction_service : GET /api/v1/transaction/{transaction_id}/status;
+	
+	transaction_service -> transaction_service_db : Get transaction status;
+	transaction_service --> individuals_api : Return transaction status;
+end
+
+@enduml

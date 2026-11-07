@@ -52,6 +52,15 @@ springBoot {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = System.getProperty("LOCAL_REPO_NAME")
+		url = uri(System.getProperty("LOCAL_REPO_URL"))
+		isAllowInsecureProtocol = true
+		credentials {
+			username = System.getProperty("LOCAL_REPO_USERNAME")
+			password = System.getProperty("LOCAL_REPO_PASSWORD")
+		}
+	}
 }
 
 sourceSets {
@@ -98,7 +107,10 @@ val dependencyVersionMap = mapOf(
 	"testcontainers-keycloak" to "4.1.1",
 
 //	OpenApi
-	"springdoc-openapi" to "3.0.2"
+	"springdoc-openapi" to "3.0.2",
+
+//	CommonProjectUtils
+	"common-utils" to "2.0.0"
 )
 
 dependencies {
@@ -169,6 +181,7 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 }
 
 tasks.withType<Test> {

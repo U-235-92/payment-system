@@ -33,6 +33,24 @@ management:
           - info
           - health
 resilience4j:
+  ratelimiter:
+    instances:
+      get-rate:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-currency-info:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-rate-provider-info:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      update-currency-rates:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
   retry:
     instances:
       update-currency-rates:
@@ -40,6 +58,7 @@ resilience4j:
         wait-duration: 1500ms
         enable-exponential-backoff: true
         exponential-backoff-multiplier: 2
+
   circuitbreaker:
     instances:
       update-currency-rates:
@@ -49,6 +68,7 @@ resilience4j:
         failure-rate-threshold: 50
         slow-call-duration-threshold: 30s
         slow-call-rate-threshold: 50
+
 application:
   rates:
     provider:

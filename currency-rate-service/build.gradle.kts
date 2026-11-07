@@ -82,7 +82,10 @@ val dependencyVersionMap = mapOf(
 	"shedlock" to "7.7.0",
 
 //	Resilience4j
-	"resilience4j" to "2.4.0"
+	"resilience4j" to "2.4.0",
+
+//	CommonProjectUtils
+	"common-utils" to "2.0.0"
 )
 
 dependencies {
@@ -130,6 +133,7 @@ dependencies {
 //	Util
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 
 //	Observability
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")

@@ -9,3 +9,5 @@ servers:
   - url: http://localhost:8084
   - url: http://transaction-service:8084
 
+paths:
+  

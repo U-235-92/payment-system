@@ -1,0 +1,22 @@
+@startuml
+
+actor individuals_api
+
+participant transaction_service
+
+database transaction_service_db
+
+queue kafka
+
+alt fail_transaction	
+	note right transaction_service
+		{type} = [ deposit, withdrawal ];
+		{status} = [ completed, failed, canceled ];
+	end note
+
+	kafka -> transaction_service : Fetch transaction.{type}.{status};
+	transaction_service -> transaction_service_db : Update transaction, status = FAILED;
+	transaction_service -> transaction_service_db : Credit balance;
+end
+
+@enduml

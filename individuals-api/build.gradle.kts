@@ -205,15 +205,6 @@ dependencies {
 
 //	Person service api
 	"apiSpec"("aq.payment-system:person-service-api-specification:${dependencyVersionMap.getValue("person-service-api-specification")}")
-
-//	Transaction service api
-	"apiSpec"("aq.payment-system:transaction-service-api-specification:${dependencyVersionMap.getValue("transaction-service-api-specification")}")
-
-//	Wallet service api
-	"apiSpec"("aq.payment-system:wallet-service-api-specification:${dependencyVersionMap.getValue("wallet-service-api-specification")}")
-
-//	Payment service api
-	"apiSpec"("aq.payment-system:payment-service-api-specification:${dependencyVersionMap.getValue("payment-service-api-specification")}")
 }
 
 tasks.withType<Test> {

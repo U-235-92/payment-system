@@ -9,9 +9,6 @@ servers:
   - url: http://localhost:8081
   - url: http://individuals-api:8081
 
-#############
-# ENDPOINTS #
-#############
 paths:
   /api/v1/token/refresh-token:
     post:
@@ -166,78 +163,6 @@ paths:
             type: string
             format: uuid
       responses:
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
-        500:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
-
-  /api/v1/wallet/create:
-    post:
-      security:
-        - BearerAuth: [ ]
-      operationId: createWallet
-      tags:
-        - Wallet
-      summary: Create a new wallet
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateWalletRequestDto"
-              description: Represents data for creating a new wallet
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: string
-                format: uuid
-          description: Returns ID of created wallet
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
-        500:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
-
-  /api/v1/wallet/info/{walletId}:
-    get:
-      security:
-        - BearerAuth: [ ]
-      operationId: getWalletInfo
-      tags:
-        - Wallet
-      summary: Get wallet info by given wallet ID
-      parameters:
-        - name: walletId
-          in: path
-          required: true
-          description: Parameter is represented an valid UUID that describes a wallet ID
-          schema:
-            type: string
-            format: uuid
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/WalletInfoResponseDto"
-          description: Returns DTO which describes the information about wallet by given ID
         400:
           content:
             application/json:
@@ -408,49 +333,6 @@ paths:
                 $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
           description: Returns ErrorDto if any 4xx client error was occurred
 
-  /api/v1/payment/get-payment-methods/{currencyCode}/{countryCode}:
-    get:
-      summary: Get list of payment methods for described currency code and country code
-      security:
-        - basicAuth: [ ]
-      operationId: getPaymentMethods
-      tags:
-        - Payment
-      parameters:
-        - name: currencyCode
-          in: path
-          required: true
-          schema:
-            type: string
-            pattern: '^[A-Z]{3}$'
-            minLength: 3
-            maxLength: 3
-        - name: countryCode
-          in: path
-          required: true
-          schema:
-            type: string
-            pattern: '^[A-Z]{3}$'
-            minLength: 3
-            maxLength: 3
-      responses:
-        200:
-          description: List of payment methods for described currency code and country code
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PaymentServicePaymentMethodResponseDto"
-        400:
-          description: Malformed request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-        401:
-          description: Request is unauthorized or credentials are incorrect
-
 ########
 # TAGS #
 ########
@@ -470,9 +352,6 @@ tags:
   - name: Rate
     description: Describes operations with currencies and its rates
 
-######################
-# COMPONENTS SCHEMAS #
-######################
 components:
   securitySchemes:
     bearerAuth:
@@ -481,9 +360,6 @@ components:
       bearerFormat: JWT
 
   schemas:
-    ##########################################
-    # INDIVIDUALS-API SERVICE API COMPONENTS #
-    ##########################################
     IndividualsApiServiceDepositTransactionRequestDto:
       type: object
       required: [ wallet_id, payment_method_id, currency_code, amount ]

@@ -93,6 +93,61 @@ public class ServiceAspectHandler {
         return result;
     }
 
+    public <T> T handle(
+            Class<T> returnResultClass,
+            ProceedingJoinPoint pjp,
+            String tracerName,
+            String serviceName,
+            String actionName,
+            Supplier<Void> validation
+    ) throws Throwable {
+//        Prepare telemetry metadata
+        Tracer tracer = openTelemetry.getTracer(tracerName);
+        Span span = tracer.spanBuilder(actionName).startSpan();
+
+        String traceId = (traceContext.getTraceId() == null)
+                ? span.getSpanContext().getTraceId()
+                : traceContext.getTraceId();
+        String spanId = span.getSpanContext().getTraceId();
+
+        Timer.Sample sample = applicationMetricsRegistry.startTimer();
+
+        long executionTime;
+
+        T result;
+
+        try(Scope scope = span.makeCurrent()) {
+//            Validation logic call
+            if(validation != null)
+                validation.get();
+
+//            Main logic call
+            result = returnResultClass.cast(pjp.proceed());
+
+        } catch (Throwable t) {
+//            Telemetry on error
+            logOnFailure(traceId, spanId, serviceName, actionName, t);
+
+            applicationMetricsRegistry.countAction(false, actionName);
+
+            throw t;
+
+        } finally {
+//            Close all telemetry resources
+            executionTime = applicationMetricsRegistry.finishTimer(sample, actionName);
+
+            traceContext.clean();
+
+            span.end();
+        }
+//            Telemetry on success
+        logOnSuccess(traceId, spanId, serviceName, actionName, executionTime);
+
+        applicationMetricsRegistry.countAction(true, actionName);
+
+        return result;
+    }
+
     public void handle(
             ProceedingJoinPoint pjp,
             String tracerName,
@@ -159,6 +214,56 @@ public class ServiceAspectHandler {
         applicationMetricsRegistry.countAction(true, actionName);
     }
 
+    public void handle(
+            ProceedingJoinPoint pjp,
+            String tracerName,
+            String serviceName,
+            String actionName,
+            Supplier<Void> validation
+    ) throws Throwable {
+//        Prepare telemetry metadata
+        Tracer tracer = openTelemetry.getTracer(tracerName);
+        Span span = tracer.spanBuilder(actionName).startSpan();
+
+        String traceId = (traceContext.getTraceId() == null)
+                ? span.getSpanContext().getTraceId()
+                : traceContext.getTraceId();
+        String spanId = span.getSpanContext().getTraceId();
+
+        Timer.Sample sample = applicationMetricsRegistry.startTimer();
+
+        long executionTime;
+
+        try(Scope scope = span.makeCurrent()) {
+//            Validation logic call
+            if(validation != null)
+                validation.get();
+
+//            Main logic call
+            pjp.proceed();
+
+        } catch (Throwable t) {
+//            Telemetry on error
+            logOnFailure(traceId, spanId, serviceName, actionName, t);
+
+            applicationMetricsRegistry.countAction(false, actionName);
+
+            throw t;
+
+        } finally {
+//            Close all telemetry resources
+            executionTime = applicationMetricsRegistry.finishTimer(sample, actionName);
+
+            traceContext.clean();
+
+            span.end();
+        }
+//            Telemetry on success
+        logOnSuccess(traceId, spanId, serviceName, actionName, executionTime);
+
+        applicationMetricsRegistry.countAction(true, actionName);
+    }
+
     private void logOnPreMainLogic(
             String traceId,
             String spanId,
@@ -182,6 +287,17 @@ public class ServiceAspectHandler {
                 traceId, spanId, service, action, description, t.getMessage());
     }
 
+    private void logOnFailure(
+            String traceId,
+            String spanId,
+            String service,
+            String action,
+            Throwable t
+    ) {
+        log.error("[{}-{}][{} -> {}]: {}",
+                traceId, spanId, service, action, t.getMessage());
+    }
+
     private void logOnSuccess(
             String traceId,
             String spanId,
@@ -192,5 +308,16 @@ public class ServiceAspectHandler {
     ) {
         log.info("[{}-{}][{} -> {}]: {} on {}ms",
                 traceId, spanId, service, action, description, executionTime);
+    }
+
+    private void logOnSuccess(
+            String traceId,
+            String spanId,
+            String service,
+            String action,
+            long executionTime
+    ) {
+        log.info("[{}-{}][{} -> {}]: on {}ms",
+                traceId, spanId, service, action, executionTime);
     }
 }

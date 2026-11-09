@@ -1,0 +1,67 @@
+logging:
+  level:
+    root: info
+
+server:
+  port: 8084
+
+spring:
+  application:
+    name: wallet-service
+
+  profiles:
+    active:
+      - dev
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+
+  flyway:
+    enabled: false
+
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: wallet-service
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+
+resilience4j:
+  ratelimiter:
+    instances:
+      create-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-wallet-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-wallet-currency-code-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      deposit-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      withdrawal-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      transfer-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100

@@ -1,0 +1,40 @@
+logging:
+  level:
+    root: info
+    sql: warn
+    web: warn
+    org.springframework.security: warn
+    org.apache.shardingsphere: info
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces
+
+spring:
+  flyway:
+    create-schemas: true
+    default-schema: public
+    locations: 'classpath:db/migration'
+    baseline-version: 1
+    baseline-on-migrate: true
+    driver-class-name: org.postgresql.Driver
+    clean-disabled: false
+
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:dev-sharding.yaml?placeholder-type=environment
+
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
+app:
+  datasource:
+    - jdbc:postgresql://localhost:5445/wallets_db,root,root
+    - jdbc:postgresql://localhost:5455/wallets_db,root,root

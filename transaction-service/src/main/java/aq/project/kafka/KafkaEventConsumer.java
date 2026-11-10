@@ -1,16 +1,15 @@
 package aq.project.kafka;
 
-import aq.project.dto.DepositWalletRequestDto;
-import aq.project.dto.PaymentType;
-import aq.project.dto.TransactionStatus;
-import aq.project.dto.WithdrawalWalletRequestDto;
+import aq.project.dto.*;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.kafka.events.TransactionResponseEvent;
 import aq.project.repositories.TransactionRepository;
 import aq.project.services.TokenService;
+import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.TraceFactory;
 import aq.project.wallet_service.WalletApiClient;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -30,6 +29,8 @@ public class KafkaEventConsumer {
     private final WalletApiClient walletApiClient;
 
     private final TokenService tokenService;
+
+    private final Fallback fallback;
 
     @Transactional
     @KafkaListener(
@@ -71,6 +72,10 @@ public class KafkaEventConsumer {
                     "${app.kafka.topics.deposit_transaction_fail_response.name}",
                     "${app.kafka.topics.withdrawal_transaction_fail_response.name}"
             }
+    )
+    @CircuitBreaker(
+            name = "handle-fail-transaction-event-circuitbreaker",
+            fallbackMethod = "handleFailTransactionEventCircuitBreakerFallback"
     )
     public void handleFailTransactionEvent(
             TransactionResponseEvent transactionResponseEvent
@@ -127,6 +132,26 @@ public class KafkaEventConsumer {
             logOnError(paymentType, transactionId, e);
             throw e;
         }
+    }
+
+    private UUID handleFailTransactionEventCircuitBreakerFallback(
+            TransactionResponseEvent transactionResponseEvent,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "handle-fail-transaction-event";
+
+        UUID transactionId = transactionResponseEvent.transactionId();
+
+        String message = String.format(
+                "Exception occurred during handle fail [%s] transaction event with transaction id: [%s]. Exception message: %s",
+                transactionResponseEvent.paymentType(), transactionId, exception.getMessage());
+
+        fallback.handleCircuitBreakerFallback(action, message, exception);
+
+        return null;
     }
 
     private Object[] getTransactionEventData(

@@ -9,6 +9,8 @@ import aq.project.repositories.TransactionRepository;
 import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.wallet_service.WalletApiClient;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,8 +38,16 @@ public class TransactionService {
 
     private final KafkaEventProducer kafkaEventProducer;
 
-    private Fallback fallback;
+    private final Fallback fallback;
 
+    @RateLimiter(
+            name = "init-transaction-rate-limiter",
+            fallbackMethod = "initTransactionRateLimiterFallback"
+    )
+    @CircuitBreaker(
+            name = "init-transaction-circuitbreaker",
+            fallbackMethod = "initTransactionCircuitBreakerFallback"
+    )
     public InitTransactionResponseDto initTransaction(
             InitTransactionRequestDto initTransactionRequestDto
     ) {
@@ -122,6 +132,46 @@ public class TransactionService {
         }
     }
 
+    private InitTransactionResponseDto initTransactionRateLimiterFallback(
+            InitTransactionRequestDto initTransactionRequestDto,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "init-transaction";
+
+        UUID walletId = initTransactionRequestDto.getWalletId();
+
+        String message = String.format(
+                "Exception occurred during init [%s] transaction for wallet with id: [%s]. Exception message: %s",
+                initTransactionRequestDto.getPaymentType(), walletId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+
+        return null;
+    }
+
+    private InitTransactionResponseDto initTransactionCircuitBreakerFallback(
+            InitTransactionRequestDto initTransactionRequestDto,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "init-transaction";
+
+        UUID walletId = initTransactionRequestDto.getWalletId();
+
+        String message = String.format(
+                "Exception occurred during init [%s] transaction for wallet with id: [%s]. Exception message: %s",
+                initTransactionRequestDto.getPaymentType(), walletId, exception.getMessage());
+
+        fallback.handleCircuitBreakerFallback(action, message, exception);
+
+        return null;
+    }
+
     private WalletInfoResponseDto getWalletInfo(UUID walletId) {
         String traceId = traceContext.getTraceId();
         String authorization = tokenService.getAdminJwtAsAuthorizationHeaderValue();
@@ -156,6 +206,14 @@ public class TransactionService {
                 && balance.compareTo(amount) >= 0;
     }
 
+    @RateLimiter(
+            name = "confirm-transaction-rate-limiter",
+            fallbackMethod = "confirmTransactionRateLimiterFallback"
+    )
+    @CircuitBreaker(
+            name = "confirm-transaction-circuitbreaker",
+            fallbackMethod = "confirmTransactionCircuitBreakerFallback"
+    )
     @Transactional
     public UUID confirmTransaction(
             ConfirmTransactionRequestDto confirmTransactionRequestDto
@@ -215,6 +273,50 @@ public class TransactionService {
         return savedTransaction.getId();
     }
 
+    private UUID confirmTransactionRateLimiterFallback(
+            ConfirmTransactionRequestDto confirmTransactionRequestDto,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "confirm-transaction";
+
+        UUID walletId = confirmTransactionRequestDto.getWalletId();
+
+        String message = String.format(
+                "Exception occurred during confirm [%s] transaction for wallet with id: [%s]. Exception message: %s",
+                confirmTransactionRequestDto.getPaymentType(), walletId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+
+        return null;
+    }
+
+    private UUID confirmTransactionCircuitBreakerFallback(
+            ConfirmTransactionRequestDto confirmTransactionRequestDto,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "confirm-transaction";
+
+        UUID walletId = confirmTransactionRequestDto.getWalletId();
+
+        String message = String.format(
+                "Exception occurred during confirm [%s] transaction for wallet with id: [%s]. Exception message: %s",
+                confirmTransactionRequestDto.getPaymentType(), walletId, exception.getMessage());
+
+        fallback.handleCircuitBreakerFallback(action, message, exception);
+
+        return null;
+    }
+
+    @RateLimiter(
+            name = "get-transaction-status-rate-limiter",
+            fallbackMethod = "getTransactionStatusRateLimiterFallback"
+    )
     public TransactionStatus getTransactionStatus(
             UUID transactionId
     ) {
@@ -222,5 +324,23 @@ public class TransactionService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Transaction with id: [%s] not found", transactionId)))
                 .getTransactionStatus();
+    }
+
+    private TransactionStatus getTransactionStatusRateLimiterFallback(
+            UUID transactionId,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException)
+            throw exception;
+
+        String action = "get-transaction-status";
+
+        String message = String.format(
+                "Exception occurred during getting transaction status for transaction with id: [%s]. Exception message: %s",
+                transactionId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+
+        return null;
     }
 }

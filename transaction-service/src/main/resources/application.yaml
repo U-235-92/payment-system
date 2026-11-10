@@ -111,3 +111,44 @@ app:
         partitions: 3
         replicas: 3
         min_insync_replicas: 2
+
+resilience4j:
+  ratelimiter:
+    instances:
+      init-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      confirm-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+  circuitbreaker:
+    instances:
+      init-transaction-circuitbreaker:
+        sliding-window-type: TIME_BASED
+        sliding-window-size: 86400
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 30s
+        slow-call-rate-threshold: 50
+
+      confirm-transaction-circuitbreaker:
+        sliding-window-type: TIME_BASED
+        sliding-window-size: 86400
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 30s
+        slow-call-rate-threshold: 50
+
+      handle-fail-transaction-event-circuitbreaker:
+        sliding-window-type: TIME_BASED
+        sliding-window-size: 86400
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 30s
+        slow-call-rate-threshold: 50

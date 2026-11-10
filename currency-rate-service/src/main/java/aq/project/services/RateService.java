@@ -1,9 +1,9 @@
 package aq.project.services;
 
 import aq.project.clients.FrankfurterRateProviderClient;
-import aq.project.dto.CurrencyResponse;
-import aq.project.dto.RateProviderResponse;
-import aq.project.dto.RateResponse;
+import aq.project.dto.CurrencyResponseDto;
+import aq.project.dto.RateProviderResponseDto;
+import aq.project.dto.RateResponseDto;
 import aq.project.entities.AdjustmentFactor;
 import aq.project.entities.ConversionRate;
 import aq.project.entities.Currency;
@@ -90,14 +90,14 @@ public class RateService {
             name = "get-rate",
             fallbackMethod = "getRateRateLimiterFallback"
     )
-    public RateResponse getRate(
+    public RateResponseDto getRate(
             String from,
             String to,
             String provider,
             OffsetDateTime date
     ) {
         if(from.equals(to)) {
-            RateResponse rateResponse = new RateResponse();
+            RateResponseDto rateResponse = new RateResponseDto();
             rateResponse.setSourceCode(from);
             rateResponse.setDestinationCode(to);
             rateResponse.setProviderCode(provider);
@@ -115,7 +115,7 @@ public class RateService {
                         .orElseThrow(() -> new EntityNotFoundException(
                                 String.format("Conversion rate not found for: [%s -> %s]", from, to)));
 
-                return getRateResponse(conversionRate, provider);
+                return getRateResponseDto(conversionRate, provider);
 
             } else {
                 Optional<ConversionRate> conversionRateOptional = conversionRateRepository
@@ -126,12 +126,12 @@ public class RateService {
                                 String.format("Conversion rate not found for: [%s -> %s] on date: %s",
                                 from, to, ISO_OFFSET_DATE_TIME.format(date))));
 
-                return getRateResponse(conversionRate, provider);
+                return getRateResponseDto(conversionRate, provider);
             }
         }
     }
 
-    private RateResponse getRateRateLimiterFallback(
+    private RateResponseDto getRateRateLimiterFallback(
             String from,
             String to,
             String provider,
@@ -152,13 +152,13 @@ public class RateService {
         return null;
     }
 
-    private RateResponse getRateResponse(
+    private RateResponseDto getRateResponseDto(
             ConversionRate conversionRate,
             String provider
     ) {
         AdjustmentFactor adjustmentFactor = getAdjustmentFactor(provider);
 
-        RateResponse rateResponse = rateResponseMapper.toRateResponse(conversionRate, provider);
+        RateResponseDto rateResponse = rateResponseMapper.toRateResponseDto(conversionRate, provider);
         rateResponse.setRate(calculateAdjustedRate(adjustmentFactor, rateResponse));
 
         return rateResponse;
@@ -178,7 +178,7 @@ public class RateService {
 
     private BigDecimal calculateAdjustedRate(
             AdjustmentFactor adjustmentFactor,
-            RateResponse rateResponse
+            RateResponseDto rateResponse
     ) {
         BigDecimal factor = adjustmentFactor.getFactor();
         BigDecimal rate = rateResponse.getRate();
@@ -186,20 +186,20 @@ public class RateService {
         return rate.multiply(factor);
     }
 
-    public List<CurrencyResponse> getCurrencies() {
-        List<CurrencyResponse> currencyResponseList = new ArrayList<>();
+    public List<CurrencyResponseDto> getCurrencies() {
+        List<CurrencyResponseDto> currencyResponseList = new ArrayList<>();
         currencyRepository.findAll()
                 .forEach(currency -> currencyResponseList
-                        .add(currencyResponseMapper.toCurrencyResponse(currency)));
+                        .add(currencyResponseMapper.toCurrencyResponseDto(currency)));
 
         return currencyResponseList;
     }
 
-    public List<RateProviderResponse> getRateProviders() {
-        List<RateProviderResponse> rateProviderResponseList = new ArrayList<>();
+    public List<RateProviderResponseDto> getRateProviders() {
+        List<RateProviderResponseDto> rateProviderResponseList = new ArrayList<>();
         rateProviderRepository.findAll()
                 .forEach(rateProvider -> rateProviderResponseList
-                        .add(rateProviderResponseMapper.toRateProviderResponse(rateProvider)));
+                        .add(rateProviderResponseMapper.toRateProviderResponseDto(rateProvider)));
 
         return rateProviderResponseList;
     }
@@ -208,17 +208,17 @@ public class RateService {
             name = "get-currency-info",
             fallbackMethod = "getCurrencyInfoRateLimiterFallback"
     )
-    public CurrencyResponse getCurrencyInfo(
+    public CurrencyResponseDto getCurrencyInfo(
             String code
     ) {
         Currency currency = currencyRepository.findById(code)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Not found currency info for currency code: [%s]", code)));
 
-        return currencyResponseMapper.toCurrencyResponse(currency);
+        return currencyResponseMapper.toCurrencyResponseDto(currency);
     }
 
-    private CurrencyResponse getCurrencyInfoRateLimiterFallback(
+    private CurrencyResponseDto getCurrencyInfoRateLimiterFallback(
             String code,
             Exception exception
     ) throws Exception {
@@ -239,17 +239,17 @@ public class RateService {
             name = "get-rate-provider-info",
             fallbackMethod = "getRateProviderInfoRateLimiterFallback"
     )
-    public RateProviderResponse getRateProviderInfo(
+    public RateProviderResponseDto getRateProviderInfo(
             String code
     ) {
         RateProvider rateProvider = rateProviderRepository.findById(code)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Not found rate provider info for rate provider code: [%s]", code)));
 
-        return rateProviderResponseMapper.toRateProviderResponse(rateProvider);
+        return rateProviderResponseMapper.toRateProviderResponseDto(rateProvider);
     }
 
-    private RateProviderResponse getRateProviderInfoRateLimiterFallback(
+    private RateProviderResponseDto getRateProviderInfoRateLimiterFallback(
             String code,
             Exception exception
     ) throws Exception {

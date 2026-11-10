@@ -1,6 +1,6 @@
 package aq.project.utils.mappers.dto;
 
-import aq.project.dto.RateProviderResponse;
+import aq.project.dto.RateProviderResponseDto;
 import aq.project.entities.RateProvider;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,7 +16,7 @@ public abstract class RateProviderResponseMapper {
     @Mapping(target = "description", expression = "java(toDescription(rateProvider))")
     @Mapping(target = "date", expression = "java(toRateProviderDate(rateProvider))")
     @Mapping(target = "active", expression = "java(toActive(rateProvider))")
-    public abstract RateProviderResponse toRateProviderResponse(RateProvider rateProvider);
+    public abstract RateProviderResponseDto toRateProviderResponseDto(RateProvider rateProvider);
 
     protected String toProviderCode(RateProvider rateProvider) {
         return rateProvider.getCode();

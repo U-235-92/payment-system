@@ -4,7 +4,7 @@ plugins {
 	java
 	id("maven-publish")
 	id("org.openapi.generator") version "7.18.0"
-	id("org.springframework.boot") version "4.1.0"
+	id("org.springframework.boot") version "4.1.2"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -15,7 +15,7 @@ extra["springCloudVersion"] = "2025.1.2"
 
 val artifact = "currency-rate-service"
 
-val specificationArtifactVersion = "2.1.0-dev"
+val specificationArtifactVersion = "7.0.0-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -45,6 +45,15 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = System.getProperty("LOCAL_REPO_NAME")
+		url = uri(System.getProperty("LOCAL_REPO_URL"))
+		isAllowInsecureProtocol = true
+		credentials {
+			username = System.getProperty("LOCAL_REPO_USERNAME")
+			password = System.getProperty("LOCAL_REPO_PASSWORD")
+		}
+	}
 }
 
 sourceSets { // Источники исходников для проекта
@@ -85,7 +94,7 @@ val dependencyVersionMap = mapOf(
 	"resilience4j" to "2.4.0",
 
 //	CommonProjectUtils
-	"common-utils" to "2.0.0"
+	"common-utils" to "4.0.3"
 )
 
 dependencies {

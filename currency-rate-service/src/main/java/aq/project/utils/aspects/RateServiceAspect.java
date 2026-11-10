@@ -1,8 +1,8 @@
 package aq.project.utils.aspects;
 
-import aq.project.dto.CurrencyResponse;
-import aq.project.dto.RateProviderResponse;
-import aq.project.dto.RateResponse;
+import aq.project.dto.CurrencyResponseDto;
+import aq.project.dto.RateProviderResponseDto;
+import aq.project.dto.RateResponseDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
@@ -34,7 +34,7 @@ public class RateServiceAspect {
     private final ServiceAspectHandler serviceAspectHandler;
 
     @Around("execution(* aq.project.services.RateService.getRate(..)) && args(from, to, provider, date)")
-    public RateResponse getRate(
+    public RateResponseDto getRate(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String from,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String to,
@@ -56,7 +56,7 @@ public class RateServiceAspect {
                 from, to, optProvider, optRateDate);
 //        Handler logic call
         return serviceAspectHandler.handle(
-                RateResponse.class,
+                RateResponseDto.class,
                 pjp,
                 tracerName,
                 serviceName,
@@ -142,7 +142,7 @@ public class RateServiceAspect {
     }
 
     @Around("execution(* aq.project.services.RateService.getCurrencyInfo(..)) && args(code)")
-    public CurrencyResponse getCurrencyInfo(
+    public CurrencyResponseDto getCurrencyInfo(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String code
     ) throws Throwable {
@@ -157,7 +157,7 @@ public class RateServiceAspect {
                 code);
 //        Handler logic call
         return serviceAspectHandler.handle(
-                CurrencyResponse.class,
+                CurrencyResponseDto.class,
                 pjp,
                 tracerName,
                 serviceName,
@@ -172,7 +172,7 @@ public class RateServiceAspect {
     }
 
     @Around("execution(* aq.project.services.RateService.getRateProviderInfo(..)) && args(code)")
-    public RateProviderResponse getRateProviderInfo(
+    public RateProviderResponseDto getRateProviderInfo(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 10) @Pattern(regexp = "^[A-Z]{3,10}$") String code
     ) throws Throwable {
@@ -187,7 +187,7 @@ public class RateServiceAspect {
                 code);
 //        Handler logic call
         return serviceAspectHandler.handle(
-                RateProviderResponse.class,
+                RateProviderResponseDto.class,
                 pjp,
                 tracerName,
                 serviceName,

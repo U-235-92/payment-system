@@ -1,9 +1,9 @@
 package aq.project.controllers;
 
 import aq.project.controller.RateRestControllerApi;
-import aq.project.dto.CurrencyResponse;
-import aq.project.dto.RateProviderResponse;
-import aq.project.dto.RateResponse;
+import aq.project.dto.CurrencyResponseDto;
+import aq.project.dto.RateProviderResponseDto;
+import aq.project.dto.RateResponseDto;
 import aq.project.services.RateService;
 import aq.project.utils.telemetry.TraceContext;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class RateRestController implements RateRestControllerApi {
     private final TraceContext traceContext;
 
     @Override
-    public ResponseEntity<List<CurrencyResponse>> getCurrencies(
+    public ResponseEntity<List<CurrencyResponseDto>> getCurrencies(
             String xTraceId,
             String authorization
     ) {
@@ -30,7 +30,7 @@ public class RateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<RateResponse> getRate(
+    public ResponseEntity<RateResponseDto> getRate(
             String from,
             String to,
             String xTraceId,
@@ -43,7 +43,7 @@ public class RateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<List<RateProviderResponse>> getRateProviders(
+    public ResponseEntity<List<RateProviderResponseDto>> getRateProviders(
             String xTraceId,
             String authorization
     ) {
@@ -52,7 +52,7 @@ public class RateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<CurrencyResponse> getCurrencyInfo(
+    public ResponseEntity<CurrencyResponseDto> getCurrencyInfo(
             String code,
             String xTraceId,
             String authorization
@@ -62,7 +62,7 @@ public class RateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<RateProviderResponse> getRateProviderInfo(
+    public ResponseEntity<RateProviderResponseDto> getRateProviderInfo(
             String code,
             String xTraceId,
             String authorization

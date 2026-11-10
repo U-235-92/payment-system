@@ -1,6 +1,6 @@
 package aq.project.utils.mappers.dto;
 
-import aq.project.dto.RateResponse;
+import aq.project.dto.RateResponseDto;
 import aq.project.entities.ConversionRate;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,7 +18,7 @@ public abstract class RateResponseMapper {
     @Mapping(target = "rateDate", expression = "java(toRateDate(conversionRate))")
     @Mapping(target = "rate", expression = "java(toRate(conversionRate, provider))")
     @Mapping(target = "providerCode", expression = "java(toProviderCode(conversionRate, provider))")
-    public abstract RateResponse toRateResponse(ConversionRate conversionRate, String provider);
+    public abstract RateResponseDto toRateResponseDto(ConversionRate conversionRate, String provider);
 
     protected String toSourceCode(ConversionRate conversionRate) {
         return conversionRate.getSourceCurrency().getIsoCode();

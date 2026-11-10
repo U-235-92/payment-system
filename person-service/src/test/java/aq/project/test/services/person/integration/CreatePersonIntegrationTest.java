@@ -2,7 +2,7 @@ package aq.project.test.services.person.integration;
 
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
@@ -25,8 +25,8 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.util.UUID;
 
-import static aq.project._utils.entities.PersonServiceEntities.getInvalidPersonServiceCreatePersonRequestDto;
-import static aq.project._utils.entities.PersonServiceEntities.getValidPersonServiceCreatePersonRequestDto;
+import static aq.project._utils.entities.PersonServiceEntities.getInvalidCreatePersonRequestDto;
+import static aq.project._utils.entities.PersonServiceEntities.getValidCreatePersonRequestDto;
 
 @Testcontainers
 @DirtiesContext
@@ -71,7 +71,7 @@ public class CreatePersonIntegrationTest {
         String countryCode = "ATA";
         String countryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
 
@@ -86,7 +86,7 @@ public class CreatePersonIntegrationTest {
     @Test
     public void failCreatePersonOnInvalidPersonServiceCreatePersonRequestDto() {
 //        Arrange
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getInvalidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getInvalidCreatePersonRequestDto();
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -96,7 +96,7 @@ public class CreatePersonIntegrationTest {
     @Test
     public void failCreatePersonOnNullPersonServiceCreatePersonRequestDto() {
 //        Arrange
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = null;
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = null;
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -113,7 +113,7 @@ public class CreatePersonIntegrationTest {
             String countryCode = "ATA";
             String countryName = "Antarctica";
 
-            PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+            CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
             personServiceCreatePersonRequestDto.setPersonKeycloakId(UUID.randomUUID());
             personServiceCreatePersonRequestDto.setEmail(email);
 

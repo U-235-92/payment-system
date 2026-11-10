@@ -3,9 +3,9 @@ package aq.project.test.services.person.integration;
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
 import aq.project.controllers.PersonRestController;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
-import aq.project.dto.PersonServiceUndoUpdatePersonRequestDto;
-import aq.project.dto.PersonServiceUpdatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
+import aq.project.dto.UndoUpdatePersonRequestDto;
+import aq.project.dto.UpdatePersonRequestDto;
 import aq.project.entities.Person;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.repositories.CountryRepository;
@@ -87,7 +87,7 @@ public class UndoUpdatePersonIntegrationTest {
 
         String createPersonFirstName = "CreatedFirstName";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.setFirstName(createPersonFirstName);
@@ -96,13 +96,13 @@ public class UndoUpdatePersonIntegrationTest {
 
         personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
 
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceUpdatePersonRequestDto.setFirstName("UpdatedFirstName");
 
         personRestController.updatePerson(traceId, personServiceUpdatePersonRequestDto, authorization);
 
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidPersonServiceUndoUpdatePersonRequestDto();
+        UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidUndoUpdatePersonRequestDto();
         personServiceUndoUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
 //        Act & Assert
@@ -117,7 +117,7 @@ public class UndoUpdatePersonIntegrationTest {
     @Test
     public void failUndoUpdatePersonOnInvalidUndoUpdateRequestDto() {
 //        Arrange
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getInvalidPersonServiceUndoUpdatePersonRequestDto();
+        UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getInvalidUndoUpdatePersonRequestDto();
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -127,7 +127,7 @@ public class UndoUpdatePersonIntegrationTest {
     @Test
     public void failUndoUpdatePersonOnNullUndoUpdateRequestDto() {
 //        Arrange
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = null;
+        UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = null;
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -154,7 +154,7 @@ public class UndoUpdatePersonIntegrationTest {
 
             String createFirstName = "CreateFirstName";
 
-            PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+            CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
             personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
             personServiceCreatePersonRequestDto.setEmail(email);
             personServiceCreatePersonRequestDto.setFirstName(createFirstName);
@@ -165,7 +165,7 @@ public class UndoUpdatePersonIntegrationTest {
 
             personKeycloakIdList.add(personKeycloakId);
 
-            PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+            UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
             personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
             personServiceUpdatePersonRequestDto.setFirstName("UpdatedFirstName");
 
@@ -176,7 +176,7 @@ public class UndoUpdatePersonIntegrationTest {
         for(int i = 0; i < RATE_LIMIT; i++) {
             UUID personKeycloakId = personKeycloakIdList.get(i);
 
-            PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidPersonServiceUndoUpdatePersonRequestDto();
+            UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidUndoUpdatePersonRequestDto();
             personServiceUndoUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
             if(i < RATE_LIMIT - 1)

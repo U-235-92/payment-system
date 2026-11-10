@@ -3,8 +3,8 @@ package aq.project.test.controllers;
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
 import aq.project.controllers.PersonRestController;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
-import aq.project.dto.PersonServiceUndoDeletePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
+import aq.project.dto.UndoDeletePersonRequestDto;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
 import aq.project.repositories.ServiceOperationRepository;
@@ -86,7 +86,7 @@ public class UndoDeletePersonWebTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
@@ -96,7 +96,7 @@ public class UndoDeletePersonWebTest {
 
         personRestController.deletePerson(personKeycloakId, traceId, authorization);
 
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getValidPersonServiceUndoDeletePersonRequestDto();
+        UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getValidUndoDeletePersonRequestDto();
         personServiceUndoDeletePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceUndoDeletePersonRequestDto);
@@ -124,7 +124,7 @@ public class UndoDeletePersonWebTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
@@ -132,7 +132,7 @@ public class UndoDeletePersonWebTest {
 
         personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
 
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getValidPersonServiceUndoDeletePersonRequestDto();
+        UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getValidUndoDeletePersonRequestDto();
         personServiceUndoDeletePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceUndoDeletePersonRequestDto);
@@ -160,7 +160,7 @@ public class UndoDeletePersonWebTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
@@ -168,7 +168,7 @@ public class UndoDeletePersonWebTest {
 
         personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
 
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getInvalidPersonServiceUndoDeletePersonRequestDto();
+        UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getInvalidUndoDeletePersonRequestDto();
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceUndoDeletePersonRequestDto);
 
@@ -194,7 +194,7 @@ public class UndoDeletePersonWebTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
@@ -202,7 +202,7 @@ public class UndoDeletePersonWebTest {
 
         personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
 
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getInvalidPersonServiceUndoDeletePersonRequestDto();
+        UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getInvalidUndoDeletePersonRequestDto();
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceUndoDeletePersonRequestDto);
 

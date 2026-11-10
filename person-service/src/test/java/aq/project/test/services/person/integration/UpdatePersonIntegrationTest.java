@@ -2,8 +2,8 @@ package aq.project.test.services.person.integration;
 
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
-import aq.project.dto.PersonServiceUpdatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
+import aq.project.dto.UpdatePersonRequestDto;
 import aq.project.entities.Country;
 import aq.project.entities.Person;
 import aq.project.exceptions.FallbackOperationException;
@@ -77,7 +77,7 @@ public class UpdatePersonIntegrationTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
@@ -90,7 +90,7 @@ public class UpdatePersonIntegrationTest {
         String updateFirstName = "TestFirstName";
         String updateAddress = "TestStreet";
 
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceUpdatePersonRequestDto.getCountry().setName(updateCountryName);
         personServiceUpdatePersonRequestDto.getCountry().setCode(updateCountryCode);
@@ -112,7 +112,7 @@ public class UpdatePersonIntegrationTest {
     @Test
     public void failUpdatePersonOnInvalidPersonServiceUpdatePersonRequestDto() {
 //        Arrange
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getInvalidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getInvalidUpdatePersonRequestDto();
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -122,7 +122,7 @@ public class UpdatePersonIntegrationTest {
     @Test
     public void failUpdatePersonOnNullPersonServiceUpdatePersonRequestDto() {
 //        Arrange
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = null;
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = null;
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -148,7 +148,7 @@ public class UpdatePersonIntegrationTest {
             createCountry.setCode(createCountryCode);
             createCountry.setName(createCountryName);
 
-            PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+            CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
             personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
             personServiceCreatePersonRequestDto.setEmail(email);
             personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
@@ -168,7 +168,7 @@ public class UpdatePersonIntegrationTest {
             String updateFirstName = "TestFirstName";
             String updateAddress = "TestStreet";
 
-            PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+            UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
             personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
             personServiceUpdatePersonRequestDto.getCountry().setName(updateCountryName);
             personServiceUpdatePersonRequestDto.getCountry().setCode(updateCountryCode);

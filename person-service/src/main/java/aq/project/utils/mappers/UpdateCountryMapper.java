@@ -1,6 +1,6 @@
 package aq.project.utils.mappers;
 
-import aq.project.dto.PersonServiceCountryDto;
+import aq.project.dto.CountryDto;
 import aq.project.entities.Country;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,7 +15,7 @@ public interface UpdateCountryMapper {
 
     @Mapping(target = "instantEmbeddedData", ignore = true)
     void updateCountryFromDto(
-            PersonServiceCountryDto dto,
+            CountryDto dto,
             @MappingTarget Country country
     );
 }

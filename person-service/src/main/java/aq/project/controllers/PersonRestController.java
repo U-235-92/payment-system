@@ -22,12 +22,13 @@ public class PersonRestController implements PersonRestControllerApi {
     @Override
     public ResponseEntity<UUID> createPerson(
             String xTraceId,
-            PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto,
+            CreatePersonRequestDto createPersonRequestDto,
             String authorization
     ) {
+        traceContext.clean();
         traceContext.setTraceId(xTraceId);
 
-        UUID userId = personService.createPerson(personServiceCreatePersonRequestDto);
+        UUID userId = personService.createPerson(createPersonRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(userId);
     }
@@ -38,6 +39,7 @@ public class PersonRestController implements PersonRestControllerApi {
             String xTraceId,
             String authorization
     )  {
+        traceContext.clean();
         traceContext.setTraceId(xTraceId);
 
         personService.deletePerson(personKeycloakId);
@@ -48,12 +50,13 @@ public class PersonRestController implements PersonRestControllerApi {
     @Override
     public ResponseEntity<Void> undoDeletePerson(
             String xTraceId,
-            PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto,
+            UndoDeletePersonRequestDto undoDeletePersonRequestDto,
             String authorization
     ) {
+        traceContext.clean();
         traceContext.setTraceId(xTraceId);
 
-        personService.undoDeletePerson(personServiceUndoDeletePersonRequestDto);
+        personService.undoDeletePerson(undoDeletePersonRequestDto);
 
         return ResponseEntity.ok().build();
     }
@@ -61,12 +64,13 @@ public class PersonRestController implements PersonRestControllerApi {
     @Override
     public ResponseEntity<Void> updatePerson(
             String xTraceId,
-            PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto,
+            UpdatePersonRequestDto updatePersonRequestDto,
             String authorization
     ) {
+        traceContext.clean();
         traceContext.setTraceId(xTraceId);
 
-        personService.updatePerson(personServiceUpdatePersonRequestDto);
+        personService.updatePerson(updatePersonRequestDto);
 
         return ResponseEntity.ok().build();
     }
@@ -74,22 +78,24 @@ public class PersonRestController implements PersonRestControllerApi {
     @Override
     public ResponseEntity<Void> undoUpdatePerson(
             String xTraceId,
-            PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto,
+            UndoUpdatePersonRequestDto undoUpdatePersonRequestDto,
             String authorization
     ) {
+        traceContext.clean();
         traceContext.setTraceId(xTraceId);
 
-        personService.undoUpdatePerson(personServiceUndoUpdatePersonRequestDto);
+        personService.undoUpdatePerson(undoUpdatePersonRequestDto);
 
         return ResponseEntity.ok().build();
     }
 
     @Override
-    public ResponseEntity<PersonServicePersonInfoResponseDto> getPersonInfo(
+    public ResponseEntity<PersonInfoResponseDto> getPersonInfo(
             UUID personKeycloakId,
             String xTraceId,
             String authorization
     ) {
+        traceContext.clean();
         traceContext.setTraceId(xTraceId);
 
         return ResponseEntity.ok().body(personService.getPersonInfo(personKeycloakId));

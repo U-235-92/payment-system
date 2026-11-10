@@ -99,6 +99,7 @@ public class ServiceAspectHandler {
             String tracerName,
             String serviceName,
             String actionName,
+            String logOnBeginning,
             Supplier<Void> validation
     ) throws Throwable {
 //        Prepare telemetry metadata
@@ -109,6 +110,9 @@ public class ServiceAspectHandler {
                 ? span.getSpanContext().getTraceId()
                 : traceContext.getTraceId();
         String spanId = span.getSpanContext().getTraceId();
+
+//        Log beginning of process
+        log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, actionName, logOnBeginning);
 
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
 
@@ -219,6 +223,7 @@ public class ServiceAspectHandler {
             String tracerName,
             String serviceName,
             String actionName,
+            String logOnBeginning,
             Supplier<Void> validation
     ) throws Throwable {
 //        Prepare telemetry metadata
@@ -229,6 +234,9 @@ public class ServiceAspectHandler {
                 ? span.getSpanContext().getTraceId()
                 : traceContext.getTraceId();
         String spanId = span.getSpanContext().getTraceId();
+
+//        Log beginning of process
+        log.info("[{}-{}][{} -> {}]: {}", traceId, spanId, serviceName, actionName, logOnBeginning);
 
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
 
@@ -317,7 +325,7 @@ public class ServiceAspectHandler {
             String action,
             long executionTime
     ) {
-        log.info("[{}-{}][{} -> {}]: on {}ms",
+        log.info("[{}-{}][{} -> {}]: Success process on {}ms",
                 traceId, spanId, service, action, executionTime);
     }
 }

@@ -19,6 +19,13 @@ spring:
   application:
     name: ${SERVICE_NAME}
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI}
+          jwk-set-uri: ${JWT_JWK_SET_URI}
+
   flyway:
     driver-class-name:
     default-schema: public
@@ -27,16 +34,6 @@ spring:
     create-schemas: true
     locations: ${FLYWAY_MIGRATION_SCRIPT_PATH}
     clean-disabled: false
-
-  kafka:
-    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS}
-
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${JWT_ISSUER_URI}
-          jwk-set-uri: ${JWT_JWK_SET_URI}
 
   datasource:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver

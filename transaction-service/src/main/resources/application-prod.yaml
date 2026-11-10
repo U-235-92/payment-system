@@ -1,0 +1,61 @@
+server:
+  port: ${SERVICE_PORT}
+
+logging:
+  level:
+    root: info
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_COLLECTOR_URI}
+  metrics:
+    tags:
+      application: ${SERVICE_NAME}
+
+spring:
+  application:
+    name: ${SERVICE_NAME}
+
+  kafka:
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI}
+            token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI}
+        registration:
+          keycloak:
+            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
+            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
+            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI}
+          jwk-set-uri: ${JWT_JWK_SET_URI}
+
+  flyway:
+    driver-class-name:
+    default-schema: public
+    baseline-version: ${FLYWAY_DB_BASELINE_VERSION}
+    baseline-on-migrate: true
+    create-schemas: true
+    locations: ${FLYWAY_MIGRATION_SCRIPT_PATH}
+    clean-disabled: false
+
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:prod-sharding.yaml?placeholder-type=environment
+
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    database-platform: ${DB_DIALECT}
+    hibernate:
+      ddl-auto: validate

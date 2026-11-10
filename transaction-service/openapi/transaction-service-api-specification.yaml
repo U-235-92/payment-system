@@ -1,0 +1,317 @@
+openapi: 3.1.0
+
+info:
+  title: transaction-service-api-specification
+  description: Common transaction-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8083
+  - url: http://transaction-service:8083
+
+paths:
+  /api/v1/transaction/{type}/init:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: initTransaction
+      tags:
+        - Transaction
+      summary: It is used to get transaction conditions
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - name: type
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/PaymentType"
+          description: Allowed type of payment [ deposit, withdrawal, transfer ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitTransactionRequestDto"
+              description: Represents data of init transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InitTransactionResponseDto"
+          description: Returns dto that represents conditions of transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/{type}/confirm:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: confirmTransaction
+      tags:
+        - Transaction
+      summary: It is used to confirm transaction
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - name: type
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/PaymentType"
+          description: Allowed type of payment [ deposit, withdrawal, transfer ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmTransactionRequestDto"
+              description: Represents data of init transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+          description: Returns UUID of confirmed transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/{id}/status:
+    get:
+      security:
+        - BearerAuth: [ ]
+      operationId: getTransactionStatus
+      tags:
+        - Transaction
+      summary: It is used get actual status of transaction
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Allowed UUID of transaction
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Current status of transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if error was occurred on service side
+
+tags:
+  - name: Transaction
+    description: Describes operations with transactions
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    InitTransactionRequestDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder"
+      required: [ wallet_id, target_wallet_id, amount, conversion_rate, payment_type, currency_code ]
+      properties:
+        wallet_id:
+          type: string
+          format: uuid
+          description: UUID of source wallet
+        target_wallet_id:
+          type: string
+          format: uuid
+          description: UUID of target wallet (for transfer payment method only)
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        payment_type:
+          $ref: "#/components/schemas/PaymentType"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+
+    InitTransactionResponseDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
+      required: [ wallet_id, available, payment_type ]
+      properties:
+        wallet_id:
+          type: string
+          format: uuid
+          description: UUID of source wallet
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        fee:
+          type: number
+          format: decimal
+          minimum: 0.00
+          description: Fee of operation
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        total_amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Total amount of transaction (total_amount = amount + fee)
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        available:
+          type: boolean
+          description: Availability of operation
+        description:
+          type: string
+          description: Description of operation
+        payment_type:
+          $ref: "#/components/schemas/PaymentType"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+
+    ConfirmTransactionRequestDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder"
+      required: [ user_id, wallet_id, target_wallet_id, amount, conversion_rate, payment_type, currency_code ]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: UUID of user
+        wallet_id:
+          type: string
+          format: uuid
+          description: UUID of source wallet
+        target_wallet_id:
+          type: string
+          format: uuid
+          description: UUID of target wallet (for transfer payment method only)
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        payment_type:
+          $ref: "#/components/schemas/PaymentType"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+
+    PaymentType:
+      enum: [ deposit, withdrawal, transfer ]
+      description: Allowed payment operations
+
+    TransactionStatus:
+      enum: [ pending, completed, failed ]
+      description: Allowed transaction statuses
+
+    TransactionServiceErrorDto:
+      type: object
+      required: [ message ]
+      properties:
+        message:
+          type: string
+        trace_id:
+          type: string
+        http_status:
+          type: integer
+          format: int32

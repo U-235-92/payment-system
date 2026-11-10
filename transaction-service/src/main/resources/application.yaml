@@ -1,0 +1,113 @@
+logging:
+  level:
+    root: info
+
+server:
+  port: 8083
+
+spring:
+  application:
+    name: transaction-service
+
+  profiles:
+    active:
+      - dev-shard
+
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/payment-system
+            token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
+        registration:
+          keycloak:
+            client-id: transaction-service
+            client-secret: VQHOlxhSlKxAVbcfJWi1ewULWhYiY3wf
+            admin-id: payment-system-admin-cli
+            admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+
+  kafka:
+    bootstrapServers:
+      - localhost:29092
+      - localhost:39092
+      - localhost:49092
+    listener:
+      ack-mode: RECORD
+    producer:
+      acks: all
+      retries: 5
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      group-id: wallet-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "aq.project.kafka.events"
+
+  flyway:
+    enabled: false
+
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: wallet-service
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+
+app:
+  transaction:
+    default_fee_percent: 0.00
+
+  kafka:
+    topics:
+      deposit_transaction_request:
+        name: deposit_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      deposit_transaction_complete_response:
+        name: deposit_transaction_complete_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      deposit_transaction_fail_response:
+        name: deposit_transaction_fail_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      withdrawal_transaction_request:
+        name: withdrawal_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      withdrawal_transaction_complete_response:
+        name: withdrawal_transaction_complete_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      withdrawal_transaction_fail_response:
+        name: withdrawal_transaction_fail_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2

@@ -35,10 +35,27 @@ public class WalletService {
     public UUID createWallet(
             CreateWalletRequestDto createWalletRequestDto
     ) {
-        Wallet newWallet = walletMapper.toWallet(createWalletRequestDto);
+        log.info("Received request to create a new wallet for user with id: [{}]",
+                createWalletRequestDto.getUserId());
 
-        Wallet createdWallet = walletRepository.save(newWallet);
-        return createdWallet.getId();
+        try {
+
+            Wallet newWallet = walletMapper.toWallet(createWalletRequestDto);
+
+            Wallet createdWallet = walletRepository.save(newWallet);
+
+            UUID walletId = createdWallet.getId();
+
+            log.info("Success create wallet with id: [{}] for person with id: [{}]",
+                    walletId, createWalletRequestDto.getUserId());
+
+            return walletId;
+
+        } catch (Exception e) {
+            log.error("Error occurred while create a new wallet for user with id: [{}]. Error message: {}",
+                    createWalletRequestDto.getUserId(), e.getMessage());
+            throw e;
+        }
     }
 
     private UUID createWalletFallback(
@@ -63,9 +80,15 @@ public class WalletService {
     public WalletInfoResponseDto getWalletInfo(
             UUID walletId
     ) {
+        log.info("Received request to get wallet info for wallet with id: [{}]", walletId);
+
         Wallet wallet = getWallet(walletId);
 
-        return walletMapper.toWalletInfoResponseDto(wallet);
+        WalletInfoResponseDto responseDto = walletMapper.toWalletInfoResponseDto(wallet);
+
+        log.info("Success get wallet info for wallet with id: [{}]", walletId);
+
+        return responseDto;
     }
 
     private WalletInfoResponseDto getWalletInfoFallback(
@@ -92,9 +115,15 @@ public class WalletService {
     public String getWalletCurrencyCode(
             UUID walletId
     ) {
+        log.info("Received request to get wallet currency code for wallet with id: [{}]", walletId);
+
         Wallet wallet = getWallet(walletId);
 
-        return wallet.getWalletType().getCurrencyCode();
+        String currencyCode = wallet.getWalletType().getCurrencyCode();
+
+        log.info("Success get wallet currency code for wallet with id: [{}]", walletId);
+
+        return currencyCode;
     }
 
     private String getWalletCurrencyCodeFallback(
@@ -124,6 +153,8 @@ public class WalletService {
     ) {
         UUID walletId = depositWalletRequestDto.getWalletId();
 
+        log.info("Received request to deposit sufficient on wallet with id: [{}]", walletId);
+
         Wallet wallet = getWalletWithLock(walletId);
 
         if(wallet.isBlocked())
@@ -132,6 +163,8 @@ public class WalletService {
         BigDecimal amount = depositWalletRequestDto.getAmount();
 
         wallet.credit(amount);
+
+        log.info("Success deposit sufficient on wallet with id: [{}]", walletId);
 
         return wallet.getId();
     }
@@ -146,7 +179,7 @@ public class WalletService {
 
         String action = "deposit-wallet";
         String message = String.format(
-                "Exception occurred during deposit wallet with id: [%s]. Exception message: %s",
+                "Exception occurred during deposit sufficient on wallet with id: [%s]. Exception message: %s",
                 depositWalletRequestDto.getWalletId(), exception.getMessage());
 
         fallback.handleRateLimiterFallback(action, message, exception);
@@ -164,6 +197,8 @@ public class WalletService {
     ) {
         UUID walletId = withdrawalWalletRequestDto.getWalletId();
 
+        log.info("Received request to withdrawal sufficient from wallet with id: [{}]", walletId);
+
         Wallet wallet = getWalletWithLock(walletId);
 
         if(wallet.isBlocked())
@@ -171,9 +206,18 @@ public class WalletService {
 
         BigDecimal amount = withdrawalWalletRequestDto.getAmount();
 
-        wallet.debit(amount);
+        if(wallet.isBalanceExceedAmount(amount)) {
+            wallet.debit(amount);
 
-        return wallet.getId();
+            log.info("Success withdrawal sufficient from wallet with id: [{}]", walletId);
+
+            return wallet.getId();
+
+        } else {
+            throw new IllegalStateException(
+                    String.format("Amount of withdrawal operation: [%s %s] is exceeded current balance of wallet",
+                            amount, withdrawalWalletRequestDto.getCurrencyCode()));
+        }
     }
 
     private UUID withdrawalWalletFallback(
@@ -186,7 +230,7 @@ public class WalletService {
 
         String action = "withdrawal-wallet";
         String message = String.format(
-                "Exception occurred during withdrawal wallet with id: [%s]. Exception message: %s",
+                "Exception occurred during withdrawal sufficient from wallet with id: [%s]. Exception message: %s",
                 withdrawalWalletRequestDto.getWalletId(), exception.getMessage());
 
         fallback.handleRateLimiterFallback(action, message, exception);
@@ -205,6 +249,9 @@ public class WalletService {
         UUID sourceWalletId = transferWalletRequestDto.getSourceWalletId();
         UUID targetWalletId = transferWalletRequestDto.getTargetWalletId();
 
+        log.info("Received request to transfer sufficient from wallet with id: [{}] to wallet with id: [{}]",
+                sourceWalletId, targetWalletId);
+
         Wallet sourceWallet = getWalletWithLock(sourceWalletId);
         Wallet targetWallet = getWalletWithLock(targetWalletId);
 
@@ -216,10 +263,20 @@ public class WalletService {
 
         BigDecimal amount = transferWalletRequestDto.getAmount();
 
-        sourceWallet.debit(amount);
-        targetWallet.credit(amount);
+        if(sourceWallet.isBalanceExceedAmount(amount)) {
+            sourceWallet.debit(amount);
+            targetWallet.credit(amount);
 
-        return List.of(sourceWalletId, targetWalletId);
+            log.info("Success transfer sufficient from wallet with id: [{}] to wallet with id: [{}]",
+                    sourceWalletId, targetWalletId);
+
+            return List.of(sourceWalletId, targetWalletId);
+
+        } else {
+            throw new IllegalStateException(
+                    String.format("Amount of transfer operation: [%s %s] is exceeded current balance of source wallet",
+                            amount, transferWalletRequestDto.getCurrencyCode()));
+        }
     }
 
     private List<UUID> transferWalletFallback(
@@ -232,7 +289,7 @@ public class WalletService {
 
         String action = "transfer-wallet";
         String message = String.format(
-                "Exception occurred during transfer from wallet with id: [%s] to wallet with id: [%s]. " +
+                "Exception occurred during transfer sufficient from wallet with id: [%s] to wallet with id: [%s]. " +
                 "Exception message: %s",
                 transferWalletRequestDto.getSourceWalletId(),
                 transferWalletRequestDto.getTargetWalletId(),

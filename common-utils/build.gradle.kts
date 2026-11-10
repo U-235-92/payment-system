@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "aq.payment-system"
-version = "3.0.0"
+version = "4.0.1"
 
 val envFile = file(".env")
 if(envFile.exists()) {
@@ -55,6 +55,15 @@ dependencies {
 
 //    Spring Web
     implementation("org.springframework:spring-web:7.0.10")
+
+//    Flyway
+    implementation("org.flywaydb:flyway-core:13.12.1")
+
+//    Jakarta Validation
+    implementation("jakarta.validation:jakarta.validation-api:4.0.0-M1")
+
+//    Jakarta Annotation
+    implementation("jakarta.annotation:jakarta.annotation-api:3.0.0")
 }
 
 java {

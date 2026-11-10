@@ -35,8 +35,11 @@ public class WalletServiceAspect {
             @NotNull @Valid CreateWalletRequestDto createWalletRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "create-person";
+        String actionName = "create-wallet";
         String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to create a new wallet for user with id: [%s]",
+                createWalletRequestDto.getUserId());
 
 //        Handler logic call
         return serviceAspectHandler.handle(
@@ -45,6 +48,7 @@ public class WalletServiceAspect {
                 tracerName,
                 serviceName,
                 actionName,
+                logOnBeginning,
                 null
         );
     }
@@ -56,8 +60,11 @@ public class WalletServiceAspect {
             @NotNull UUID walletId
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "create-person";
+        String actionName = "get-wallet-info";
         String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to get wallet info for wallet with id: [%s]",
+                walletId);
 
 //        Handler logic call
         return serviceAspectHandler.handle(
@@ -66,6 +73,7 @@ public class WalletServiceAspect {
                 tracerName,
                 serviceName,
                 actionName,
+                logOnBeginning,
                 null
         );
     }
@@ -77,8 +85,11 @@ public class WalletServiceAspect {
             @NotNull UUID walletId
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "create-person";
+        String actionName = "get-wallet-currency-code";
         String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to get wallet currency for wallet with id: [%s]",
+                walletId);
 
 //        Handler logic call
         return serviceAspectHandler.handle(
@@ -87,6 +98,7 @@ public class WalletServiceAspect {
                 tracerName,
                 serviceName,
                 actionName,
+                logOnBeginning,
                 null
         );
     }
@@ -98,8 +110,11 @@ public class WalletServiceAspect {
             @NotNull @Valid DepositWalletRequestDto depositWalletRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "create-person";
+        String actionName = "deposit-wallet";
         String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to deposit sufficient on wallet with id: [%s]",
+                depositWalletRequestDto.getWalletId());
 
 //        Handler logic call
         return serviceAspectHandler.handle(
@@ -108,6 +123,7 @@ public class WalletServiceAspect {
                 tracerName,
                 serviceName,
                 actionName,
+                logOnBeginning,
                 null
         );
     }
@@ -119,8 +135,11 @@ public class WalletServiceAspect {
             @NotNull @Valid WithdrawalWalletRequestDto withdrawalWalletRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "create-person";
+        String actionName = "withdrawal-wallet";
         String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to withdrawal sufficient on wallet with id: [%s]",
+                withdrawalWalletRequestDto.getWalletId());
 
 //        Handler logic call
         return serviceAspectHandler.handle(
@@ -129,6 +148,7 @@ public class WalletServiceAspect {
                 tracerName,
                 serviceName,
                 actionName,
+                logOnBeginning,
                 null
         );
     }
@@ -140,8 +160,12 @@ public class WalletServiceAspect {
             @NotNull @Valid TransferWalletRequestDto transferWalletRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "create-person";
+        String actionName = "transfer-wallet";
         String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to transfer sufficient " +
+                        "from wallet with id: [%s] to wallet with id: [%s]",
+                transferWalletRequestDto.getSourceWalletId(), transferWalletRequestDto.getTargetWalletId());
 
 //        Handler logic call
         return serviceAspectHandler.handle(
@@ -150,6 +174,7 @@ public class WalletServiceAspect {
                 tracerName,
                 serviceName,
                 actionName,
+                logOnBeginning,
                 null
         );
     }

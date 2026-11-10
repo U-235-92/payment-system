@@ -35,21 +35,13 @@ public class WalletService {
     public UUID createWallet(
             CreateWalletRequestDto createWalletRequestDto
     ) {
-        log.info("Received request to create a new wallet for user with id: [{}]",
-                createWalletRequestDto.getUserId());
-
         try {
 
             Wallet newWallet = walletMapper.toWallet(createWalletRequestDto);
 
             Wallet createdWallet = walletRepository.save(newWallet);
 
-            UUID walletId = createdWallet.getId();
-
-            log.info("Success create wallet with id: [{}] for person with id: [{}]",
-                    walletId, createWalletRequestDto.getUserId());
-
-            return walletId;
+            return createdWallet.getId();
 
         } catch (Exception e) {
             log.error("Error occurred while create a new wallet for user with id: [{}]. Error message: {}",
@@ -80,15 +72,9 @@ public class WalletService {
     public WalletInfoResponseDto getWalletInfo(
             UUID walletId
     ) {
-        log.info("Received request to get wallet info for wallet with id: [{}]", walletId);
-
         Wallet wallet = getWallet(walletId);
 
-        WalletInfoResponseDto responseDto = walletMapper.toWalletInfoResponseDto(wallet);
-
-        log.info("Success get wallet info for wallet with id: [{}]", walletId);
-
-        return responseDto;
+        return walletMapper.toWalletInfoResponseDto(wallet);
     }
 
     private WalletInfoResponseDto getWalletInfoFallback(
@@ -115,15 +101,9 @@ public class WalletService {
     public String getWalletCurrencyCode(
             UUID walletId
     ) {
-        log.info("Received request to get wallet currency code for wallet with id: [{}]", walletId);
-
         Wallet wallet = getWallet(walletId);
 
-        String currencyCode = wallet.getWalletType().getCurrencyCode();
-
-        log.info("Success get wallet currency code for wallet with id: [{}]", walletId);
-
-        return currencyCode;
+        return wallet.getWalletType().getCurrencyCode();
     }
 
     private String getWalletCurrencyCodeFallback(
@@ -153,8 +133,6 @@ public class WalletService {
     ) {
         UUID walletId = depositWalletRequestDto.getWalletId();
 
-        log.info("Received request to deposit sufficient on wallet with id: [{}]", walletId);
-
         Wallet wallet = getWalletWithLock(walletId);
 
         if(wallet.isBlocked())
@@ -163,8 +141,6 @@ public class WalletService {
         BigDecimal amount = depositWalletRequestDto.getAmount();
 
         wallet.credit(amount);
-
-        log.info("Success deposit sufficient on wallet with id: [{}]", walletId);
 
         return wallet.getId();
     }
@@ -197,8 +173,6 @@ public class WalletService {
     ) {
         UUID walletId = withdrawalWalletRequestDto.getWalletId();
 
-        log.info("Received request to withdrawal sufficient from wallet with id: [{}]", walletId);
-
         Wallet wallet = getWalletWithLock(walletId);
 
         if(wallet.isBlocked())
@@ -208,8 +182,6 @@ public class WalletService {
 
         if(wallet.isBalanceExceedAmount(amount)) {
             wallet.debit(amount);
-
-            log.info("Success withdrawal sufficient from wallet with id: [{}]", walletId);
 
             return wallet.getId();
 

@@ -1,0 +1,39 @@
+server:
+  port: ${SERVICE_PORT}
+
+logging:
+  level:
+    root: info
+    org.hibernate.orm.results: info
+    org.hibernate.SQL: info
+    org.hibernate.type.descriptor.sql: info
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_COLLECTOR_URI}
+
+spring:
+  flyway:
+    driver-class-name:
+    default-schema: public
+    baseline-version: ${FLYWAY_DB_BASELINE_VERSION}
+    baseline-on-migrate: true
+    create-schemas: true
+    locations: ${FLYWAY_MIGRATION_SCRIPT_PATH}
+    clean-disabled: false
+
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate

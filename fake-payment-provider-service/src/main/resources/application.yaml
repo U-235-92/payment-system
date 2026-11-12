@@ -1,0 +1,53 @@
+logging:
+  level:
+    root: info
+
+server:
+  port: 8086
+
+spring:
+  application:
+    name: fake-payment-provider-service
+
+  profiles:
+    active:
+      - dev
+
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: fake-payment-provider-service
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+
+resilience4j:
+  retry:
+    instances:
+      complete-transaction-retry:
+        max-attempts: 3
+        wait-duration: 500
+        fail-after-max-attempts: true
+        exponential-backoff-multiplier: 1.5
+
+      complete-payout-retry:
+        max-attempts: 3
+        wait-duration: 500
+        fail-after-max-attempts: true
+        exponential-backoff-multiplier: 1.5
+
+app:
+  schedule:
+    update-operation-status: 30
+
+  service:
+    external-test-service:
+      uri: http://external-test-service:18081

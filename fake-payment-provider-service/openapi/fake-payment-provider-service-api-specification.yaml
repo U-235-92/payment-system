@@ -1,0 +1,527 @@
+openapi: 3.1.0
+
+info:
+  title: fake-payment-provider-service-api-specification
+  description: Common fake-payment-provider-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8086
+  - url: http://fake-payment-provider-service:8086
+
+paths:
+  /api/v1/transactions/create:
+    post:
+      summary: Create a new transaction
+      security:
+        - basicAuth: [ ]
+      operationId: createTransaction
+      tags:
+        - Transaction
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequestDto'
+      responses:
+        201:
+          description: Created transaction info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionInfoResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/transactions/list-on-period:
+    get:
+      summary: Get list of transactions on described period
+      security:
+        - basicAuth: []
+      operationId: getTransactionList
+      tags:
+        - Transaction
+      parameters:
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: Start date (include)
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: End date (include)
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      responses:
+        200:
+          description: List of transaction info on described period
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionInfoResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/transactions/info/{id}:
+    get:
+      summary: Get transaction info by specified id
+      security:
+        - basicAuth: []
+      operationId: getTransactionInfo
+      tags:
+        - Transaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Transaction id
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      responses:
+        200:
+          description: Transaction info with specified id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionInfoResponseDto"
+        404:
+          description: Transaction with specified id is not exist or belongs another merchant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+        403:
+          description: Received request for merchant which hasn't got any permission to handle operation
+
+  /api/v1/payouts/create:
+    post:
+      summary: Create a new payout request
+      security:
+        - basicAuth: [ ]
+      operationId: createPayout
+      tags:
+        - Payout
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePayoutRequestDto"
+      responses:
+        201:
+          description: Payout response DTO which describes result of handle payment request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayoutInfoResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/payouts/list-on-period:
+    get:
+      summary: Get list of payouts
+      security:
+        - basicAuth: [ ]
+      operationId: getPayoutList
+      tags:
+        - Payout
+      parameters:
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Optional start date of payout filtered by its creation (include)
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Optional end date of payout filtered by its creation (include)
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      responses:
+        200:
+          description: Actual list of info about payout optional filtered by creation date
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PayoutInfoResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+
+  /api/v1/payouts/info/{id}:
+    get:
+      summary: Get payout info
+      security:
+        - basicAuth: [ ]
+      operationId: getPayoutInfo
+      tags:
+        - Payout
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Id of payout
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Basic authorization header
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      responses:
+        200:
+          description: Actual info about payout by its id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayoutInfoResponseDto"
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        404:
+          description: Payout with specified id is not exist or belongs another merchant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        401:
+          description: Request is unauthorized or credentials are incorrect
+        403:
+          description: Received request for merchant which hasn't got any permission to handle operation
+
+  /webhook/transaction:
+    post:
+      summary: Incoming notification about status of transaction (success/fail). Request validates by its signature
+      security: [ ]
+      operationId: confirmTransactionWebhook
+      tags:
+        - Webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusOperationRequestDto"
+      responses:
+        200:
+          description: Notification was confirmed and status was updated
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        401:
+          description: Request has got invalid signature
+
+  /webhook/payout:
+    post:
+      summary: Incoming notification about status of payout (success/fail). Request validates by its signature
+      security: [ ]
+      operationId: confirmPayoutWebhook
+      tags:
+        - Webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusOperationRequestDto"
+      responses:
+        200:
+          description: Notification was confirmed and status was updated
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+        401:
+          description: Request has got invalid signature
+
+tags:
+  - name: Transaction
+    description: Describes operations with transactions
+  - name: Payout
+    description: Describes operations with payouts
+  - name: Webhook
+    description: Describes operations with webhooks
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    CreateTransactionRequestDto:
+      type: object
+      required: [ merchant_id, amount, currency_code, payment_method ]
+      properties:
+        merchant_id:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+        payment_method:
+          $ref: "#/components/schemas/PaymentMethod"
+          description: Accessible method of payment
+        external_id:
+          type: string
+        notification_url:
+          type: string
+          maxLength: 2048
+          description: Optional URL of callback notification
+        description:
+          type: string
+          description: Optional description of transaction
+
+    TransactionInfoResponseDto:
+      type: object
+      required: [ id, merchant_id, amount, currency_code, payment_method, status, created_at ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        merchant_id:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+        payment_method:
+          $ref: "#/components/schemas/PaymentMethod"
+          description: Accessible method of payment
+        status:
+          $ref: "#/components/schemas/Status"
+          description: Current status of transaction
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        description:
+          type: string
+        external_id:
+          type: string
+        notification_url:
+          type: string
+
+    CreatePayoutRequestDto:
+      type: object
+      required: [ merchant_id, amount, currency_code]
+      properties:
+        merchant_id:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          description: Amount of payout
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+        external_id:
+          type: string
+        notification_url:
+          type: string
+
+    PayoutInfoResponseDto:
+      type: object
+      required: [ id, merchant_id, amount, currency_code, status, created_at ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        merchant_id:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          description: Amount of payout
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+        status:
+          $ref: "#/components/schemas/Status"
+          description: Current status of payout
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        external_id:
+          type: string
+        notification_url:
+          type: string
+
+    UpdateStatusOperationRequestDto:
+      type: object
+      required: [ id, status, operation_type ]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID of operation (transaction\payout)
+        status:
+          $ref: "#/components/schemas/Status"
+          description: Status of operation
+        operation_type:
+          $ref: "#/components/schemas/OperationType"
+          description: Operation type (transaction\payout)
+        description:
+          type: string
+          description: Optional description of operation
+        notification_url:
+          type: string
+
+    FakePaymentProviderServiceErrorDto:
+      type: object
+      required: [ message ]
+      properties:
+        message:
+          type: string
+        trace_id:
+          type: string
+        http_status:
+          type: integer
+          format: int32
+
+    PaymentMethod:
+      enum: [ card, cash, transfer ]
+      description: Allowed payment methods
+
+    Status:
+      enum: [ pending, success, fail ]
+      description: Allowed payment methods
+
+    OperationType:
+      enum: [ payout, transaction ]
+      description: Allowed operation types

@@ -4,6 +4,7 @@ import aq.project.controller.PersonRestControllerApi;
 import aq.project.dto.*;
 import aq.project.services.PersonService;
 import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,7 @@ public class PersonRestController implements PersonRestControllerApi {
             CreatePersonRequestDto createPersonRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         UUID userId = personService.createPerson(createPersonRequestDto);
 
@@ -39,8 +39,7 @@ public class PersonRestController implements PersonRestControllerApi {
             String xTraceId,
             String authorization
     )  {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         personService.deletePerson(personKeycloakId);
 
@@ -53,8 +52,7 @@ public class PersonRestController implements PersonRestControllerApi {
             UndoDeletePersonRequestDto undoDeletePersonRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         personService.undoDeletePerson(undoDeletePersonRequestDto);
 
@@ -67,8 +65,7 @@ public class PersonRestController implements PersonRestControllerApi {
             UpdatePersonRequestDto updatePersonRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         personService.updatePerson(updatePersonRequestDto);
 
@@ -81,8 +78,7 @@ public class PersonRestController implements PersonRestControllerApi {
             UndoUpdatePersonRequestDto undoUpdatePersonRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         personService.undoUpdatePerson(undoUpdatePersonRequestDto);
 
@@ -95,8 +91,7 @@ public class PersonRestController implements PersonRestControllerApi {
             String xTraceId,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.ok().body(personService.getPersonInfo(personKeycloakId));
     }

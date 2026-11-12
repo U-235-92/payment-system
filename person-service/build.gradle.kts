@@ -18,7 +18,7 @@ extra["springCloudVersion"] = "2025.1.0"
 
 val artifact = "person-service"
 
-val specificationArtifactVersion = "7.0.0-dev"
+val specificationArtifactVersion = "7.0.1-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -110,7 +110,7 @@ val dependencyVersionMap = mapOf(
 	"springdoc-openapi" to "3.0.2",
 
 //	CommonProjectUtils
-	"common-utils" to "4.0.3"
+	"common-utils" to "4.0.4"
 )
 
 dependencies {

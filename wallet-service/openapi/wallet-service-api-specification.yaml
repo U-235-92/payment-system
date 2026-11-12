@@ -21,7 +21,7 @@ paths:
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -79,7 +79,7 @@ paths:
             format: uuid
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -129,7 +129,7 @@ paths:
             format: uuid
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -172,7 +172,7 @@ paths:
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -223,7 +223,7 @@ paths:
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -274,7 +274,7 @@ paths:
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace

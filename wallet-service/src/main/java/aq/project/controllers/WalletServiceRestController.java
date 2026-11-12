@@ -4,6 +4,7 @@ import aq.project.controller.WalletRestControllerApi;
 import aq.project.dto.*;
 import aq.project.services.WalletService;
 import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,7 @@ public class WalletServiceRestController implements WalletRestControllerApi {
             CreateWalletRequestDto createWalletRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(walletService.createWallet(createWalletRequestDto));
@@ -39,8 +39,7 @@ public class WalletServiceRestController implements WalletRestControllerApi {
             String xTraceId,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(walletService.getWalletInfo(id));
@@ -52,8 +51,7 @@ public class WalletServiceRestController implements WalletRestControllerApi {
             String xTraceId,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(walletService.getWalletCurrencyCode(id));
@@ -65,8 +63,7 @@ public class WalletServiceRestController implements WalletRestControllerApi {
             DepositWalletRequestDto depositWalletRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(walletService.depositWallet(depositWalletRequestDto));
@@ -78,8 +75,7 @@ public class WalletServiceRestController implements WalletRestControllerApi {
             WithdrawalWalletRequestDto withdrawalWalletRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(walletService.withdrawalWallet(withdrawalWalletRequestDto));
@@ -91,8 +87,7 @@ public class WalletServiceRestController implements WalletRestControllerApi {
             TransferWalletRequestDto transferWalletRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(walletService.transferWallet(transferWalletRequestDto));

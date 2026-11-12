@@ -15,7 +15,7 @@ extra["springCloudVersion"] = "2025.1.2"
 
 val artifact = "currency-rate-service"
 
-val specificationArtifactVersion = "7.0.0-dev"
+val specificationArtifactVersion = "7.0.1-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -94,7 +94,7 @@ val dependencyVersionMap = mapOf(
 	"resilience4j" to "2.4.0",
 
 //	CommonProjectUtils
-	"common-utils" to "4.0.3"
+	"common-utils" to "4.0.4"
 )
 
 dependencies {

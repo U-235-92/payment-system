@@ -6,6 +6,7 @@ import aq.project.dto.RateProviderResponseDto;
 import aq.project.dto.RateResponseDto;
 import aq.project.services.RateService;
 import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,8 @@ public class RateRestController implements RateRestControllerApi {
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getCurrencies());
     }
 
@@ -38,7 +40,8 @@ public class RateRestController implements RateRestControllerApi {
             OffsetDateTime date,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getRate(from, to, provider, date));
     }
 
@@ -47,7 +50,8 @@ public class RateRestController implements RateRestControllerApi {
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getRateProviders());
     }
 
@@ -57,7 +61,8 @@ public class RateRestController implements RateRestControllerApi {
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getCurrencyInfo(code));
     }
 
@@ -67,7 +72,8 @@ public class RateRestController implements RateRestControllerApi {
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getRateProviderInfo(code));
     }
 }

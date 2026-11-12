@@ -1,6 +1,5 @@
 package aq.project.configurations;
 
-import aq.project.security.HeaderValidatorHttpFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +14,6 @@ import org.springframework.security.config.annotation.web.configurers.CorsConfig
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import static aq.project.controller.TransactionRestControllerApi.*;
 
@@ -33,7 +31,6 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .addFilterBefore(new HeaderValidatorHttpFilter(), BasicAuthenticationFilter.class)
                 .cors(CorsConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
                 .build();
@@ -51,7 +48,6 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, PATH_INIT_TRANSACTION.replace("{type}", "*")).authenticated()
                         .requestMatchers(HttpMethod.POST, PATH_CONFIRM_TRANSACTION.replace("{type}", "*")).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
-                .addFilterBefore(new HeaderValidatorHttpFilter(), BasicAuthenticationFilter.class)
                 .build();
     }
 

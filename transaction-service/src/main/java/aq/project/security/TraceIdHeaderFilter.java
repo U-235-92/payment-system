@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static aq.project.constants.ServiceConstants.X_TRACE_ID_HEADER;
 
-public class HeaderValidatorHttpFilter extends OncePerRequestFilter {
+public class TraceIdHeaderFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(

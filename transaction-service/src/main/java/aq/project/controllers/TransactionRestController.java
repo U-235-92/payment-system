@@ -4,6 +4,7 @@ import aq.project.controller.TransactionRestControllerApi;
 import aq.project.dto.*;
 import aq.project.services.TransactionService;
 import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,8 +26,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
             InitTransactionRequestDto initTransactionRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.ok(transactionService.initTransaction(initTransactionRequestDto));
     }
@@ -38,8 +38,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
             ConfirmTransactionRequestDto confirmTransactionRequestDto,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.ok(transactionService.confirmTransaction(confirmTransactionRequestDto));
     }
@@ -50,8 +49,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
             UUID id,
             String authorization
     ) {
-        traceContext.clean();
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.ok(transactionService.getTransactionStatus(id));
     }

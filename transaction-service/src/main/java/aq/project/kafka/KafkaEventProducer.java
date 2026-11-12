@@ -20,7 +20,7 @@ public class KafkaEventProducer {
 
     @Value("{app.kafka.topics.deposit_transaction_request.name}")
     private String depositTransactionRequestTopic;
-    @Value("{app.kafka.topics.withdrawal_transaction_request.name}")
+    @Value("${app.kafka.topics.withdrawal_transaction_request.name}")
     private String withdrawalTransactionRequestTopic;
 
     private final TransactionMapper transactionMapper = TransactionMapper.INSTANCE;

@@ -6,8 +6,11 @@ import aq.project.dto.Status;
 import aq.project.entities.Merchant;
 import aq.project.entities.Payout;
 import aq.project.exceptions.EntityNotFoundException;
+import aq.project.exceptions.NotEqualsEntityException;
 import aq.project.mappers.PayoutMapper;
 import aq.project.repositories.PayoutRepository;
+import aq.project.utils.resilence.Fallback;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,6 +34,12 @@ public class PayoutService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final Fallback fallback;
+
+    @RateLimiter(
+            name = "create-payout-rate-limiter",
+            fallbackMethod = "createPayoutFallback"
+    )
     @Transactional
     public PayoutInfoResponseDto createPayout(
             CreatePayoutRequestDto createPayoutRequestDto,
@@ -56,6 +65,31 @@ public class PayoutService {
         return payoutMapper.toPayoutInfoResponseDto(savedPayout);
     }
 
+    private PayoutInfoResponseDto createPayoutFallback(
+            CreatePayoutRequestDto createPayoutRequestDto,
+            Authentication authentication,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof NotEqualsEntityException
+                || exception instanceof EntityNotFoundException)
+            throw exception;
+
+        String action = "create-payout";
+
+        String message = String.format(
+                "Exception occurred during creating of payout for merchant with id: [%s]. " +
+                        "Exception message: %s",
+                createPayoutRequestDto.getMerchantId(), exception.getMessage());
+
+        fallback.handleRetryFallback(action, message, exception);
+
+        return null;
+    }
+
+    @RateLimiter(
+            name = "get-payout-list-rate-limiter",
+            fallbackMethod = "getPayoutListFallback"
+    )
     public List<PayoutInfoResponseDto> getPayoutList(
             OffsetDateTime startDate,
             OffsetDateTime endDate,
@@ -82,6 +116,29 @@ public class PayoutService {
                 .toList();
     }
 
+    private List<PayoutInfoResponseDto> getPayoutListFallback(
+            OffsetDateTime startDate,
+            OffsetDateTime endDate,
+            Authentication authentication,
+            Exception exception
+    ) {
+        String action = "get-payout-list";
+        String authenticatedMerchantId = authentication.getName();
+
+        String message = String.format(
+                "Exception occurred during getting of payout list for merchant with id: [%s]. " +
+                        "Exception message: %s",
+                authenticatedMerchantId, exception.getMessage());
+
+        fallback.handleRetryFallback(action, message, exception);
+
+        return null;
+    }
+
+    @RateLimiter(
+            name = "get-payout-info-rate-limiter",
+            fallbackMethod = "getPayoutInfoFallback"
+    )
     public PayoutInfoResponseDto getPayoutInfo(
             Long id,
             Authentication authentication
@@ -93,5 +150,26 @@ public class PayoutService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Payout with id: [%s] not found for merchant with merchant id: [%s]",
                                 id, authenticatedMerchantId)));
+    }
+
+    private PayoutInfoResponseDto getPayoutInfoFallback(
+            Long id,
+            Authentication authentication,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException)
+            throw exception;
+
+        String action = "get-payout-info";
+        String authenticatedMerchantId = authentication.getName();
+
+        String message = String.format(
+                "Exception occurred during getting of payout info for merchant with id: [%s] and payout id: [%s]. " +
+                        "Exception message: %s",
+                authenticatedMerchantId, id, exception.getMessage());
+
+        fallback.handleRetryFallback(action, message, exception);
+
+        return null;
     }
 }

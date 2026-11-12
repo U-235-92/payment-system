@@ -6,8 +6,11 @@ import aq.project.dto.TransactionInfoResponseDto;
 import aq.project.entities.Merchant;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
+import aq.project.exceptions.NotEqualsEntityException;
 import aq.project.mappers.TransactionMapper;
 import aq.project.repositories.TransactionRepository;
+import aq.project.utils.resilence.Fallback;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,6 +34,12 @@ public class TransactionService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final Fallback fallback;
+
+    @RateLimiter(
+            name = "create-transaction-rate-limiter",
+            fallbackMethod = "createTransactionFallback"
+    )
     @Transactional
     public TransactionInfoResponseDto createTransaction(
             CreateTransactionRequestDto createTransactionRequestDto,
@@ -56,6 +65,31 @@ public class TransactionService {
         return transactionMapper.toTransactionInfoResponseDto(savedTransaction);
     }
 
+    private TransactionInfoResponseDto createTransactionFallback(
+            CreateTransactionRequestDto createTransactionRequestDto,
+            Authentication authentication,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof NotEqualsEntityException
+                || exception instanceof EntityNotFoundException)
+            throw exception;
+
+        String action = "create-transaction";
+
+        String message = String.format(
+                "Exception occurred during creating of transaction for merchant with id: [%s]. " +
+                        "Exception message: %s",
+                createTransactionRequestDto.getMerchantId(), exception.getMessage());
+
+        fallback.handleRetryFallback(action, message, exception);
+
+        return null;
+    }
+
+    @RateLimiter(
+            name = "get-transaction-list-rate-limiter",
+            fallbackMethod = "getTransactionListFallback"
+    )
     public List<TransactionInfoResponseDto> getTransactionList(
             OffsetDateTime startDate,
             OffsetDateTime endDate,
@@ -82,6 +116,29 @@ public class TransactionService {
                 .toList();
     }
 
+    private List<TransactionInfoResponseDto> getTransactionListFallback(
+            OffsetDateTime startDate,
+            OffsetDateTime endDate,
+            Authentication authentication,
+            Exception exception
+    ) {
+        String action = "get-transaction-list";
+        String authenticatedMerchantId = authentication.getName();
+
+        String message = String.format(
+                "Exception occurred during getting of transaction list for merchant with id: [%s]. " +
+                        "Exception message: %s",
+                authenticatedMerchantId, exception.getMessage());
+
+        fallback.handleRetryFallback(action, message, exception);
+
+        return null;
+    }
+
+    @RateLimiter(
+            name = "get-transaction-info-rate-limiter",
+            fallbackMethod = "getTransactionInfoFallback"
+    )
     public TransactionInfoResponseDto getTransactionInfo(
             Long id,
             Authentication authentication
@@ -93,5 +150,26 @@ public class TransactionService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Transaction with id: [%s] not found for merchant with merchant id: [%s]",
                                 id, authenticatedMerchantId)));
+    }
+
+    private TransactionInfoResponseDto getTransactionInfoFallback(
+            Long id,
+            Authentication authentication,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException)
+            throw exception;
+
+        String action = "get-transaction-info";
+        String authenticatedMerchantId = authentication.getName();
+
+        String message = String.format(
+                "Exception occurred during getting of transaction info for merchant with id: [%s] and transaction id: [%s]. " +
+                        "Exception message: %s",
+                authenticatedMerchantId, id, exception.getMessage());
+
+        fallback.handleRetryFallback(action, message, exception);
+
+        return null;
     }
 }

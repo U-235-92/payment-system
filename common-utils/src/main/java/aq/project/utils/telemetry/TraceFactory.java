@@ -22,4 +22,9 @@ public abstract class TraceFactory {
 
         return traceId.toString();
     }
+
+    public static void setUpTraceId(TraceContext traceContext, String traceId) {
+        traceContext.clean();
+        traceContext.setTraceId(traceId == null ? TraceFactory.genTraceId() : traceId);
+    }
 }

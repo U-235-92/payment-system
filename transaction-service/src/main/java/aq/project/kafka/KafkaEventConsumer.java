@@ -1,20 +1,13 @@
 package aq.project.kafka;
 
-import aq.project.dto.*;
-import aq.project.entities.Transaction;
-import aq.project.exceptions.EntityNotFoundException;
+import aq.project.dto.PaymentType;
+import aq.project.dto.TransactionStatus;
 import aq.project.kafka.events.TransactionResponseEvent;
-import aq.project.repositories.TransactionRepository;
-import aq.project.services.TokenService;
-import aq.project.utils.resilence.Fallback;
-import aq.project.utils.telemetry.TraceFactory;
-import aq.project.wallet_service.WalletApiClient;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import aq.project.services.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -24,15 +17,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class KafkaEventConsumer {
 
-    private final TransactionRepository transactionRepository;
+    private final TransactionService transactionService;
 
-    private final WalletApiClient walletApiClient;
-
-    private final TokenService tokenService;
-
-    private final Fallback fallback;
-
-    @Transactional
     @KafkaListener(
             topics = {
                     "${app.kafka.topics.deposit_transaction_complete_response.name}",
@@ -53,10 +39,7 @@ public class KafkaEventConsumer {
         try {
             logOnReceive(paymentType, transactionId, transactionStatus);
 
-            checkTransactionInPendingState(paymentType, transactionId, transactionStatus);
-
-            Transaction transaction = getTransaction(transactionId);
-            transaction.completeTransaction();
+            transactionService.completeTransaction(transactionId);
 
             log.info("[{}] transaction with id: [{}] was completed", paymentType, transactionId);
 
@@ -66,16 +49,11 @@ public class KafkaEventConsumer {
         }
     }
 
-    @Transactional
     @KafkaListener(
             topics = {
                     "${app.kafka.topics.deposit_transaction_fail_response.name}",
                     "${app.kafka.topics.withdrawal_transaction_fail_response.name}"
             }
-    )
-    @CircuitBreaker(
-            name = "handle-fail-transaction-event-circuitbreaker",
-            fallbackMethod = "handleFailTransactionEventCircuitBreakerFallback"
     )
     public void handleFailTransactionEvent(
             TransactionResponseEvent transactionResponseEvent
@@ -95,35 +73,7 @@ public class KafkaEventConsumer {
         try {
             logOnReceive(paymentType, transactionId, transactionStatus);
 
-            checkTransactionInPendingState(paymentType, transactionId, transactionStatus);
-
-            Transaction transaction = getTransaction(transactionId);
-            transaction.failTransaction();
-
-            String traceId = TraceFactory.genTraceId();
-            String authorization = tokenService.getAdminJwtAsAuthorizationHeaderValue();
-
-            switch (paymentType) {
-                case DEPOSIT -> {
-//                    Compensation on fail
-                    WithdrawalWalletRequestDto dto = new WithdrawalWalletRequestDto()
-                            .walletId(transaction.getWalletId())
-                            .amount(transaction.getAmount())
-                            .currencyCode(transaction.getCurrencyCode());
-
-                    walletApiClient.withdrawalWallet(traceId, dto, authorization);
-                }
-
-                case WITHDRAWAL ->  {
-//                    Compensation on fail
-                    DepositWalletRequestDto dto = new DepositWalletRequestDto()
-                            .walletId(transaction.getWalletId())
-                            .amount(transaction.getAmount())
-                            .currencyCode(transaction.getCurrencyCode());
-
-                    walletApiClient.depositWallet(traceId, dto, authorization);
-                }
-            }
+            transactionService.failTransaction(transactionId);
 
             log.info("[{}] transaction with id: [{}] was failed. Description: {}",
                     paymentType, transactionId, description);
@@ -132,26 +82,6 @@ public class KafkaEventConsumer {
             logOnError(paymentType, transactionId, e);
             throw e;
         }
-    }
-
-    private UUID handleFailTransactionEventCircuitBreakerFallback(
-            TransactionResponseEvent transactionResponseEvent,
-            Exception exception
-    ) throws Exception {
-        if(exception instanceof IllegalStateException)
-            throw exception;
-
-        String action = "handle-fail-transaction-event";
-
-        UUID transactionId = transactionResponseEvent.transactionId();
-
-        String message = String.format(
-                "Exception occurred during handle fail [%s] transaction event with transaction id: [%s]. Exception message: %s",
-                transactionResponseEvent.paymentType(), transactionId, exception.getMessage());
-
-        fallback.handleCircuitBreakerFallback(action, message, exception);
-
-        return null;
     }
 
     private Object[] getTransactionEventData(
@@ -170,26 +100,13 @@ public class KafkaEventConsumer {
         return new Object[]{ transactionId, currentTransactionEventStatus, paymentType, amount, description };
     }
 
-    private void checkTransactionInPendingState(
+    private void logOnReceive(
             PaymentType paymentType,
             UUID transactionId,
             TransactionStatus transactionStatus
     ) {
-        if(transactionStatus != TransactionStatus.PENDING) {
-            log.warn("[{}] transaction with id: [{}] is not in [{}] state, current state: [{}]",
-                    paymentType, transactionId, TransactionStatus.PENDING, transactionStatus);
-
-            throw new IllegalStateException(
-                    String.format("Received transaction event in [%s] status", transactionStatus));
-        }
-    }
-
-    private Transaction getTransaction(
-            UUID transactionId
-    ) {
-        return transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Transaction with id: [%s] not found", transactionId)));
+        log.info("Received [{}] transaction event with transaction id: [{}] in state: [{}]",
+                paymentType, transactionId, transactionStatus);
     }
 
     private void logOnError(
@@ -199,14 +116,5 @@ public class KafkaEventConsumer {
     ) {
         log.error("Error occurred while handle [{}] transaction event with transaction id: [{}]. Error message: [{}]",
                 paymentType, transactionId, e.getMessage());
-    }
-
-    private void logOnReceive(
-            PaymentType paymentType,
-            UUID transactionId,
-            TransactionStatus transactionStatus
-    ) {
-        log.info("Received [{}] transaction event with transaction id: [{}] in state: [{}]",
-                paymentType, transactionId, transactionStatus);
     }
 }

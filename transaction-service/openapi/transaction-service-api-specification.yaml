@@ -173,6 +173,98 @@ paths:
                 $ref: "#/components/schemas/TransactionServiceErrorDto"
           description: Response in case if error was occurred on service side
 
+  /api/v1/transaction/{id}/fail:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: failTransaction
+      tags:
+        - Transaction
+      summary: Update status of transaction on [fail]
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Allowed UUID of transaction
+      responses:
+        200:
+          description: Success update of transaction status on [fail]
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/{id}/complete:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: completeTransaction
+      tags:
+        - Transaction
+      summary: Update status of transaction on [complete]
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Allowed UUID of transaction
+      responses:
+        200:
+          description: Success update of transaction status on [complete]
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionServiceErrorDto"
+          description: Response in case if error was occurred on service side
+
 tags:
   - name: Transaction
     description: Describes operations with transactions

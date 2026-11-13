@@ -104,4 +104,52 @@ public class TransactionServiceAspect {
                 null
         );
     }
+
+    @Around("execution(* aq.project.services.TransactionService.failTransaction(..)) " +
+            "&& args(transactionId)")
+    public void failTransaction(
+            ProceedingJoinPoint pjp,
+            @NotNull UUID transactionId
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "fail-transaction";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to fail transaction with id: [%s]",
+                transactionId);
+
+//        Handler logic call
+        serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                logOnBeginning,
+                null
+        );
+    }
+
+    @Around("execution(* aq.project.services.TransactionService.completeTransaction(..)) " +
+            "&& args(transactionId)")
+    public void completeTransaction(
+            ProceedingJoinPoint pjp,
+            @NotNull UUID transactionId
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "complete-transaction";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to complete transaction with id: [%s]",
+                transactionId);
+
+//        Handler logic call
+        serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                logOnBeginning,
+                null
+        );
+    }
 }

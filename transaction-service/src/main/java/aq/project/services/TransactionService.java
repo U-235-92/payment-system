@@ -8,6 +8,7 @@ import aq.project.mappers.TransactionMapper;
 import aq.project.repositories.TransactionRepository;
 import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceFactory;
 import aq.project.wallet_service.WalletApiClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -51,6 +52,8 @@ public class TransactionService {
     public InitTransactionResponseDto initTransaction(
             InitTransactionRequestDto initTransactionRequestDto
     ) {
+        String traceId = traceContext.getTraceId();
+
         PaymentType paymentType = initTransactionRequestDto.getPaymentType();
 
         WalletInfoResponseDto pendingWalletInfo;
@@ -109,10 +112,10 @@ public class TransactionService {
                     .paymentType(paymentType)
                     .currencyCode(currencyCode);
         } else {
-            log.warn("Success init [{}] transaction for wallet with id: [{}]. " +
+            log.warn("[{}]: Success init [{}] transaction for wallet with id: [{}]. " +
                             "Warning: initialization of transaction is not available. " +
                             "Amount of operation is exceeded current balance of wallet",
-                    paymentType, initTransactionRequestDto.getWalletId());
+                    traceId, paymentType, initTransactionRequestDto.getWalletId());
 
             String description = String.format(
                     "Process [%s] transaction is not allowed for wallet with id: [%s]. " +
@@ -183,9 +186,11 @@ public class TransactionService {
             UUID walletId,
             PaymentType paymentType
     ) {
-        log.warn("Success init [{}] transaction for wallet with id: [{}]. " +
+        String traceId = traceContext.getTraceId();
+
+        log.warn("[{}]: Success init [{}] transaction for wallet with id: [{}]. " +
                         "Warning: initialization of transaction is not available. Wallet is blocked",
-                paymentType, walletId);
+                traceId, paymentType, walletId);
 
         String description = String.format("Process [%s] transaction is not allowed for wallet with id: [%s]. " +
                 "Wallet is blocked", paymentType, walletId);
@@ -342,5 +347,157 @@ public class TransactionService {
         fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
+    }
+
+    @RateLimiter(
+            name = "fail-transaction-rate-limiter",
+            fallbackMethod = "failTransactionRateLimiterFallback"
+    )
+    @CircuitBreaker(
+            name = "fail-transaction-circuitbreaker",
+            fallbackMethod = "failTransactionCircuitBreakerFallback"
+    )
+    @Transactional
+    public void failTransaction(
+            UUID transactionId
+    ) {
+        Transaction transaction = getTransaction(transactionId);
+
+        checkTransactionInPendingState(transaction);
+
+        transaction.failTransaction();
+
+        PaymentType paymentType = transaction.getPaymentType();
+
+        String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
+        String authorization = tokenService.getAdminJwtAsAuthorizationHeaderValue();
+
+        switch (paymentType) {
+            case DEPOSIT -> {
+//                    Compensation on fail
+                WithdrawalWalletRequestDto dto = new WithdrawalWalletRequestDto()
+                        .walletId(transaction.getWalletId())
+                        .amount(transaction.getAmount())
+                        .currencyCode(transaction.getCurrencyCode());
+
+                walletApiClient.withdrawalWallet(traceId, dto, authorization);
+            }
+
+            case WITHDRAWAL ->  {
+//                    Compensation on fail
+                DepositWalletRequestDto dto = new DepositWalletRequestDto()
+                        .walletId(transaction.getWalletId())
+                        .amount(transaction.getAmount())
+                        .currencyCode(transaction.getCurrencyCode());
+
+                walletApiClient.depositWallet(traceId, dto, authorization);
+            }
+
+            case TRANSFER ->  {
+//                    Compensation on fail
+                TransferWalletRequestDto dto = new TransferWalletRequestDto()
+                        .sourceWalletId(transaction.getTargetWalletId())
+                        .targetWalletId(transaction.getWalletId())
+                        .amount(transaction.getAmount())
+                        .currencyCode(transaction.getCurrencyCode());
+
+                walletApiClient.transferWallet(traceId, dto, authorization);
+            }
+        }
+    }
+
+    private void failTransactionRateLimiterFallback(
+            UUID transactionId,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException
+                || exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "fail-transaction";
+
+        String message = String.format(
+                "Exception occurred during fail transaction with id: [%s]. Exception message: %s",
+                transactionId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+    }
+
+    private void failTransactionCircuitBreakerFallback(
+            UUID transactionId,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException
+                || exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "fail-transaction";
+
+        String message = String.format(
+                "Exception occurred during fail transaction with id: [%s]. Exception message: %s",
+                transactionId, exception.getMessage());
+
+        fallback.handleCircuitBreakerFallback(action, message, exception);
+    }
+
+    @RateLimiter(
+            name = "complete-transaction-rate-limiter",
+            fallbackMethod = "completeTransactionRateLimiterFallback"
+    )
+    @Transactional
+    public void completeTransaction(
+            UUID transactionId
+    ) {
+        Transaction transaction = getTransaction(transactionId);
+
+        checkTransactionInPendingState(transaction);
+
+        transaction.completeTransaction();
+    }
+
+    private void completeTransactionRateLimiterFallback(
+            UUID transactionId,
+            Exception exception
+    ) throws Exception {
+        if(exception instanceof EntityNotFoundException
+                || exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "complete-transaction";
+
+        String message = String.format(
+                "Exception occurred during complete transaction with id: [%s]. Exception message: %s",
+                transactionId, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+    }
+
+    private Transaction getTransaction(
+            UUID transactionId
+    ) {
+        return transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Transaction with id: [%s] not found", transactionId)));
+    }
+
+    private void checkTransactionInPendingState(
+            Transaction transaction
+    ) {
+        TransactionStatus transactionStatus = transaction.getTransactionStatus();
+
+        PaymentType paymentType = transaction.getPaymentType();
+
+        UUID transactionId = transaction.getId();
+
+        String traceId = traceContext.getTraceId();
+
+        if(transactionStatus != TransactionStatus.PENDING) {
+            log.warn("[{}]: [{}] transaction with id: [{}] is not in [{}] state, current state: [{}]",
+                    traceId, paymentType, transactionId, TransactionStatus.PENDING, transactionStatus);
+
+            throw new IllegalStateException(
+                    String.format("Unable to update transaction with id: [%s] in [%s] status",
+                            transactionId, transactionStatus));
+        }
     }
 }

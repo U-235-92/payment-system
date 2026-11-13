@@ -6,6 +6,7 @@ import aq.project.services.TransactionService;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -21,9 +22,9 @@ public class TransactionRestController implements TransactionRestControllerApi {
 
     @Override
     public ResponseEntity<InitTransactionResponseDto> initTransaction(
-            String xTraceId,
             PaymentType type,
             InitTransactionRequestDto initTransactionRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
@@ -33,9 +34,9 @@ public class TransactionRestController implements TransactionRestControllerApi {
 
     @Override
     public ResponseEntity<UUID> confirmTransaction(
-            String xTraceId,
             PaymentType type,
             ConfirmTransactionRequestDto confirmTransactionRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
@@ -45,12 +46,38 @@ public class TransactionRestController implements TransactionRestControllerApi {
 
     @Override
     public ResponseEntity<TransactionStatus> getTransactionStatus(
-            String xTraceId,
             UUID id,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
 
         return ResponseEntity.ok(transactionService.getTransactionStatus(id));
+    }
+
+    @Override
+    public ResponseEntity<Void> failTransaction(
+            UUID id,
+            String xTraceId,
+            String authorization
+    ) {
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
+        transactionService.failTransaction(id);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Override
+    public ResponseEntity<Void> completeTransaction(
+            UUID id,
+            String xTraceId,
+            String authorization
+    ) {
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
+        transactionService.completeTransaction(id);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

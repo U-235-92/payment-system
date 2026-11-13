@@ -39,9 +39,15 @@ public class ServiceAspectHandler {
         Tracer tracer = openTelemetry.getTracer(tracerName);
         Span span = tracer.spanBuilder(actionName).startSpan();
 
-        String traceId = (traceContext.getTraceId() == null)
-                ? span.getSpanContext().getTraceId()
-                : traceContext.getTraceId();
+        String traceId;
+
+        if(traceContext.getTraceId() == null) {
+            traceId = span.getSpanContext().getTraceId();
+            traceContext.setTraceId(traceId);
+        } else {
+            traceId = traceContext.getTraceId();
+        }
+
         String spanId = span.getSpanContext().getTraceId();
 
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
@@ -106,9 +112,15 @@ public class ServiceAspectHandler {
         Tracer tracer = openTelemetry.getTracer(tracerName);
         Span span = tracer.spanBuilder(actionName).startSpan();
 
-        String traceId = (traceContext.getTraceId() == null)
-                ? span.getSpanContext().getTraceId()
-                : traceContext.getTraceId();
+        String traceId;
+
+        if(traceContext.getTraceId() == null) {
+            traceId = span.getSpanContext().getTraceId();
+            traceContext.setTraceId(traceId);
+        } else {
+            traceId = traceContext.getTraceId();
+        }
+
         String spanId = span.getSpanContext().getTraceId();
 
 //        Log beginning of process
@@ -168,9 +180,15 @@ public class ServiceAspectHandler {
         Tracer tracer = openTelemetry.getTracer(tracerName);
         Span span = tracer.spanBuilder(actionName).startSpan();
 
-        String traceId = (traceContext.getTraceId() == null)
-                ? span.getSpanContext().getTraceId()
-                : traceContext.getTraceId();
+        String traceId;
+
+        if(traceContext.getTraceId() == null) {
+            traceId = span.getSpanContext().getTraceId();
+            traceContext.setTraceId(traceId);
+        } else {
+            traceId = traceContext.getTraceId();
+        }
+
         String spanId = span.getSpanContext().getTraceId();
 
         Timer.Sample sample = applicationMetricsRegistry.startTimer();
@@ -230,9 +248,15 @@ public class ServiceAspectHandler {
         Tracer tracer = openTelemetry.getTracer(tracerName);
         Span span = tracer.spanBuilder(actionName).startSpan();
 
-        String traceId = (traceContext.getTraceId() == null)
-                ? span.getSpanContext().getTraceId()
-                : traceContext.getTraceId();
+        String traceId;
+
+        if(traceContext.getTraceId() == null) {
+            traceId = span.getSpanContext().getTraceId();
+            traceContext.setTraceId(traceId);
+        } else {
+            traceId = traceContext.getTraceId();
+        }
+
         String spanId = span.getSpanContext().getTraceId();
 
 //        Log beginning of process

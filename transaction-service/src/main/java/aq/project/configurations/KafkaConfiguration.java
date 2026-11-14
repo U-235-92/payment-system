@@ -1,67 +1,71 @@
 package aq.project.configurations;
 
-import aq.project.exceptions.ClientHttpException;
-import aq.project.exceptions.ExceedAttemptLimitException;
-import aq.project.exceptions.FallbackOperationException;
-import aq.project.exceptions.ServiceHttpException;
-import jakarta.validation.ConstraintViolationException;
+import aq.project.properties.KafkaTopicProperties;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.TopicPartition;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
-import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.serializer.DeserializationException;
-import org.springframework.util.backoff.BackOff;
-import org.springframework.util.backoff.ExponentialBackOff;
-
-import java.util.concurrent.ExecutionException;
-import java.util.function.BiFunction;
+import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConfiguration {
 
-    @Value("${service.kafka.backoff.max-attempts}")
-    private long maxAttempts;
-    @Value("${service.kafka.backoff.wait-duration}")
-    private long waitDuration;
-    @Value("${service.kafka.backoff.multiplier}")
-    private double multiplier;
+    private final KafkaTopicProperties kafkaTopicProperties;
 
     @Bean
-    public DefaultErrorHandler errorHandler(DeadLetterPublishingRecoverer deadLetterPublishingRecoverer) {
-        DefaultErrorHandler handler = new DefaultErrorHandler(deadLetterPublishingRecoverer, backOff());
-        handler.addRetryableExceptions(ServiceHttpException.class);
-        handler.addNotRetryableExceptions(ClientHttpException.class);
-        handler.addNotRetryableExceptions(DeserializationException.class);
-        handler.addNotRetryableExceptions(FallbackOperationException.class);
-        handler.addNotRetryableExceptions(ExceedAttemptLimitException.class);
-        handler.addNotRetryableExceptions(ExecutionException.class);
-        handler.addNotRetryableExceptions(InterruptedException.class);
-        handler.addNotRetryableExceptions(ConstraintViolationException.class);
-        return handler;
+    public NewTopic depositTransactionRequestTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("deposit_transaction_request");
+        return createTopic(config);
     }
 
     @Bean
-    public DeadLetterPublishingRecoverer deadLetterPublishingRecoverer(KafkaTemplate<String, Object> kafkaTemplate) {
-        return new DeadLetterPublishingRecoverer(kafkaTemplate, destinationResolver());
+    public NewTopic depositTransactionCompleteResponseTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("deposit_transaction_complete_response");
+        return createTopic(config);
     }
 
-    private BiFunction<ConsumerRecord<?, ?>, Exception, TopicPartition> destinationResolver() {
-        return (record, exc) -> {
-            if(exc instanceof ClientHttpException)
-                return new TopicPartition(record.topic() + "_dlt", record.partition());
-            return new TopicPartition(record.topic() + "_exceptions", record.partition());
-        };
+    @Bean
+    public NewTopic depositTransactionFailResponseTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("deposit_transaction_fail_response");
+        return createTopic(config);
     }
 
-    private BackOff backOff() {
-        ExponentialBackOff backOff = new ExponentialBackOff(waitDuration, multiplier);
-        backOff.setMaxAttempts(maxAttempts);
-        return backOff;
+    @Bean
+    public NewTopic withdrawalTransactionRequestTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("withdrawal_transaction_request");
+        return createTopic(config);
+    }
+
+    @Bean
+    public NewTopic withdrawalTransactionCompleteResponseTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("withdrawal_transaction_complete_response");
+        return createTopic(config);
+    }
+
+    @Bean
+    public NewTopic withdrawalTransactionFailResponseTopic() {
+        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
+                .getTopics()
+                .get("withdrawal_transaction_fail_response");
+        return createTopic(config);
+    }
+
+    private NewTopic createTopic(KafkaTopicProperties.KafkaTopicConfiguration config) {
+        return TopicBuilder.name(config.getName())
+                .partitions(config.getPartitions())
+                .replicas(config.getReplicas())
+                .config("min.insync.replicas", String.valueOf(config.getMinInsyncReplicas()))
+                .build();
     }
 }

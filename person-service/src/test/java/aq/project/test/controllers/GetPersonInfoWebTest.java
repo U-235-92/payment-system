@@ -3,7 +3,7 @@ package aq.project.test.controllers;
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
 import aq.project.controllers.PersonRestController;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
 import aq.project.repositories.ServiceOperationRepository;
@@ -25,7 +25,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.util.UUID;
 
-import static aq.project._utils.entities.PersonServiceEntities.getValidPersonServiceCreatePersonRequestDto;
+import static aq.project._utils.entities.PersonServiceEntities.getValidCreatePersonRequestDto;
 import static aq.project.controller.PersonRestControllerApi.PATH_GET_PERSON_INFO;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,7 +82,7 @@ public class GetPersonInfoWebTest {
         String countryCode = "ATA";
         String countryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(countryName);

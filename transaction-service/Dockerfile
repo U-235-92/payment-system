@@ -22,5 +22,5 @@ COPY --from=builder /source/build/libs/*.jar ./transaction-service.jar
 #Spring env:
 ENV SPRING_PROFILES_ACTIVE=prod
 
-EXPOSE 8084
+EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "transaction-service.jar"]

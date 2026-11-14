@@ -5,6 +5,7 @@ import aq.project.exceptions.EntityAlreadyExistException;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.ProcessOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,9 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -39,7 +42,9 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(ProcessOperationException.class)
@@ -48,7 +53,9 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
 //    Non project specific exceptions
@@ -58,7 +65,9 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -67,7 +76,9 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -76,7 +87,9 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -85,7 +98,9 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -94,7 +109,9 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -103,13 +120,15 @@ public class PersonRestControllerExceptionHandler {
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        PersonServiceErrorDto dto = getPersonServiceErrorDto(status, e);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
     }
 
-    private ResponseEntity<PersonServiceErrorDto> getErrorResponseEntity(HttpStatus status, Exception e) {
-        return ResponseEntity.status(status)
-                .body(new PersonServiceErrorDto()
-                        .httpStatus(status.value())
-                        .message(e.getMessage()));
+    private PersonServiceErrorDto getPersonServiceErrorDto(HttpStatus httpStatus, Exception e) {
+        PersonServiceErrorDto dto = new PersonServiceErrorDto();
+        dto.setHttpStatus(httpStatus.value());
+        dto.setMessage(e.getMessage());
+        return dto;
     }
 }

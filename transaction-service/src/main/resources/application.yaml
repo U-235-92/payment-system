@@ -1,24 +1,20 @@
 logging:
   level:
     root: info
+
 server:
-  port: 8084
+  port: 8083
+
 spring:
   application:
     name: transaction-service
+
   profiles:
     active:
-      - dev
-  task:
-    scheduling:
-      pool:
-        size: 5 # 1 for [payment provider service] scheduler and 3 for [wallet-service] scheduler + 1 additional
+      - dev-shard
+
   security:
     oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080/realms/payment-system
-          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
       client:
         provider:
           keycloak:
@@ -30,6 +26,11 @@ spring:
             client-secret: VQHOlxhSlKxAVbcfJWi1ewULWhYiY3wf
             admin-id: payment-system-admin-cli
             admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+
   kafka:
     bootstrapServers:
       - localhost:29092
@@ -45,27 +46,26 @@ spring:
     consumer:
       enable-auto-commit: false
       auto-offset-reset: latest
-      group-id: transaction-service
+      group-id: wallet-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
       properties:
         spring:
           json:
             trusted:
-              packages: "aq.project.dto"
+              packages: "aq.project.kafka.events"
+
+  flyway:
+    enabled: false
+
 management:
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: http://localhost:4318/v1/traces # OTEL collector URI
   otlp:
     metrics:
       export:
         enabled: false
   metrics:
     tags:
-      application: transaction-service
+      application: wallet-service
   endpoints:
     web:
       exposure:
@@ -73,118 +73,90 @@ management:
           - prometheus
           - info
           - health
+
+app:
+  transaction:
+    default_fee_percent: 0.00
+
+  kafka:
+    topics:
+      deposit_transaction_request:
+        name: deposit_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      deposit_transaction_complete_response:
+        name: deposit_transaction_complete_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      deposit_transaction_fail_response:
+        name: deposit_transaction_fail_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      withdrawal_transaction_request:
+        name: withdrawal_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      withdrawal_transaction_complete_response:
+        name: withdrawal_transaction_complete_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      withdrawal_transaction_fail_response:
+        name: withdrawal_transaction_fail_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
 resilience4j:
-  bulkhead:
-    instances:
-      create-deposit-transaction-bulkhead:
-        max-concurrent-calls: 100
-      get-deposit-transaction-status-bulkhead:
-        max-concurrent-calls: 100
-      fail-deposit-transaction-bulkhead:
-        max-concurrent-calls: 100
-
-      create-withdraw-transaction-bulkhead:
-        max-concurrent-calls: 100
-      get-withdraw-transaction-status-bulkhead:
-        max-concurrent-calls: 100
-      fail-withdraw-transaction-bulkhead:
-        max-concurrent-calls: 100
-
-      create-transfer-transaction-bulkhead:
-        max-concurrent-calls: 100
-      get-transfer-transaction-status-bulkhead:
-        max-concurrent-calls: 100
-      fail-transfer-transaction-bulkhead:
-        max-concurrent-calls: 100
-
   ratelimiter:
     instances:
-      create-deposit-transaction-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      get-deposit-transaction-status-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      fail-deposit-transaction-rate-limiter:
+      init-transaction-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
 
-      create-withdraw-transaction-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      get-withdraw-transaction-status-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      fail-withdraw-transaction-rate-limiter:
+      confirm-transaction-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
 
-      create-transfer-transaction-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      get-transfer-transaction-status-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      fail-transfer-transaction-rate-limiter:
+      get-transaction-status-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
 
-otel:
-  instrumentation:
-    annotations:
-      enabled: true
-service:
-  keycloak:
-    uri: http://localhost:8080
-    endpoints:
-      token: /realms/payment-system/protocol/openid-connect/token
-  kafka:
-    backoff:
-      max-attempts: 3
-      wait-duration: 1500
-      multiplier: 2
-    services:
-      wallet-service:
-        topics:
-          - wallet_service_create_deposit_transaction_request
-          - wallet_service_create_deposit_transaction_response
-          - wallet_service_create_deposit_transaction_response_exceptions
-          - wallet_service_fail_deposit_transaction_request
-          - wallet_service_cancel_deposit_transaction_request # <- end of list deposit transaction topics
-          - wallet_service_create_withdraw_transaction_request
-          - wallet_service_create_withdraw_transaction_response
-          - wallet_service_create_withdraw_transaction_response_exceptions
-          - wallet_service_fail_withdraw_transaction_request
-          - wallet_service_cancel_withdraw_transaction_request # <- end of list withdraw transaction topics
-          - wallet_service_create_transfer_transaction_request
-          - wallet_service_create_transfer_transaction_response
-          - wallet_service_create_transfer_transaction_response_exceptions
-          - wallet_service_fail_transfer_transaction_request
-          - wallet_service_cancel_transfer_transaction_request # <- end of list transfer transaction topics
-      payment-provider-service:
-        topics:
-          - payment_provider_service_create_transaction_request
-          - payment_provider_service_fail_transaction_request
-          - payment_provider_service_cancel_transaction_request
-          - payment_provider_service_create_transaction_response
-          - payment_provider_service_create_transaction_response_exceptions
-  wallet-service:
-    name: wallet-service
-    uri: http://localhost:8083
-    endpoints:
-      get-transaction-status: /api/v1/transaction/status
-  payment-provider-service:
-    name: payment-provider-service
-    uri: http://localhost:8086
-  transaction-service:
-    merchant-id: transaction-service
-    merchant-secret: secret
-    schedule:
-      send-transaction-request-rate: 30
-      handle-create-transaction-on-payment-provider-service: 5
-      handle-create-deposit-transaction-on-wallet-service: 5
-      handle-create-withdraw-transaction-on-wallet-service: 5
-      handle-create-transfer-transaction-on-wallet-service: 5
-    retry:
-      send-transaction-request-to-message-broker:
-        max-attempts: 3
+      fail-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      complete-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+  circuitbreaker:
+    instances:
+      init-transaction-circuitbreaker:
+        sliding-window-type: TIME_BASED
+        sliding-window-size: 86400
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 30s
+        slow-call-rate-threshold: 50
+
+      confirm-transaction-circuitbreaker:
+        sliding-window-type: TIME_BASED
+        sliding-window-size: 86400
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 30s
+        slow-call-rate-threshold: 50
+
+      fail-transaction-circuitbreaker:
+        sliding-window-type: TIME_BASED
+        sliding-window-size: 86400
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 30s
+        slow-call-rate-threshold: 50

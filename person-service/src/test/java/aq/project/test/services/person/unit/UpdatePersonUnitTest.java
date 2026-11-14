@@ -1,6 +1,6 @@
 package aq.project.test.services.person.unit;
 
-import aq.project.dto.PersonServiceUpdatePersonRequestDto;
+import aq.project.dto.UpdatePersonRequestDto;
 import aq.project.entities.Country;
 import aq.project.entities.Person;
 import aq.project.exceptions.EntityNotFoundException;
@@ -52,7 +52,7 @@ public class UpdatePersonUnitTest {
         person.setKeycloakId(personKeycloakId.toString());
         person.getIndividual().setEmail(email);
 
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
         Mockito.when(personRepository.findByKeycloakId(Mockito.any()))
@@ -65,7 +65,7 @@ public class UpdatePersonUnitTest {
     @Test
     public void failUpdatePersonOnPersonNotFound() {
 //        Arrange
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
 
         Country country = getValidCountry();
 

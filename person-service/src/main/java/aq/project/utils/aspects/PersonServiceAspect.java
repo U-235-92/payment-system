@@ -28,16 +28,16 @@ public class PersonServiceAspect {
     private final ServiceAspectHandler serviceAspectHandler;
 
     @Around("execution(* aq.project.services.PersonService.createPerson(..)) " +
-            "&& args(personServiceCreatePersonRequestDto)")
+            "&& args(createPersonRequestDto)")
     public UUID createPerson(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto
+            @NotNull @Valid CreatePersonRequestDto createPersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "create-person";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
-        String email = personServiceCreatePersonRequestDto.getEmail();
+        String email = createPersonRequestDto.getEmail();
 
         String preMainLogicLogMessage = String.format(
                 "Received request to create a person with email: %s", email);
@@ -65,16 +65,16 @@ public class PersonServiceAspect {
     }
 
     @Around("execution(* aq.project.services.PersonService.updatePerson(..)) " +
-            "&& args(personServiceUpdatePersonRequestDto)")
+            "&& args(updatePersonRequestDto)")
     public void updatePerson(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto
+            @NotNull @Valid UpdatePersonRequestDto updatePersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "update-person";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
-        UUID personKeycloakId = personServiceUpdatePersonRequestDto.getPersonKeycloakId();
+        UUID personKeycloakId = updatePersonRequestDto.getPersonKeycloakId();
 
         String preMainLogicLogMessage = String.format(
                 "Received request to update a person with keycloak id: %s", personKeycloakId);
@@ -101,10 +101,10 @@ public class PersonServiceAspect {
     }
 
     @Around("execution(* aq.project.services.PersonService.undoUpdatePerson(..)) " +
-            "&& args(personServiceUndoUpdatePersonRequestDto)")
+            "&& args(undoUpdatePersonRequestDto)")
     public void undoUpdatePerson(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto
+            @NotNull @Valid UndoUpdatePersonRequestDto undoUpdatePersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "undo-update-person";
@@ -170,10 +170,10 @@ public class PersonServiceAspect {
     }
 
     @Around("execution(* aq.project.services.PersonService.undoDeletePerson(..)) " +
-            "&& args(personServiceUndoDeletePersonRequestDto)")
+            "&& args(undoDeletePersonRequestDto)")
     public void undoDeletePerson(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto
+            @NotNull @Valid UndoDeletePersonRequestDto undoDeletePersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "undo-delete-person";
@@ -207,7 +207,7 @@ public class PersonServiceAspect {
 
     @Around("execution(* aq.project.services.PersonService.getPersonInfo(..)) " +
             "&& args(personKeycloakId)")
-    public PersonServicePersonInfoResponseDto getPersonInfo(
+    public PersonInfoResponseDto getPersonInfo(
             ProceedingJoinPoint pjp,
             @NotNull UUID personKeycloakId
     ) throws Throwable {
@@ -226,7 +226,7 @@ public class PersonServiceAspect {
 
 //        Handler logic call
         return serviceAspectHandler.handle(
-                PersonServicePersonInfoResponseDto.class,
+                PersonInfoResponseDto.class,
                 pjp,
                 tracerName,
                 serviceName,

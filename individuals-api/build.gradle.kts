@@ -129,7 +129,10 @@ val dependencyVersionMap = mapOf(
 	"wallet-service-api-specification" to "2.1.0-dev",
 
 //	Payment service API specification
-	"payment-service-api-specification" to "2.1.0-dev"
+	"payment-service-api-specification" to "2.1.0-dev",
+
+//	CommonProjectUtils
+	"common-utils" to "2.0.0"
 )
 
 dependencies {
@@ -188,6 +191,7 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 
 //	Mapping
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
@@ -201,15 +205,6 @@ dependencies {
 
 //	Person service api
 	"apiSpec"("aq.payment-system:person-service-api-specification:${dependencyVersionMap.getValue("person-service-api-specification")}")
-
-//	Transaction service api
-	"apiSpec"("aq.payment-system:transaction-service-api-specification:${dependencyVersionMap.getValue("transaction-service-api-specification")}")
-
-//	Wallet service api
-	"apiSpec"("aq.payment-system:wallet-service-api-specification:${dependencyVersionMap.getValue("wallet-service-api-specification")}")
-
-//	Payment service api
-	"apiSpec"("aq.payment-system:payment-service-api-specification:${dependencyVersionMap.getValue("payment-service-api-specification")}")
 }
 
 tasks.withType<Test> {

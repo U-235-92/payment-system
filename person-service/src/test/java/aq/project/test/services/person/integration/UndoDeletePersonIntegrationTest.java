@@ -3,8 +3,8 @@ package aq.project.test.services.person.integration;
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
 import aq.project.controllers.PersonRestController;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
-import aq.project.dto.PersonServiceUndoDeletePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
+import aq.project.dto.UndoDeletePersonRequestDto;
 import aq.project.entities.Person;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.repositories.CountryRepository;
@@ -87,7 +87,7 @@ public class UndoDeletePersonIntegrationTest {
 
         String createFirstName = "CreateFirstName";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.setFirstName(createFirstName);
@@ -98,7 +98,7 @@ public class UndoDeletePersonIntegrationTest {
 
         personRestController.deletePerson(personKeycloakId, traceId, authorization);
 
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getValidPersonServiceUndoDeletePersonRequestDto();
+        UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getValidUndoDeletePersonRequestDto();
         personServiceUndoDeletePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
 //        Act & Assert
@@ -117,7 +117,7 @@ public class UndoDeletePersonIntegrationTest {
     @Test
     public void failUndoDeletePersonOnInvalidUndoDeleteRequestDto() {
 //        Arrange
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getInvalidPersonServiceUndoDeletePersonRequestDto();
+        UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getInvalidUndoDeletePersonRequestDto();
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -127,7 +127,7 @@ public class UndoDeletePersonIntegrationTest {
     @Test
     public void failUndoDeletePersonOnNullUndoDeleteRequestDto() {
 //        Arrange
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = null;
+        UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = null;
 
 //        Act & Assert
         Assertions.assertThrows(ConstraintViolationException.class,
@@ -154,7 +154,7 @@ public class UndoDeletePersonIntegrationTest {
 
             String createFirstName = "CreateFirstName";
 
-            PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+            CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
             personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
             personServiceCreatePersonRequestDto.setEmail(email);
             personServiceCreatePersonRequestDto.setFirstName(createFirstName);
@@ -172,7 +172,7 @@ public class UndoDeletePersonIntegrationTest {
         for(int i = 0; i < RATE_LIMIT; i++) {
             UUID personKeycloakId = personKeycloakIdList.get(i);
 
-            PersonServiceUndoDeletePersonRequestDto undoDeletePersonRequestDto = getInvalidPersonServiceUndoDeletePersonRequestDto();
+            UndoDeletePersonRequestDto undoDeletePersonRequestDto = getInvalidUndoDeletePersonRequestDto();
             undoDeletePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
             if(i < RATE_LIMIT - 1)

@@ -1,6 +1,5 @@
 package aq.project.configurations;
 
-import aq.project.utils.security.HeaderValidatorHttpFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,14 +10,12 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import static aq.project.controller.DepositTransactionRestControllerApi.*;
-import static aq.project.controller.TransferTransactionRestControllerApi.*;
-import static aq.project.controller.WithdrawTransactionRestControllerApi.*;
+import static aq.project.controller.TransactionRestControllerApi.*;
 
 @Configuration
 @EnableWebSecurity
@@ -27,40 +24,30 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(1)
-    @Profile("dev")
+    @Profile(value = { "dev" })
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/api/v1/**")
+                .securityMatcher("/h2-console/**", "/api/v1/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
-                .oauth2Client(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .cors(CorsConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
                 .build();
     }
 
     @Bean
     @Order(2)
-    @Profile({ "prod", "test" })
+    @Profile(value = { "prod", "test" })
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/api/v1/**")
                 .csrf(AbstractHttpConfigurer::disable)
-                .oauth2Client(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, PATH_CREATE_DEPOSIT_TRANSACTION).authenticated()
-                        .requestMatchers(HttpMethod.POST, PATH_FAIL_DEPOSIT_TRANSACTION.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.GET, PATH_GET_DEPOSIT_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
-
-                        .requestMatchers(HttpMethod.POST, PATH_CREATE_TRANSFER_TRANSACTION).authenticated()
-                        .requestMatchers(HttpMethod.POST, PATH_FAIL_TRANSFER_TRANSACTION.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.GET, PATH_GET_TRANSFER_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
-
-                        .requestMatchers(HttpMethod.POST, PATH_CREATE_WITHDRAW_TRANSACTION).authenticated()
-                        .requestMatchers(HttpMethod.POST, PATH_FAIL_WITHDRAW_TRANSACTION.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.GET, PATH_GET_WITHDRAW_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
-                .addFilterBefore(new HeaderValidatorHttpFilter(), BasicAuthenticationFilter.class)
+                        .requestMatchers(HttpMethod.POST, PATH_INIT_TRANSACTION.replace("{type}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.POST, PATH_CONFIRM_TRANSACTION.replace("{type}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated())
                 .build();
     }
 

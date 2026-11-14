@@ -5,18 +5,18 @@ plugins {
 	java
 	id("maven-publish")
 	id("org.openapi.generator") version "7.18.0"
-	id("org.springframework.boot") version "4.0.6"
+	id("org.springframework.boot") version "4.1.2"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "aq.payment-system"
 version = "1.0.0"
 
-extra["springCloudVersion"] = "2025.1.2"
+extra["springCloudVersion"] = "2025.1.4"
 
 val artifact = "wallet-service"
 
-val specificationArtifactVersion = "2.1.0-dev"
+val specificationArtifactVersion = "7.0.1-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -55,6 +55,15 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = System.getProperty("LOCAL_REPO_NAME")
+		url = uri(System.getProperty("LOCAL_REPO_URL"))
+		isAllowInsecureProtocol = true
+		credentials {
+			username = System.getProperty("LOCAL_REPO_USERNAME")
+			password = System.getProperty("LOCAL_REPO_PASSWORD")
+		}
+	}
 }
 
 springBoot {
@@ -71,20 +80,16 @@ val dependencyVersionMap = mapOf(
 //	Mapping
 	"mapstruct" to "1.6.3",
 
+//	Lombok MapStruct binding
+	"lombok-mapstruct-binding" to "0.2.0",
+
 //	Observability
-	"opentelemetry-api" to "1.59.0",
-	"opentelemetry-sdk" to "1.59.0",
-	"opentelemetry-annotations" to "2.25.0",
 	"logstash-encoder" to "9.0",
 
-//	Spring
-	"spring-data-envers" to "4.0.4",
+//	Spring AOP
 	"spring-boot-starter-aop" to "4.0.0-M2",
-	"spring-cloud-starter-openfeign" to "5.0.1",
 
-//	Test
-	"testcontainers" to "2.0.3",
-	"wiremock-spring-boot" to "4.0.9",
+//	Testcontainers
 	"testcontainers-keycloak" to "4.1.1",
 
 //	OpenApi
@@ -94,83 +99,43 @@ val dependencyVersionMap = mapOf(
 	"shardingsphere" to "5.5.1",
 	"atomikos" to "6.0.1",
 
-//	Lombok MapStruct binding
-	"lombok-mapstruct-binding" to "0.2.0"
+//	CommonProjectUtils
+	"common-utils" to "4.0.4"
 )
 
 dependencies {
-//	Spring web
+//	Spring Web
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-	implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
-//	Spring kafka
-	implementation("org.springframework.boot:spring-boot-starter-kafka")
+//	Spring Data
+	implementation("org.springframework.boot:spring-boot-h2console")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-flyway")
+	runtimeOnly("com.h2database:h2")
+	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.flywaydb:flyway-database-postgresql")
 
 //	Spring AOP
 	implementation("org.springframework.boot:spring-boot-starter-aop:${dependencyVersionMap.getValue("spring-boot-starter-aop")}")
 
-//	Spring validation
+//	Spring Security
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
+
+//	Spring Validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
-//	Spring data
-	implementation("org.springframework.data:spring-data-envers:${dependencyVersionMap.getValue("spring-data-envers")}")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-h2console")
-
-//	DB drivers
-	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("com.h2database:h2")
-
-//	Flyway
-	implementation("org.flywaydb:flyway-database-postgresql")
-	implementation("org.springframework.boot:spring-boot-starter-flyway")
-
-//	Spring security
-	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
-	implementation("org.springframework.boot:spring-boot-starter-security")
-
-//	Util
-	annotationProcessor("org.projectlombok:lombok")
-	compileOnly("org.projectlombok:lombok")
-
-//	Mapping
+//	MapStruct
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
 	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
-
-//	Lombok MapStruct binding
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
 
-//	Test
-	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-opentelemetry-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
-	testImplementation("org.springframework.boot:spring-boot-testcontainers")
-	testImplementation("org.testcontainers:testcontainers:${dependencyVersionMap.getValue("testcontainers")}")
-	testImplementation("org.testcontainers:testcontainers-grafana")
-	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	testImplementation("org.testcontainers:testcontainers-kafka")
-	testImplementation("org.testcontainers:testcontainers-postgresql")
-	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
-	testCompileOnly("org.projectlombok:lombok")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testAnnotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.wiremock.integrations:wiremock-spring-boot:${dependencyVersionMap.getValue("wiremock-spring-boot")}")
+//	Lombok
+	compileOnly("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
 
-//	Logback JSON encoder
-	implementation("net.logstash.logback:logstash-logback-encoder:${dependencyVersionMap.getValue("logstash-encoder")}")
-
-//	Observability
-	implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:${dependencyVersionMap.getValue("opentelemetry-annotations")}")
-	implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("io.opentelemetry:opentelemetry-exporter-otlp")
-	implementation("io.micrometer:micrometer-registry-prometheus")
-	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+//	Resilience
+	implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
 
 //	OpenApi
 	implementation("tools.jackson.core:jackson-core")
@@ -189,6 +154,34 @@ dependencies {
 	implementation("org.apache.shardingsphere:shardingsphere-transaction-xa-core:${dependencyVersionMap.getValue("shardingsphere")}")
 //	Sharding. Implementation of XA-transaction
 	implementation("com.atomikos:transactions-jta:${dependencyVersionMap.getValue("atomikos")}")
+
+//	Observability
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
+	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+//	Logging
+	implementation("net.logstash.logback:logstash-logback-encoder:${dependencyVersionMap.getValue("logstash-encoder")}")
+
+//	Test
+	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-opentelemetry-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:testcontainers-grafana")
+	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	testImplementation("org.testcontainers:testcontainers-kafka")
+	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testCompileOnly("org.projectlombok:lombok")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testAnnotationProcessor("org.projectlombok:lombok")
+
+//	Util
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 }
 
 tasks.withType<Test> {

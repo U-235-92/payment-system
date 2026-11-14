@@ -16,7 +16,7 @@ paths:
         - BearerAuth: []
       tags:
         - Rate
-      summary: Получить курс между двумя валютами на указанную дату/время
+      summary: Get currency rate between pair of currencies on selected date
       operationId: getRate
       parameters:
         - name: from
@@ -24,64 +24,59 @@ paths:
           required: true
           schema:
             type: string
-            minLength: 3
-            maxLength: 3
-            example: "USD"
-          description: Код исходной валюты (например, "USD")
+            pattern: '[A-Z]{3}'
+          description: Source currency code
         - name: to
           in: query
           required: true
           schema:
             type: string
-            minLength: 3
-            maxLength: 3
-            example: "EUR"
-          description: Код целевой валюты (например, "EUR")
+            pattern: '[A-Z]{3}'
+          description: Target currency code
         - name: provider
           in: query
           required: false
           schema:
             type: string
-          description: Идентификатор конкретного поставщика данных. Если параметр опущен, возвращается смешанное (усредненное) значение по всем доступным провайдерам.
+          description: Identifier of currency provider
         - name: date
           in: query
           required: false
           schema:
             type: string
             format: date-time
-          description: Дата курса валюты
-          example: "2025-11-22"
+          description: Date of currency rate
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
-          description: Идентификатор трассировки запроса.
+          description: Identifier of open telemetry trace
         - name: Authorization
           in: header
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RateResponse'
-          description: Курс найден
+                $ref: '#/components/schemas/RateResponseDto'
+          description: Returns actual rate for specified provider. In case if provider wasn't specified then returns average rate for all the available providers
         404:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CurrencyRateServiceErrorDto'
-          description: Курс не найден
+          description: Response in case if currency rate not found
         400:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CurrencyRateServiceErrorDto'
-          description: Ошибка запроса
+          description: Response in case if was received incorrect request
 
   /api/v1/currency-rate/get-currencies:
     get:
@@ -89,30 +84,30 @@ paths:
         - BearerAuth: []
       tags:
         - Rate
-      summary: Получить список поддерживаемых валют
+      summary: Get list of supported currencies
       operationId: getCurrencies
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
-          description: Идентификатор трассировки запроса open telemetry.
+          description: Identifier of open telemetry trace
         - name: Authorization
           in: header
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
       responses:
         200:
-          description: Список валют
+          description: Returns list of supported currencies
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CurrencyResponse'
+                  $ref: '#/components/schemas/CurrencyResponseDto'
 
   /api/v1/currency-rate/get-rate-providers:
     get:
@@ -120,21 +115,21 @@ paths:
         - BearerAuth: []
       tags:
         - Rate
-      summary: Получить список провайдеров курсов валют
+      summary: Get list of currency providers
       operationId: getRateProviders
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
-          description: Идентификатор трассировки запроса.
+          description: Identifier of open telemetry trace
         - name: Authorization
           in: header
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
       responses:
         200:
           content:
@@ -142,8 +137,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RateProviderResponse'
-          description: Провайдеры
+                  $ref: '#/components/schemas/RateProviderResponseDto'
+          description: Returns list of currency providers
 
   /api/v1/currency-rate/get-currency-info/{code}:
     get:
@@ -151,7 +146,7 @@ paths:
         - BearerAuth: []
       tags:
         - Rate
-      summary: Получить информацию по указанной валюте
+      summary: Get info about specified currency
       operationId: getCurrencyInfo
       parameters:
         - name: code
@@ -159,34 +154,35 @@ paths:
           required: true
           schema:
             type: string
-          description: Трехбуквенный код валюты
+            pattern: '[A-Z]{3}'
+          description: Currency code
           example: USD
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
-          description: Идентификатор трассировки запроса
+          description: Identifier of open telemetry trace
         - name: Authorization
           in: header
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrencyResponse'
-          description: Информация по валюте
+                $ref: '#/components/schemas/CurrencyResponseDto'
+          description: Actual info for specified currency
 
         400:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CurrencyRateServiceErrorDto'
-          description: Ошибка запроса
+          description: Response in case if was received incorrect request
 
   /api/v1/currency-rate/get-rate-provider-info/{code}:
     get:
@@ -194,7 +190,7 @@ paths:
         - BearerAuth: []
       tags:
         - Rate
-      summary: Получить информацию по указанному поставщику курсов валют
+      summary: Get info about specified currency provider
       operationId: getRateProviderInfo
       parameters:
         - name: code
@@ -202,33 +198,34 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '[A-Z]+'
           description: Код поставщика валют
           example: AMCM
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
-          description: Идентификатор трассировки запроса
+          description: Identifier of open telemetry trace
         - name: Authorization
           in: header
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RateProviderResponse'
-          description: Информация по поставщику валют
+                $ref: '#/components/schemas/RateProviderResponseDto'
+          description: Returns info about specified currency provider
         400:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CurrencyRateServiceErrorDto'
-          description: Ошибка запроса
+          description: Response in case if was received incorrect request
 
 tags:
   - name: Rate
@@ -254,59 +251,65 @@ components:
           type: integer
           format: int32
 
-    RateResponse:
+    RateResponseDto:
       type: object
       properties:
         sourceCode:
           type: string
-          description: Код исходной валюты (например, "USD")
+          description: Source currency code
         destinationCode:
           type: string
-          description: Код целевой валюты (например, "EUR")
+          description: Target currency code
         rate:
           type: number
-          description: Курс обмена sourceCode→destinationCode
+          description: Currency rate sourceCode -> destinationCode
         rateDate:
           type: string
           format: date-time
-          description: Дата обменного курса
+          description: Date of currency rate
         providerCode:
           type: string
-          description: Код провайдера курса
+          description: Currency provider code
 
-    CurrencyResponse:
+    CurrencyResponseDto:
       type: object
       properties:
         code:
           type: string
-          description: Трёхбуквенный код валюты (ISO 4217)
+          description: Currency code
         isoCode:
           type: integer
-          description: Числовой ISO-код валюты
+          description: Digit ISO-code of currency
         description:
           type: string
+          description: Description of currency
         active:
           type: boolean
+          description: Currency active status
         symbol:
           type: string
-          description: Символ валюты (например, $ или €)
+          description: Symbol of currency (например, $ или €)
 
-    RateProviderResponse:
+    RateProviderResponseDto:
       type: object
       properties:
         providerCode:
           type: string
+          description: Currency provider code
         providerName:
           type: string
+          description: Currency provider name
         description:
           type: string
+          description: Description of rate provider
         date:
           type: string
           format: date-time
         active:
           type: boolean
+          description: Currency provider active status
 
-    HealthResponse:
+    HealthResponseDto:
       type: object
       properties:
         status:

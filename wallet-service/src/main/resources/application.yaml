@@ -1,39 +1,28 @@
 logging:
   level:
     root: info
+
 server:
-  port: 8083
+  port: 8084
+
 spring:
   application:
     name: wallet-service
+
   profiles:
     active:
-      - dev-shard
-  task:
-    scheduling:
-      pool:
-        size: 3
-  kafka:
-    listener:
-      ack-mode: RECORD
-    producer:
-      acks: all
-      retries: 5
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
-    consumer:
-      enable-auto-commit: false
-      auto-offset-reset: latest
-      group-id: wallet-service
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
-      properties:
-        spring:
-          json:
-            trusted:
-              packages: "aq.project.dto"
+      - dev
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+
   flyway:
     enabled: false
+
 management:
   otlp:
     metrics:
@@ -49,149 +38,30 @@ management:
           - prometheus
           - info
           - health
-otel:
-  instrumentation:
-    annotations:
-      enabled: true
-service:
-  kafka:
-    topics:
-      create_deposit_transaction_request:
-        name: wallet_service_create_deposit_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      create_deposit_transaction_request_dlt:
-        name: wallet_service_create_deposit_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_deposit_transaction_request:
-        name: wallet_service_fail_deposit_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_deposit_transaction_request_dlt:
-        name: wallet_service_fail_deposit_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_deposit_transaction_request:
-        name: wallet_service_cancel_deposit_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_deposit_transaction_request_dlt:
-        name: wallet_service_cancel_deposit_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
 
-      create_deposit_transaction_response:
-        name: wallet_service_create_deposit_transaction_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      create_deposit_transaction_response_exceptions:
-        name: wallet_service_create_deposit_transaction_response_exceptions
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
+resilience4j:
+  ratelimiter:
+    instances:
+      create-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
-      create_withdraw_transaction_request:
-        name: wallet_service_create_withdraw_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      create_withdraw_transaction_request_dlt:
-        name: wallet_service_create_withdraw_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_withdraw_transaction_request:
-        name: wallet_service_fail_withdraw_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_withdraw_transaction_request_dlt:
-        name: wallet_service_fail_withdraw_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_withdraw_transaction_request:
-        name: wallet_service_cancel_withdraw_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_withdraw_transaction_request_dlt:
-        name: wallet_service_cancel_withdraw_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
+      get-wallet-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
-      create_withdraw_transaction_response:
-        name: wallet_service_create_withdraw_transaction_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      create_withdraw_transaction_response_exceptions:
-        name: wallet_service_create_withdraw_transaction_response_exceptions
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
+      get-wallet-currency-code-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
-      create_transfer_transaction_request:
-        name: wallet_service_create_transfer_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      create_transfer_transaction_request_dlt:
-        name: wallet_service_create_transfer_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_transfer_transaction_request:
-        name: wallet_service_fail_transfer_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      fail_transfer_transaction_request_dlt:
-        name: wallet_service_fail_transfer_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_transfer_transaction_request:
-        name: wallet_service_cancel_transfer_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      cancel_transfer_transaction_request_dlt:
-        name: wallet_service_cancel_transfer_transaction_request_dlt
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
+      deposit-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
-      create_transfer_transaction_response:
-        name: wallet_service_create_transfer_transaction_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      create_transfer_transaction_response_exceptions:
-        name: wallet_service_create_transfer_transaction_response_exceptions
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
+      withdrawal-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
 
-    backoff:
-      max-attempts: 3
-      wait-duration: 1500
-      multiplier: 2
-application:
-  services:
-    wallet-service:
-      name: wallet-service
-      audit:
-        db: wallets_db
-        schema: public
-        table: revinfo
-        column: rev
+      transfer-wallet-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100

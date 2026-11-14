@@ -27,11 +27,6 @@
             <appender-ref ref="console_appender"/>
         </root>
     </springProfile>
-    <springProfile name = "dev-shard">
-        <root level="INFO">
-            <appender-ref ref="console_appender"/>
-        </root>
-    </springProfile>
     <springProfile name = "prod">
         <root level="INFO">
             <appender-ref ref="json_appender"/>

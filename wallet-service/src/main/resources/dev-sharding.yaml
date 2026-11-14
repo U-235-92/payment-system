@@ -1,0 +1,52 @@
+# DATA SOURCES
+dataSources:
+  datasource_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:5445/wallets_db
+    username: root
+    password: root
+  datasource_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:5455/wallets_db
+    username: root
+    password: root
+
+# SHARDING RULES
+rules:
+#     BROADCAST table stores its full copy of data on each shard
+  - !BROADCAST
+    tables:
+      - wallet_types
+  - !SHARDING
+    tables:
+#      WALLETS table
+      wallets:
+        actualDataNodes: datasource_${0..1}.wallets
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: pk_shard_alg_by_hash_wallet_id
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: uuid_generator
+#       UTILS
+    keyGenerators:
+      uuid_generator:
+        type: UUID
+    shardingAlgorithms:
+      pk_shard_alg_by_hash_wallet_id:
+        type: INLINE
+        props:
+          algorithm-expression: datasource_${Math.abs(id.hashCode()) % 2}
+      fk_shard_alg_by_hash_wallet_id:
+        type: INLINE
+        props:
+          algorithm-expression: datasource_${Math.abs(wallet_id.hashCode()) % 2}
+    bindingTables:
+      - wallets
+# TRANSACTIONS
+transaction:
+  defaultType: LOCAL
+  providerType: Atomikos

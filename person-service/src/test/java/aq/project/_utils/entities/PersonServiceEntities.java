@@ -10,8 +10,8 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class PersonServiceEntities {
 
-    public static PersonServiceCreatePersonRequestDto getValidPersonServiceCreatePersonRequestDto() {
-        PersonServiceCreatePersonRequestDto dto = new PersonServiceCreatePersonRequestDto();
+    public static CreatePersonRequestDto getValidCreatePersonRequestDto() {
+        CreatePersonRequestDto dto = new CreatePersonRequestDto();
         dto.setPersonKeycloakId(UUID.randomUUID());
         dto.setFirstName("FirstName");
         dto.setLastName("LastName");
@@ -19,13 +19,13 @@ public abstract class PersonServiceEntities {
         dto.setPhoneNumber("123456789");
         dto.setPassportNumber("123456789");
         dto.setActive(true);
-        dto.setAddress(getValidPersonServiceAddressDto());
-        dto.setCountry(getValidPersonServiceCountryDto());
+        dto.setAddress(getValidAddressDto());
+        dto.setCountry(getValidCountryDto());
         return dto;
     }
 
-    public static PersonServiceAddressDto getValidPersonServiceAddressDto() {
-        PersonServiceAddressDto dto = new PersonServiceAddressDto();
+    public static AddressDto getValidAddressDto() {
+        AddressDto dto = new AddressDto();
         dto.setAddress("Address");
         dto.setCity("City");
         dto.setState("State");
@@ -33,15 +33,15 @@ public abstract class PersonServiceEntities {
         return dto;
     }
 
-    public static PersonServiceCountryDto getValidPersonServiceCountryDto() {
-        PersonServiceCountryDto dto = new PersonServiceCountryDto();
+    public static CountryDto getValidCountryDto() {
+        CountryDto dto = new CountryDto();
         dto.setCode("ATA");
         dto.setName("Antarctica");
         return dto;
     }
 
-    public static PersonServiceCreatePersonRequestDto getInvalidPersonServiceCreatePersonRequestDto() {
-        PersonServiceCreatePersonRequestDto dto = new PersonServiceCreatePersonRequestDto();
+    public static CreatePersonRequestDto getInvalidCreatePersonRequestDto() {
+        CreatePersonRequestDto dto = new CreatePersonRequestDto();
         dto.setPersonKeycloakId(null);
         dto.setFirstName(null);
         dto.setLastName("LastName");
@@ -53,11 +53,11 @@ public abstract class PersonServiceEntities {
         return dto;
     }
 
-    public static PersonServiceUpdatePersonRequestDto getValidPersonServiceUpdatePersonRequestDto() {
-        PersonServiceUpdatePersonRequestDto dto = new PersonServiceUpdatePersonRequestDto();
+    public static UpdatePersonRequestDto getValidUpdatePersonRequestDto() {
+        UpdatePersonRequestDto dto = new UpdatePersonRequestDto();
         dto.setPersonKeycloakId(UUID.randomUUID());
-        dto.setCountry(getValidPersonServiceCountryDto());
-        dto.setAddress(getValidPersonServiceAddressDto());
+        dto.setCountry(getValidCountryDto());
+        dto.setAddress(getValidAddressDto());
         dto.setFirstName("FirstName");
         dto.setLastName("LastName");
         dto.setPhoneNumber("123456789");
@@ -66,8 +66,8 @@ public abstract class PersonServiceEntities {
         return dto;
     }
 
-    public static PersonServiceUpdatePersonRequestDto getInvalidPersonServiceUpdatePersonRequestDto() {
-        PersonServiceUpdatePersonRequestDto dto = new PersonServiceUpdatePersonRequestDto();
+    public static UpdatePersonRequestDto getInvalidUpdatePersonRequestDto() {
+        UpdatePersonRequestDto dto = new UpdatePersonRequestDto();
         dto.setPersonKeycloakId(null);
         dto.setFirstName(null);
         dto.setLastName(null);
@@ -78,29 +78,29 @@ public abstract class PersonServiceEntities {
         return dto;
     }
 
-    public static PersonServiceUndoDeletePersonRequestDto getValidPersonServiceUndoDeletePersonRequestDto() {
-        PersonServiceUndoDeletePersonRequestDto dto = new PersonServiceUndoDeletePersonRequestDto();
+    public static UndoDeletePersonRequestDto getValidUndoDeletePersonRequestDto() {
+        UndoDeletePersonRequestDto dto = new UndoDeletePersonRequestDto();
         dto.setPersonKeycloakId(UUID.randomUUID());
         dto.setDescription("Description");
         return dto;
     }
 
-    public static PersonServiceUndoDeletePersonRequestDto getInvalidPersonServiceUndoDeletePersonRequestDto() {
-        PersonServiceUndoDeletePersonRequestDto dto = new PersonServiceUndoDeletePersonRequestDto();
+    public static UndoDeletePersonRequestDto getInvalidUndoDeletePersonRequestDto() {
+        UndoDeletePersonRequestDto dto = new UndoDeletePersonRequestDto();
         dto.setPersonKeycloakId(null);
         dto.setDescription("Description");
         return dto;
     }
 
-    public static PersonServiceUndoUpdatePersonRequestDto getValidPersonServiceUndoUpdatePersonRequestDto() {
-        PersonServiceUndoUpdatePersonRequestDto dto = new PersonServiceUndoUpdatePersonRequestDto();
+    public static UndoUpdatePersonRequestDto getValidUndoUpdatePersonRequestDto() {
+        UndoUpdatePersonRequestDto dto = new UndoUpdatePersonRequestDto();
         dto.setPersonKeycloakId(UUID.randomUUID());
         dto.setDescription("Description");
         return dto;
     }
 
-    public static PersonServiceUndoUpdatePersonRequestDto getInvalidPersonServiceUndoUpdatePersonRequestDto() {
-        PersonServiceUndoUpdatePersonRequestDto dto = new PersonServiceUndoUpdatePersonRequestDto();
+    public static UndoUpdatePersonRequestDto getInvalidUndoUpdatePersonRequestDto() {
+        UndoUpdatePersonRequestDto dto = new UndoUpdatePersonRequestDto();
         dto.setPersonKeycloakId(null);
         dto.setDescription("Description");
         return dto;

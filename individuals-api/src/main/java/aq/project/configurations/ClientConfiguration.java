@@ -2,13 +2,9 @@ package aq.project.configurations;
 
 import aq.project.clients.KeycloakServiceClient;
 import aq.project.currency_rate_service.RateApiClient;
-import aq.project.dto.*;
-import aq.project.payment_service.PaymentApiClient;
+import aq.project.dto.CurrencyRateServiceErrorDto;
+import aq.project.dto.PersonServiceErrorDto;
 import aq.project.person_service.PersonApiClient;
-import aq.project.transaction_service.DepositTransactionApiClient;
-import aq.project.transaction_service.TransferTransactionApiClient;
-import aq.project.transaction_service.WithdrawTransactionApiClient;
-import aq.project.wallet_service.WalletApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,12 +30,6 @@ public class ClientConfiguration {
     private String personServiceBaseUrl;
     @Value("${application.currency-rate-service.uri}")
     private String currencyRateServiceBaseUrl;
-    @Value("${application.transaction-service.uri}")
-    private String transactionServiceBaseUrl;
-    @Value("${application.wallet-service.uri}")
-    private String walletServiceBaseUrl;
-    @Value("${application.payment-service.uri}")
-    private String paymentServiceBaseUrl;
 
     @Bean(name = "keycloakWebClient")
     public WebClient keycloakWebClient() {
@@ -137,135 +127,6 @@ public class ClientConfiguration {
         HttpStatusCode httpStatusCode = response.statusCode();
 
         return response.bodyToMono(CurrencyRateServiceErrorDto.class)
-                .switchIfEmpty(Mono.error(() -> getHttpServerErrorException(httpStatusCode, null)))
-                .flatMap(dto ->
-                        Mono.error(getHttpServerErrorException(httpStatusCode, dto.getMessage())));
-    }
-
-    @Bean
-    public DepositTransactionApiClient depositTransactionApiClient() {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(transactionServiceBaseUrl)
-                .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxTransactionServiceErrorResponse)
-                .defaultStatusHandler(HttpStatusCode::is5xxServerError, this::on5xxTransactionServiceErrorResponse)
-                .build();
-
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
-                .exchangeAdapter(WebClientAdapter.create(webClient))
-                .build();
-
-        return factory.createClient(DepositTransactionApiClient.class);
-    }
-
-    @Bean
-    public TransferTransactionApiClient transferTransactionApiClient() {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(transactionServiceBaseUrl)
-                .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxTransactionServiceErrorResponse)
-                .defaultStatusHandler(HttpStatusCode::is5xxServerError, this::on5xxTransactionServiceErrorResponse)
-                .build();
-
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
-                .exchangeAdapter(WebClientAdapter.create(webClient))
-                .build();
-
-        return factory.createClient(TransferTransactionApiClient.class);
-    }
-
-    @Bean
-    public WithdrawTransactionApiClient withdrawTransactionApiClient() {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(transactionServiceBaseUrl)
-                .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxTransactionServiceErrorResponse)
-                .defaultStatusHandler(HttpStatusCode::is5xxServerError, this::on5xxTransactionServiceErrorResponse)
-                .build();
-
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
-                .exchangeAdapter(WebClientAdapter.create(webClient))
-                .build();
-
-        return factory.createClient(WithdrawTransactionApiClient.class);
-    }
-
-    private Mono<? extends Exception> on4xxTransactionServiceErrorResponse(ClientResponse response) {
-        HttpStatusCode httpStatusCode = response.statusCode();
-
-        return response.bodyToMono(TransactionServiceErrorDto.class)
-                .switchIfEmpty(Mono.error(() -> getHttpClientErrorException(httpStatusCode, null)))
-                .flatMap(dto ->
-                        Mono.error(getHttpClientErrorException(httpStatusCode, dto.getMessage())));
-    }
-
-    private Mono<? extends Exception> on5xxTransactionServiceErrorResponse(ClientResponse response) {
-        HttpStatusCode httpStatusCode = response.statusCode();
-
-        return response.bodyToMono(TransactionServiceErrorDto.class)
-                .switchIfEmpty(Mono.error(() -> getHttpServerErrorException(httpStatusCode, null)))
-                .flatMap(dto ->
-                        Mono.error(getHttpServerErrorException(httpStatusCode, dto.getMessage())));
-    }
-
-    @Bean
-    public WalletApiClient walletApiClient() {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(walletServiceBaseUrl)
-                .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxWalletServiceErrorResponse)
-                .defaultStatusHandler(HttpStatusCode::is5xxServerError, this::on5xxWalletServiceErrorResponse)
-                .build();
-
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
-                .exchangeAdapter(WebClientAdapter.create(webClient))
-                .build();
-
-        return factory.createClient(WalletApiClient.class);
-    }
-
-    private Mono<? extends Exception> on4xxWalletServiceErrorResponse(ClientResponse response) {
-        HttpStatusCode httpStatusCode = response.statusCode();
-
-        return response.bodyToMono(WalletServiceErrorDto.class)
-                .switchIfEmpty(Mono.error(() -> getHttpClientErrorException(httpStatusCode, null)))
-                .flatMap(dto ->
-                        Mono.error(getHttpClientErrorException(httpStatusCode, dto.getMessage())));
-    }
-
-    private Mono<? extends Exception> on5xxWalletServiceErrorResponse(ClientResponse response) {
-        HttpStatusCode httpStatusCode = response.statusCode();
-
-        return response.bodyToMono(WalletServiceErrorDto.class)
-                .switchIfEmpty(Mono.error(() -> getHttpServerErrorException(httpStatusCode, null)))
-                .flatMap(dto ->
-                        Mono.error(getHttpServerErrorException(httpStatusCode, dto.getMessage())));
-    }
-
-    @Bean
-    public PaymentApiClient paymentApiClient() {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(paymentServiceBaseUrl)
-                .defaultStatusHandler(HttpStatusCode::is4xxClientError, this::on4xxPaymentServiceErrorResponse)
-                .defaultStatusHandler(HttpStatusCode::is5xxServerError, this::on5xxPaymentServiceErrorResponse)
-                .build();
-
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
-                .exchangeAdapter(WebClientAdapter.create(webClient))
-                .build();
-
-        return factory.createClient(PaymentApiClient.class);
-    }
-
-    private Mono<? extends Exception> on4xxPaymentServiceErrorResponse(ClientResponse response) {
-        HttpStatusCode httpStatusCode = response.statusCode();
-
-        return response.bodyToMono(PaymentServiceErrorDto.class)
-                .switchIfEmpty(Mono.error(() -> getHttpClientErrorException(httpStatusCode, null)))
-                .flatMap(dto ->
-                        Mono.error(getHttpClientErrorException(httpStatusCode, dto.getMessage())));
-    }
-
-    private Mono<? extends Exception> on5xxPaymentServiceErrorResponse(ClientResponse response) {
-        HttpStatusCode httpStatusCode = response.statusCode();
-
-        return response.bodyToMono(PaymentServiceErrorDto.class)
                 .switchIfEmpty(Mono.error(() -> getHttpServerErrorException(httpStatusCode, null)))
                 .flatMap(dto ->
                         Mono.error(getHttpServerErrorException(httpStatusCode, dto.getMessage())));

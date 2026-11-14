@@ -12,8 +12,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import static aq.project.utils.constants.CustomHttpHeaders.BEARER;
-
 @Service
 @RequiredArgsConstructor
 public class TokenService {
@@ -31,6 +29,10 @@ public class TokenService {
 
     private final ObjectMapper objectMapper;
 
+    public String getAdminJwtAsAuthorizationHeaderValue() {
+        return "Bearer " + getAdminJwt();
+    }
+
     public String getAdminJwt() {
         if(tokenMap.isEmpty()) {
             String accessToken = keycloakServiceRestClient.getAdminJwt(adminId, adminSecret, objectMapper);
@@ -45,10 +47,6 @@ public class TokenService {
             }
             return accessToken;
         }
-    }
-
-    public String getAdminJwtAsAuthorizationHeaderValue() {
-        return BEARER + getAdminJwt();
     }
 
     private boolean isJwtExpired(String accessToken) {

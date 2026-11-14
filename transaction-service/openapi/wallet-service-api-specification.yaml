@@ -6,14 +6,14 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:8083
-  - url: http://wallet-service:8083
+  - url: http://localhost:8084
+  - url: http://wallet-service:8084
 
 paths:
   /api/v1/wallet/create:
     post:
       security:
-        - BearerAuth: []
+        - BearerAuth: [ ]
       operationId: createWallet
       tags:
         - Wallet
@@ -30,7 +30,7 @@ paths:
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
       requestBody:
         required: true
         content:
@@ -39,13 +39,13 @@ paths:
               $ref: "#/components/schemas/CreateWalletRequestDto"
               description: Represents data for creating a new wallet
       responses:
-        200:
+        201:
           content:
             application/json:
               schema:
                 type: string
                 format: uuid
-          description: Returns ID of created wallet
+          description: Returns UUID of created wallet
         400:
           content:
             application/json:
@@ -64,7 +64,7 @@ paths:
   /api/v1/wallet/info/{id}:
     get:
       security:
-        - BearerAuth: []
+        - BearerAuth: [ ]
       operationId: getWalletInfo
       tags:
         - Wallet
@@ -88,7 +88,7 @@ paths:
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
       responses:
         200:
           content:
@@ -114,7 +114,7 @@ paths:
   /api/v1/wallet/currency/{id}:
     get:
       security:
-        - BearerAuth: []
+        - BearerAuth: [ ]
       operationId: getWalletCurrency
       tags:
         - Wallet
@@ -138,7 +138,7 @@ paths:
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
       responses:
         200:
           content:
@@ -161,22 +161,15 @@ paths:
                 $ref: "#/components/schemas/WalletServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/transaction/deposit/status/{id}:
-    get:
+  /api/v1/wallet/deposit:
+    post:
       security:
-        - BearerAuth: []
-      operationId: getDepositTransactionStatus
+        - BearerAuth: [ ]
+      operationId: depositWallet
       tags:
-        - DepositTransaction
-      summary: Get transaction status by given ID
+        - Wallet
+      summary: Deposit wallet
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Parameter is represented an valid UUID that describes a transaction ID
-          schema:
-            type: string
-            format: uuid
         - name: x-trace-id
           in: header
           required: true
@@ -188,14 +181,22 @@ paths:
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DepositWalletRequestDto"
+              description: Represents data for deposit sufficient on target wallet
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionStatus"
-          description: Returns current status of transaction by given ID
+                type: string
+                format: uuid
+          description: Returns wallet UUID
         400:
           content:
             application/json:
@@ -211,22 +212,15 @@ paths:
                 $ref: "#/components/schemas/WalletServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/transaction/withdraw/status/{id}:
-    get:
+  /api/v1/wallet/withdrawal:
+    post:
       security:
         - BearerAuth: [ ]
-      operationId: getWithdrawTransactionStatus
+      operationId: withdrawalWallet
       tags:
-        - WithdrawTransaction
-      summary: Get transaction status by given ID
+        - Wallet
+      summary: Withdrawal wallet
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Parameter is represented an valid UUID that describes a transaction ID
-          schema:
-            type: string
-            format: uuid
         - name: x-trace-id
           in: header
           required: true
@@ -238,14 +232,22 @@ paths:
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WithdrawalWalletRequestDto"
+              description: Represents data for withdrawal sufficient from target wallet
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionStatus"
-          description: Returns current status of transaction by given ID
+                type: string
+                format: uuid
+          description: Returns wallet UUID
         400:
           content:
             application/json:
@@ -261,22 +263,15 @@ paths:
                 $ref: "#/components/schemas/WalletServiceErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/transaction/transfer/status/{id}:
-    get:
+  /api/v1/wallet/transfer:
+    post:
       security:
         - BearerAuth: [ ]
-      operationId: getTransferTransactionStatus
+      operationId: transferWallet
       tags:
-        - TransferTransaction
-      summary: Get transaction status by given ID
+        - Wallet
+      summary: Transfer wallet
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Parameter is represented an valid UUID that describes a transaction ID
-          schema:
-            type: string
-            format: uuid
         - name: x-trace-id
           in: header
           required: true
@@ -288,14 +283,24 @@ paths:
           required: false
           schema:
             type: string
-          description: JWT доступа к ресурсу
+          description: OAuth 2.0 JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferWalletRequestDto"
+              description: Represents data for transfer sufficient from one wallet to another wallet
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionStatus"
-          description: Returns current status of transaction by given ID
+                type: array
+                items:
+                  type: string
+                  format: uuid
+          description: Returns array of transfer wallets [ source_wallet_id, target_wallet_id ]
         400:
           content:
             application/json:
@@ -314,12 +319,6 @@ paths:
 tags:
   - name: Wallet
     description: Describes operations with wallets
-  - name: DepositTransaction
-    description: Describes operations with deposit transactions
-  - name: WithdrawTransaction
-    description: Describes operations with withdraw transactions
-  - name: TransferTransaction
-    description: Describes operations with transfer transactions
 
 components:
   securitySchemes:
@@ -328,246 +327,159 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-  responses:
-    BadRequestResponse:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/WalletServiceErrorDto"
-      description: Return DTO in case if parameter of request is not valid or requested data is absent
-    InternalServerErrorResponse:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/WalletServiceErrorDto"
-      description: Return DTO in case if something went wrong during request handling on service side
-
   schemas:
     CreateWalletRequestDto:
       type: object
-      required: [ personId, walletStatus, creator, modifier, currencyCode, balance, cardNumber, cardCvvNumber, cardExpirationDate, cardType ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
+      required: [ user_id, name, currency_code, user_type, creator, modifier, wallet_status ]
       properties:
-        personId:
+        user_id:
           type: string
           format: uuid
-        walletStatus:
-          $ref: "#/components/schemas/WalletStatus"
-        creator:
+          description: User UUID value
+        name:
           type: string
-          maxLength: 255
-        modifier:
-          type: string
-          maxLength: 255
-        currencyCode:
-          $ref: "#/components/schemas/CurrencyCodeDefinition"
+          description: Wallet name
         balance:
           type: number
           format: decimal
-        cardNumber:
-          $ref: "#/components/schemas/CardNumberDefinition"
-        cardCvvNumber:
-          $ref: "#/components/schemas/CardCvvDefinition"
-        cardExpirationDate:
-          $ref: "#/components/schemas/CardExpirationDateDefinition"
-        cardType:
-          $ref: "#/components/schemas/CardType"
+          default: 0.00
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+          description: Wallet balance
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+        user_type:
+          $ref: "#/components/schemas/WalletUserType"
+          description: Wallet user type
+        creator:
+          type: string
+          description: Creator of the wallet
+        modifier:
+          type: string
+          description: Modifier of the wallet
+        wallet_status:
+          $ref: "#/components/schemas/WalletStatus"
+          description: Current status of wallet
 
     WalletInfoResponseDto:
       type: object
-      required: [ personId, walletId, balance, currencyCode, cardNumber, cardExpirationDate, cardType, createdAt, modifiedAt ]
+      x-class-extra-annotation: "@lombok.Builder"
+      required: [ wallet_id, user_id, name, balance, currency_code, user_type, creator, modifier, wallet_status, created_at, modified_at ]
       properties:
-        personId:
+        wallet_id:
           type: string
           format: uuid
-        walletId:
+          description: Wallet UUID value
+        user_id:
           type: string
           format: uuid
-        createdAt:
+          description: User UUID value
+        name:
           type: string
-          format: date-time
-        modifiedAt:
-          type: string
-          format: date-time
+          description: Wallet name
         balance:
           type: number
           format: decimal
-        currencyCode:
-          $ref: "#/components/schemas/CurrencyCodeDefinition"
-        cardNumber:
-          $ref: "#/components/schemas/CardNumberDefinition"
-        cardType:
-          $ref: "#/components/schemas/CardType"
-        cardExpirationDate:
-          $ref: "#/components/schemas/CardExpirationDateDefinition"
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+          description: Wallet balance
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+        user_type:
+          $ref: "#/components/schemas/WalletUserType"
+          description: Wallet user type
+        creator:
+          type: string
+          description: Creator of the wallet
+        modifier:
+          type: string
+          description: Modifier of the wallet
+        wallet_status:
+          $ref: "#/components/schemas/WalletStatus"
+          description: Current status of wallet
+        created_at:
+          type: string
+          format: date-time
+          description: Wallet creation time
+        modified_at:
+          type: string
+          format: date-time
+          description: Wallet modification time
 
-    WalletServiceDepositTransactionRequestDto:
+    DepositWalletRequestDto:
       type: object
-      required: [ transactionId, walletId, amount, currencyCode, timestamp, traceId, conversionRate ]
+      x-class-extra-annotation: "@lombok.Builder"
+      required: [ wallet_id, amount, currency_code ]
       properties:
-        transactionId:
+        wallet_id:
           type: string
           format: uuid
-        walletId:
-          type: string
-          format: uuid
+          description: UUID of source wallet
         amount:
           type: number
           format: decimal
-        currencyCode:
-          $ref: "#/components/schemas/CurrencyCodeDefinition"
-        timestamp:
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        currency_code:
           type: string
-          format: date-time
-        traceId:
-          type: string
-        conversionRate:
-          type: number
-          format: decimal
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
 
-    WalletServiceTransferTransactionRequestDto:
+    WithdrawalWalletRequestDto:
       type: object
-      required: [ transactionId, senderWalletId, recipientWalletId, amount, currencyCode, timestamp, traceId, senderConversionRate, recipientConversionRate ]
+      x-class-extra-annotation: "@lombok.Builder"
+      required: [ wallet_id, amount, currency_code ]
       properties:
-        transactionId:
+        wallet_id:
           type: string
           format: uuid
-        senderWalletId:
-          type: string
-          format: uuid
-        recipientWalletId:
-          type: string
-          format: uuid
+          description: UUID of source wallet
         amount:
           type: number
           format: decimal
-        currencyCode:
-          $ref: "#/components/schemas/CurrencyCodeDefinition"
-        timestamp:
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        currency_code:
           type: string
-          format: date-time
-        traceId:
-          type: string
-        senderConversionRate:
-          type: number
-          format: decimal
-        recipientConversionRate:
-          type: number
-          format: decimal
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
 
-    WalletServiceWithdrawTransactionRequestDto:
+    TransferWalletRequestDto:
       type: object
-      required: [ transactionId, walletId, amount, currencyCode, timestamp, traceId, conversionRate ]
+      x-class-extra-annotation: "@lombok.Builder"
+      required: [ source_wallet_id, target_wallet_id, amount, currency_code ]
       properties:
-        transactionId:
+        source_wallet_id:
           type: string
           format: uuid
-        walletId:
+          description: UUID of source wallet
+        target_wallet_id:
           type: string
           format: uuid
+          description: UUID of target wallet
         amount:
           type: number
           format: decimal
-        currencyCode:
-          $ref: "#/components/schemas/CurrencyCodeDefinition"
-        timestamp:
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        currency_code:
           type: string
-          format: date-time
-        traceId:
-          type: string
-        conversionRate:
-          type: number
-          format: decimal
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
 
-    WalletServiceFailTransactionRequestDto:
-      type: object
-      required: [ transactionId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
+    WalletStatus:
+      enum: [ active, blocked ]
+      description: Allowed wallet statuses
 
-    WalletServiceCancelTransactionRequestDto:
-      type: object
-      required: [ transactionId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-
-    WalletServiceDepositTransactionSuccessResponseDto:
-      type: object
-      required: [ transactionId, walletId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        walletId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-
-    WalletServiceTransferTransactionSuccessResponseDto:
-      type: object
-      required: [ transactionId, senderWalletId, recipientWalletId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        senderWalletId:
-          type: string
-          format: uuid
-        recipientWalletId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-
-    WalletServiceWithdrawTransactionSuccessResponseDto:
-      type: object
-      required: [ transactionId, walletId, traceId, timestamp ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        walletId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-
-    WalletServiceTransactionErrorResponseDto:
-      type: object
-      required: [ transactionId, traceId, transactionStatus ]
-      properties:
-        transactionId:
-          type: string
-          format: uuid
-        traceId:
-          type: string
-        transactionStatus:
-          $ref: "#/components/schemas/TransactionStatus"
-        description:
-          type: string
+    WalletUserType:
+      enum: [ business, personal ]
+      description: Allowed wallet user type
 
     WalletServiceErrorDto:
       type: object
@@ -580,35 +492,3 @@ components:
         http_status:
           type: integer
           format: int32
-
-    WalletStatus:
-      enum: [ "ACTIVE", "BLOCKED" ]
-
-    CardType:
-      enum: [ "VISA", "MASTERCARD", "MIR", "AMERICAN_EXPRESS", "UNION_PAY" ]
-
-    TransactionStatus:
-      enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]
-
-    CurrencyCodeDefinition:
-      type: string
-      pattern: '^[A-Z]{3}$'
-      minLength: 3
-      maxLength: 3
-
-    CardCvvDefinition:
-      type: string
-      pattern: '^[0-9]{3}$'
-      minLength: 3
-      maxLength: 3
-
-    CardNumberDefinition:
-      type: string
-      pattern: '^[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}$'
-      description: "Описание шаблона номера карты в формате: ХХХХ ХХХХ ХХХХ ХХХХ"
-
-    CardExpirationDateDefinition:
-      type: string
-      pattern: '^([0][1-9]|[1][0-2])/[0-9][0-9]$'
-      minLength: 5
-      maxLength: 5

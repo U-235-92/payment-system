@@ -1,22 +1,25 @@
 import org.gradle.internal.extensions.stdlib.capitalized
+import org.gradle.kotlin.dsl.java
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
 	java
 	id("maven-publish")
 	id("org.openapi.generator") version "7.18.0"
-	id("org.springframework.boot") version "4.0.6"
+	id("org.springframework.boot") version "4.1.2"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "aq.payment-system"
 version = "1.0.0"
 
+extra["springCloudVersion"] = "2025.1.4"
+
 val artifact = "transaction-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "2.2.0-dev"
+val specificationArtifactVersion = "7.0.1-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -35,6 +38,17 @@ if(envFile.exists()) {
 					System.setProperty(key, value)
 				}
 			}
+		}
+	}
+}
+
+sourceSets { // Источники исходников для проекта
+	main {
+		java {
+			srcDir("$rootDir/src/main/java")
+			srcDir("$openApiSpecificationBuildPath/api-contract/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/wallet-service/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/transaction-service/src/main/java")
 		}
 	}
 }
@@ -58,15 +72,18 @@ repositories {
 	}
 }
 
-sourceSets { // Источники исходников для проекта
-	main {
-		java {
-			srcDir("${rootDir}/src/main/java")
-			srcDir("${openApiSpecificationBuildPath}/transaction-service/src/main/java")
-			srcDir("${openApiSpecificationBuildPath}/wallet-service/src/main/java")
-			srcDir("${openApiSpecificationBuildPath}/payment-provider-service/src/main/java")
-		}
+springBoot {
+	mainClass = "aq.project.TransactionServiceApplication"
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
 	}
+}
+
+repositories {
+	mavenCentral()
 }
 
 configurations {
@@ -74,83 +91,72 @@ configurations {
 }
 
 val dependencyVersionMap = mapOf(
-//	Observability
-	"opentelemetry-api" to "1.59.0",
-	"opentelemetry-sdk" to "1.59.0",
-	"opentelemetry-annotations" to "2.25.0",
-
-//	Logging
-	"logstash-encoder" to "9.0",
-
-//	Spring
-	"spring-boot-starter-aop" to "4.0.0-M2",
-	"spring-data-envers" to "4.0.4",
-
-//	Test
-	"testcontainers" to "2.0.3",
-	"wiremock-spring-boot" to "4.0.9",
-	"testcontainers-keycloak" to "4.1.1",
-
 //	Mapping
 	"mapstruct" to "1.6.3",
 
-	//	Lombok MapStruct binding
+//	Lombok MapStruct binding
 	"lombok-mapstruct-binding" to "0.2.0",
+
+//	Observability
+	"logstash-encoder" to "9.0",
+
+//	Spring AOP
+	"spring-boot-starter-aop" to "4.0.0-M2",
+
+//	Testcontainers
+	"testcontainers-keycloak" to "4.1.1",
 
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
 
-	//	Resilience4j
-	"resilience4j" to "2.4.0",
+//	Sharding
+	"shardingsphere" to "5.5.1",
+	"atomikos" to "6.0.1",
+
+//	CommonProjectUtils
+	"common-utils" to "4.0.5",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "2.1.0-dev",
-
-//	Payment provider service API specification
-	"payment-provider-service-api-specification" to "2.3.1-dev"
+	"wallet-service-api-specification" to "7.0.0-dev"
 )
 
 dependencies {
-//	Spring web
+//	Spring Web
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 
-//	Spring Kafka
-	implementation("org.springframework.boot:spring-boot-starter-kafka")
+//	Spring Data
+	implementation("org.springframework.boot:spring-boot-h2console")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-flyway")
+	runtimeOnly("com.h2database:h2")
+	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.flywaydb:flyway-database-postgresql")
 
 //	Spring AOP
 	implementation("org.springframework.boot:spring-boot-starter-aop:${dependencyVersionMap.getValue("spring-boot-starter-aop")}")
 
-//	Spring security
+//	Spring Security
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
 
-//	Spring data
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-h2console")
-	implementation("org.springframework.data:spring-data-envers:${dependencyVersionMap.getValue("spring-data-envers")}")
-
-//	DB drivers
-	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("com.h2database:h2")
-
-//	Flyway
-	implementation("org.flywaydb:flyway-database-postgresql")
-	implementation("org.springframework.boot:spring-boot-starter-flyway")
-
-//	Spring validation
+//	Spring Validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
-//	Observability
-	implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:${dependencyVersionMap.getValue("opentelemetry-annotations")}")
-	implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("io.opentelemetry:opentelemetry-exporter-otlp")
-	implementation("io.micrometer:micrometer-registry-prometheus")
-	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+//	Spring Kafka
+	implementation("org.springframework.boot:spring-boot-starter-kafka")
 
-//	Resilience4j
-	implementation("io.github.resilience4j:resilience4j-spring-boot4:${dependencyVersionMap.getValue("resilience4j")}")
+//	MapStruct
+	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
+	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
+
+//	Lombok
+	compileOnly("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
+
+//	Resilience
+	implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
 
 //	OpenApi
 	implementation("tools.jackson.core:jackson-core")
@@ -159,44 +165,48 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${dependencyVersionMap.getValue("springdoc-openapi")}")
 
-//	Mapping
-	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
-	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
+//	Sharding. Basic
+	implementation("org.apache.shardingsphere:shardingsphere-jdbc:${dependencyVersionMap.getValue("shardingsphere")}")
+//	Sharding. API
+	implementation("org.apache.shardingsphere:shardingsphere-transaction-api:${dependencyVersionMap.getValue("shardingsphere")}")
+//	Sharding. Adds ability for using [jdbc:shardingsphere:classpath] as spring.datasource.url property for load sharding datasource settings
+	implementation("org.apache.shardingsphere:shardingsphere-infra-url-classpath:${dependencyVersionMap.getValue("shardingsphere")}")
+//	Sharding. XA-transactions
+	implementation("org.apache.shardingsphere:shardingsphere-transaction-xa-core:${dependencyVersionMap.getValue("shardingsphere")}")
+//	Sharding. Implementation of XA-transaction
+	implementation("com.atomikos:transactions-jta:${dependencyVersionMap.getValue("atomikos")}")
 
-//	Lombok MapStruct binding
-	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
+//	Observability
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
+	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-//	Logback JSON encoder
+//	Logging
 	implementation("net.logstash.logback:logstash-logback-encoder:${dependencyVersionMap.getValue("logstash-encoder")}")
 
-//	Util
-	compileOnly("org.projectlombok:lombok")
-	annotationProcessor("org.projectlombok:lombok")
-
 //	Test
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-opentelemetry-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
-	testImplementation("org.testcontainers:testcontainers-postgresql")
 	testImplementation("org.testcontainers:testcontainers-grafana")
 	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-kafka")
-	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
-	testAnnotationProcessor("org.projectlombok:lombok")
+	testImplementation("org.testcontainers:testcontainers-postgresql")
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testImplementation("org.wiremock.integrations:wiremock-spring-boot:${dependencyVersionMap.getValue("wiremock-spring-boot")}")
+	testAnnotationProcessor("org.projectlombok:lombok")
+
+//	Util
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 
 //	Wallet service api
 	"apiSpec"("aq.payment-system:wallet-service-api-specification:${dependencyVersionMap.getValue("wallet-service-api-specification")}")
-
-//	Payment provider service api
-	"apiSpec"("aq.payment-system:payment-provider-service-api-specification:${dependencyVersionMap.getValue("payment-provider-service-api-specification")}")
 }
 
 tasks.withType<Test> {
@@ -276,6 +286,17 @@ tasks.register<GenerateTask>("genApiControllers") {
 	))
 }
 
+tasks.register("purgeJarApi") {
+	val root = File(openApiSpecificationBuildPath)
+	if(root.exists()) {
+		for(file in root.listFiles()) {
+			if(file.name.endsWith(".jar")) {
+				file.delete()
+			}
+		}
+	}
+}
+
 tasks.register("purgeExternalApi") {
 	val dir = File("./openapi")
 	for(file in dir.listFiles()) {
@@ -291,17 +312,6 @@ tasks.register<Copy>("fetchExternalApi") {
 		.map { apiSpecification -> zipTree(apiSpecification)
 			.matching { include("*$yamlExtension") } })
 	into("$rootDir/openapi")
-}
-
-tasks.register("purgeJarApi") {
-	val root = File(openApiSpecificationBuildPath)
-	if(root.exists()) {
-		for(file in root.listFiles()) {
-			if(file.name.endsWith(".jar")) {
-				file.delete()
-			}
-		}
-	}
 }
 
 tasks.register<Jar>("jarApi") {

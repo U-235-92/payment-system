@@ -1,11 +1,12 @@
 package aq.project.controllers;
 
 import aq.project.controller.RateRestControllerApi;
-import aq.project.dto.CurrencyResponse;
-import aq.project.dto.RateProviderResponse;
-import aq.project.dto.RateResponse;
+import aq.project.dto.CurrencyResponseDto;
+import aq.project.dto.RateProviderResponseDto;
+import aq.project.dto.RateResponseDto;
 import aq.project.services.RateService;
 import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,16 +22,17 @@ public class RateRestController implements RateRestControllerApi {
     private final TraceContext traceContext;
 
     @Override
-    public ResponseEntity<List<CurrencyResponse>> getCurrencies(
+    public ResponseEntity<List<CurrencyResponseDto>> getCurrencies(
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getCurrencies());
     }
 
     @Override
-    public ResponseEntity<RateResponse> getRate(
+    public ResponseEntity<RateResponseDto> getRate(
             String from,
             String to,
             String xTraceId,
@@ -38,36 +40,40 @@ public class RateRestController implements RateRestControllerApi {
             OffsetDateTime date,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getRate(from, to, provider, date));
     }
 
     @Override
-    public ResponseEntity<List<RateProviderResponse>> getRateProviders(
+    public ResponseEntity<List<RateProviderResponseDto>> getRateProviders(
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getRateProviders());
     }
 
     @Override
-    public ResponseEntity<CurrencyResponse> getCurrencyInfo(
+    public ResponseEntity<CurrencyResponseDto> getCurrencyInfo(
             String code,
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getCurrencyInfo(code));
     }
 
     @Override
-    public ResponseEntity<RateProviderResponse> getRateProviderInfo(
+    public ResponseEntity<RateProviderResponseDto> getRateProviderInfo(
             String code,
             String xTraceId,
             String authorization
     ) {
-        traceContext.setTraceId(xTraceId);
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
         return ResponseEntity.ok(rateService.getRateProviderInfo(code));
     }
 }

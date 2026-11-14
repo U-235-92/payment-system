@@ -1,0 +1,44 @@
+# DATA SOURCES
+dataSources:
+  datasource_0:
+    dataSourceClassName: $${DATASOURCE_CLASS_NAME::}
+    driverClassName: $${DB_DRIVER_CLASS_NAME::}
+    jdbcUrl: $${SHARD0_DB_URL::}
+    username: $${SHARD0_DB_USERNAME::}
+    password: $${SHARD0_DB_PASSWORD::}
+  datasource_1:
+    dataSourceClassName: $${DATASOURCE_CLASS_NAME::}
+    driverClassName: $${DB_DRIVER_CLASS_NAME::}
+    jdbcUrl: $${SHARD1_DB_URL::}
+    username: $${SHARD1_DB_USERNAME::}
+    password: $${SHARD1_DB_PASSWORD::}
+
+# SHARDING RULES
+rules:
+  - !SHARDING
+    tables:
+      #      TRANSACTIONS table
+      transactions:
+        actualDataNodes: datasource_${0..1}.transactions
+        databaseStrategy:
+          standard:
+            shardingColumn: wallet_id
+            shardingAlgorithmName: pk_shard_alg_by_hash_wallet_id
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: uuid_generator
+    #       UTILS
+    keyGenerators:
+      uuid_generator:
+        type: UUID
+    shardingAlgorithms:
+      pk_shard_alg_by_hash_wallet_id:
+        type: INLINE
+        props:
+          algorithm-expression: datasource_${Math.abs(id.hashCode()) % 2}
+    bindingTables:
+      - transactions
+# TRANSACTIONS
+transaction:
+  defaultType: LOCAL
+  providerType: Atomikos

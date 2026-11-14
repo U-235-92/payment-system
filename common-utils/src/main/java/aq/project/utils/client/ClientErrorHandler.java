@@ -37,27 +37,27 @@ public abstract class ClientErrorHandler {
            HttpRequest request,
            ClientHttpResponse response
     ) {
-        String errorDescription = null;
+        String errorMessage = null;
 
-        HttpStatusCode responseStatusCode = null;
+        HttpStatusCode status = null;
 
         try {
-            responseStatusCode = response.getStatusCode();
+            status = response.getStatusCode();
 
             byte[] responseBytes = response.getBody().readAllBytes();
 
-            errorDescription = getErrorMessage(responseBytes);
+            errorMessage = getErrorMessage(responseBytes);
 
         } catch (IOException e) {
-            errorDescription = "Unexpected error occurred while handle error response";
-            responseStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            errorMessage = "Unexpected error occurred while handle error response";
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        if(responseStatusCode.is4xxClientError())
-            throw new HttpClientErrorException(responseStatusCode, errorDescription);
+        if(status.is4xxClientError())
+            throw new HttpClientErrorException(status, errorMessage);
 
-        if(responseStatusCode.is5xxServerError())
-            throw new HttpServerErrorException(responseStatusCode, errorDescription);
+        if(status.is5xxServerError())
+            throw new HttpServerErrorException(status, errorMessage);
     }
 
     public static Mono<? extends Exception> onWebClientErrorResponse(
@@ -76,34 +76,42 @@ public abstract class ClientErrorHandler {
     private static byte[] readByteArray(
             DataBuffer dataBuffer
     ) {
+        byte[] bytes = null;
+
         try (InputStream inputStream = dataBuffer.asInputStream()) {
-            return inputStream.readAllBytes();
+            bytes = inputStream.readAllBytes();
 
         } catch (IOException e) {
             log.error("{} exception occurred while process received error response. Exception message: {}",
                     e.getClass().getSimpleName(), e.getMessage());
-            throw new RuntimeException(e);
+            bytes = new byte[]{};
 
         } finally {
             DataBufferUtils.release(dataBuffer);
         }
+        return bytes;
     }
 
     private static String getErrorMessage(
             byte[] bytes
     ) {
         String errorDescription = null;
-        try {
-            JsonNode jsonTree = OBJECT_MAPPER.readTree(bytes);
-            JsonNode messageNode = jsonTree.get("message");
 
-            errorDescription = (messageNode == null || messageNode.isNull())
-                    ? new String(bytes, StandardCharsets.UTF_8)
-                    : messageNode.asString();
+        if(bytes.length == 0) {
+            errorDescription = "No response body provided";
+        } else {
+            try {
+                JsonNode jsonTree = OBJECT_MAPPER.readTree(bytes);
+                JsonNode messageNode = jsonTree.get("message");
 
-        } catch (JacksonException e) {
+                errorDescription = (messageNode == null || messageNode.isNull())
+                        ? new String(bytes, StandardCharsets.UTF_8)
+                        : messageNode.asString();
+
+            } catch (JacksonException e) {
 //            Suppressed: response contains no target data
-            errorDescription = new String(bytes, StandardCharsets.UTF_8);
+                errorDescription = new String(bytes, StandardCharsets.UTF_8);
+            }
         }
         return errorDescription;
     }

@@ -55,7 +55,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -63,7 +63,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/{type}/confirm:
@@ -112,7 +112,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -120,7 +120,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/{id}/status:
@@ -162,7 +162,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -170,7 +170,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/{id}/fail:
@@ -208,7 +208,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -216,7 +216,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if error was occurred on service side
 
   /api/v1/transaction/{id}/complete:
@@ -254,7 +254,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if was received incorrect request
         401:
           description: Response in case if unauthorized request was received
@@ -262,7 +262,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Response in case if error was occurred on service side
 
 tags:
@@ -396,14 +396,11 @@ components:
       enum: [ pending, completed, failed ]
       description: Allowed transaction statuses
 
-    TransactionServiceErrorDto:
+    ErrorDto:
       type: object
-      required: [ message ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
       properties:
         message:
           type: string
         trace_id:
           type: string
-        http_status:
-          type: integer
-          format: int32

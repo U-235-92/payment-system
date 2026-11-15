@@ -19,7 +19,7 @@ val artifact = "transaction-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "7.0.1-dev"
+val specificationArtifactVersion = "7.0.2-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -84,6 +84,15 @@ dependencyManagement {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = System.getProperty("LOCAL_REPO_NAME")
+		url = uri(System.getProperty("LOCAL_REPO_URL"))
+		isAllowInsecureProtocol = true
+		credentials {
+			username = System.getProperty("LOCAL_REPO_USERNAME")
+			password = System.getProperty("LOCAL_REPO_PASSWORD")
+		}
+	}
 }
 
 configurations {
@@ -114,10 +123,10 @@ val dependencyVersionMap = mapOf(
 	"atomikos" to "6.0.1",
 
 //	CommonProjectUtils
-	"common-utils" to "4.0.5",
+	"common-utils" to "5.0.0",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "7.0.0-dev"
+	"wallet-service-api-specification" to "7.0.2-dev"
 )
 
 dependencies {

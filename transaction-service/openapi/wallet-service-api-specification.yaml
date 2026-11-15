@@ -21,7 +21,7 @@ paths:
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -50,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         401:
           description: Error occurred if received unauthorized request
@@ -58,7 +58,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/info/{id}:
@@ -79,7 +79,7 @@ paths:
             format: uuid
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -100,7 +100,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         401:
           description: Error occurred if received unauthorized request
@@ -108,7 +108,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/currency/{id}:
@@ -129,7 +129,7 @@ paths:
             format: uuid
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -150,7 +150,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         401:
           description: Error occurred if received unauthorized request
@@ -158,7 +158,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/deposit:
@@ -172,7 +172,7 @@ paths:
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -201,7 +201,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         401:
           description: Error occurred if received unauthorized request
@@ -209,7 +209,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/withdrawal:
@@ -223,7 +223,7 @@ paths:
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -252,7 +252,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         401:
           description: Error occurred if received unauthorized request
@@ -260,7 +260,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/transfer:
@@ -274,7 +274,7 @@ paths:
       parameters:
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -305,7 +305,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         401:
           description: Error occurred if received unauthorized request
@@ -313,7 +313,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
 tags:
@@ -481,14 +481,11 @@ components:
       enum: [ business, personal ]
       description: Allowed wallet user type
 
-    WalletServiceErrorDto:
+    ErrorDto:
       type: object
-      required: [ message ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
       properties:
         message:
           type: string
         trace_id:
           type: string
-        http_status:
-          type: integer
-          format: int32

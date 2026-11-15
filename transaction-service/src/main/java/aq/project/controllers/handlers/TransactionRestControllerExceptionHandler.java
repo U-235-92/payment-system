@@ -1,6 +1,6 @@
 package aq.project.controllers.handlers;
 
-import aq.project.dto.TransactionServiceErrorDto;
+import aq.project.dto.ErrorDto;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
@@ -21,53 +21,44 @@ public class TransactionRestControllerExceptionHandler {
     private final ControllerExceptionLogger controllerExceptionLogger;
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<TransactionServiceErrorDto> onConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<ErrorDto> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<TransactionServiceErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<ErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<TransactionServiceErrorDto> onIllegalStateException(IllegalStateException e) {
+    public ResponseEntity<ErrorDto> onIllegalStateException(IllegalStateException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(FallbackOperationException.class)
-    public ResponseEntity<TransactionServiceErrorDto> onFallbackOperationException(FallbackOperationException e) {
+    public ResponseEntity<ErrorDto> onFallbackOperationException(FallbackOperationException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         controllerExceptionLogger.logException(e, status);
 
-        TransactionServiceErrorDto dto = getTransactionServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
-    private TransactionServiceErrorDto getTransactionServiceErrorDto(HttpStatus httpStatus, Exception e) {
-        TransactionServiceErrorDto dto = new TransactionServiceErrorDto();
-        dto.setHttpStatus(httpStatus.value());
-        dto.setMessage(e.getMessage());
-        return dto;
+    private ErrorDto getErrorDto(Exception e) {
+        return ErrorDto.builder()
+                .message(e.getMessage())
+                .build();
     }
 }

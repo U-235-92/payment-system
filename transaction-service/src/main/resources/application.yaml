@@ -74,44 +74,6 @@ management:
           - info
           - health
 
-app:
-  transaction:
-    default_fee_percent: 0.00
-
-  kafka:
-    topics:
-      deposit_transaction_request:
-        name: deposit_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      deposit_transaction_complete_response:
-        name: deposit_transaction_complete_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      deposit_transaction_fail_response:
-        name: deposit_transaction_fail_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-
-      withdrawal_transaction_request:
-        name: withdrawal_transaction_request
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      withdrawal_transaction_complete_response:
-        name: withdrawal_transaction_complete_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-      withdrawal_transaction_fail_response:
-        name: withdrawal_transaction_fail_response
-        partitions: 3
-        replicas: 3
-        min_insync_replicas: 2
-
 resilience4j:
   ratelimiter:
     instances:
@@ -160,3 +122,50 @@ resilience4j:
         failure-rate-threshold: 50
         slow-call-duration-threshold: 30s
         slow-call-rate-threshold: 50
+
+app:
+  transaction:
+    default_fee_percent: 0.00
+
+  service:
+    keycloak:
+      uri: http://localhost:8080
+      endpoints:
+        token: /realms/payment-system/protocol/openid-connect/token
+
+    wallet-service:
+      uri: http://localhost:8084
+
+  kafka:
+    topics:
+      deposit_transaction_request:
+        name: deposit_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      deposit_transaction_complete_response:
+        name: deposit_transaction_complete_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      deposit_transaction_fail_response:
+        name: deposit_transaction_fail_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+
+      withdrawal_transaction_request:
+        name: withdrawal_transaction_request
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      withdrawal_transaction_complete_response:
+        name: withdrawal_transaction_complete_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2
+      withdrawal_transaction_fail_response:
+        name: withdrawal_transaction_fail_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2

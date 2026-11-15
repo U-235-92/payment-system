@@ -51,19 +51,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         409:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/person/delete-person/{personKeycloakId}:
@@ -99,13 +99,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/person/undo-delete-person:
@@ -141,13 +141,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/person/update-person:
@@ -185,13 +185,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/person/undo-update-person:
@@ -227,13 +227,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/person/get-person-info/{personKeycloakId}:
@@ -275,13 +275,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
 tags:
@@ -407,17 +407,14 @@ components:
         description:
           type: string
 
-    PersonServiceErrorDto:
+    ErrorDto:
       type: object
-      required: [ message ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
       properties:
         message:
           type: string
         trace_id:
           type: string
-        http_status:
-          type: integer
-          format: int32
 
     UndoOperationStatus:
       enum: [ "FAILED", "COMPLETED" ]

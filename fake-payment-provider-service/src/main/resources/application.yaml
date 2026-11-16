@@ -13,6 +13,20 @@ spring:
     active:
       - dev
 
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/payment-system
+            token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
+        registration:
+          keycloak:
+            client-id: fake-payment-provider-service
+            client-secret: CHANGE_ME!!!!!
+            admin-id: payment-system-admin-cli
+            admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
+
 management:
   otlp:
     metrics:
@@ -32,13 +46,13 @@ management:
 resilience4j:
   retry:
     instances:
-      complete-transaction-retry:
+      fail-payment-retry:
         max-attempts: 3
         wait-duration: 500
         fail-after-max-attempts: true
         exponential-backoff-multiplier: 1.5
 
-      complete-payout-retry:
+      update-operation-status-retry:
         max-attempts: 3
         wait-duration: 500
         fail-after-max-attempts: true
@@ -75,5 +89,5 @@ app:
     update-operation-status: 30
 
   service:
-    external-test-service:
-      uri: http://external-test-service:18081
+    webhook-service:
+      uri: http://localhost:8088

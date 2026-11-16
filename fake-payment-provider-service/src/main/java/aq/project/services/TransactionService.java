@@ -6,16 +6,17 @@ import aq.project.dto.TransactionInfoResponseDto;
 import aq.project.entities.Merchant;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.NotEqualsEntityException;
 import aq.project.mappers.TransactionMapper;
 import aq.project.repositories.TransactionRepository;
 import aq.project.utils.resilence.Fallback;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
@@ -38,7 +39,7 @@ public class TransactionService {
 
     @RateLimiter(
             name = "create-transaction-rate-limiter",
-            fallbackMethod = "createTransactionFallback"
+            fallbackMethod = "createTransactionRateLimiterFallback"
     )
     @Transactional
     public TransactionInfoResponseDto createTransaction(
@@ -47,33 +48,30 @@ public class TransactionService {
     ) {
         String requestMerchantId = createTransactionRequestDto.getMerchantId();
         String authenticatedMerchantId = authentication.getName();
+        String externalId = createTransactionRequestDto.getExternalId();
 
         merchantService.checkEqualMerchantIds(requestMerchantId, authenticatedMerchantId);
 
         Merchant merchant = merchantService.getMerchant(requestMerchantId);
 
-        Transaction newTransaction = transactionMapper.toTransaction(createTransactionRequestDto);
+        Transaction transaction;
 
-        newTransaction.setMerchant(merchant);
-        newTransaction.setStatus(Status.PENDING);
+//        Check idempotent create transaction call.
+//        In case if transaction already exists then return its info without creation of duplicate.
+        if(externalId == null)
+            transaction = createTransaction(createTransactionRequestDto, merchant);
+        else
+            transaction = transactionRepository.findByExternalId(externalId, authenticatedMerchantId)
+                    .orElse(createTransaction(createTransactionRequestDto, merchant));
 
-        Transaction savedTransaction = transactionRepository.save(newTransaction);
-
-//        Continue to async handle saved transaction (see WebhookService.completeTransactionAsync)
-        applicationEventPublisher.publishEvent(savedTransaction);
-
-        return transactionMapper.toTransactionInfoResponseDto(savedTransaction);
+        return transactionMapper.toTransactionInfoResponseDto(transaction);
     }
 
-    private TransactionInfoResponseDto createTransactionFallback(
+    private TransactionInfoResponseDto createTransactionRateLimiterFallback(
             CreateTransactionRequestDto createTransactionRequestDto,
             Authentication authentication,
-            Exception exception
+            RequestNotPermitted exception
     ) throws Exception {
-        if(exception instanceof NotEqualsEntityException
-                || exception instanceof EntityNotFoundException)
-            throw exception;
-
         String action = "create-transaction";
 
         String message = String.format(
@@ -86,9 +84,26 @@ public class TransactionService {
         return null;
     }
 
+    private Transaction createTransaction(
+            CreateTransactionRequestDto createTransactionRequestDto,
+            Merchant merchant
+    ) {
+        Transaction newTransaction = transactionMapper.toTransaction(createTransactionRequestDto);
+
+        newTransaction.setMerchant(merchant);
+        newTransaction.setStatus(Status.PENDING);
+
+        Transaction savedTransaction = transactionRepository.save(newTransaction);
+
+//        Continue to async handle saved transaction (see TransactionEventListener.onCommitTransaction(..))
+        applicationEventPublisher.publishEvent(savedTransaction);
+
+        return savedTransaction;
+    }
+
     @RateLimiter(
             name = "get-transaction-list-rate-limiter",
-            fallbackMethod = "getTransactionListFallback"
+            fallbackMethod = "getTransactionListRateLimiterFallback"
     )
     public List<TransactionInfoResponseDto> getTransactionList(
             OffsetDateTime startDate,
@@ -116,11 +131,11 @@ public class TransactionService {
                 .toList();
     }
 
-    private List<TransactionInfoResponseDto> getTransactionListFallback(
+    private List<TransactionInfoResponseDto> getTransactionListRateLimiterFallback(
             OffsetDateTime startDate,
             OffsetDateTime endDate,
             Authentication authentication,
-            Exception exception
+            RequestNotPermitted exception
     ) {
         String action = "get-transaction-list";
         String authenticatedMerchantId = authentication.getName();
@@ -137,7 +152,7 @@ public class TransactionService {
 
     @RateLimiter(
             name = "get-transaction-info-rate-limiter",
-            fallbackMethod = "getTransactionInfoFallback"
+            fallbackMethod = "getTransactionInfoRateLimiterFallback"
     )
     public TransactionInfoResponseDto getTransactionInfo(
             Long id,
@@ -152,14 +167,11 @@ public class TransactionService {
                                 id, authenticatedMerchantId)));
     }
 
-    private TransactionInfoResponseDto getTransactionInfoFallback(
+    private TransactionInfoResponseDto getTransactionInfoRateLimiterFallback(
             Long id,
             Authentication authentication,
-            Exception exception
+            RequestNotPermitted exception
     ) throws Exception {
-        if(exception instanceof EntityNotFoundException)
-            throw exception;
-
         String action = "get-transaction-info";
         String authenticatedMerchantId = authentication.getName();
 
@@ -171,5 +183,18 @@ public class TransactionService {
         fallback.handleRetryFallback(action, message, exception);
 
         return null;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void failTransaction(
+            Long id
+    ) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Not found transaction with id: [%s]", id)));
+
+        transaction.fail();
+
+        transactionRepository.save(transaction);
     }
 }

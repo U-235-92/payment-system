@@ -35,4 +35,13 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
             "AND t.id = :id"
     )
     Optional<Transaction> findByIdAndMerchantId(Long id, String merchantId);
+
+    @Query(
+            "SELECT t " +
+            "FROM Transaction t " +
+            "JOIN FETCH t.merchant m " +
+            "WHERE m.merchantId = :merchantId " +
+            "AND t.externalId = :externalId"
+    )
+    Optional<Transaction> findByExternalId(String externalId, String merchantId);
 }

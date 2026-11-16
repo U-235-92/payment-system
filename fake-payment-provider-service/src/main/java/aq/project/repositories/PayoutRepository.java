@@ -35,4 +35,13 @@ public interface PayoutRepository extends CrudRepository<Payout, Long> {
             "AND p.id = :id"
     )
     Optional<Payout> findByIdAndMerchantId(Long id, String merchantId);
+
+    @Query(
+            "SELECT p " +
+            "FROM Payout p " +
+            "JOIN FETCH p.merchant m " +
+            "WHERE m.merchantId = :merchantId " +
+            "AND p.externalId = :externalId"
+    )
+    Optional<Payout> findByExternalId(String externalId, String merchantId);
 }

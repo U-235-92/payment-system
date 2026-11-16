@@ -52,7 +52,7 @@ public class Transaction extends AbstractEntity {
 
     @Nullable
     @Size(max = 100)
-    @Column(name = "external_id", length = 100)
+    @Column(name = "external_id", length = 100, unique = true)
     private String externalId;
 
     @Nullable

@@ -49,7 +49,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -102,7 +102,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -146,7 +146,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
         403:
@@ -191,7 +191,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -244,7 +244,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -288,13 +288,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         404:
           description: Payout with specified id is not exist or belongs another merchant
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
         403:
@@ -321,7 +321,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request has got invalid signature
 
@@ -346,7 +346,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FakePaymentProviderServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request has got invalid signature
 
@@ -502,17 +502,14 @@ components:
         notification_url:
           type: string
 
-    FakePaymentProviderServiceErrorDto:
+    ErrorDto:
       type: object
-      required: [ message ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
       properties:
         message:
           type: string
         trace_id:
           type: string
-        http_status:
-          type: integer
-          format: int32
 
     PaymentMethod:
       enum: [ card, cash, transfer ]

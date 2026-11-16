@@ -6,16 +6,17 @@ import aq.project.dto.Status;
 import aq.project.entities.Merchant;
 import aq.project.entities.Payout;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.exceptions.NotEqualsEntityException;
 import aq.project.mappers.PayoutMapper;
 import aq.project.repositories.PayoutRepository;
 import aq.project.utils.resilence.Fallback;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
@@ -38,7 +39,7 @@ public class PayoutService {
 
     @RateLimiter(
             name = "create-payout-rate-limiter",
-            fallbackMethod = "createPayoutFallback"
+            fallbackMethod = "createPayoutRateLimiterFallback"
     )
     @Transactional
     public PayoutInfoResponseDto createPayout(
@@ -47,33 +48,30 @@ public class PayoutService {
     ) {
         String requestMerchantId = createPayoutRequestDto.getMerchantId();
         String authenticatedMerchantId = authentication.getName();
+        String externalId = createPayoutRequestDto.getExternalId();
 
         merchantService.checkEqualMerchantIds(requestMerchantId, authenticatedMerchantId);
 
         Merchant merchant = merchantService.getMerchant(requestMerchantId);
 
-        Payout newPayout = payoutMapper.toPayout(createPayoutRequestDto);
-        
-        newPayout.setMerchant(merchant);
-        newPayout.setStatus(Status.PENDING);
-        
-        Payout savedPayout = payoutRepository.save(newPayout);
+        Payout payout;
 
-//        Continue to async handle saved payout (see WebhookService.completePayoutAsync)
-        applicationEventPublisher.publishEvent(savedPayout);
-        
-        return payoutMapper.toPayoutInfoResponseDto(savedPayout);
+//        Check idempotent create payout call.
+//        In case if payout already exists then return its info without creation of duplicate.
+        if(externalId == null)
+            payout = createPayout(createPayoutRequestDto, merchant);
+        else
+            payout = payoutRepository.findByExternalId(externalId, authenticatedMerchantId)
+                    .orElse(createPayout(createPayoutRequestDto, merchant));
+
+        return payoutMapper.toPayoutInfoResponseDto(payout);
     }
 
-    private PayoutInfoResponseDto createPayoutFallback(
+    private PayoutInfoResponseDto createPayoutRateLimiterFallback(
             CreatePayoutRequestDto createPayoutRequestDto,
             Authentication authentication,
-            Exception exception
-    ) throws Exception {
-        if(exception instanceof NotEqualsEntityException
-                || exception instanceof EntityNotFoundException)
-            throw exception;
-
+            RequestNotPermitted exception
+    ) {
         String action = "create-payout";
 
         String message = String.format(
@@ -86,9 +84,26 @@ public class PayoutService {
         return null;
     }
 
+    private Payout createPayout(
+            CreatePayoutRequestDto createPayoutRequestDto,
+            Merchant merchant
+    ) {
+        Payout newPayout = payoutMapper.toPayout(createPayoutRequestDto);
+
+        newPayout.setMerchant(merchant);
+        newPayout.setStatus(Status.PENDING);
+
+        Payout savedPayout = payoutRepository.save(newPayout);
+
+//        Continue to async handle saved payout (see PayoutEventListener.onCommitPayout)
+        applicationEventPublisher.publishEvent(savedPayout);
+
+        return savedPayout;
+    }
+
     @RateLimiter(
             name = "get-payout-list-rate-limiter",
-            fallbackMethod = "getPayoutListFallback"
+            fallbackMethod = "getPayoutListRateLimiterFallback"
     )
     public List<PayoutInfoResponseDto> getPayoutList(
             OffsetDateTime startDate,
@@ -116,11 +131,11 @@ public class PayoutService {
                 .toList();
     }
 
-    private List<PayoutInfoResponseDto> getPayoutListFallback(
+    private List<PayoutInfoResponseDto> getPayoutListRateLimiterFallback(
             OffsetDateTime startDate,
             OffsetDateTime endDate,
             Authentication authentication,
-            Exception exception
+            RequestNotPermitted exception
     ) {
         String action = "get-payout-list";
         String authenticatedMerchantId = authentication.getName();
@@ -137,7 +152,7 @@ public class PayoutService {
 
     @RateLimiter(
             name = "get-payout-info-rate-limiter",
-            fallbackMethod = "getPayoutInfoFallback"
+            fallbackMethod = "getPayoutInfoRateLimiterFallback"
     )
     public PayoutInfoResponseDto getPayoutInfo(
             Long id,
@@ -152,14 +167,11 @@ public class PayoutService {
                                 id, authenticatedMerchantId)));
     }
 
-    private PayoutInfoResponseDto getPayoutInfoFallback(
+    private PayoutInfoResponseDto getPayoutInfoRateLimiterFallback(
             Long id,
             Authentication authentication,
-            Exception exception
+            RequestNotPermitted exception
     ) throws Exception {
-        if(exception instanceof EntityNotFoundException)
-            throw exception;
-
         String action = "get-payout-info";
         String authenticatedMerchantId = authentication.getName();
 
@@ -171,5 +183,18 @@ public class PayoutService {
         fallback.handleRetryFallback(action, message, exception);
 
         return null;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void failPayout(
+            Long id
+    ) {
+        Payout payout = payoutRepository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                String.format("Not found payout with id: [%s]", id)));
+
+        payout.fail();
+
+        payoutRepository.save(payout);
     }
 }

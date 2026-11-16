@@ -1,6 +1,6 @@
 package aq.project.controllers.handlers;
 
-import aq.project.dto.FakePaymentProviderServiceErrorDto;
+import aq.project.dto.ErrorDto;
 import aq.project.exceptions.EntityAlreadyExistsException;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.FallbackOperationException;
@@ -23,86 +23,71 @@ public class CommonRestControllerExceptionHandler {
     private final ControllerExceptionLogger controllerExceptionLogger;
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<FakePaymentProviderServiceErrorDto> onConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<ErrorDto> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        FakePaymentProviderServiceErrorDto dto = getFakePaymentProviderServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<FakePaymentProviderServiceErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<ErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
         HttpStatus status = HttpStatus.NOT_FOUND;
 
         controllerExceptionLogger.logException(e, status);
 
-        FakePaymentProviderServiceErrorDto dto = getFakePaymentProviderServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
-    public ResponseEntity<FakePaymentProviderServiceErrorDto> onEntityAlreadyExistsException(EntityAlreadyExistsException e) {
+    public ResponseEntity<ErrorDto> onEntityAlreadyExistsException(EntityAlreadyExistsException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        FakePaymentProviderServiceErrorDto dto = getFakePaymentProviderServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(NotEqualsEntityException.class)
-    public ResponseEntity<FakePaymentProviderServiceErrorDto> onNotEqualsEntityException(NotEqualsEntityException e) {
+    public ResponseEntity<ErrorDto> onNotEqualsEntityException(NotEqualsEntityException e) {
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         controllerExceptionLogger.logException(e, status);
 
-        FakePaymentProviderServiceErrorDto dto = getFakePaymentProviderServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<FakePaymentProviderServiceErrorDto> onIllegalStateException(IllegalStateException e) {
+    public ResponseEntity<ErrorDto> onIllegalStateException(IllegalStateException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        FakePaymentProviderServiceErrorDto dto = getFakePaymentProviderServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<FakePaymentProviderServiceErrorDto> onNullPointerException(NullPointerException e) {
+    public ResponseEntity<ErrorDto> onNullPointerException(NullPointerException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         controllerExceptionLogger.logException(e, status);
 
-        FakePaymentProviderServiceErrorDto dto = getFakePaymentProviderServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(FallbackOperationException.class)
-    public ResponseEntity<FakePaymentProviderServiceErrorDto> onFallbackOperationException(FallbackOperationException e) {
+    public ResponseEntity<ErrorDto> onFallbackOperationException(FallbackOperationException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         controllerExceptionLogger.logException(e, status);
 
-        FakePaymentProviderServiceErrorDto dto = getFakePaymentProviderServiceErrorDto(status, e);
-
-        return ErrorResponseEntityFactory.getErrorResponseEntity(dto, status);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
-    private FakePaymentProviderServiceErrorDto getFakePaymentProviderServiceErrorDto(HttpStatus httpStatus, Exception e) {
-        FakePaymentProviderServiceErrorDto dto = new FakePaymentProviderServiceErrorDto();
-        dto.setHttpStatus(httpStatus.value());
-        dto.setMessage(e.getMessage());
-        return dto;
+    private ErrorDto getErrorDto(Exception e) {
+        return ErrorDto.builder()
+                .message(e.getMessage())
+                .build();
     }
 }

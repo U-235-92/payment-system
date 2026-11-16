@@ -1,7 +1,7 @@
 package aq.project.aspects;
 
-import aq.project.entities.Payout;
-import aq.project.entities.Transaction;
+import aq.project.dto.OperationType;
+import aq.project.dto.UpdateStatusOperationRequestDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -26,42 +26,22 @@ public class WebhookServiceAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.services.WebhookService.completeTransactionAsync(..)) " +
-            "&& args(transaction)")
-    public void completeTransactionAsync(
-            ProceedingJoinPoint pjp,
-            @NotNull @Valid Transaction transaction
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "complete-transaction-async";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-
-        String logOnBeginning = String.format(
-                "Received request to update transaction status with transaction id: [%s]", transaction.getId());
-
-//        Handler logic call
-        serviceAspectHandler.handle(
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                logOnBeginning,
-                null
-        );
-    }
-
-    @Around("execution(* aq.project.services.WebhookService.completePayoutAsync(..)) " +
-            "&& args(payout)")
+    @Around("execution(* aq.project.services.WebhookService.updateOperationStatus(..)) " +
+            "&& args(updateStatusOperationRequestDto)")
     public void completePayoutAsync(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid Payout payout
+            @NotNull @Valid UpdateStatusOperationRequestDto updateStatusOperationRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "complete-payout-async";
+        String actionName = "update-operation-status";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
-        String logOnBeginning = String.format("Received request to update payout status with payout id: [%s]",
-                payout.getId());
+        OperationType operationType = updateStatusOperationRequestDto.getOperationType();
+        Long operationId = updateStatusOperationRequestDto.getId();
+
+        String logOnBeginning = String.format(
+                "Received request to update [%s] status with [%s] id: [%s]",
+                operationType, operationType, operationId);
 
 //        Handler logic call
         serviceAspectHandler.handle(

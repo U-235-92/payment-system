@@ -95,52 +95,52 @@ public abstract class ClientErrorHandler {
     private static String getErrorMessage(
             byte[] bytes
     ) {
-        String errorDescription = null;
+        String errorMessage = null;
 
         if(bytes.length == 0) {
-            errorDescription = "No response body provided";
+            errorMessage = "No response body provided";
         } else {
             try {
                 JsonNode jsonTree = OBJECT_MAPPER.readTree(bytes);
                 JsonNode messageNode = jsonTree.get("message");
 
-                errorDescription = (messageNode == null || messageNode.isNull())
+                errorMessage = (messageNode == null || messageNode.isNull())
                         ? new String(bytes, StandardCharsets.UTF_8)
                         : messageNode.asString();
 
             } catch (JacksonException e) {
 //            Suppressed: response contains no target data
-                errorDescription = new String(bytes, StandardCharsets.UTF_8);
+                errorMessage = new String(bytes, StandardCharsets.UTF_8);
             }
         }
-        return errorDescription;
+        return errorMessage;
     }
 
     private static Exception getHttpErrorException(
             HttpStatusCode status,
-            String description
+            String errorMessage
     ) {
         if(status.is4xxClientError())
-            return getHttpClientErrorException(status, description);
+            return getHttpClientErrorException(status, errorMessage);
         else
-            return getHttpServerErrorException(status, description);
+            return getHttpServerErrorException(status, errorMessage);
     }
 
     private static HttpClientErrorException getHttpClientErrorException(
             HttpStatusCode httpStatusCode,
-            String errorDescription
+            String errorMessage
     ) {
-        if(errorDescription == null)
+        if(errorMessage == null)
             return new HttpClientErrorException(httpStatusCode);
-        return new HttpClientErrorException(httpStatusCode, errorDescription);
+        return new HttpClientErrorException(httpStatusCode, errorMessage);
     }
 
     private static HttpServerErrorException getHttpServerErrorException(
             HttpStatusCode httpStatusCode,
-            String errorDescription
+            String errorMessage
     ) {
-        if(errorDescription == null)
+        if(errorMessage == null)
             return new HttpServerErrorException(httpStatusCode);
-        return new HttpServerErrorException(httpStatusCode, errorDescription);
+        return new HttpServerErrorException(httpStatusCode, errorMessage);
     }
 }

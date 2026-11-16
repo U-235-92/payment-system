@@ -129,11 +129,13 @@ dependencies {
 
 //	Spring Security
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
 
 //	Spring Validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+
+//	Spring Kafka
+	implementation("org.springframework.boot:spring-boot-starter-kafka")
 
 //	MapStruct
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
@@ -171,6 +173,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
+	testImplementation("org.testcontainers:testcontainers-kafka")
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")

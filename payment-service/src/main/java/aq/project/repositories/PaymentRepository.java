@@ -18,4 +18,7 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
 
     @Query("SELECT p FROM Payment p WHERE p.status = :status AND p.processed = false")
     List<Payment> findAllUnprocessedByPaymentStatus(PaymentStatus status);
+
+    @Query("SELECT p FROM Payment p WHERE p.paymentId = :paymentId")
+    Optional<Payment> findByPaymentId(UUID paymentId);
 }

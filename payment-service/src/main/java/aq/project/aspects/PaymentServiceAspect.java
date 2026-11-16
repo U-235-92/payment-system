@@ -109,39 +109,14 @@ public class PaymentServiceAspect {
         );
     }
 
-    @Around("execution(* aq.project.services.PaymentService.handleCompletePayment(..)) " +
+    @Around("execution(* aq.project.services.PaymentService.handlePendingPayment(..)) " +
             "&& args(payment)")
-    public void handleCompletePayment(
+    public void handlePendingPayment(
             ProceedingJoinPoint pjp,
             @NotNull @Valid Payment payment
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "handle-complete-payment";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-
-        String logOnBeginning = String.format(
-                "Received request to handle of payment in [%s] status for transaction with id: [%s]",
-                payment.getStatus(), payment.getTransactionId());
-
-//        Handler logic call
-        serviceAspectHandler.handle(
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                logOnBeginning,
-                null
-        );
-    }
-
-    @Around("execution(* aq.project.services.PaymentService.handleFailPayment(..)) " +
-            "&& args(payment)")
-    public void handleFailPayment(
-            ProceedingJoinPoint pjp,
-            @NotNull @Valid Payment payment
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "handle-fail-payment";
+        String actionName = "handle-pending-payment";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
         String logOnBeginning = String.format(

@@ -70,7 +70,7 @@ resilience4j:
 
   retry:
     instances:
-      on-commit-payment-retry:
+      handle-pending-payment-retry:
         max-attempts: 3
         wait-duration: 500ms
         exponential-backoff-multiplier: 1.5
@@ -96,24 +96,19 @@ resilience4j:
 
 app:
   service:
-    keycloak:
-      uri: http://localhost:8080
-      endpoints:
-        token: /realms/payment-system/protocol/openid-connect/token
-
     fake-payment-provider-service:
       uri: http://localhost:8086
-
-    individuals-api:
-      uri: http://localhost:8081
-      endpoints:
-        complete-transaction: /api/v1/transaction/complete
-        fail-transaction: /api/v1/transaction/fail
 
     payment-service:
       merchant-id: payment-service
       merchant-secret: payment-service-secret
       schedulers:
         schedule-processing-payment: 5
-        schedule-complete-payment: 5
-        schedule-fail-payment: 5
+        schedule-pending-payment: 5
+
+  kafka:
+    consumer:
+      group:
+        payment_service_consumer: payment_service_consumer
+    topics:
+      payment_status_update_response: payment_status_update_response

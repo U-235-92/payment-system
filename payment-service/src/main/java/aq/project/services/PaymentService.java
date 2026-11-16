@@ -1,6 +1,5 @@
 package aq.project.services;
 
-import aq.project.clients.IndividualsApiServiceRestClient;
 import aq.project.dto.*;
 import aq.project.entities.Payment;
 import aq.project.entities.PaymentMethod;
@@ -9,7 +8,6 @@ import aq.project.fake_payment_provider_service.PayoutApiClient;
 import aq.project.mappers.PaymentMapper;
 import aq.project.repositories.PaymentMethodRepository;
 import aq.project.repositories.PaymentRepository;
-import aq.project.utils.jwt.JwtUtil;
 import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
@@ -18,7 +16,6 @@ import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,19 +32,13 @@ public class PaymentService {
 
     private final PaymentMapper paymentMapper = PaymentMapper.INSTANCE;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
-
     private final PaymentRepository paymentRepository;
 
     private final PaymentMethodRepository paymentMethodRepository;
 
     private final PayoutApiClient payoutApiClient;
 
-    private final IndividualsApiServiceRestClient individualsApiServiceRestClient;
-
     private final AuthorizationService authorizationService;
-
-    private final TokenService tokenService;
 
     private final TraceContext traceContext;
 
@@ -72,11 +63,9 @@ public class PaymentService {
         newPayment.setProcessed(false);
         newPayment.setPaymentMethod(paymentMethod);
 
+//        Continue to async handle saved payment.
+//        See PaymentScheduler.schedulePendingPayment(..) for details.
         Payment savedPayment = paymentRepository.save(newPayment);
-
-//        Continue to async handle saved payment
-//        See PaymentEventListener.onCommitPayment(..) for details
-        applicationEventPublisher.publishEvent(savedPayment);
 
         return paymentMapper.toPaymentServiceCreatePaymentResponseDto(savedPayment);
     }
@@ -85,7 +74,6 @@ public class PaymentService {
             PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
             RequestNotPermitted exception
     ) {
-
         String action = "create-payment";
 
         String message = String.format(
@@ -182,7 +170,7 @@ public class PaymentService {
         }
     }
 
-    public void handleProcessingPaymentFallbackRetry(
+    private void handleProcessingPaymentFallbackRetry(
             Payment payment,
             Exception exception
     ) {
@@ -197,71 +185,52 @@ public class PaymentService {
     }
 
     @Retry(
-            name = "handle-complete-payment-retry",
-            fallbackMethod = "handleCompletePaymentFallbackRetry"
+            name = "handle-pending-payment-retry",
+            fallbackMethod = "handlePendingPaymentRetryFallback"
     )
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleCompletePayment(
+    public void handlePendingPayment(
             Payment payment
     ) {
-//        Confirm complete of transaction by sending request for update its status into individuals-api-service
-//        payment-service -> individuals-api-service -> transaction-service
-        UUID transactionId = payment.getTransactionId();
+        String traceId = TraceFactory.genTraceId();
+        String authorization = authorizationService.getAuthorization();
+        String merchantId = authorizationService.getMerchantId();
 
-        String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
-        String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
+        CreatePayoutRequestDto createPayoutRequestDto = paymentMapper.toCreatePayoutRequestDto(payment);
 
-        individualsApiServiceRestClient.completeTransaction(transactionId, authorization, traceId);
+        createPayoutRequestDto.setMerchantId(merchantId);
 
-        payment.markProcessed();
+        ResponseEntity<PayoutInfoResponseDto> responseEntity = payoutApiClient
+                .createPayout(authorization, createPayoutRequestDto, traceId);
 
-        paymentRepository.save(payment);
+        HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
+
+        if(httpStatusCode.is2xxSuccessful()) {
+//            The final process of payment to success/fail state will continue on PaymentStatusKafkaConsumer side
+//            See PaymentStatusKafkaConsumer.onPaymentStatusEvent(..) for details
+            PayoutInfoResponseDto payoutInfoResponseDto = responseEntity.getBody();
+
+            if(payoutInfoResponseDto != null) {
+                Long payoutId = payoutInfoResponseDto.getId();
+
+                payment.setExternalId(payoutId);
+                payment.processing();
+
+                paymentRepository.save(payment);
+            } else {
+                throw new IllegalStateException("Received response has no body");
+            }
+        }
     }
 
-    private void handleCompletePaymentFallbackRetry(
+    private void handlePendingPaymentRetryFallback(
             Payment payment,
             Exception exception
     ) {
-        String action = "handle-complete-payment";
+        String action = "handle-pending-payment";
 
         String message = String.format(
-                "Exception occurred during handle of payment in status: [%s] for transaction with id: [%s]. " +
-                        "Exception message: %s",
-                payment.getStatus(), payment.getTransactionId(), exception.getMessage());
-
-        fallback.handleRetryFallback(action, message, exception);
-    }
-
-    @Retry(
-            name = "handle-fail-payment-retry",
-            fallbackMethod = "handleFailPaymentFallbackRetry"
-    )
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleFailPayment(
-            Payment payment
-    ) {
-//        Confirm fail of transaction by sending request for update its status into individuals-api-service
-//        payment-service -> individuals-api-service -> transaction-service
-        UUID transactionId = payment.getTransactionId();
-
-        String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
-        String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
-
-        individualsApiServiceRestClient.failTransaction(transactionId, authorization, traceId);
-
-        payment.markProcessed();
-
-        paymentRepository.save(payment);
-    }
-
-    private void handleFailPaymentFallbackRetry(
-            Payment payment,
-            Exception exception
-    ) {
-        String action = "handle-fail-payment";
-
-        String message = String.format(
-                "Exception occurred during handle of payment in status: [%s] for transaction with id: [%s]. " +
+                "Exception occurred during handle of [%s] payment for transaction with id: [%s]. " +
                         "Exception message: %s",
                 payment.getStatus(), payment.getTransactionId(), exception.getMessage());
 

@@ -22,6 +22,22 @@ public class PaymentScheduler {
     private final PaymentService paymentService;
 
     @Scheduled(
+            fixedRateString = "${app.service.payment-service.schedulers.schedule-pending-payment}",
+            timeUnit = TimeUnit.SECONDS
+    )
+    public void schedulePendingPayment() {
+        List<Payment> pendingPayments = paymentRepository.findAllUnprocessedByPaymentStatus(PaymentStatus.PENDING);
+
+        for(Payment pendingPayment : pendingPayments) {
+            try {
+                paymentService.handlePendingPayment(pendingPayment);
+            } catch (Exception e) {
+                onProcessPaymentException(pendingPayment, e);
+            }
+        }
+    }
+
+    @Scheduled(
             fixedRateString = "${app.service.payment-service.schedulers.schedule-processing-payment}",
             timeUnit = TimeUnit.SECONDS
     )
@@ -33,38 +49,6 @@ public class PaymentScheduler {
                 paymentService.handleProcessingPayment(processingPayment);
             } catch (Exception e) {
                 onProcessPaymentException(processingPayment, e);
-            }
-        }
-    }
-
-    @Scheduled(
-            fixedRateString = "${app.service.payment-service.schedulers.schedule-complete-payment}",
-            timeUnit = TimeUnit.SECONDS
-    )
-    public void scheduleCompletePayment() {
-        List<Payment> completePayments = paymentRepository.findAllUnprocessedByPaymentStatus(PaymentStatus.COMPLETED);
-
-        for(Payment completePayment : completePayments) {
-            try {
-                paymentService.handleCompletePayment(completePayment);
-            } catch (Exception e) {
-                onProcessPaymentException(completePayment, e);
-            }
-        }
-    }
-
-    @Scheduled(
-            fixedRateString = "${app.service.payment-service.schedulers.schedule-fail-payment}",
-            timeUnit = TimeUnit.SECONDS
-    )
-    public void scheduleFailPayment() {
-        List<Payment> failPayments = paymentRepository.findAllUnprocessedByPaymentStatus(PaymentStatus.FAILED);
-
-        for(Payment failPayment : failPayments) {
-            try {
-                paymentService.handleFailPayment(failPayment);
-            } catch (Exception e) {
-                onProcessPaymentException(failPayment, e);
             }
         }
     }

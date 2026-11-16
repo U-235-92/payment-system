@@ -65,11 +65,5 @@ management:
 
 app:
   service:
-    keycloak:
-      uri: ${KEYCLOAK_SERVICE_BASE_URI}
-
     fake-payment-provider-service:
       uri: ${FAKE_PAYMENT_PROVIDER_SERVICE_BASE_URI}
-
-    individuals-api:
-      uri: ${INDIVIDUALS_API_SERVICE_BASE_URI}

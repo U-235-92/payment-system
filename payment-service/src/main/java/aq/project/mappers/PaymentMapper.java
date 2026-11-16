@@ -45,7 +45,7 @@ public interface PaymentMapper {
     @Mapping(target = "merchantId", ignore = true)
     @Mapping(target = "amount", source = "amount")
     @Mapping(target = "currencyCode", source = "currencyCode")
-    @Mapping(target = "externalId", source = "paymentId")
+    @Mapping(target = "externalId", source = "transactionId")
     @Mapping(target = "notificationUrl", ignore = true)
     CreatePayoutRequestDto toCreatePayoutRequestDto(Payment payment);
 }

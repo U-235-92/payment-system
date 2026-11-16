@@ -110,7 +110,7 @@ val dependencyVersionMap = mapOf(
 	"springdoc-openapi" to "3.0.2",
 
 //	CommonProjectUtils
-	"common-utils" to "5.0.0"
+	"common-utils" to "5.1.0"
 )
 
 dependencies {

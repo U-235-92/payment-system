@@ -23,9 +23,9 @@ public class KafkaEventProducerAspect {
     @Value("${spring.application.name}")
     private String serviceName;
 
-    @Value("{app.kafka.topics.deposit_transaction_request.name}")
+    @Value("${app.kafka.topics.deposit_transaction_request.name}")
     private String depositTransactionRequestTopic;
-    @Value("{app.kafka.topics.withdrawal_transaction_request.name}")
+    @Value("${app.kafka.topics.withdrawal_transaction_request.name}")
     private String withdrawalTransactionRequestTopic;
 
     private final ServiceAspectHandler serviceAspectHandler;

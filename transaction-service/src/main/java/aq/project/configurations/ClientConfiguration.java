@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.registry.ImportHttpServices;
-import tools.jackson.databind.ObjectMapper;
 
 @Configuration
 @ImportHttpServices(
@@ -26,8 +25,6 @@ public class ClientConfiguration {
 
     @Value("${app.service.wallet-service.uri}")
     private String walletServiceBaseUri;
-
-    private final ObjectMapper objectMapper;
 
     @Bean
     public RestClientHttpServiceGroupConfigurer restClientHttpServiceGroupConfigurer() {

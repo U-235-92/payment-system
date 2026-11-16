@@ -123,7 +123,7 @@ val dependencyVersionMap = mapOf(
 	"atomikos" to "6.0.1",
 
 //	CommonProjectUtils
-	"common-utils" to "5.0.0",
+	"common-utils" to "5.1.0",
 
 //	Wallet service API specification
 	"wallet-service-api-specification" to "7.0.2-dev"

@@ -6,6 +6,7 @@ import aq.project.exceptions.EntityNotFoundException;
 import aq.project.kafka.KafkaEventProducer;
 import aq.project.mappers.TransactionMapper;
 import aq.project.repositories.TransactionRepository;
+import aq.project.utils.jwt.JwtUtil;
 import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
@@ -177,7 +178,7 @@ public class TransactionService {
 
     private WalletInfoResponseDto getWalletInfo(UUID walletId) {
         String traceId = traceContext.getTraceId();
-        String authorization = tokenService.getAdminJwtAsAuthorizationHeaderValue();
+        String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
 
         return walletApiClient.getWalletInfo(walletId, traceId, authorization).getBody();
     }
@@ -234,7 +235,7 @@ public class TransactionService {
         PaymentType paymentType = confirmTransactionRequestDto.getPaymentType();
 
         String traceId = traceContext.getTraceId();
-        String authorization = tokenService.getAdminJwtAsAuthorizationHeaderValue();
+        String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
 
         switch(paymentType) {
             case DEPOSIT ->  {
@@ -243,7 +244,7 @@ public class TransactionService {
                         .amount(savedTransaction.getAmount())
                         .currencyCode(savedTransaction.getCurrencyCode());
 
-                walletApiClient.depositWallet(traceId, dto, authorization);
+                walletApiClient.depositWallet(dto, traceId, authorization);
 
                 kafkaEventProducer.sendDepositTransactionRequestEvent(savedTransaction);
             }
@@ -254,7 +255,7 @@ public class TransactionService {
                         .amount(savedTransaction.getAmount())
                         .currencyCode(savedTransaction.getCurrencyCode());
 
-                walletApiClient.withdrawalWallet(traceId, dto, authorization);
+                walletApiClient.withdrawalWallet(dto, traceId, authorization);
 
                 kafkaEventProducer.sendWithdrawalTransactionRequestEvent(savedTransaction);
             }
@@ -266,7 +267,7 @@ public class TransactionService {
                         .amount(savedTransaction.getAmount())
                         .currencyCode(savedTransaction.getCurrencyCode());
 
-                walletApiClient.transferWallet(traceId, dto, authorization);
+                walletApiClient.transferWallet(dto, traceId, authorization);
 
                 savedTransaction.completeTransaction();
             }
@@ -370,7 +371,7 @@ public class TransactionService {
         PaymentType paymentType = transaction.getPaymentType();
 
         String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
-        String authorization = tokenService.getAdminJwtAsAuthorizationHeaderValue();
+        String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
 
         switch (paymentType) {
             case DEPOSIT -> {
@@ -380,7 +381,7 @@ public class TransactionService {
                         .amount(transaction.getAmount())
                         .currencyCode(transaction.getCurrencyCode());
 
-                walletApiClient.withdrawalWallet(traceId, dto, authorization);
+                walletApiClient.withdrawalWallet(dto, traceId, authorization);
             }
 
             case WITHDRAWAL ->  {
@@ -390,7 +391,7 @@ public class TransactionService {
                         .amount(transaction.getAmount())
                         .currencyCode(transaction.getCurrencyCode());
 
-                walletApiClient.depositWallet(traceId, dto, authorization);
+                walletApiClient.depositWallet(dto, traceId, authorization);
             }
 
             case TRANSFER ->  {
@@ -401,7 +402,7 @@ public class TransactionService {
                         .amount(transaction.getAmount())
                         .currencyCode(transaction.getCurrencyCode());
 
-                walletApiClient.transferWallet(traceId, dto, authorization);
+                walletApiClient.transferWallet(dto, traceId, authorization);
             }
         }
     }

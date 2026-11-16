@@ -67,4 +67,8 @@ public class Transaction extends AbstractEntity {
     public void fail() {
         this.status = Status.FAIL;
     }
+
+    public void processing() {
+        this.status = Status.PROCESSING;
+    }
 }

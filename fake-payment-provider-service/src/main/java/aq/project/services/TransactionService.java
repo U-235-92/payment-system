@@ -13,10 +13,8 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
@@ -32,8 +30,6 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
 
     private final MerchantService merchantService;
-
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final Fallback fallback;
 
@@ -93,12 +89,9 @@ public class TransactionService {
         newTransaction.setMerchant(merchant);
         newTransaction.setStatus(Status.PENDING);
 
-        Transaction savedTransaction = transactionRepository.save(newTransaction);
-
-//        Continue to async handle saved transaction (see TransactionEventListener.onCommitTransaction(..))
-        applicationEventPublisher.publishEvent(savedTransaction);
-
-        return savedTransaction;
+//        Continue to async handle saved payout.
+//        See TransactionScheduler.updateTransactionStatus for details.
+        return transactionRepository.save(newTransaction);
     }
 
     @RateLimiter(
@@ -183,18 +176,5 @@ public class TransactionService {
         fallback.handleRetryFallback(action, message, exception);
 
         return null;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void failTransaction(
-            Long id
-    ) {
-        Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Not found transaction with id: [%s]", id)));
-
-        transaction.fail();
-
-        transactionRepository.save(transaction);
     }
 }

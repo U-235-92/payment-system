@@ -20,7 +20,7 @@ public interface TransactionMapper {
     @Mapping(target = "paymentMethod", source = "paymentMethod")
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "description", source = "description")
-    @Mapping(target = "externalId", source = "externalId")
+    @Mapping(target = "externalId", source = "externalId") // transactionId
     @Mapping(target = "notificationUrl", source = "notificationUrl")
     Transaction toTransaction(CreateTransactionRequestDto dto);
 

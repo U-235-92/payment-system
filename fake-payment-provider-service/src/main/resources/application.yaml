@@ -87,6 +87,8 @@ resilience4j:
 app:
   schedule:
     update-operation-status: 30
+    update-payout-status: 5
+    update-transaction-status: 5
 
   service:
     webhook-service:

@@ -13,10 +13,8 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
@@ -32,8 +30,6 @@ public class PayoutService {
     private final PayoutRepository payoutRepository;
 
     private final MerchantService merchantService;
-
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final Fallback fallback;
 
@@ -93,12 +89,9 @@ public class PayoutService {
         newPayout.setMerchant(merchant);
         newPayout.setStatus(Status.PENDING);
 
-        Payout savedPayout = payoutRepository.save(newPayout);
-
-//        Continue to async handle saved payout (see PayoutEventListener.onCommitPayout)
-        applicationEventPublisher.publishEvent(savedPayout);
-
-        return savedPayout;
+//        Continue to async handle saved payout.
+//        See PayoutScheduler.updatePayoutStatus(..).
+        return payoutRepository.save(newPayout);
     }
 
     @RateLimiter(
@@ -183,18 +176,5 @@ public class PayoutService {
         fallback.handleRetryFallback(action, message, exception);
 
         return null;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void failPayout(
-            Long id
-    ) {
-        Payout payout = payoutRepository.findById(id)
-                        .orElseThrow(() -> new EntityNotFoundException(
-                                String.format("Not found payout with id: [%s]", id)));
-
-        payout.fail();
-
-        payoutRepository.save(payout);
     }
 }

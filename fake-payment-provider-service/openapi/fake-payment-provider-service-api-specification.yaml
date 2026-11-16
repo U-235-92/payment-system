@@ -516,7 +516,7 @@ components:
       description: Allowed payment methods
 
     Status:
-      enum: [ pending, success, fail ]
+      enum: [ pending, processing, success, fail ]
       description: Allowed payment methods
 
     OperationType:

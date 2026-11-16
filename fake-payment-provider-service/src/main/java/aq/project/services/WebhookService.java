@@ -25,10 +25,6 @@ public class WebhookService {
 
     private final WebhookRepository webhookRepository;
 
-    private final PayoutService payoutService;
-
-    private final TransactionService transactionService;
-
     private final Fallback fallback;
 
     @Retry(
@@ -57,10 +53,11 @@ public class WebhookService {
             default -> throw new IllegalStateException(
                     String.format("Unexpected operation type: [%s]", operationType));
         }
-//        If was received 4xx/5xx status code response then error handler will handle that case (see ClientConfiguration)
 
+//        If was received 4xx/5xx status code response then error handler will handle that case (see ClientConfiguration)
         if(responseEntity.getStatusCode().is2xxSuccessful()) {
-//            Save outbox entity. The final update of transaction/payout status will continue on WebhookScheduler side
+//            Save outbox entity to the final update of transaction/payout status.
+//            See WebhookScheduler for details.updateOperationStatus(..).
             Webhook webhook = Webhook.builder()
                     .operationType(operationType)
                     .entityId(operationEntityId)
@@ -88,12 +85,6 @@ public class WebhookService {
                 "Exception occurred during update operation: [%s] with id: [%s] on status: [%s]. " +
                         "Exception message: %s",
                 operationType, operationId, operationStatus, exception.getMessage());
-
-        switch (operationType) {
-            case PAYOUT -> payoutService.failPayout(operationId);
-
-            case TRANSACTION -> transactionService.failTransaction(operationId);
-        }
 
         fallback.handleRetryFallback(action, message, exception);
     }

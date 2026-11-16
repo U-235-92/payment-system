@@ -1,5 +1,6 @@
 package aq.project.repositories;
 
+import aq.project.dto.Status;
 import aq.project.entities.Transaction;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -44,4 +45,13 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
             "AND t.externalId = :externalId"
     )
     Optional<Transaction> findByExternalId(String externalId, String merchantId);
+
+    @Query(
+            "SELECT t " +
+            "FROM Transaction t " +
+            "JOIN FETCH t.merchant m " +
+            "WHERE m.merchantId = :merchantId " +
+            "AND t.status = :status"
+    )
+    List<Transaction> findAllByMerchantIdAndStatus(String merchantId, Status status);
 }

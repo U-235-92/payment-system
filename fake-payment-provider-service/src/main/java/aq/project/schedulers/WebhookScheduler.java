@@ -53,15 +53,15 @@ public class WebhookScheduler {
 
                         Payout payout = getPayout(operationEntityId);
 
-                        Status status = payout.getStatus();
+                        Status payoutStatus = payout.getStatus();
 
-                        if(status == Status.PENDING) {
+                        if(payoutStatus == Status.PROCESSING) {
                             payout.complete();
 
                             log.info("[{}]: Update of payout status with payout id: [{}] completed",
                                     traceId, payout.getId());
                         } else {
-                            onUnexpectedStatus(status);
+                            onUnexpectedStatus(payoutStatus);
                         }
                     }
 
@@ -71,15 +71,15 @@ public class WebhookScheduler {
 
                         Transaction transaction = getTransaction(operationEntityId);
 
-                        Status status = transaction.getStatus();
+                        Status transactionStatus = transaction.getStatus();
 
-                        if(status == Status.PENDING) {
+                        if(transactionStatus == Status.PROCESSING) {
                             transaction.complete();
 
                             log.info("[{}]: Update of transaction status with transaction id: [{}] completed",
                                     traceId, transaction.getId());
                         } else {
-                            onUnexpectedStatus(status);
+                            onUnexpectedStatus(transactionStatus);
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package aq.project.repositories;
 
+import aq.project.dto.Status;
 import aq.project.entities.Payout;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -44,4 +45,13 @@ public interface PayoutRepository extends CrudRepository<Payout, Long> {
             "AND p.externalId = :externalId"
     )
     Optional<Payout> findByExternalId(String externalId, String merchantId);
+
+    @Query(
+            "SELECT p " +
+            "FROM Payout p " +
+            "JOIN FETCH p.merchant m " +
+            "WHERE m.merchantId = :merchantId " +
+            "AND p.status = :status"
+    )
+    List<Payout> findAllByMerchantIdAndStatus(String merchantId, Status status);
 }

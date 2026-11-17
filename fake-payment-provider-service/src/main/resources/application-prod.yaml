@@ -56,3 +56,6 @@ app:
   service:
     webhook-service:
       uri: ${WEBHOOK_SERVICE_BASE_URI}
+  security:
+    access-token-key: ${ACCESS_TOKEN_KEY}
+    access-token-hash-alg: ${ACCESS_TOKEN_HASH_ALG}

@@ -11,7 +11,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
 @Configuration
 @ImportHttpServices(
         group = "webhook-service",
-        types = aq.project.client.WebhookClientApi.class
+        types = aq.project.webhook_service.WebhookApiClient.class
 )
 @RequiredArgsConstructor
 public class ClientConfiguration {

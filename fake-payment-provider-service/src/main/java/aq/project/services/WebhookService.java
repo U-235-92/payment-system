@@ -1,6 +1,8 @@
 package aq.project.services;
 
-import aq.project.client.WebhookClientApi;
+import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceFactory;
+import aq.project.webhook_service.WebhookApiClient;
 import aq.project.dto.OperationType;
 import aq.project.dto.Status;
 import aq.project.dto.UpdateStatusOperationRequestDto;
@@ -10,6 +12,7 @@ import aq.project.utils.resilence.Fallback;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +24,19 @@ import java.time.OffsetDateTime;
 @RequiredArgsConstructor
 public class WebhookService {
 
-    private final WebhookClientApi webhookClientApi;
+    @Value("${app.security.access-token-key}")
+    private String accessTokenKey;
+
+    @Value("${app.security.access-token-hash-alg}")
+    private String accessTokenHashAlg;
+
+    private final WebhookApiClient webhookApiClient;
 
     private final WebhookRepository webhookRepository;
+
+    private final AccessTokenService accessTokenService;
+
+    private final TraceContext traceContext;
 
     private final Fallback fallback;
 
@@ -40,24 +53,17 @@ public class WebhookService {
         OperationType operationType = updateStatusOperationRequestDto.getOperationType();
 
         String notificationUrl = updateStatusOperationRequestDto.getNotificationUrl();
+        String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
+        String accessTokeHash = accessTokenService.getAccessTokenHash(accessTokenKey, accessTokenHashAlg);
 
-        ResponseEntity<Void> responseEntity;
+        ResponseEntity<Void> responseEntity = webhookApiClient
+                .confirmOperationWebhook(accessTokeHash, accessTokenHashAlg, updateStatusOperationRequestDto, traceId);
 
-        switch (operationType) {
-            case TRANSACTION -> responseEntity = webhookClientApi
-                    .confirmTransactionWebhook(updateStatusOperationRequestDto);
-
-            case PAYOUT -> responseEntity = webhookClientApi
-                    .confirmPayoutWebhook(updateStatusOperationRequestDto);
-
-            default -> throw new IllegalStateException(
-                    String.format("Unexpected operation type: [%s]", operationType));
-        }
-
-//        If was received 4xx/5xx status code response then error handler will handle that case (see ClientConfiguration)
+//        If was received 4xx/5xx status code response then error handler will handle that case.
+//        See ClientConfiguration for details.
         if(responseEntity.getStatusCode().is2xxSuccessful()) {
 //            Save outbox entity to the final update of transaction/payout status.
-//            See WebhookScheduler for details.updateOperationStatus(..).
+//            See WebhookScheduler.updateOperationStatus(..) for details.
             Webhook webhook = Webhook.builder()
                     .operationType(operationType)
                     .entityId(operationEntityId)

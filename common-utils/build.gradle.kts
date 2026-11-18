@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "aq.payment-system"
-version = "5.1.0"
+version = "5.3.0"
 
 val envFile = file(".env")
 if(envFile.exists()) {

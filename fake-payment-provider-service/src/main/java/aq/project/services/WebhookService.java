@@ -1,14 +1,15 @@
 package aq.project.services;
 
-import aq.project.utils.telemetry.TraceContext;
-import aq.project.utils.telemetry.TraceFactory;
-import aq.project.webhook_service.WebhookApiClient;
 import aq.project.dto.OperationType;
 import aq.project.dto.Status;
 import aq.project.dto.UpdateStatusOperationRequestDto;
 import aq.project.entities.Webhook;
 import aq.project.repositories.WebhookRepository;
 import aq.project.utils.resilence.Fallback;
+import aq.project.utils.security.SecurityUtil;
+import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.telemetry.TraceFactory;
+import aq.project.webhook_service.WebhookApiClient;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +35,6 @@ public class WebhookService {
 
     private final WebhookRepository webhookRepository;
 
-    private final AccessTokenService accessTokenService;
-
     private final TraceContext traceContext;
 
     private final Fallback fallback;
@@ -54,7 +53,7 @@ public class WebhookService {
 
         String notificationUrl = updateStatusOperationRequestDto.getNotificationUrl();
         String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
-        String accessTokeHash = accessTokenService.getAccessTokenHash(accessTokenKey, accessTokenHashAlg);
+        String accessTokeHash = SecurityUtil.getHash(accessTokenKey, accessTokenHashAlg);
 
         ResponseEntity<Void> responseEntity = webhookApiClient
                 .confirmOperationWebhook(accessTokeHash, accessTokenHashAlg, updateStatusOperationRequestDto, traceId);

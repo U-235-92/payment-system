@@ -6,13 +6,6 @@ logging:
     org.springframework.security: warn
     org.apache.shardingsphere: info
 
-management:
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: http://localhost:4318/v1/traces
-
 spring:
   flyway:
     enabled: false

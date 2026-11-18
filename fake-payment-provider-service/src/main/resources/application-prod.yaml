@@ -16,19 +16,9 @@ management:
           endpoint: ${OTEL_COLLECTOR_URI}
 
 spring:
-  security:
-    oauth2:
-      client:
-        provider:
-          keycloak:
-            issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI}
-            token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI}
-        registration:
-          keycloak:
-            client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
-            client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
-            admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
-            admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
+  profiles:
+    active:
+      - ${PROFILE}
 
   flyway:
     driver-class-name:

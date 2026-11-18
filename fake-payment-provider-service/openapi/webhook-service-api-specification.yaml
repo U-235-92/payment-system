@@ -24,12 +24,12 @@ paths:
           schema:
             type: string
           description: Hash of access token
-        - name: x-access-token-encoding
+        - name: x-access-token-hash-alg
           in: header
           required: true
           schema:
             type: string
-          description: Encoding hash algorithm of access token
+          description: Valid hash algorithm
         - name: x-trace-id
           in: header
           required: false

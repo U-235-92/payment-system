@@ -1,9 +1,33 @@
+server:
+  port: 8086
+
 logging:
   level:
     root: info
 
-server:
-  port: 8086
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
+
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
+  metrics:
+    tags:
+      application: fake-payment-provider-service
+
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
 
 spring:
   application:
@@ -12,36 +36,6 @@ spring:
   profiles:
     active:
       - dev
-
-  security:
-    oauth2:
-      client:
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/payment-system
-            token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
-        registration:
-          keycloak:
-            client-id: fake-payment-provider-service
-            client-secret: CHANGE_ME!!!!!
-            admin-id: payment-system-admin-cli
-            admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
-
-management:
-  otlp:
-    metrics:
-      export:
-        enabled: false
-  metrics:
-    tags:
-      application: fake-payment-provider-service
-  endpoints:
-    web:
-      exposure:
-        include:
-          - prometheus
-          - info
-          - health
 
 resilience4j:
   retry:

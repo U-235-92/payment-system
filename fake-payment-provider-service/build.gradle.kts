@@ -106,7 +106,7 @@ val dependencyVersionMap = mapOf(
 	"springdoc-openapi" to "3.0.2",
 
 //	CommonProjectUtils
-	"common-utils" to "5.1.0",
+	"common-utils" to "5.3.0",
 
 //	Webhook service API specification
 	"webhook-service-api-specification" to "7.0.2-dev"

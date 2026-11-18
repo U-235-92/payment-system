@@ -173,14 +173,14 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
           description: Response in case if error was occurred on service side
 
-  /api/v1/transaction/{id}/fail:
-    post:
+  /api/v1/transactions:
+    get:
       security:
         - BearerAuth: [ ]
-      operationId: failTransaction
+      operationId: getTransactions
       tags:
         - Transaction
-      summary: Update status of transaction on [fail]
+      summary: Search for transactions by specified filters with paging
       parameters:
         - name: x-trace-id
           in: header
@@ -194,62 +194,55 @@ paths:
           schema:
             type: string
           description: OAuth 2.0 JWT
-        - name: id
-          in: path
-          required: true
+        - in: query
+          name: userId
           schema:
             type: string
             format: uuid
-          description: Allowed UUID of transaction
-      responses:
-        200:
-          description: Success update of transaction status on [fail]
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-          description: Response in case if was received incorrect request
-        401:
-          description: Response in case if unauthorized request was received
-        500:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDto"
-          description: Response in case if error was occurred on service side
-
-  /api/v1/transaction/{id}/complete:
-    post:
-      security:
-        - BearerAuth: [ ]
-      operationId: completeTransaction
-      tags:
-        - Transaction
-      summary: Update status of transaction on [complete]
-      parameters:
-        - name: x-trace-id
-          in: header
-          required: false
-          schema:
-            type: string
-          description: Identifier of open telemetry trace
-        - name: Authorization
-          in: header
-          required: false
-          schema:
-            type: string
-          description: OAuth 2.0 JWT
-        - name: id
-          in: path
-          required: true
+        - in: query
+          name: walletId
           schema:
             type: string
             format: uuid
-          description: Allowed UUID of transaction
+        - in: query
+          name: type
+          schema:
+            $ref: "#/components/schemas/PaymentType"
+        - in: query
+          name: status
+          schema:
+            $ref: "#/components/schemas/TransactionStatus"
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: page
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            format: int32
+            default: 20
       responses:
         200:
-          description: Success update of transaction status on [complete]
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionInfoResponseDto"
         400:
           content:
             application/json:
@@ -380,6 +373,40 @@ components:
           type: number
           format: decimal
           description: Conversion rate for currency
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        payment_type:
+          $ref: "#/components/schemas/PaymentType"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+
+    TransactionInfoResponseDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder"
+      required: [ transaction_id, user_id, wallet_id, target_wallet_id, amount, payment_type, currency_code ]
+      properties:
+        transaction_id:
+          type: string
+          format: uuid
+          description: UUID of transaction
+        user_id:
+          type: string
+          format: uuid
+          description: UUID of user
+        wallet_id:
+          type: string
+          format: uuid
+          description: UUID of source wallet
+        target_wallet_id:
+          type: string
+          format: uuid
+          description: UUID of target wallet (for transfer payment method only)
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Amount of transaction
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
         payment_type:
           $ref: "#/components/schemas/PaymentType"

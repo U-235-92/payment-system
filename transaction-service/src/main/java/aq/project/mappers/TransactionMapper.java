@@ -1,6 +1,7 @@
 package aq.project.mappers;
 
 import aq.project.dto.ConfirmTransactionRequestDto;
+import aq.project.dto.TransactionInfoResponseDto;
 import aq.project.entities.Transaction;
 import aq.project.kafka.events.DepositTransactionRequestEvent;
 import aq.project.kafka.events.WithdrawalTransactionRequestEvent;
@@ -46,4 +47,13 @@ public interface TransactionMapper {
     @Mapping(target = "description", ignore = true)
     @Mapping(target = "fee", ignore = true)
     Transaction toTransaction(ConfirmTransactionRequestDto dto);
+
+    @Mapping(target = "transactionId", source = "id")
+    @Mapping(target = "userId", source = "userId")
+    @Mapping(target = "walletId", source = "walletId")
+    @Mapping(target = "targetWalletId", source = "targetWalletId")
+    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "paymentType", source = "paymentType")
+    @Mapping(target = "currencyCode", source = "currencyCode")
+    TransactionInfoResponseDto toTransactionInfoResponseDto(Transaction transaction);
 }

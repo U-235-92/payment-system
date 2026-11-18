@@ -17,7 +17,7 @@ public class KafkaConfiguration {
     public NewTopic depositTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("deposit_transaction_request");
+                .get("deposit-transaction-request");
         return createTopic(config);
     }
 
@@ -25,7 +25,7 @@ public class KafkaConfiguration {
     public NewTopic depositTransactionCompleteResponseTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("deposit_transaction_complete_response");
+                .get("deposit-transaction-complete-response");
         return createTopic(config);
     }
 
@@ -33,7 +33,7 @@ public class KafkaConfiguration {
     public NewTopic depositTransactionFailResponseTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("deposit_transaction_fail_response");
+                .get("deposit-transaction-fail-response");
         return createTopic(config);
     }
 
@@ -41,7 +41,7 @@ public class KafkaConfiguration {
     public NewTopic withdrawalTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("withdrawal_transaction_request");
+                .get("withdrawal-transaction-request");
         return createTopic(config);
     }
 
@@ -49,7 +49,7 @@ public class KafkaConfiguration {
     public NewTopic withdrawalTransactionCompleteResponseTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("withdrawal_transaction_complete_response");
+                .get("withdrawal-transaction-complete-response");
         return createTopic(config);
     }
 
@@ -57,7 +57,7 @@ public class KafkaConfiguration {
     public NewTopic withdrawalTransactionFailResponseTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
-                .get("withdrawal_transaction_fail_response");
+                .get("withdrawal-transaction-fail-response");
         return createTopic(config);
     }
 

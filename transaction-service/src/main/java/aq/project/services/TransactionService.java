@@ -3,22 +3,28 @@ package aq.project.services;
 import aq.project.dto.*;
 import aq.project.entities.Transaction;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.kafka.KafkaEventProducer;
+import aq.project.kafka.TransactionEventKafkaProducer;
 import aq.project.mappers.TransactionMapper;
 import aq.project.repositories.TransactionRepository;
+import aq.project.util.SpecificationFactory;
 import aq.project.utils.jwt.JwtUtil;
 import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
 import aq.project.wallet_service.WalletApiClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -38,7 +44,7 @@ public class TransactionService {
 
     private final TraceContext traceContext;
 
-    private final KafkaEventProducer kafkaEventProducer;
+    private final TransactionEventKafkaProducer transactionEventKafkaProducer;
 
     private final Fallback fallback;
 
@@ -138,11 +144,8 @@ public class TransactionService {
 
     private InitTransactionResponseDto initTransactionRateLimiterFallback(
             InitTransactionRequestDto initTransactionRequestDto,
-            Exception exception
-    ) throws Exception {
-        if(exception instanceof IllegalStateException)
-            throw exception;
-
+            RequestNotPermitted exception
+    ) {
         String action = "init-transaction";
 
         UUID walletId = initTransactionRequestDto.getWalletId();
@@ -246,7 +249,7 @@ public class TransactionService {
 
                 walletApiClient.depositWallet(dto, traceId, authorization);
 
-                kafkaEventProducer.sendDepositTransactionRequestEvent(savedTransaction);
+                transactionEventKafkaProducer.sendDepositTransactionEvent(savedTransaction);
             }
 
             case WITHDRAWAL -> {
@@ -257,7 +260,7 @@ public class TransactionService {
 
                 walletApiClient.withdrawalWallet(dto, traceId, authorization);
 
-                kafkaEventProducer.sendWithdrawalTransactionRequestEvent(savedTransaction);
+                transactionEventKafkaProducer.sendWithdrawalTransactionEvent(savedTransaction);
             }
 
             case TRANSFER -> {
@@ -281,11 +284,8 @@ public class TransactionService {
 
     private UUID confirmTransactionRateLimiterFallback(
             ConfirmTransactionRequestDto confirmTransactionRequestDto,
-            Exception exception
-    ) throws Exception {
-        if(exception instanceof IllegalStateException)
-            throw exception;
-
+            RequestNotPermitted exception
+    ) {
         String action = "confirm-transaction";
 
         UUID walletId = confirmTransactionRequestDto.getWalletId();
@@ -334,11 +334,8 @@ public class TransactionService {
 
     private TransactionStatus getTransactionStatusRateLimiterFallback(
             UUID transactionId,
-            Exception exception
-    ) throws Exception {
-        if(exception instanceof EntityNotFoundException)
-            throw exception;
-
+            RequestNotPermitted exception
+    ) {
         String action = "get-transaction-status";
 
         String message = String.format(
@@ -409,12 +406,8 @@ public class TransactionService {
 
     private void failTransactionRateLimiterFallback(
             UUID transactionId,
-            Exception exception
-    ) throws Exception {
-        if(exception instanceof EntityNotFoundException
-                || exception instanceof IllegalStateException)
-            throw exception;
-
+            RequestNotPermitted exception
+    ) {
         String action = "fail-transaction";
 
         String message = String.format(
@@ -458,12 +451,8 @@ public class TransactionService {
 
     private void completeTransactionRateLimiterFallback(
             UUID transactionId,
-            Exception exception
-    ) throws Exception {
-        if(exception instanceof EntityNotFoundException
-                || exception instanceof IllegalStateException)
-            throw exception;
-
+            RequestNotPermitted exception
+    ) {
         String action = "complete-transaction";
 
         String message = String.format(
@@ -500,5 +489,60 @@ public class TransactionService {
                     String.format("Unable to update transaction with id: [%s] in [%s] status",
                             transactionId, transactionStatus));
         }
+    }
+
+    @RateLimiter(
+            name = "get-transactions-rate-limiter",
+            fallbackMethod = "getTransactionsRateLimiterFallback"
+    )
+    public List<TransactionInfoResponseDto> getTransactions(
+            UUID userId,
+            UUID walletId,
+            PaymentType type,
+            TransactionStatus status,
+            OffsetDateTime dateFrom,
+            OffsetDateTime dateTo,
+            Integer page,
+            Integer size
+    ) {
+        final int defaultPage = page == null ? 0 : page;
+        final int defaultSize = size == null ? 20 : size;
+
+        PageRequest pageRequest = PageRequest.of(defaultPage, defaultSize);
+
+        Specification<Transaction> spec = Specification
+                .where(SpecificationFactory.getSpecFor("userId", userId))
+                .and(SpecificationFactory.getSpecFor("walletId", walletId))
+                .and(SpecificationFactory.getSpecFor("paymentType", type))
+                .and(SpecificationFactory.getSpecFor("transactionStatus", status))
+                .and(SpecificationFactory.getSpecGreaterOrEqualFor("createdAt", dateFrom))
+                .and(SpecificationFactory.getSpecLessOrEqualFor("createdAt", dateTo));
+
+        return transactionRepository.findAll(spec, pageRequest)
+                .stream()
+                .map(transactionMapper::toTransactionInfoResponseDto)
+                .toList();
+    }
+
+    public List<TransactionInfoResponseDto> getTransactionsRateLimiterFallback(
+            UUID userId,
+            UUID walletId,
+            PaymentType type,
+            TransactionStatus status,
+            OffsetDateTime dateFrom,
+            OffsetDateTime dateTo,
+            Integer page,
+            Integer size,
+            RequestNotPermitted exception
+    ) {
+        String action = "get-transactions";
+
+        String message = String.format(
+                "Exception occurred during getting list of transaction info. Exception message: %s",
+                exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
+
+        return null;
     }
 }

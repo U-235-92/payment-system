@@ -18,26 +18,26 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Component
 @RequiredArgsConstructor
-public class KafkaEventProducerAspect {
+public class TransactionEventKafkaProducerAspect {
 
     @Value("${spring.application.name}")
     private String serviceName;
 
-    @Value("${app.kafka.topics.deposit_transaction_request.name}")
+    @Value("${app.kafka.topics.deposit-transaction-request.name}")
     private String depositTransactionRequestTopic;
-    @Value("${app.kafka.topics.withdrawal_transaction_request.name}")
+    @Value("${app.kafka.topics.withdrawal-transaction-request.name}")
     private String withdrawalTransactionRequestTopic;
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.kafka.KafkaEventProducer.sendDepositTransactionRequestEvent(..)) " +
+    @Around("execution(* aq.project.kafka.TransactionEventKafkaProducer.sendDepositTransactionEvent(..)) " +
             "&& args(transaction)")
-    public void sendDepositTransactionRequestEvent(
+    public void sendDepositTransactionEvent(
             ProceedingJoinPoint pjp,
             @NotNull @Valid Transaction transaction
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "send-deposit-transaction-request-event";
+        String actionName = "send-deposit-transaction-event";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
         String logOnBeginning = String.format("Sending [deposit] transaction with transaction id: [%s] " +
@@ -55,14 +55,14 @@ public class KafkaEventProducerAspect {
         );
     }
 
-    @Around("execution(* aq.project.kafka.KafkaEventProducer.sendWithdrawalTransactionRequestEvent(..)) " +
+    @Around("execution(* aq.project.kafka.TransactionEventKafkaProducer.sendWithdrawalTransactionEvent(..)) " +
             "&& args(transaction)")
-    public void sendWithdrawalTransactionRequestEvent(
+    public void sendWithdrawalTransactionEvent(
             ProceedingJoinPoint pjp,
             @NotNull @Valid Transaction transaction
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "send-withdrawal-transaction-request-event";
+        String actionName = "send-withdrawal-transaction-event";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
         String logOnBeginning = String.format("Sending [withdrawal] transaction with transaction id: [%s] " +

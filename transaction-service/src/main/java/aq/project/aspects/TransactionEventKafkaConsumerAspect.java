@@ -18,14 +18,14 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Component
 @RequiredArgsConstructor
-public class KafkaEventConsumerAspect {
+public class TransactionEventKafkaConsumerAspect {
 
     @Value("${spring.application.name}")
     private String serviceName;
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.kafka.KafkaEventConsumer.handleCompleteTransactionEvent(..)) " +
+    @Around("execution(* aq.project.kafka.TransactionEventKafkaConsumer.handleCompleteTransactionEvent(..)) " +
             "&& args(transactionResponseEvent)")
     public void handleCompleteTransactionEvent(
             ProceedingJoinPoint pjp,
@@ -49,7 +49,7 @@ public class KafkaEventConsumerAspect {
         );
     }
 
-    @Around("execution(* aq.project.kafka.KafkaEventConsumer.handleFailTransactionEvent(..)) " +
+    @Around("execution(* aq.project.kafka.TransactionEventKafkaConsumer.handleFailTransactionEvent(..)) " +
             "&& args(transactionResponseEvent)")
     public void handleFailTransactionEvent(
             ProceedingJoinPoint pjp,

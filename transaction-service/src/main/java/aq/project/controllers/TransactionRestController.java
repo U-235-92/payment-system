@@ -6,10 +6,11 @@ import aq.project.services.TransactionService;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -56,28 +57,21 @@ public class TransactionRestController implements TransactionRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<Void> failTransaction(
-            UUID id,
+    public ResponseEntity<List<TransactionInfoResponseDto>> getTransactions(
             String xTraceId,
-            String authorization
+            String authorization,
+            UUID userId,
+            UUID walletId,
+            PaymentType type,
+            TransactionStatus status,
+            OffsetDateTime dateFrom,
+            OffsetDateTime dateTo,
+            Integer page,
+            Integer size
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
 
-        transactionService.failTransaction(id);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    @Override
-    public ResponseEntity<Void> completeTransaction(
-            UUID id,
-            String xTraceId,
-            String authorization
-    ) {
-        TraceFactory.setUpTraceId(traceContext, xTraceId);
-
-        transactionService.completeTransaction(id);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok(transactionService
+                .getTransactions(userId, walletId, type, status, dateFrom, dateTo, page, size));
     }
 }

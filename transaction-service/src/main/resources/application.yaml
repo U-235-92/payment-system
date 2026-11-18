@@ -5,6 +5,30 @@ logging:
 server:
   port: 8083
 
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
+
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
+  metrics:
+    tags:
+      application: transaction-service
+
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+
 spring:
   application:
     name: transaction-service
@@ -46,7 +70,7 @@ spring:
     consumer:
       enable-auto-commit: false
       auto-offset-reset: latest
-      group-id: wallet-service
+      group-id: transaction-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
       properties:
@@ -57,22 +81,6 @@ spring:
 
   flyway:
     enabled: false
-
-management:
-  otlp:
-    metrics:
-      export:
-        enabled: false
-  metrics:
-    tags:
-      application: wallet-service
-  endpoints:
-    web:
-      exposure:
-        include:
-          - prometheus
-          - info
-          - health
 
 resilience4j:
   ratelimiter:
@@ -94,6 +102,10 @@ resilience4j:
         limit-for-period: 100
 
       complete-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      get-transactions-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
 
@@ -138,34 +150,40 @@ app:
 
   kafka:
     topics:
-      deposit_transaction_request:
+      deposit-transaction-request:
         name: deposit_transaction_request
         partitions: 3
         replicas: 3
-        min_insync_replicas: 2
-      deposit_transaction_complete_response:
+        min-insync-replicas: 2
+      deposit-transaction-complete-response:
         name: deposit_transaction_complete_response
         partitions: 3
         replicas: 3
-        min_insync_replicas: 2
-      deposit_transaction_fail_response:
+        min-insync-replicas: 2
+      deposit-transaction-fail-response:
         name: deposit_transaction_fail_response
         partitions: 3
         replicas: 3
-        min_insync_replicas: 2
+        min-insync-replicas: 2
 
-      withdrawal_transaction_request:
+      withdrawal-transaction-request:
         name: withdrawal_transaction_request
         partitions: 3
         replicas: 3
-        min_insync_replicas: 2
-      withdrawal_transaction_complete_response:
+        min-insync-replicas: 2
+      withdrawal-transaction-complete-response:
         name: withdrawal_transaction_complete_response
         partitions: 3
         replicas: 3
-        min_insync_replicas: 2
-      withdrawal_transaction_fail_response:
+        min-insync-replicas: 2
+      withdrawal-transaction-fail-response:
         name: withdrawal_transaction_fail_response
         partitions: 3
         replicas: 3
-        min_insync_replicas: 2
+        min-insync-replicas: 2
+
+      payment-status-update-response:
+        name: payment_status_update_response
+        partitions: 3
+        replicas: 3
+        min-insync-replicas: 2

@@ -59,19 +59,6 @@ java {
 	}
 }
 
-repositories {
-	mavenCentral()
-	maven {
-		name = System.getProperty("LOCAL_REPO_NAME")
-		url = uri(System.getProperty("LOCAL_REPO_URL"))
-		isAllowInsecureProtocol = true
-		credentials {
-			username = System.getProperty("LOCAL_REPO_USERNAME")
-			password = System.getProperty("LOCAL_REPO_PASSWORD")
-		}
-	}
-}
-
 springBoot {
 	mainClass = "aq.project.TransactionServiceApplication"
 }
@@ -123,7 +110,7 @@ val dependencyVersionMap = mapOf(
 	"atomikos" to "6.0.1",
 
 //	CommonProjectUtils
-	"common-utils" to "5.1.0",
+	"common-utils" to "5.3.0",
 
 //	Wallet service API specification
 	"wallet-service-api-specification" to "7.0.2-dev"
@@ -321,6 +308,14 @@ tasks.register<Copy>("fetchExternalApi") {
 		.map { apiSpecification -> zipTree(apiSpecification)
 			.matching { include("*$yamlExtension") } })
 	into("$rootDir/openapi")
+}
+
+tasks.register("printApiSpec") {
+//	Print info about current path to open api specs in local machine
+//	Need to debug operations to figure out which actual versions of specs store in local cache
+	doLast {
+		configurations["apiSpec"].forEach { println(">>> $it") }
+	}
 }
 
 tasks.register<Jar>("jarApi") {

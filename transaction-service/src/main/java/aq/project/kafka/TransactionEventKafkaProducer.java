@@ -1,5 +1,6 @@
 package aq.project.kafka;
 
+import aq.project.dto.PaymentType;
 import aq.project.entities.Transaction;
 import aq.project.kafka.events.DepositTransactionRequestEvent;
 import aq.project.kafka.events.WithdrawalTransactionRequestEvent;
@@ -11,12 +12,13 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KafkaEventProducer {
+public class TransactionEventKafkaProducer {
 
     @Value("${app.kafka.topics.deposit_transaction_request.name}")
     private String depositTransactionRequestTopic;
@@ -27,7 +29,7 @@ public class KafkaEventProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public void sendDepositTransactionRequestEvent(
+    public void sendDepositTransactionEvent(
             Transaction transaction
     ) {
         DepositTransactionRequestEvent event = transactionMapper.toDepositTransactionRequestEvent(transaction);
@@ -37,7 +39,7 @@ public class KafkaEventProducer {
         handleWhenComplete(transaction, future);
     }
 
-    public void sendWithdrawalTransactionRequestEvent(
+    public void sendWithdrawalTransactionEvent(
             Transaction transaction
     ) {
         WithdrawalTransactionRequestEvent event = transactionMapper.toWithdrawalTransactionRequestEvent(transaction);
@@ -52,20 +54,19 @@ public class KafkaEventProducer {
             CompletableFuture<SendResult<String, Object>> future
     ) {
         future.whenComplete((result, exception) -> {
+            PaymentType paymentType = transaction.getPaymentType();
+
+            UUID transactionId = transaction.getId();
+
             if(exception == null) {
-                log.info("Complete send [{}] transaction request event " +
-                                "with transaction id: [{}] to topic: [{}], offset: [{}]",
-                        transaction.getPaymentType(),
-                        transaction.getId(),
-                        depositTransactionRequestTopic,
-                        result.getRecordMetadata().offset());
+                long offset = result.getRecordMetadata().offset();
+
+                log.info("Complete send [{}] request event with transaction id: [{}] to topic: [{}], offset: [{}]",
+                        paymentType, transactionId, depositTransactionRequestTopic, offset);
 
             } else {
-                log.error("Error occurred while sending [{}] transaction request event " +
-                                "with transaction id: [{}] to topic: [{}]",
-                        transaction.getPaymentType(),
-                        transaction.getId(),
-                        depositTransactionRequestTopic);
+                log.error("Error occurred while sending [{}] request event with transaction id: [{}] to topic: [{}]",
+                        paymentType, transactionId, depositTransactionRequestTopic);
             }
         });
     }

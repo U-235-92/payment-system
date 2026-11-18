@@ -1,12 +1,12 @@
 package aq.project.aspects;
 
-import aq.project.dto.ConfirmTransactionRequestDto;
-import aq.project.dto.InitTransactionRequestDto;
-import aq.project.dto.InitTransactionResponseDto;
-import aq.project.dto.TransactionStatus;
+import aq.project.dto.*;
 import aq.project.utils.telemetry.ServiceAspectHandler;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -16,6 +16,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Aspect
@@ -144,6 +146,37 @@ public class TransactionServiceAspect {
 
 //        Handler logic call
         serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                logOnBeginning,
+                null
+        );
+    }
+
+    @Around("execution(* aq.project.services.TransactionService.getTransactions(..)) " +
+            "&& args(userId, walletId, type, status, dateFrom, dateTo, page, size)")
+    public List<TransactionInfoResponseDto> getTransactions(
+            ProceedingJoinPoint pjp,
+            @Nullable UUID userId,
+            @Nullable UUID walletId,
+            @Nullable PaymentType type,
+            @Nullable TransactionStatus status,
+            @Nullable OffsetDateTime dateFrom,
+            @Nullable OffsetDateTime dateTo,
+            @Nullable @PositiveOrZero Integer page,
+            @Nullable @Positive Integer size
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "get-transactions";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = "Received request to get list of transaction info";
+
+//        Handler logic call
+        return serviceAspectHandler.handle(
+                List.class,
                 pjp,
                 tracerName,
                 serviceName,

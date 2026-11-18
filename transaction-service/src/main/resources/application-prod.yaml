@@ -11,9 +11,6 @@ management:
       export:
         otlp:
           endpoint: ${OTEL_COLLECTOR_URI}
-  metrics:
-    tags:
-      application: ${SERVICE_NAME}
 
 spring:
   application:

@@ -1,8 +1,8 @@
 package aq.project.aspects;
 
-import aq.project.dto.PaymentServiceCreatePaymentRequestDto;
-import aq.project.dto.PaymentServiceCreatePaymentResponseDto;
-import aq.project.dto.PaymentServicePaymentMethodResponseDto;
+import aq.project.dto.CreatePaymentRequestDto;
+import aq.project.dto.CreatePaymentResponseDto;
+import aq.project.dto.PaymentMethodResponseDto;
 import aq.project.entities.Payment;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.Valid;
@@ -33,21 +33,21 @@ public class PaymentServiceAspect {
     private final ServiceAspectHandler serviceAspectHandler;
 
     @Around("execution(* aq.project.services.PaymentService.createPayment(..)) " +
-            "&& args(paymentServiceCreatePaymentRequestDto)")
-    public PaymentServiceCreatePaymentResponseDto createPayment(
+            "&& args(createPaymentRequestDto)")
+    public CreatePaymentResponseDto createPayment(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto
+            @NotNull @Valid CreatePaymentRequestDto createPaymentRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "create-payment";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
         String logOnBeginning = String.format("Received request to create a new payment for transaction with id: [%s]",
-                paymentServiceCreatePaymentRequestDto.getTransactionId());
+                createPaymentRequestDto.getTransactionId());
 
 //        Handler logic call
         return serviceAspectHandler.handle(
-                PaymentServiceCreatePaymentResponseDto.class,
+                CreatePaymentResponseDto.class,
                 pjp,
                 tracerName,
                 serviceName,
@@ -59,7 +59,7 @@ public class PaymentServiceAspect {
 
     @Around("execution(* aq.project.services.PaymentService.getPaymentMethods(..)) " +
             "&& args(currencyCode, countryCode)")
-    public List<PaymentServicePaymentMethodResponseDto> getPaymentMethods(
+    public List<PaymentMethodResponseDto> getPaymentMethods(
             ProceedingJoinPoint pjp,
             @NotBlank @Pattern(regexp = "[A-Z]{3}") String currencyCode,
             @NotBlank @Pattern(regexp = "[A-Z]{3}") String countryCode

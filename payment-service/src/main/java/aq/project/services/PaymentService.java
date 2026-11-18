@@ -49,14 +49,14 @@ public class PaymentService {
             fallbackMethod = "createPaymentRateLimiterFallback"
     )
     @Transactional
-    public PaymentServiceCreatePaymentResponseDto createPayment(
-            PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto
+    public CreatePaymentResponseDto createPayment(
+            CreatePaymentRequestDto createPaymentRequestDto
     ) {
-        Long paymentMethodId = paymentServiceCreatePaymentRequestDto.getPaymentMethodId();
+        Long paymentMethodId = createPaymentRequestDto.getPaymentMethodId();
 
         PaymentMethod paymentMethod = getPaymentMethod(paymentMethodId);
 
-        Payment newPayment = paymentMapper.toPayment(paymentServiceCreatePaymentRequestDto);
+        Payment newPayment = paymentMapper.toPayment(createPaymentRequestDto);
 
         newPayment.setPaymentId(UUID.randomUUID());
         newPayment.setStatus(PaymentStatus.PENDING);
@@ -67,11 +67,11 @@ public class PaymentService {
 //        See PaymentScheduler.schedulePendingPayment(..) for details.
         Payment savedPayment = paymentRepository.save(newPayment);
 
-        return paymentMapper.toPaymentServiceCreatePaymentResponseDto(savedPayment);
+        return paymentMapper.toCreatePaymentResponseDto(savedPayment);
     }
 
-    private PaymentServiceCreatePaymentResponseDto createPaymentRateLimiterFallback(
-            PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
+    private CreatePaymentResponseDto createPaymentRateLimiterFallback(
+            CreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
             RequestNotPermitted exception
     ) {
         String action = "create-payment";
@@ -96,18 +96,18 @@ public class PaymentService {
             name = "get-payment-methods-rate-limiter",
             fallbackMethod = "getPaymentMethodsRateLimiterFallback"
     )
-    public List<PaymentServicePaymentMethodResponseDto> getPaymentMethods(
+    public List<PaymentMethodResponseDto> getPaymentMethods(
             String currencyCode,
             String countryCode
     ) {
         return paymentMethodRepository
                 .findAllByCurrencyCodeAndCountryCode(currencyCode, countryCode)
                 .stream()
-                .map(paymentMapper::toPaymentServicePaymentMethodResponseDto)
+                .map(paymentMapper::toPaymentMethodResponseDto)
                 .toList();
     }
 
-    private List<PaymentServicePaymentMethodResponseDto> getPaymentMethodsRateLimiterFallback(
+    private List<PaymentMethodResponseDto> getPaymentMethodsRateLimiterFallback(
             String currencyCode,
             String countryCode,
             RequestNotPermitted exception

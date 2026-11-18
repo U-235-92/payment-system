@@ -50,7 +50,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PaymentServicePaymentMethodResponseDto"
+                  $ref: "#/components/schemas/PaymentMethodResponseDto"
         400:
           description: Malformed request
           content:
@@ -86,14 +86,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PaymentServiceCreatePaymentRequestDto"
+              $ref: "#/components/schemas/CreatePaymentRequestDto"
       responses:
         201:
           description: Payment response DTO which describes result of handle payment request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentServiceCreatePaymentResponseDto"
+                $ref: "#/components/schemas/CreatePaymentResponseDto"
         400:
           description: Malformed request
           content:
@@ -109,7 +109,7 @@ tags:
 
 components:
   schemas:
-    PaymentServicePaymentMethodResponseDto:
+    PaymentMethodResponseDto:
       type: object
       required: [ payment_method_id, payment_method_type ]
       properties:
@@ -137,7 +137,7 @@ components:
           items:
             type: string
 
-    PaymentServiceCreatePaymentRequestDto:
+    CreatePaymentRequestDto:
       type: object
       required: [ transaction_id, payment_method_id, amount, currency_code ]
       properties:
@@ -159,7 +159,7 @@ components:
           additionalProperties:
             type: string
 
-    PaymentServiceCreatePaymentResponseDto:
+    CreatePaymentResponseDto:
       type: object
       required: [ transaction_id, payment_id, payment_status ]
       properties:

@@ -1,9 +1,9 @@
 package aq.project.mappers;
 
 import aq.project.dto.CreatePayoutRequestDto;
-import aq.project.dto.PaymentServiceCreatePaymentRequestDto;
-import aq.project.dto.PaymentServiceCreatePaymentResponseDto;
-import aq.project.dto.PaymentServicePaymentMethodResponseDto;
+import aq.project.dto.CreatePaymentRequestDto;
+import aq.project.dto.CreatePaymentResponseDto;
+import aq.project.dto.PaymentMethodResponseDto;
 import aq.project.entities.Payment;
 import aq.project.entities.PaymentMethod;
 import org.mapstruct.Mapper;
@@ -24,7 +24,7 @@ public interface PaymentMapper {
     @Mapping(target = "validationType", source = "requiredFields.validationType")
     @Mapping(target = "validationRule", source = "requiredFields.validationRule")
     @Mapping(target = "defaultValue", source = "requiredFields.defaultValue")
-    PaymentServicePaymentMethodResponseDto toPaymentServicePaymentMethodResponseDto(PaymentMethod paymentMethod);
+    PaymentMethodResponseDto toPaymentMethodResponseDto(PaymentMethod paymentMethod);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "paymentId", ignore = true)
@@ -35,12 +35,12 @@ public interface PaymentMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Payment toPayment(PaymentServiceCreatePaymentRequestDto dto);
+    Payment toPayment(CreatePaymentRequestDto dto);
 
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "paymentId", source = "paymentId")
     @Mapping(target = "paymentStatus", source = "status")
-    PaymentServiceCreatePaymentResponseDto toPaymentServiceCreatePaymentResponseDto(Payment payment);
+    CreatePaymentResponseDto toCreatePaymentResponseDto(Payment payment);
 
     @Mapping(target = "merchantId", ignore = true)
     @Mapping(target = "amount", source = "amount")

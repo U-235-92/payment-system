@@ -1,9 +1,9 @@
 package aq.project.controllers;
 
 import aq.project.controller.PaymentRestControllerApi;
-import aq.project.dto.PaymentServiceCreatePaymentRequestDto;
-import aq.project.dto.PaymentServiceCreatePaymentResponseDto;
-import aq.project.dto.PaymentServicePaymentMethodResponseDto;
+import aq.project.dto.CreatePaymentRequestDto;
+import aq.project.dto.CreatePaymentResponseDto;
+import aq.project.dto.PaymentMethodResponseDto;
 import aq.project.services.PaymentService;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
@@ -23,8 +23,8 @@ public class PaymentRestController implements PaymentRestControllerApi {
     private final TraceContext traceContext;
 
     @Override
-    public ResponseEntity<PaymentServiceCreatePaymentResponseDto> createPayment(
-            PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
+    public ResponseEntity<CreatePaymentResponseDto> createPayment(
+            CreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
             String xTraceId,
             String authorization
     ) {
@@ -35,7 +35,7 @@ public class PaymentRestController implements PaymentRestControllerApi {
     }
 
     @Override
-    public ResponseEntity<List<PaymentServicePaymentMethodResponseDto>> getPaymentMethods(
+    public ResponseEntity<List<PaymentMethodResponseDto>> getPaymentMethods(
             String currencyCode,
             String countryCode,
             String xTraceId,

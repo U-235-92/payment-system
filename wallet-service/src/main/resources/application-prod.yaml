@@ -11,13 +11,11 @@ management:
       export:
         otlp:
           endpoint: ${OTEL_COLLECTOR_URI}
-  metrics:
-    tags:
-      application: ${SERVICE_NAME}
 
 spring:
-  application:
-    name: ${SERVICE_NAME}
+  profiles:
+    active:
+      - ${PROFILE}
 
   security:
     oauth2:

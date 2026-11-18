@@ -5,6 +5,30 @@ logging:
 server:
   port: 8084
 
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces
+
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
+  metrics:
+    tags:
+      application: wallet-service
+
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+
 spring:
   application:
     name: wallet-service
@@ -22,22 +46,6 @@ spring:
 
   flyway:
     enabled: false
-
-management:
-  otlp:
-    metrics:
-      export:
-        enabled: false
-  metrics:
-    tags:
-      application: wallet-service
-  endpoints:
-    web:
-      exposure:
-        include:
-          - prometheus
-          - info
-          - health
 
 resilience4j:
   ratelimiter:

@@ -100,7 +100,7 @@ val dependencyVersionMap = mapOf(
 	"atomikos" to "6.0.1",
 
 //	CommonProjectUtils
-	"common-utils" to "5.1.0"
+	"common-utils" to "5.3.0"
 )
 
 dependencies {

@@ -106,7 +106,7 @@ val dependencyVersionMap = mapOf(
 	"springdoc-openapi" to "3.0.2",
 
 //	CommonProjectUtils
-	"common-utils" to "5.1.0",
+	"common-utils" to "5.3.0",
 
 //	Fake payment provider service API specification
 	"fake-payment-provider-service-api-specification" to "7.0.2-dev"
@@ -289,6 +289,14 @@ tasks.register<Copy>("fetchExternalApi") {
 		.map { apiSpecification -> zipTree(apiSpecification)
 			.matching { include("*$yamlExtension") } })
 	into("$rootDir/openapi")
+}
+
+tasks.register("printApiSpec") {
+//	Print info about current path to open api specs in local machine
+//	Need to debug operations to figure out which actual versions of specs store in local cache
+	doLast {
+		configurations["apiSpec"].forEach { println(">>> $it") }
+	}
 }
 
 tasks.register<Jar>("jarApi") {

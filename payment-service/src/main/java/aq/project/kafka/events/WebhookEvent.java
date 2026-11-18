@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record PaymentStatusEvent(
+public record WebhookEvent(
         @NotNull UUID paymentId,
         @NotNull UUID transactionId,
         @NotBlank String status,

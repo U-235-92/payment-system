@@ -1,9 +1,33 @@
+server:
+  port: 8087
+
 logging:
   level:
     root: info
 
-server:
-  port: 8087
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # OTEL collector URI
+
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
+  metrics:
+    tags:
+      application: payment-service
+
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
 
 spring:
   application:
@@ -18,44 +42,31 @@ spring:
       pool:
         size: 10
 
+  kafka:
+    bootstrapServers:
+      - localhost:29092
+      - localhost:39092
+      - localhost:49092
+    listener:
+      ack-mode: RECORD
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      group-id: payment-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "aq.project.kafka.events"
+
   security:
     oauth2:
-      client:
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/payment-system
-            token-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/token
-        registration:
-          keycloak:
-            client-id: payment-service
-            client-secret: H4fnQQwfECigQWB6UWgzI6255oYZjYgb
-            admin-id: payment-system-admin-cli
-            admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/payment-system
           jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
-
-management:
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: http://localhost:4318/v1/traces # OTEL collector URI
-  otlp:
-    metrics:
-      export:
-        enabled: false
-  metrics:
-    tags:
-      application: payment-service
-  endpoints:
-    web:
-      exposure:
-        include:
-          - prometheus
-          - info
-          - health
 
 resilience4j:
   ratelimiter:

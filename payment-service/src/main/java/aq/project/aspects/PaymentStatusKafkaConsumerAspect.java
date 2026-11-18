@@ -1,6 +1,6 @@
 package aq.project.aspects;
 
-import aq.project.kafka.events.PaymentStatusEvent;
+import aq.project.kafka.events.WebhookEvent;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -26,19 +26,19 @@ public class PaymentStatusKafkaConsumerAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.kafka.PaymentStatusKafkaConsumer.onPaymentStatusEvent(..)) " +
-            "&& args(paymentStatusEvent, acknowledgment)")
-    public void onPaymentStatusEvent(
+    @Around("execution(* aq.project.kafka.WebhookEventKafkaConsumer.onWebhookEvent(..)) " +
+            "&& args(webhookEvent, acknowledgment)")
+    public void onWebhookEvent(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid PaymentStatusEvent paymentStatusEvent,
+            @NotNull @Valid WebhookEvent webhookEvent,
             Acknowledgment acknowledgment
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "on-payment-status-event";
+        String actionName = "on-webhook-event";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
         String logOnBeginning = String.format("Received request to update a status of payment with id: [%s]",
-                paymentStatusEvent.paymentId());
+                webhookEvent.paymentId());
 
 //        Handler logic call
         serviceAspectHandler.handle(

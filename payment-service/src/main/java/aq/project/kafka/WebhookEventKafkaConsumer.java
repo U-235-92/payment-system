@@ -3,7 +3,7 @@ package aq.project.kafka;
 import aq.project.dto.PaymentStatus;
 import aq.project.entities.Payment;
 import aq.project.exceptions.EntityNotFoundException;
-import aq.project.kafka.events.PaymentStatusEvent;
+import aq.project.kafka.events.WebhookEvent;
 import aq.project.repositories.PaymentRepository;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
@@ -19,31 +19,28 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PaymentStatusKafkaConsumer {
+public class WebhookEventKafkaConsumer {
 
     private final PaymentRepository paymentRepository;
 
     private final TraceContext traceContext;
 
     @Transactional
-    @KafkaListener(
-            groupId = "${app.kafka.consumer.group.payment_service_consumer}",
-            topics = "${app.kafka.topics.payment_status_update_response}"
-    )
-    public void onPaymentStatusEvent(
-            PaymentStatusEvent paymentStatusEvent,
+    @KafkaListener(topics = "${app.kafka.topics.payment_status_update_response}")
+    public void onWebhookEvent(
+            WebhookEvent webhookEvent,
             Acknowledgment acknowledgment
     ) {
         String traceId = (traceContext.getTraceId() == null)
                 ? TraceFactory.genTraceId()
                 : traceContext.getTraceId();
 
-        UUID paymentId = paymentStatusEvent.paymentId();
+        UUID paymentId = webhookEvent.paymentId();
 
         PaymentStatus paymentStatus = null;
 
         try {
-            paymentStatus = PaymentStatus.valueOf(paymentStatusEvent.status());
+            paymentStatus = PaymentStatus.valueOf(webhookEvent.status());
 
         } catch (IllegalArgumentException e) {
             log.error("[{}]: Received invalid payment status value: [{}] for payment with payment id: [{}]. " +

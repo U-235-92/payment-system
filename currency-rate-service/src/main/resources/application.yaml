@@ -1,30 +1,22 @@
 server:
   port: 8085
-spring:
-  profiles:
-    active:
-      - dev
-  application:
-    name: currency-rate-service
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080/realms/payment-system
-          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+
 management:
   opentelemetry:
     tracing:
       export:
         otlp:
           endpoint: http://localhost:4318/v1/traces
+
   otlp:
     metrics:
       export:
         enabled: false
+
   metrics:
     tags:
       application: currency-rate-service
+
   endpoints:
     web:
       exposure:
@@ -32,6 +24,22 @@ management:
           - prometheus
           - info
           - health
+
+spring:
+  application:
+    name: currency-rate-service
+
+  profiles:
+    active:
+      - dev
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/payment-system
+          jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+
 resilience4j:
   ratelimiter:
     instances:
@@ -76,6 +84,7 @@ application:
         code: CBR
         name: 'Central Bank of Russia'
         adjustment-factor: 1.0085
+
   client:
     frankfurter:
       base-url: 'https://api.frankfurter.dev/v2'
@@ -86,11 +95,13 @@ application:
         provider: '/provider/{code}'
         currencies: '/currencies'
         currency: '/currency/{code}'
+
   schedlock:
     update-rate-shedlock:
       name: updateRatesSchedLock
       lock-at-least-for: 30s
       lock-at-most-for: 3600s
+
   scheduler:
     update-rate-scheduler:
       fixed-rate: 3600

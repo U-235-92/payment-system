@@ -76,6 +76,50 @@ services:
       timeout: 5s
       retries: 3
 
+  transaction-service:
+    container_name: transaction-service
+    build:
+      context: .
+      dockerfile: ./transaction-service/Dockerfile
+    image: u23592/transaction-service:1.0.0
+    env_file:
+      - ./transaction-service/.env
+    ports:
+      - "8083:8083"
+    networks:
+      - app-network
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+      otel-collector:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+      wallet-service:
+        condition: service_healthy
+      transaction-service-db-shard-0:
+        condition: service_healthy
+      transaction-service-db-shard-1:
+        condition: service_healthy
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: container=transaction-service
+    healthcheck:
+      test: [ "CMD", "curl", "http://localhost:8083/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   wallet-service:
     container_name: wallet-service
     build:
@@ -85,7 +129,7 @@ services:
     env_file:
       - ./wallet-service/.env
     ports:
-      - "8083:8083"
+      - "8084:8084"
     networks:
       - app-network
     depends_on:
@@ -113,47 +157,7 @@ services:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         loki-external-labels: container=wallet-service
     healthcheck:
-      test: [ "CMD", "curl", "http://localhost:8083/actuator/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  transaction-service:
-    container_name: transaction-service
-    build:
-      context: .
-      dockerfile: ./transaction-service/Dockerfile
-    image: u23592/transaction-service:1.0.0
-    env_file:
-      - ./transaction-service/.env
-    ports:
-      - "8084:8084"
-    networks:
-      - app-network
-    depends_on:
-      keycloak-db:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
-      prometheus:
-        condition: service_healthy
-      loki:
-        condition: service_healthy
-      grafana:
-        condition: service_healthy
-      otel-collector:
-        condition: service_healthy
-      zipkin:
-        condition: service_healthy
-      wallet-service:
-        condition: service_healthy
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: container=transaction-service
-    healthcheck:
-      test: [ "CMD", "curl", "http://localhost:8083/actuator/health" ]
+      test: [ "CMD", "curl", "http://localhost:8084/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -193,14 +197,14 @@ services:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         loki-external-labels: container=currency-rate-service
 
-  payment-provider-service:
-    container_name: payment-provider-service
+  fake-payment-provider-service:
+    container_name: fake-payment-provider-service
     build:
       context: .
-      dockerfile: ./payment-provider-service/Dockerfile
-    image: u23592/payment-provider-service:1.0.0
+      dockerfile: ./fake-payment-provider-service/Dockerfile
+    image: u23592/fake-payment-provider-service:1.0.0
     env_file:
-      - ./payment-provider-service/.env
+      - ./fake-payment-provider-service/.env
     ports:
       - "8086:8086"
     networks:
@@ -216,13 +220,13 @@ services:
         condition: service_healthy
       zipkin:
         condition: service_healthy
-      payment-provider-service-db:
+      fake-payment-provider-service-db:
         condition: service_healthy
     logging:
       driver: loki
       options:
         loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: container=payment-provider-service
+        loki-external-labels: container=fake-payment-provider-service
 
   payment-service:
     container_name: payment-service
@@ -255,6 +259,37 @@ services:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         loki-external-labels: container=payment-service
 
+  webhook-service:
+    container_name: webhook-service
+    build:
+      context: .
+      dockerfile: ./webhook-service/Dockerfile
+    image: u23592/webhook-service:1.0.0
+    env_file:
+      - ./webhook-service/.env
+    ports:
+      - "8088:8088"
+    networks:
+      - app-network
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+      otel-collector:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+      webhook-service-db:
+        condition: service_healthy
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: container=webhook-service
+
   keycloak-db:
     image: postgres:18.3
     container_name: keycloak_db
@@ -276,9 +311,51 @@ services:
       retries: 5
     restart: unless-stopped
 
+  transaction-service-db-shard-0:
+    image: postgres:18.3
+    container_name: transaction-service-db-shard-0
+    ports:
+      - "5465:5432"
+    networks:
+      - app-network
+    volumes:
+      - transaction_service_db_shard_0_data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: transactions_db
+      PGDATA: /var/lib/postgresql/17/docker
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d transactions_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  transaction-service-db-shard-1:
+    image: postgres:18.3
+    container_name: transaction-service-db-shard-1
+    ports:
+      - "5475:5432"
+    networks:
+      - app-network
+    volumes:
+      - transaction_service_db_shard_1_data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: transactions_db
+      PGDATA: /var/lib/postgresql/17/docker
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d transactions_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   wallet-service-db-shard-0:
     image: postgres:18.3
-    container_name: wallet_service_db_shard_0
+    container_name: wallet-service-db-shard-0
     ports:
       - "5445:5432"
     networks:
@@ -299,7 +376,7 @@ services:
 
   wallet-service-db-shard-1:
     image: postgres:18.3
-    container_name: wallet_service_db_shard_1
+    container_name: wallet-service-db-shard-1
     ports:
       - "5455:5432"
     networks:
@@ -339,22 +416,22 @@ services:
       retries: 5
     restart: unless-stopped
 
-  payment-provider-service-db:
+  fake-payment-provider-service-db:
     image: postgres:18.3
-    container_name: payment-provider-service-db
+    container_name: fake-payment-provider-service-db
     ports:
       - "5436:5432"
     networks:
       - app-network
     volumes:
-      - payment_provider_service_data:/var/lib/postgresql
+      - fake_payment_provider_service_data:/var/lib/postgresql
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: payment_provider_service_db
+      POSTGRES_DB: fake_payment_provider_service_db
       PGDATA: /var/lib/postgresql/17/docker
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U root -d payment_provider_service_db" ]
+      test: [ "CMD-SHELL", "pg_isready -U root -d fake_payment_provider_service_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -376,6 +453,27 @@ services:
       PGDATA: /var/lib/postgresql/17/docker
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U root -d payment_service_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  webhook-service-db:
+    image: postgres:18.3
+    container_name: webhook-service-db
+    ports:
+      - "5438:5432"
+    networks:
+      - app-network
+    volumes:
+      - webhook_service_data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: webhook_service_db
+      PGDATA: /var/lib/postgresql/17/docker
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d webhook_service_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -594,6 +692,10 @@ networks:
 volumes:
   postgres_data:
     driver: local
+  transaction_service_db_shard_0_data:
+    driver: local
+  transaction_service_db_shard_1_data:
+    driver: local
   wallet_service_shard_0_data:
     driver: local
   wallet_service_shard_1_data:
@@ -614,7 +716,9 @@ volumes:
     driver: local
   currency_rate_service_data:
     driver: local
-  payment_provider_service_data:
+  fake_payment_provider_service_data:
     driver: local
   payment_service_data:
+    driver: local
+  webhook_service_data:
     driver: local

@@ -99,8 +99,8 @@ public class TransactionService {
         }
 
         BigDecimal amount = initTransactionRequestDto.getAmount();
-        BigDecimal conversionRate = initTransactionRequestDto.getConversionRate();
-        BigDecimal convertedAmount = amount.multiply(conversionRate);
+        BigDecimal walletConversionRate = initTransactionRequestDto.getWalletConversionRate();
+        BigDecimal convertedAmount = amount.multiply(walletConversionRate);
         BigDecimal fee = feeService.evaluateFeeForAmount(convertedAmount);
         BigDecimal totalAmount = convertedAmount.add(fee);
         BigDecimal walletBalance = pendingWalletInfo.getBalance();
@@ -111,7 +111,7 @@ public class TransactionService {
             return new InitTransactionResponseDto()
                     .walletId(pendingWalletInfo.getWalletId())
                     .amount(amount)
-                    .conversionRate(conversionRate)
+                    .conversionRate(walletConversionRate)
                     .fee(fee)
                     .totalAmount(totalAmount)
                     .available(true)
@@ -132,7 +132,7 @@ public class TransactionService {
             return new InitTransactionResponseDto()
                     .walletId(pendingWalletInfo.getWalletId())
                     .amount(amount)
-                    .conversionRate(conversionRate)
+                    .conversionRate(walletConversionRate)
                     .fee(fee)
                     .totalAmount(totalAmount)
                     .available(false)
@@ -227,11 +227,18 @@ public class TransactionService {
     public UUID confirmTransaction(
             ConfirmTransactionRequestDto confirmTransactionRequestDto
     ) {
+        BigDecimal transactionAmount = confirmTransactionRequestDto.getAmount();
+
+        BigDecimal walletConversionRate = confirmTransactionRequestDto.getWalletConversionRate();
+        BigDecimal walletConvertedAmount = transactionAmount.multiply(walletConversionRate);
+        BigDecimal walletFee = feeService.evaluateFeeForAmount(walletConvertedAmount);
+        BigDecimal walletTotalAmount = walletFee.add(walletConvertedAmount);
+
         Transaction newTransaction = transactionMapper.toTransaction(confirmTransactionRequestDto);
 
         newTransaction.setTransactionStatus(TransactionStatus.PENDING);
         newTransaction.setDescription(null);
-        newTransaction.setFee(feeService.evaluateFeeForAmount(newTransaction.getAmount()));
+        newTransaction.setWalletAmount(walletTotalAmount);
 
         Transaction savedTransaction = transactionRepository.save(newTransaction);
 
@@ -244,7 +251,7 @@ public class TransactionService {
             case DEPOSIT ->  {
                 DepositWalletRequestDto dto = new DepositWalletRequestDto()
                         .walletId(savedTransaction.getWalletId())
-                        .amount(savedTransaction.getAmount())
+                        .amount(savedTransaction.getWalletAmount())
                         .currencyCode(savedTransaction.getCurrencyCode());
 
                 walletApiClient.depositWallet(dto, traceId, authorization);
@@ -255,7 +262,7 @@ public class TransactionService {
             case WITHDRAWAL -> {
                 WithdrawalWalletRequestDto dto = new WithdrawalWalletRequestDto()
                         .walletId(savedTransaction.getWalletId())
-                        .amount(savedTransaction.getAmount())
+                        .amount(savedTransaction.getWalletAmount())
                         .currencyCode(savedTransaction.getCurrencyCode());
 
                 walletApiClient.withdrawalWallet(dto, traceId, authorization);
@@ -264,14 +271,21 @@ public class TransactionService {
             }
 
             case TRANSFER -> {
+                BigDecimal targetWalletConversionRate = confirmTransactionRequestDto.getTargetWalletConversionRate();
+                BigDecimal targetWalletConvertedAmount = transactionAmount.multiply(targetWalletConversionRate);
+                BigDecimal targetWalletFee = feeService.evaluateFeeForAmount(targetWalletConvertedAmount);
+                BigDecimal targetWalletTotalAmount = targetWalletFee.add(targetWalletConvertedAmount);
+
                 TransferWalletRequestDto dto = new TransferWalletRequestDto()
                         .sourceWalletId(savedTransaction.getWalletId())
                         .targetWalletId(savedTransaction.getTargetWalletId())
-                        .amount(savedTransaction.getAmount())
+                        .walletAmount(savedTransaction.getWalletAmount())
+                        .targetWalletAmount(targetWalletTotalAmount)
                         .currencyCode(savedTransaction.getCurrencyCode());
 
                 walletApiClient.transferWallet(dto, traceId, authorization);
 
+                savedTransaction.setTargetWalletAmount(targetWalletTotalAmount);
                 savedTransaction.completeTransaction();
             }
 
@@ -375,7 +389,7 @@ public class TransactionService {
 //                    Compensation on fail
                 WithdrawalWalletRequestDto dto = new WithdrawalWalletRequestDto()
                         .walletId(transaction.getWalletId())
-                        .amount(transaction.getAmount())
+                        .amount(transaction.getWalletAmount())
                         .currencyCode(transaction.getCurrencyCode());
 
                 walletApiClient.withdrawalWallet(dto, traceId, authorization);
@@ -385,7 +399,7 @@ public class TransactionService {
 //                    Compensation on fail
                 DepositWalletRequestDto dto = new DepositWalletRequestDto()
                         .walletId(transaction.getWalletId())
-                        .amount(transaction.getAmount())
+                        .amount(transaction.getWalletAmount())
                         .currencyCode(transaction.getCurrencyCode());
 
                 walletApiClient.depositWallet(dto, traceId, authorization);
@@ -396,7 +410,8 @@ public class TransactionService {
                 TransferWalletRequestDto dto = new TransferWalletRequestDto()
                         .sourceWalletId(transaction.getTargetWalletId())
                         .targetWalletId(transaction.getWalletId())
-                        .amount(transaction.getAmount())
+                        .walletAmount(transaction.getTargetWalletAmount())
+                        .targetWalletAmount(transaction.getWalletAmount())
                         .currencyCode(transaction.getCurrencyCode());
 
                 walletApiClient.transferWallet(dto, traceId, authorization);
@@ -524,7 +539,7 @@ public class TransactionService {
                 .toList();
     }
 
-    public List<TransactionInfoResponseDto> getTransactionsRateLimiterFallback(
+    private List<TransactionInfoResponseDto> getTransactionsRateLimiterFallback(
             UUID userId,
             UUID walletId,
             PaymentType type,

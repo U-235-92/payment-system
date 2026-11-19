@@ -19,7 +19,7 @@ public interface TransactionMapper {
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "userId", source = "userId")
     @Mapping(target = "walletId", source = "walletId")
-    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "amount", source = "walletAmount")
     @Mapping(target = "currency", source = "currencyCode")
     @Mapping(target = "timestamp", expression = "java(toTimestamp())")
     DepositTransactionRequestEvent toDepositTransactionRequestEvent(Transaction transaction);
@@ -28,7 +28,7 @@ public interface TransactionMapper {
     @Mapping(target = "userId", source = "userId")
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "targetWalletId", source = "targetWalletId")
-    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "amount", source = "walletAmount")
     @Mapping(target = "currency", source = "currencyCode")
     @Mapping(target = "timestamp", expression = "java(toTimestamp())")
     WithdrawalTransactionRequestEvent toWithdrawalTransactionRequestEvent(Transaction transaction);
@@ -40,7 +40,8 @@ public interface TransactionMapper {
     @Mapping(target = "userId", source = "userId")
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "targetWalletId", source = "targetWalletId")
-    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "walletAmount", ignore = true)
+    @Mapping(target = "targetWalletAmount", ignore = true)
     @Mapping(target = "currencyCode", source = "currencyCode")
     @Mapping(target = "paymentType", source = "paymentType")
     @Mapping(target = "transactionStatus", ignore = true)
@@ -52,7 +53,8 @@ public interface TransactionMapper {
     @Mapping(target = "userId", source = "userId")
     @Mapping(target = "walletId", source = "walletId")
     @Mapping(target = "targetWalletId", source = "targetWalletId")
-    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "walletAmount", source = "walletAmount")
+    @Mapping(target = "targetWalletAmount", source = "targetWalletAmount")
     @Mapping(target = "paymentType", source = "paymentType")
     @Mapping(target = "currencyCode", source = "currencyCode")
     TransactionInfoResponseDto toTransactionInfoResponseDto(Transaction transaction);

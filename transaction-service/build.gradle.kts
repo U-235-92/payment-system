@@ -19,7 +19,7 @@ val artifact = "transaction-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "7.0.2-dev"
+val specificationArtifactVersion = "7.0.3-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -113,7 +113,7 @@ val dependencyVersionMap = mapOf(
 	"common-utils" to "5.3.0",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "7.0.2-dev"
+	"wallet-service-api-specification" to "7.0.3-dev"
 )
 
 dependencies {

@@ -273,7 +273,7 @@ components:
     InitTransactionRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ wallet_id, target_wallet_id, amount, conversion_rate, payment_type, currency_code ]
+      required: [ wallet_id, target_wallet_id, amount, wallet_conversion_rate, target_wallet_conversion_rate, payment_type, currency_code ]
       properties:
         wallet_id:
           type: string
@@ -289,10 +289,15 @@ components:
           minimum: 0.01
           description: Amount of transaction
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
-        conversion_rate:
+        wallet_conversion_rate:
           type: number
           format: decimal
           description: Conversion rate for currency
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        target_wallet_conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency (for transfer payment method only)
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
         payment_type:
           $ref: "#/components/schemas/PaymentType"
@@ -349,7 +354,7 @@ components:
     ConfirmTransactionRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ user_id, wallet_id, target_wallet_id, amount, conversion_rate, payment_type, currency_code ]
+      required: [ user_id, wallet_id, target_wallet_id, amount, wallet_conversion_rate, target_wallet_conversion_rate, payment_type, currency_code ]
       properties:
         user_id:
           type: string
@@ -369,10 +374,15 @@ components:
           minimum: 0.01
           description: Amount of transaction
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
-        conversion_rate:
+        wallet_conversion_rate:
           type: number
           format: decimal
           description: Conversion rate for currency
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        target_wallet_conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency (for transfer payment method only)
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
         payment_type:
           $ref: "#/components/schemas/PaymentType"
@@ -384,7 +394,7 @@ components:
     TransactionInfoResponseDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ transaction_id, user_id, wallet_id, target_wallet_id, amount, payment_type, currency_code ]
+      required: [ transaction_id, user_id, wallet_id, target_wallet_id, wallet_amount, target_wallet_amount, payment_type, currency_code ]
       properties:
         transaction_id:
           type: string
@@ -402,11 +412,17 @@ components:
           type: string
           format: uuid
           description: UUID of target wallet (for transfer payment method only)
-        amount:
+        wallet_amount:
           type: number
           format: decimal
           minimum: 0.01
           description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        target_wallet_amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Amount of transaction (for transfer payment method only)
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
         payment_type:
           $ref: "#/components/schemas/PaymentType"

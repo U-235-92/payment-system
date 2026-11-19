@@ -452,7 +452,7 @@ components:
     TransferWalletRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ source_wallet_id, target_wallet_id, amount, currency_code ]
+      required: [ source_wallet_id, target_wallet_id, wallet_amount, target_wallet_amount, currency_code ]
       properties:
         source_wallet_id:
           type: string
@@ -462,7 +462,13 @@ components:
           type: string
           format: uuid
           description: UUID of target wallet
-        amount:
+        wallet_amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        target_wallet_amount:
           type: number
           format: decimal
           minimum: 0.01

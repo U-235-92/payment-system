@@ -3,8 +3,10 @@ package aq.project.utils.security;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class SecurityUtil {
@@ -15,7 +17,9 @@ public abstract class SecurityUtil {
 
             byte[] sourceBytes = target.getBytes();
 
-            return new String(messageDigest.digest(sourceBytes));
+            byte[] digest = messageDigest.digest(sourceBytes);
+
+            return new String(HexFormat.of().formatHex(digest).getBytes(), StandardCharsets.UTF_8);
 
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);

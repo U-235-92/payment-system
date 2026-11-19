@@ -4,7 +4,7 @@ import aq.project.clients.KeycloakServiceClientFacade;
 import aq.project.dto.*;
 import aq.project.exceptions.FallbackOperationException;
 import aq.project.person_service.PersonApiClient;
-import aq.project.utils.mappers.PersonMapper;
+import aq.project.utils.telemetry.TraceFactory;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +21,11 @@ import reactor.core.publisher.Mono;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
-import static aq.project.utils.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
-import static aq.project.utils.telemetry.TracePropagator.fetchTraceId;
-import static aq.project.utils.telemetry.TracePropagator.genTraceId;
+import static aq.project.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+import static aq.project.telemetry.TracePropagator.fetchTraceId;
 
 @Slf4j
 @Service
@@ -35,36 +35,34 @@ public class PersonService {
     @Value("${spring.application.name}")
     private String serviceName;
 
-    private final PersonMapper personMapper = PersonMapper.INSTANCE;
+    private final PersonApiClient personClient;
 
-    private final PersonApiClient personApiClient;
-
-    private final KeycloakServiceClientFacade keycloakServiceClientFacade;
+    private final KeycloakServiceClientFacade keycloakClient;
 
     @RateLimiter(
             name = "login-person-rate-limiter",
-            fallbackMethod = "loginFallback"
+            fallbackMethod = "loginPersonFallback"
     )
     @CircuitBreaker(
             name = "login-person-circuitbreaker",
-            fallbackMethod = "loginFallback"
+            fallbackMethod = "loginPersonFallback"
     )
-    public Mono<IndividualsApiServiceTokenResponseDto> loginPerson(
-            IndividualsApiServiceLoginPersonRequestDto loginPersonRequestDto
+    public Mono<TokenResponseDto> loginPerson(
+            LoginPersonRequestDto loginPersonRequestDto
     ) {
         String email = loginPersonRequestDto.getEmail();
         String password = loginPersonRequestDto.getPassword();
 
-        return keycloakServiceClientFacade.loginPerson(email, password);
+        return keycloakClient.loginPerson(email, password);
     }
 
-    private Mono<IndividualsApiServiceTokenResponseDto> loginFallback(
-            IndividualsApiServiceLoginPersonRequestDto loginPersonRequestDto,
+    private Mono<TokenResponseDto> loginPersonFallback(
+            LoginPersonRequestDto loginPersonRequestDto,
             Exception exception
     ) {
         return Mono.deferContextual(context -> {
             String email = loginPersonRequestDto.getEmail();
-            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, genTraceId());
+            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, TraceFactory.genTraceId());
             String action = "login-person-fallback";
             String exceptionClassSimpleName = exception.getClass().getSimpleName();
             String exceptionMessage = exception.getMessage();
@@ -79,36 +77,36 @@ public class PersonService {
 
     @RateLimiter(
             name = "create-person-rate-limiter",
-            fallbackMethod = "createFallback"
+            fallbackMethod = "createPersonFallback"
     )
     @CircuitBreaker(
             name = "create-person-circuitbreaker",
-            fallbackMethod = "createFallback"
+            fallbackMethod = "createPersonFallback"
     )
-    public Mono<IndividualsApiServiceTokenResponseDto> createPerson(
-            IndividualsApiServiceCreatePersonRequestDto createPersonRequestDto
+    public Mono<TokenResponseDto> createPerson(
+            CreatePersonRequestDto createPersonRequestDto
     ) {
         String email = createPersonRequestDto.getEmail();
         String password = createPersonRequestDto.getPassword();
 
         return fetchTraceId()
-                .flatMap(traceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                        .flatMap(jwtHeader -> keycloakServiceClientFacade.createPerson(jwtHeader, createPersonRequestDto)
+                .flatMap(traceId -> keycloakClient.getAdminBearerToken()
+                        .flatMap(jwtHeader -> keycloakClient.createPerson(jwtHeader, createPersonRequestDto)
                                 .doOnError(Mono::error)
                                 .flatMap(personKeycloakId -> createPersonOnPersonService(traceId, jwtHeader, personKeycloakId, createPersonRequestDto)
-                                        .onErrorResume(personServiceException -> keycloakServiceClientFacade.undoCreatePerson(jwtHeader, personKeycloakId)
+                                        .onErrorResume(personServiceException -> keycloakClient.undoCreatePerson(jwtHeader, personKeycloakId)
                                                 .doOnError(Mono::error)
                                                 .then(Mono.error(personServiceException)))
-                                        .then(keycloakServiceClientFacade.loginPerson(email, password)))));
+                                        .then(keycloakClient.loginPerson(email, password)))));
     }
 
-    private Mono<IndividualsApiServiceTokenResponseDto> createFallback(
-            IndividualsApiServiceCreatePersonRequestDto createPersonRequestDto,
+    private Mono<TokenResponseDto> createPersonFallback(
+            CreatePersonRequestDto createPersonRequestDto,
             Exception exception
     ) {
         return Mono.deferContextual(context -> {
             String email = createPersonRequestDto.getEmail();
-            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, genTraceId());
+            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, TraceFactory.genTraceId());
             String action = "create-person-fallback";
             String exceptionClassSimpleName = exception.getClass().getSimpleName();
             String exceptionMessage = exception.getMessage();
@@ -125,50 +123,48 @@ public class PersonService {
             String traceId,
             String authorization,
             UUID personKeycloakId,
-            IndividualsApiServiceCreatePersonRequestDto individualsApiServiceCreatePersonRequestDto
+            CreatePersonRequestDto createPersonRequestDto
     ) {
-        individualsApiServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
+        createPersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = personMapper
-                .toPersonServiceCreatePersonRequestDto(individualsApiServiceCreatePersonRequestDto);
-
-        return personApiClient.createPerson(traceId, Mono.just(personServiceCreatePersonRequestDto), authorization)
+        return personClient
+                .createPerson(Mono.just(createPersonRequestDto), traceId, authorization)
                 .flatMap(personServiceResponse -> Mono.empty())
                 .then();
     }
 
     @RateLimiter(
             name = "update-person-rate-limiter",
-            fallbackMethod = "updateFallback"
+            fallbackMethod = "updatePersonFallback"
     )
     @CircuitBreaker(
             name = "update-person-circuitbreaker",
-            fallbackMethod = "updateFallback"
+            fallbackMethod = "updatePersonFallback"
     )
     public Mono<Void> updatePerson(
             UUID jwtPersonKeycloakId,
-            IndividualsApiServiceUpdatePersonRequestDto updatePersonRequestDto
+            UpdatePersonRequestDto updatePersonRequestDto
     ) {
         return fetchTraceId()
                 .flatMap(traceId -> checkValidPersonKeycloakId(jwtPersonKeycloakId, updatePersonRequestDto.getPersonKeycloakId(), "update-person")
-                        .then(keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
+                        .then(keycloakClient.getAdminBearerToken()
                                 .flatMap(jwtHeader -> updatePersonOnPersonService(traceId, jwtHeader, updatePersonRequestDto)
                                         .doOnError(Mono::error)
-                                        .then(keycloakServiceClientFacade.updatePerson(jwtHeader, updatePersonRequestDto)
+                                        .then(keycloakClient.updatePerson(jwtHeader, updatePersonRequestDto)
                                                 .onErrorResume(keycloakServiceException -> undoUpdatePersonOnPersonService(traceId, jwtHeader, updatePersonRequestDto)
                                                         .doOnError(Mono::error)
                                                         .then(Mono.error(keycloakServiceException)))))))
                 .then();
     }
 
-    private Mono<Void> updateFallback(
+    private Mono<Void> updatePersonFallback(
             UUID jwtPersonKeycloakId,
-            IndividualsApiServiceUpdatePersonRequestDto updatePersonRequestDto,
+            UpdatePersonRequestDto updatePersonRequestDto,
             Exception exception
     ) {
         return Mono.deferContextual(context -> {
             UUID personKeycloakId = updatePersonRequestDto.getPersonKeycloakId();
-            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, genTraceId());
+            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, TraceFactory.genTraceId());
             String action = "update-person-fallback";
             String exceptionClassSimpleName = exception.getClass().getSimpleName();
             String exceptionMessage = exception.getMessage();
@@ -184,50 +180,48 @@ public class PersonService {
     private Mono<Void> updatePersonOnPersonService(
             String traceId,
             String authorization,
-            IndividualsApiServiceUpdatePersonRequestDto updatePersonRequestDto
+            UpdatePersonRequestDto updatePersonRequestDto
     ) {
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = personMapper
-                .toPersonServiceUpdatePersonRequestDto(updatePersonRequestDto);
-
-        return personApiClient.updatePerson(traceId, Mono.just(personServiceUpdatePersonRequestDto), authorization)
+        return personClient
+                .updatePerson(Mono.just(updatePersonRequestDto), traceId, authorization)
                 .then();
     }
 
     private Mono<HttpStatusCode> undoUpdatePersonOnPersonService(
             String traceId,
             String authorization,
-            IndividualsApiServiceUpdatePersonRequestDto updatePersonRequestDto
+            UpdatePersonRequestDto updatePersonRequestDto
     ) {
         UUID personKeycloakId = updatePersonRequestDto.getPersonKeycloakId();
 
         String description = String.format("Undo update person with keycloak id: [%s]", personKeycloakId);
 
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoRequestDto = getPersonServiceUndoUpdateRequestDto(
-                personKeycloakId, description);
+        UndoUpdatePersonRequestDto undoRequestDto = getUndoUpdateRequestDto(personKeycloakId, description);
 
-        return personApiClient.undoUpdatePerson(traceId, Mono.just(personServiceUndoRequestDto), authorization)
+        return personClient
+                .undoUpdatePerson(Mono.just(undoRequestDto), traceId, authorization)
                 .flatMap(personServiceResponse -> Mono.just(personServiceResponse.getStatusCode()));
     }
 
-    private PersonServiceUndoUpdatePersonRequestDto getPersonServiceUndoUpdateRequestDto(
+    private UndoUpdatePersonRequestDto getUndoUpdateRequestDto(
             UUID personKeycloakId,
             String description
     ) {
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoRequestDto = new PersonServiceUndoUpdatePersonRequestDto();
+        UndoUpdatePersonRequestDto undoUpdatePersonRequestDto = new UndoUpdatePersonRequestDto();
 
-        personServiceUndoRequestDto.setPersonKeycloakId(personKeycloakId);
-        personServiceUndoRequestDto.setDescription(description);
+        undoUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
+        undoUpdatePersonRequestDto.setDescription(description);
 
-        return personServiceUndoRequestDto;
+        return undoUpdatePersonRequestDto;
     }
 
     @RateLimiter(
             name = "delete-person-rate-limiter",
-            fallbackMethod = "deleteFallback"
+            fallbackMethod = "deletePersonFallback"
     )
     @CircuitBreaker(
             name = "delete-person-circuitbreaker",
-            fallbackMethod = "deleteFallback"
+            fallbackMethod = "deletePersonFallback"
     )
     public Mono<Void> deletePerson(
             UUID jwtPersonKeycloakId,
@@ -235,23 +229,23 @@ public class PersonService {
     ) {
         return fetchTraceId()
                 .flatMap(traceId -> checkValidPersonKeycloakId(jwtPersonKeycloakId, requestPersonKeycloakId, "delete-person")
-                        .then(keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                                .flatMap(jwtHeader -> personApiClient.deletePerson(requestPersonKeycloakId, traceId, jwtHeader)
+                        .then(keycloakClient.getAdminBearerToken()
+                                .flatMap(jwtHeader -> personClient.deletePerson(requestPersonKeycloakId, traceId, jwtHeader)
                                         .doOnError(Mono::error)
-                                        .then(keycloakServiceClientFacade.deletePerson(jwtHeader, requestPersonKeycloakId)
+                                        .then(keycloakClient.deletePerson(jwtHeader, requestPersonKeycloakId)
                                                 .onErrorResume(keycloakServiceException -> undoDeletePersonOnPersonService(traceId, jwtHeader, requestPersonKeycloakId)
                                                         .doOnError(Mono::error)
                                                         .then(Mono.error(keycloakServiceException))))))
                 .then());
     }
 
-    private Mono<Void> deleteFallback(
+    private Mono<Void> deletePersonFallback(
             UUID jwtPersonKeycloakId,
             UUID requestPersonKeycloakId,
             Exception exception
     ) {
         return Mono.deferContextual(context -> {
-            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, genTraceId());
+            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, TraceFactory.genTraceId());
             String action = "delete-person-fallback";
             String exceptionClassSimpleName = exception.getClass().getSimpleName();
             String exceptionMessage = exception.getMessage();
@@ -271,46 +265,46 @@ public class PersonService {
     ) {
         String description = String.format("Undo delete person with id: [%s]", personKeycloakId);
 
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoRequestDto = getPersonServiceUndoDeleteRequestDto(
-                personKeycloakId, description);
+        UndoDeletePersonRequestDto undoDeletePersonRequestDto = getUndoDeleteRequestDto(personKeycloakId, description);
 
-        return personApiClient.undoDeletePerson(traceId, Mono.just(personServiceUndoRequestDto), authorization)
+        return personClient
+                .undoDeletePerson(Mono.just(undoDeletePersonRequestDto), traceId, authorization)
                 .flatMap(personServiceResponse -> Mono.just(personServiceResponse.getStatusCode()));
     }
 
-    private PersonServiceUndoDeletePersonRequestDto getPersonServiceUndoDeleteRequestDto(
+    private UndoDeletePersonRequestDto getUndoDeleteRequestDto(
             UUID personKeycloakId,
             String description
     ) {
-        PersonServiceUndoDeletePersonRequestDto personServiceUndoRequestDto = new PersonServiceUndoDeletePersonRequestDto();
+        UndoDeletePersonRequestDto undoDeletePersonRequestDto = new UndoDeletePersonRequestDto();
 
-        personServiceUndoRequestDto.setPersonKeycloakId(personKeycloakId);
-        personServiceUndoRequestDto.setDescription(description);
+        undoDeletePersonRequestDto.setPersonKeycloakId(personKeycloakId);
+        undoDeletePersonRequestDto.setDescription(description);
 
-        return personServiceUndoRequestDto;
+        return undoDeletePersonRequestDto;
     }
 
     @RateLimiter(
             name = "get-person-info-rate-limiter",
-            fallbackMethod = "getInfoFallback"
+            fallbackMethod = "getPersonInfoFallback"
     )
     @CircuitBreaker(
             name = "get-person-info-circuitbreaker",
-            fallbackMethod = "getInfoFallback"
+            fallbackMethod = "getPersonInfoFallback"
     )
-    public Mono<IndividualsApiServicePersonInfoResponseDto> getPersonInfo(
+    public Mono<PersonInfoResponseDto> getPersonInfo(
             Authentication authentication
     ) {
-        return getIndividualsApiServicePersonInfoResponseDto(authentication)
-                .flatMap(this::complementIndividualsApiServicePersonInfoResponseDto);
+        return getPersonInfoResponseDto(authentication)
+                .flatMap(this::complementPersonInfoResponseDto);
     }
 
-    private Mono<IndividualsApiServicePersonInfoResponseDto> getInfoFallback(
+    private Mono<PersonInfoResponseDto> getPersonInfoFallback(
             Authentication authentication,
             Exception exception
     ) {
         return Mono.deferContextual(context -> {
-            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, genTraceId());
+            String traceId = context.getOrDefault(X_TRACE_ID_HEADER, TraceFactory.genTraceId());
             String action = "get-person-info-fallback";
             String exceptionClassSimpleName = exception.getClass().getSimpleName();
             String exceptionMessage = exception.getMessage();
@@ -323,21 +317,21 @@ public class PersonService {
         });
     }
 
-    private Mono<IndividualsApiServicePersonInfoResponseDto> getIndividualsApiServicePersonInfoResponseDto(
+    private Mono<PersonInfoResponseDto> getPersonInfoResponseDto(
             Authentication authentication
     ) {
         if(authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt))
             return Mono.error(new HttpClientErrorException(
                     HttpStatus.UNAUTHORIZED, "Access denied. Valid JWT required."));
 
-        IndividualsApiServicePersonInfoResponseDto dto = new IndividualsApiServicePersonInfoResponseDto();
+        PersonInfoResponseDto personInfoResponseDto = new PersonInfoResponseDto();
 
-        dto.setPersonKeycloakId(UUID.fromString(jwt.getSubject()));
-        dto.setEmail(jwt.getClaim("email"));
-        dto.setRoles(getUserRoles(jwt));
-        dto.setCreatedAt(jwt.getIssuedAt().atOffset(ZoneOffset.UTC));
+        personInfoResponseDto.setPersonKeycloakId(UUID.fromString(jwt.getSubject()));
+        personInfoResponseDto.setEmail(jwt.getClaim("email"));
+        personInfoResponseDto.setRoles(getUserRoles(jwt));
+        personInfoResponseDto.setCreatedAt(jwt.getIssuedAt().atOffset(ZoneOffset.UTC));
 
-        return Mono.just(dto);
+        return Mono.just(personInfoResponseDto);
     }
 
     @SuppressWarnings("unchecked")
@@ -351,35 +345,24 @@ public class PersonService {
                 .toList();
     }
 
-    private Mono<IndividualsApiServicePersonInfoResponseDto> complementIndividualsApiServicePersonInfoResponseDto(
-            IndividualsApiServicePersonInfoResponseDto individualsApiServicePersonInfoResponseDto
+    private Mono<PersonInfoResponseDto> complementPersonInfoResponseDto(
+            PersonInfoResponseDto personInfoResponseDto
     ) {
-        UUID personKeycloakId = individualsApiServicePersonInfoResponseDto.getPersonKeycloakId();
+        UUID personKeycloakId = personInfoResponseDto.getPersonKeycloakId();
 
         return fetchTraceId()
-                .flatMap(traceId -> keycloakServiceClientFacade.getAdminJwtAsAuthorizationHeaderValue()
-                        .flatMap(jwtHeader -> getPersonServicePersonInfoResponseDto(traceId, jwtHeader, personKeycloakId)
-                                .flatMap(personServicePersonInfoDto -> complementIndividualsApiServicePersonInfoResponseDto(individualsApiServicePersonInfoResponseDto, personServicePersonInfoDto)
-                                        .then(Mono.just(individualsApiServicePersonInfoResponseDto)))));
+                .flatMap(traceId -> keycloakClient.getAdminBearerToken()
+                        .flatMap(authorization -> getPersonInfoResponseDto(traceId, authorization, personKeycloakId)
+                                .then(Mono.just(personInfoResponseDto))));
     }
 
-    private Mono<PersonServicePersonInfoResponseDto> getPersonServicePersonInfoResponseDto(
+    private Mono<PersonInfoResponseDto> getPersonInfoResponseDto(
             String traceId,
             String authorization,
             UUID personKeycloakId
     ) {
-        return personApiClient.getPersonInfo(personKeycloakId, traceId, authorization)
-                .map(personServiceResponse -> personServiceResponse.getBody());
-    }
-
-    private Mono<Void> complementIndividualsApiServicePersonInfoResponseDto(
-            IndividualsApiServicePersonInfoResponseDto individualsApiServicePersonInfoResponseDto,
-            PersonServicePersonInfoResponseDto personServicePersonInfoResponseDto
-    ) {
-        personMapper.toIndividualsApiServicePersonInfoResponseDto(
-                individualsApiServicePersonInfoResponseDto, personServicePersonInfoResponseDto);
-
-        return Mono.empty();
+        return personClient.getPersonInfo(personKeycloakId, traceId, authorization)
+                .map(response -> Objects.requireNonNull(response.getBody()));
     }
 
     private Mono<Void> checkValidPersonKeycloakId(

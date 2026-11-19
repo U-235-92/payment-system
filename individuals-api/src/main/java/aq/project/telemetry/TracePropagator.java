@@ -1,4 +1,4 @@
-package aq.project.utils.telemetry;
+package aq.project.telemetry;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 import java.security.SecureRandom;
 
-import static aq.project.utils.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+import static aq.project.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class TracePropagator {

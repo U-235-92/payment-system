@@ -117,22 +117,22 @@ val dependencyVersionMap = mapOf(
 	"resilience4j" to "2.4.0",
 
 //	Currency rate service API specification
-	"currency-rate-service-api-specification" to "2.1.0-dev",
+	"currency-rate-service-api-specification" to "7.0.2-dev",
 
 //	Person service API specification
-	"person-service-api-specification" to "3.0.0-dev",
+	"person-service-api-specification" to "7.0.2-dev",
 
 //	Transaction service API specification
-	"transaction-service-api-specification" to "2.2.0-dev",
+	"transaction-service-api-specification" to "7.0.3-dev",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "2.1.0-dev",
+	"wallet-service-api-specification" to "7.0.3-dev",
 
 //	Payment service API specification
-	"payment-service-api-specification" to "2.1.0-dev",
+	"payment-service-api-specification" to "7.0.3-dev",
 
 //	CommonProjectUtils
-	"common-utils" to "2.0.0"
+	"common-utils" to "5.3.0"
 )
 
 dependencies {
@@ -205,6 +205,15 @@ dependencies {
 
 //	Person service api
 	"apiSpec"("aq.payment-system:person-service-api-specification:${dependencyVersionMap.getValue("person-service-api-specification")}")
+
+//	Transaction service api
+	"apiSpec"("aq.payment-system:transaction-service-api-specification:${dependencyVersionMap.getValue("transaction-service-api-specification")}")
+
+//	Wallet service api
+	"apiSpec"("aq.payment-system:wallet-service-api-specification:${dependencyVersionMap.getValue("wallet-service-api-specification")}")
+
+//	Payment service api
+	"apiSpec"("aq.payment-system:payment-service-api-specification:${dependencyVersionMap.getValue("payment-service-api-specification")}")
 }
 
 tasks.withType<Test> {
@@ -301,4 +310,12 @@ tasks.register<Copy>("fetchExternalApi") {
 		.map { apiSpecification -> zipTree(apiSpecification)
 			.matching { include("*$yamlExtension") } })
 	into("$rootDir/openapi")
+}
+
+tasks.register("printApiSpec") {
+//	Print info about current path to open api specs in local machine
+//	Need to debug operations to figure out which actual versions of specs store in local cache
+	doLast {
+		configurations["apiSpec"].forEach { println(">>> $it") }
+	}
 }

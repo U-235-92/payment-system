@@ -1,9 +1,9 @@
 package aq.project.clients;
 
-import aq.project.dto.IndividualsApiServiceCreatePersonRequestDto;
-import aq.project.dto.IndividualsApiServiceTokenRequestDto;
-import aq.project.dto.IndividualsApiServiceTokenResponseDto;
-import aq.project.dto.IndividualsApiServiceUpdatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
+import aq.project.dto.TokenRequestDto;
+import aq.project.dto.TokenResponseDto;
+import aq.project.dto.UpdatePersonRequestDto;
 import aq.project.repositories.JwtRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,8 +53,8 @@ public class KeycloakServiceClientFacade {
         this.objectMapper = objectMapper;
     }
 
-    public Mono<IndividualsApiServiceTokenResponseDto> refreshJwt(
-            IndividualsApiServiceTokenRequestDto individualsApiServiceTokenRequestDto
+    public Mono<TokenResponseDto> refreshJwt(
+            TokenRequestDto individualsApiServiceTokenRequestDto
     ) {
         return keycloakServiceClient
                 .refreshUserJwt(
@@ -67,7 +67,7 @@ public class KeycloakServiceClientFacade {
                         jwtRepository, adminId, adminSecret, tokenEndpoint, keycloakWebClient, objectMapper);
     }
 
-    public Mono<String> getAdminJwtAsAuthorizationHeaderValue() {
+    public Mono<String> getAdminBearerToken() {
         return keycloakServiceClient
                 .getAdminJwt(jwtRepository, adminId, adminSecret, tokenEndpoint, keycloakWebClient, objectMapper)
                 .map(jwt -> String.format("%s %s", BEARER.getValue(), jwt));
@@ -75,11 +75,11 @@ public class KeycloakServiceClientFacade {
 
     public Mono<UUID> createPerson(
             String adminJwtAuthorizationValue,
-            IndividualsApiServiceCreatePersonRequestDto individualsApiServiceCreatePersonRequestDto
+            CreatePersonRequestDto createPersonRequestDto
     ) {
         return keycloakServiceClient
                 .createUser(
-                        adminJwtAuthorizationValue, adminEndpoint, individualsApiServiceCreatePersonRequestDto, keycloakWebClient);
+                        adminJwtAuthorizationValue, adminEndpoint, createPersonRequestDto, keycloakWebClient);
     }
 
     public Mono<HttpStatusCode> undoCreatePerson(
@@ -90,7 +90,7 @@ public class KeycloakServiceClientFacade {
                 .undoCreateUser(adminJwtAuthorizationValue, personKeycloakId);
     }
 
-    public Mono<IndividualsApiServiceTokenResponseDto> loginPerson(
+    public Mono<TokenResponseDto> loginPerson(
             String email,
             String password
     ) {
@@ -101,10 +101,10 @@ public class KeycloakServiceClientFacade {
 
     public Mono<HttpStatusCode> updatePerson(
             String adminJwtAuthorizationValue,
-            IndividualsApiServiceUpdatePersonRequestDto individualsApiServiceUpdatePersonRequestDto
+            UpdatePersonRequestDto updatePersonRequestDto
     ) {
         return keycloakServiceClient
-                .updatePerson(adminJwtAuthorizationValue, individualsApiServiceUpdatePersonRequestDto);
+                .updatePerson(adminJwtAuthorizationValue, updatePersonRequestDto);
     }
 
     public Mono<HttpStatusCode> deletePerson(

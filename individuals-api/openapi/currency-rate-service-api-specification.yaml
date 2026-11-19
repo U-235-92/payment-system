@@ -1,0 +1,314 @@
+openapi: 3.1.0
+
+info:
+  title: currency-rate-service-api-specification
+  description: Common currency-rate-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8085
+  - url: http://currency-rate-service:8085
+
+paths:
+  /api/v1/currency-rate/get-rate:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Rate
+      summary: Get currency rate between pair of currencies on selected date
+      operationId: getRate
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '[A-Z]{3}'
+          description: Source currency code
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '[A-Z]{3}'
+          description: Target currency code
+        - name: provider
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Identifier of currency provider
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Date of currency rate
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateResponseDto'
+          description: Returns actual rate for specified provider. In case if provider wasn't specified then returns average rate for all the available providers
+        404:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+          description: Response in case if currency rate not found
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+          description: Response in case if was received incorrect request
+
+  /api/v1/currency-rate/get-currencies:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Rate
+      summary: Get list of supported currencies
+      operationId: getCurrencies
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+      responses:
+        200:
+          description: Returns list of supported currencies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyResponseDto'
+
+  /api/v1/currency-rate/get-rate-providers:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Rate
+      summary: Get list of currency providers
+      operationId: getRateProviders
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RateProviderResponseDto'
+          description: Returns list of currency providers
+
+  /api/v1/currency-rate/get-currency-info/{code}:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Rate
+      summary: Get info about specified currency
+      operationId: getCurrencyInfo
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[A-Z]{3}'
+          description: Currency code
+          example: USD
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyResponseDto'
+          description: Actual info for specified currency
+
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+          description: Response in case if was received incorrect request
+
+  /api/v1/currency-rate/get-rate-provider-info/{code}:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Rate
+      summary: Get info about specified currency provider
+      operationId: getRateProviderInfo
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[A-Z]+'
+          description: Код поставщика валют
+          example: AMCM
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateProviderResponseDto'
+          description: Returns info about specified currency provider
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+          description: Response in case if was received incorrect request
+
+tags:
+  - name: Rate
+    description: Describes operations with rates
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RateResponseDto:
+      type: object
+      properties:
+        sourceCode:
+          type: string
+          description: Source currency code
+        destinationCode:
+          type: string
+          description: Target currency code
+        rate:
+          type: number
+          description: Currency rate sourceCode -> destinationCode
+        rateDate:
+          type: string
+          format: date-time
+          description: Date of currency rate
+        providerCode:
+          type: string
+          description: Currency provider code
+
+    CurrencyResponseDto:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Currency code
+        isoCode:
+          type: integer
+          description: Digit ISO-code of currency
+        description:
+          type: string
+          description: Description of currency
+        active:
+          type: boolean
+          description: Currency active status
+        symbol:
+          type: string
+          description: Symbol of currency (например, $ или €)
+
+    RateProviderResponseDto:
+      type: object
+      properties:
+        providerCode:
+          type: string
+          description: Currency provider code
+        providerName:
+          type: string
+          description: Currency provider name
+        description:
+          type: string
+          description: Description of rate provider
+        date:
+          type: string
+          format: date-time
+        active:
+          type: boolean
+          description: Currency provider active status
+
+    HealthResponseDto:
+      type: object
+      properties:
+        status:
+          type: string
+          example: UP
+
+    ErrorDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
+      properties:
+        message:
+          type: string
+        trace_id:
+          type: string

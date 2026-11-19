@@ -1,8 +1,8 @@
-package aq.project.controllers.exception_handlers;
+package aq.project.controllers.handlers;
 
 import aq.project.controllers.CurrencyRateRestController;
-import aq.project.dto.IndividualsApiServiceErrorDto;
-import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.dto.ErrorDto;
+import aq.project.logging.ControllerExceptionLogger;
 import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -22,53 +22,44 @@ public class CurrencyRateRestControllerExceptionHandler {
 
 //    Non-project specific exceptions
     @ExceptionHandler(value = ConstraintViolationException.class)
-    public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onConstraintViolationException(ConstraintViolationException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onConstraintViolationException(ConstraintViolationException exc) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(exc, status);
 
-        IndividualsApiServiceErrorDto dto = getIndividualsApiServiceErrorDto(status, exc);
-
-        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(dto, status));
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(exc), status));
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onIllegalArgumentException(IllegalArgumentException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onIllegalArgumentException(IllegalArgumentException exc) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(exc, status);
 
-        IndividualsApiServiceErrorDto dto = getIndividualsApiServiceErrorDto(status, exc);
-
-        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(dto, status));
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(exc), status));
     }
 
     @ExceptionHandler(value = HttpClientErrorException.class)
-    public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onHttpClientErrorException(HttpClientErrorException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onHttpClientErrorException(HttpClientErrorException exc) {
         HttpStatus status = HttpStatus.valueOf(exc.getStatusCode().value());
 
         controllerExceptionLogger.logException(exc, status);
 
-        IndividualsApiServiceErrorDto dto = getIndividualsApiServiceErrorDto(status, exc);
-
-        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(dto, status));
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(exc), status));
     }
 
     @ExceptionHandler(value = HttpServerErrorException .class)
-    public Mono<ResponseEntity<IndividualsApiServiceErrorDto>> onHttpServerErrorException(HttpServerErrorException exc) {
+    public Mono<ResponseEntity<ErrorDto>> onHttpServerErrorException(HttpServerErrorException exc) {
         HttpStatus status = HttpStatus.valueOf(exc.getStatusCode().value());
 
         controllerExceptionLogger.logException(exc, status);
 
-        IndividualsApiServiceErrorDto dto = getIndividualsApiServiceErrorDto(status, exc);
-
-        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(dto, status));
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(exc), status));
     }
 
-    private IndividualsApiServiceErrorDto getIndividualsApiServiceErrorDto(HttpStatus httpStatus, Exception e) {
-        IndividualsApiServiceErrorDto dto = new IndividualsApiServiceErrorDto();
-        dto.setHttpStatus(httpStatus.value());
-        dto.setMessage(e.getMessage());
-        return dto;
+    private ErrorDto getErrorDto(Exception e) {
+        return ErrorDto.builder()
+                .message(e.getMessage())
+                .build();
     }
 }

@@ -1,9 +1,9 @@
-package aq.project.utils.aspects;
+package aq.project.aspects;
 
-import aq.project.dto.CurrencyResponse;
-import aq.project.dto.RateProviderResponse;
-import aq.project.dto.RateResponse;
-import aq.project.utils.telemetry.ServiceAspectHandler;
+import aq.project.dto.CurrencyResponseDto;
+import aq.project.dto.RateProviderResponseDto;
+import aq.project.dto.RateResponseDto;
+import aq.project.telemetry.ServiceAspectHandler;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -13,6 +13,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
@@ -22,9 +23,10 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-import static aq.project.utils.constants.CustomConstants.ISO_DATE_FORMAT;
+import static aq.project.constants.CustomConstants.ISO_DATE_FORMAT;
 
 @Aspect
+@Order(1)
 @Component
 @Validated
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class CurrencyRateServiceAspect {
 
     @Around("execution(* aq.project.services.CurrencyRateService.getCurrencies(..)) " +
             "&& args()")
-    public Mono<Flux<CurrencyResponse>> getCurrencies(
+    public Mono<Flux<CurrencyResponseDto>> getCurrencies(
             ProceedingJoinPoint pjp
     ) throws Throwable {
 //        Prepare handler metadata
@@ -62,7 +64,7 @@ public class CurrencyRateServiceAspect {
 
     @Around("execution(* aq.project.services.CurrencyRateService.getCurrencyInfo(..)) " +
             "&& args(code)")
-    public Mono<CurrencyResponse> getCurrencyInfo(
+    public Mono<CurrencyResponseDto> getCurrencyInfo(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String code
     ) throws Throwable {
@@ -94,7 +96,7 @@ public class CurrencyRateServiceAspect {
 
     @Around("execution(* aq.project.services.CurrencyRateService.getRate(..)) " +
             "&& args(from, to, provider, date)")
-    public Mono<RateResponse> getRate(
+    public Mono<RateResponseDto> getRate(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String from,
             @NotBlank @Size(min = 3, max = 3) @Pattern(regexp = "^[A-Z]{3}$") String to,
@@ -133,7 +135,7 @@ public class CurrencyRateServiceAspect {
 
     @Around("execution(* aq.project.services.CurrencyRateService.getRateProviderInfo(..)) " +
             "&& args(code)")
-    public Mono<RateProviderResponse> getRateProviderInfo(
+    public Mono<RateProviderResponseDto> getRateProviderInfo(
             ProceedingJoinPoint pjp,
             @NotBlank @Size(min = 3, max = 10) @Pattern(regexp = "^[A-Z]{3,10}$") String code
     ) throws Throwable {
@@ -165,7 +167,7 @@ public class CurrencyRateServiceAspect {
 
     @Around("execution(* aq.project.services.CurrencyRateService.getRateProviders(..)) " +
             "&& args()")
-    public Mono<Flux<RateProviderResponse>> getRateProviders(
+    public Mono<Flux<RateProviderResponseDto>> getRateProviders(
             ProceedingJoinPoint pjp
     ) throws Throwable {
 //        Prepare handler metadata

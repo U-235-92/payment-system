@@ -23,11 +23,11 @@ public class PersonRestController implements PersonRestControllerApi {
     private final PersonService personService;
 
     @Override
-    public Mono<ResponseEntity<IndividualsApiServiceTokenResponseDto>> createPerson(
-            Mono<IndividualsApiServiceCreatePersonRequestDto> individualsApiServiceCreatePersonRequestDtoMono,
+    public Mono<ResponseEntity<TokenResponseDto>> createPerson(
+            Mono<CreatePersonRequestDto> createPersonRequestDtoMono,
             ServerWebExchange exchange
     ) {
-        return individualsApiServiceCreatePersonRequestDtoMono
+        return createPersonRequestDtoMono
                 .flatMap(requestDto -> personService.createPerson(requestDto)
                         .map(ResponseEntity::ok));
     }
@@ -49,18 +49,18 @@ public class PersonRestController implements PersonRestControllerApi {
     }
 
     @Override
-    public Mono<ResponseEntity<IndividualsApiServiceTokenResponseDto>> loginPerson(
-            Mono<IndividualsApiServiceLoginPersonRequestDto> individualsApiServiceLoginPersonRequestDtoMono,
+    public Mono<ResponseEntity<TokenResponseDto>> loginPerson(
+            Mono<LoginPersonRequestDto> loginPersonRequestDto,
             ServerWebExchange exchange
     ) {
-        return individualsApiServiceLoginPersonRequestDtoMono
+        return loginPersonRequestDto
                 .flatMap(requestDto -> personService.loginPerson(requestDto)
                         .map(ResponseEntity::ok));
     }
 
     @Override
     public Mono<ResponseEntity<Void>> updatePerson(
-            Mono<IndividualsApiServiceUpdatePersonRequestDto> updatePersonRequestDtoMono,
+            Mono<UpdatePersonRequestDto> updatePersonRequestDtoMono,
             ServerWebExchange exchange
     ) {
         try {
@@ -77,7 +77,7 @@ public class PersonRestController implements PersonRestControllerApi {
     }
 
     @GetMapping("/api/v1/person/get-person-info")
-    public Mono<ResponseEntity<IndividualsApiServicePersonInfoResponseDto>> getPersonInfo(
+    public Mono<ResponseEntity<PersonInfoResponseDto>> getPersonInfo(
             Authentication authentication
     ) {
         return personService.getPersonInfo(authentication)

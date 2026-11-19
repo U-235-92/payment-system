@@ -1,7 +1,7 @@
-package aq.project.utils.aspects;
+package aq.project.aspects;
 
 import aq.project.dto.*;
-import aq.project.utils.telemetry.ServiceAspectHandler;
+import aq.project.telemetry.ServiceAspectHandler;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -36,9 +36,9 @@ public class PersonServiceAspect {
 
     @Around("execution(* aq.project.services.PersonService.loginPerson(..)) " +
             "&& args(loginPersonRequestDto)")
-    public Mono<IndividualsApiServiceTokenResponseDto> loginPerson(
+    public Mono<TokenResponseDto> loginPerson(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid IndividualsApiServiceLoginPersonRequestDto loginPersonRequestDto
+            @NotNull @Valid LoginPersonRequestDto loginPersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "login-person";
@@ -66,9 +66,9 @@ public class PersonServiceAspect {
 
     @Around("execution(* aq.project.services.PersonService.createPerson(..)) " +
             "&& args(createPersonRequestDto)")
-    public Mono<IndividualsApiServiceTokenResponseDto> createPerson(
+    public Mono<TokenResponseDto> createPerson(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid IndividualsApiServiceCreatePersonRequestDto createPersonRequestDto
+            @NotNull @Valid CreatePersonRequestDto createPersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "create-person";
@@ -95,11 +95,11 @@ public class PersonServiceAspect {
     }
 
     private Supplier<Mono<Void>> checkConstraints(
-            IndividualsApiServiceCreatePersonRequestDto individualsApiServiceCreatePersonRequestDto
+            CreatePersonRequestDto createPersonRequestDto
     ) {
         return () -> {
-            String password = individualsApiServiceCreatePersonRequestDto.getPassword();
-            String confirmPassword = individualsApiServiceCreatePersonRequestDto.getConfirmPassword();
+            String password = createPersonRequestDto.getPassword();
+            String confirmPassword = createPersonRequestDto.getConfirmPassword();
 
             if (!password.equals(confirmPassword))
                 throw new ConstraintViolationException("Input password and it's confirmation do not match.", null);
@@ -113,7 +113,7 @@ public class PersonServiceAspect {
     public Mono<Void> updatePerson(
             ProceedingJoinPoint pjp,
             @NotNull UUID jwtPersonKeycloakId,
-            @NotNull @Valid IndividualsApiServiceUpdatePersonRequestDto updatePersonRequestDto
+            @NotNull @Valid UpdatePersonRequestDto updatePersonRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "update-person";
@@ -171,7 +171,7 @@ public class PersonServiceAspect {
 
     @Around("execution(* aq.project.services.PersonService.getPersonInfo(..)) " +
             "&& args(authentication)")
-    public Mono<IndividualsApiServicePersonInfoResponseDto> getPersonInfo(
+    public Mono<PersonInfoResponseDto> getPersonInfo(
             ProceedingJoinPoint pjp,
             @NotNull Authentication authentication
     ) throws Throwable {

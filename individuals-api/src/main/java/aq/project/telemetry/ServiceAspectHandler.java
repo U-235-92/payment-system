@@ -1,5 +1,6 @@
-package aq.project.utils.telemetry;
+package aq.project.telemetry;
 
+import aq.project.utils.telemetry.ApplicationMetricsRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
@@ -12,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Supplier;
 
-import static aq.project.utils.constants.CustomHttpHeaders.*;
+import static aq.project.constants.CustomHttpHeaders.*;
 
 @Slf4j
 @Component

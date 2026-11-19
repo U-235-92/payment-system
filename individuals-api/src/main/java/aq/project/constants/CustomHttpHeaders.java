@@ -1,4 +1,4 @@
-package aq.project.utils.constants;
+package aq.project.constants;
 
 public interface CustomHttpHeaders {
 

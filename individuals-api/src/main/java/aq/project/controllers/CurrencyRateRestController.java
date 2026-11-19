@@ -1,9 +1,9 @@
 package aq.project.controllers;
 
 import aq.project.controller.RateRestControllerApi;
-import aq.project.dto.CurrencyResponse;
-import aq.project.dto.RateProviderResponse;
-import aq.project.dto.RateResponse;
+import aq.project.dto.CurrencyResponseDto;
+import aq.project.dto.RateProviderResponseDto;
+import aq.project.dto.RateResponseDto;
 import aq.project.services.CurrencyRateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class CurrencyRateRestController implements RateRestControllerApi {
     private final CurrencyRateService currencyRateService;
 
     @Override
-    public Mono<ResponseEntity<Flux<CurrencyResponse>>> getCurrencies(
+    public Mono<ResponseEntity<Flux<CurrencyResponseDto>>> getCurrencies(
             ServerWebExchange exchange
     ) {
         return currencyRateService.getCurrencies()
@@ -29,7 +29,7 @@ public class CurrencyRateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public Mono<ResponseEntity<CurrencyResponse>> getCurrencyInfo(
+    public Mono<ResponseEntity<CurrencyResponseDto>> getCurrencyInfo(
             String code,
             ServerWebExchange exchange
     ) {
@@ -38,7 +38,7 @@ public class CurrencyRateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public Mono<ResponseEntity<RateResponse>> getRate(
+    public Mono<ResponseEntity<RateResponseDto>> getRate(
             String from,
             String to,
             String provider,
@@ -50,7 +50,7 @@ public class CurrencyRateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public Mono<ResponseEntity<RateProviderResponse>> getRateProviderInfo(
+    public Mono<ResponseEntity<RateProviderResponseDto>> getRateProviderInfo(
             String code,
             ServerWebExchange exchange
     ) {
@@ -59,7 +59,7 @@ public class CurrencyRateRestController implements RateRestControllerApi {
     }
 
     @Override
-    public Mono<ResponseEntity<Flux<RateProviderResponse>>> getRateProviders(
+    public Mono<ResponseEntity<Flux<RateProviderResponseDto>>> getRateProviders(
             ServerWebExchange exchange
     ) {
         return currencyRateService.getRateProviders()

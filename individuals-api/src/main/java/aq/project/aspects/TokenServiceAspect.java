@@ -1,8 +1,8 @@
-package aq.project.utils.aspects;
+package aq.project.aspects;
 
-import aq.project.dto.IndividualsApiServiceTokenRequestDto;
-import aq.project.dto.IndividualsApiServiceTokenResponseDto;
-import aq.project.utils.telemetry.ServiceAspectHandler;
+import aq.project.dto.TokenRequestDto;
+import aq.project.dto.TokenResponseDto;
+import aq.project.telemetry.ServiceAspectHandler;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +11,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Mono;
@@ -20,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Aspect
+@Order(1)
 @Component
 @Validated
 @RequiredArgsConstructor
@@ -31,10 +33,10 @@ public class TokenServiceAspect {
     private final ServiceAspectHandler serviceAspectHandler;
 
     @Around("execution(* aq.project.services.TokenService.refreshUserJwt(..)) " +
-            "&& args(individualsApiServiceTokenRequestDto)")
-    public Mono<IndividualsApiServiceTokenResponseDto> refreshUserJwt(
+            "&& args(tokenRequestDto)")
+    public Mono<TokenResponseDto> refreshUserJwt(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid IndividualsApiServiceTokenRequestDto individualsApiServiceTokenRequestDto
+            @NotNull @Valid TokenRequestDto tokenRequestDto
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "refresh-token";
@@ -52,19 +54,19 @@ public class TokenServiceAspect {
                 preMainLogicLogMessage,
                 postSuccessMainLogicCallLogMessage,
                 postFailureMainLogicCallLogMessage,
-                checkConstraints(individualsApiServiceTokenRequestDto)
+                checkConstraints(tokenRequestDto)
         );
     }
 
-    private Supplier<Mono<Void>> checkConstraints(IndividualsApiServiceTokenRequestDto dto) {
+    private Supplier<Mono<Void>> checkConstraints(TokenRequestDto tokenRequestDto) {
         return () -> {
-            if(dto == null)
+            if(tokenRequestDto == null)
                 throw new ConstraintViolationException("Refresh token DTO is null", null);
 
-            if(dto.getRefreshToken().isBlank())
+            if(tokenRequestDto.getRefreshToken().isBlank())
                 throw new ConstraintViolationException("Received request to refresh JWT token is blank", null);
 
-            String refreshToken = dto.getRefreshToken();
+            String refreshToken = tokenRequestDto.getRefreshToken();
 
             Pattern pattern = Pattern.compile("^[eyJ][a-zA-Z0-9-_]+\\.[eyJ][a-zA-Z0-9-_]+\\.[a-zA-Z0-9-_]+$");
             Matcher matcher = pattern.matcher(refreshToken);

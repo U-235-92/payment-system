@@ -3,22 +3,17 @@ package aq.project.utils.client;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import reactor.core.publisher.Mono;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -60,38 +55,6 @@ public abstract class ClientErrorHandler {
             throw new HttpServerErrorException(status, errorMessage);
     }
 
-    public static Mono<? extends Exception> onWebClientErrorResponse(
-            ClientResponse response
-    ) {
-        return Mono.just(response.statusCode())
-                .flatMap(status -> response
-                        .body((clientHttpResponse, context) ->
-                                DataBufferUtils.join(clientHttpResponse.getBody())
-                                        .map(ClientErrorHandler::readByteArray)
-                                        .map(ClientErrorHandler::getErrorMessage)
-                                        .map(description -> getHttpErrorException(status, description))
-                                        .switchIfEmpty(Mono.error(getHttpErrorException(status, null)))));
-    }
-
-    private static byte[] readByteArray(
-            DataBuffer dataBuffer
-    ) {
-        byte[] bytes = null;
-
-        try (InputStream inputStream = dataBuffer.asInputStream()) {
-            bytes = inputStream.readAllBytes();
-
-        } catch (IOException e) {
-            log.error("{} exception occurred while process received error response. Exception message: {}",
-                    e.getClass().getSimpleName(), e.getMessage());
-            bytes = new byte[]{};
-
-        } finally {
-            DataBufferUtils.release(dataBuffer);
-        }
-        return bytes;
-    }
-
     private static String getErrorMessage(
             byte[] bytes
     ) {
@@ -114,33 +77,5 @@ public abstract class ClientErrorHandler {
             }
         }
         return errorMessage;
-    }
-
-    private static Exception getHttpErrorException(
-            HttpStatusCode status,
-            String errorMessage
-    ) {
-        if(status.is4xxClientError())
-            return getHttpClientErrorException(status, errorMessage);
-        else
-            return getHttpServerErrorException(status, errorMessage);
-    }
-
-    private static HttpClientErrorException getHttpClientErrorException(
-            HttpStatusCode httpStatusCode,
-            String errorMessage
-    ) {
-        if(errorMessage == null)
-            return new HttpClientErrorException(httpStatusCode);
-        return new HttpClientErrorException(httpStatusCode, errorMessage);
-    }
-
-    private static HttpServerErrorException getHttpServerErrorException(
-            HttpStatusCode httpStatusCode,
-            String errorMessage
-    ) {
-        if(errorMessage == null)
-            return new HttpServerErrorException(httpStatusCode);
-        return new HttpServerErrorException(httpStatusCode, errorMessage);
     }
 }

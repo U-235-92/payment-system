@@ -750,7 +750,7 @@ components:
 
     InitTransactionRequestDto:
       type: object
-      x-class-extra-annotation: "@lombok.Builder"
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
       required: [ wallet_id, amount, payment_type, currency_code ]
       properties:
         wallet_id:
@@ -790,7 +790,7 @@ components:
 
     ConfirmTransactionRequestDto:
       type: object
-      x-class-extra-annotation: "@lombok.Builder"
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
       required: [ user_id, wallet_id, payment_method_id, amount, payment_type, currency_code ]
       properties:
         user_id:

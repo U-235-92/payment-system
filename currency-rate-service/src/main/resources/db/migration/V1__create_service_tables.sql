@@ -1,5 +1,5 @@
 CREATE TABLE currencies (
-    iso_code VARCHAR(3) NOT NULL,
+    iso_code VARCHAR(5) NOT NULL,
     iso_numeric INT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     modified_at TIMESTAMP WITH TIME ZONE,

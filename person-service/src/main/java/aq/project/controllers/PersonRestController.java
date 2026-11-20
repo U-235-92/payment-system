@@ -22,8 +22,8 @@ public class PersonRestController implements PersonRestControllerApi {
 
     @Override
     public ResponseEntity<UUID> createPerson(
-            String xTraceId,
             CreatePersonRequestDto createPersonRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
@@ -48,8 +48,8 @@ public class PersonRestController implements PersonRestControllerApi {
 
     @Override
     public ResponseEntity<Void> undoDeletePerson(
-            String xTraceId,
             UndoDeletePersonRequestDto undoDeletePersonRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
@@ -61,8 +61,8 @@ public class PersonRestController implements PersonRestControllerApi {
 
     @Override
     public ResponseEntity<Void> updatePerson(
-            String xTraceId,
             UpdatePersonRequestDto updatePersonRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
@@ -74,8 +74,8 @@ public class PersonRestController implements PersonRestControllerApi {
 
     @Override
     public ResponseEntity<Void> undoUpdatePerson(
-            String xTraceId,
             UndoUpdatePersonRequestDto undoUpdatePersonRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);

@@ -27,8 +27,6 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import static aq.project.controller.PayoutRestControllerApi.*;
 import static aq.project.controller.TransactionRestControllerApi.*;
-import static aq.project.controller.WebhookRestControllerApi.PATH_CONFIRM_PAYOUT_WEBHOOK;
-import static aq.project.controller.WebhookRestControllerApi.PATH_CONFIRM_TRANSACTION_WEBHOOK;
 
 @Configuration
 @EnableWebSecurity
@@ -44,10 +42,7 @@ public class SecurityConfiguration {
         return http
                 .securityMatcher("/h2-console/**", "/api/v1/**")
                 .httpBasic(c -> c.authenticationEntryPoint(new AuthenticationExceptionEntryPoint(handlerExceptionResolver)))
-                .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, PATH_CONFIRM_TRANSACTION_WEBHOOK).denyAll()
-                        .requestMatchers(HttpMethod.POST, PATH_CONFIRM_PAYOUT_WEBHOOK).denyAll()
-                        .anyRequest().permitAll())
+                .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .cors(CorsConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
@@ -68,9 +63,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_INFO.replace("{id}", "*")).authenticated()
                         .requestMatchers(HttpMethod.POST, PATH_CREATE_PAYOUT).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_PAYOUT_LIST).authenticated()
-                        .requestMatchers(HttpMethod.GET, PATH_GET_PAYOUT_INFO.replace("{id}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.POST, PATH_CONFIRM_TRANSACTION_WEBHOOK).denyAll()
-                        .requestMatchers(HttpMethod.POST, PATH_CONFIRM_PAYOUT_WEBHOOK).denyAll())
+                        .requestMatchers(HttpMethod.GET, PATH_GET_PAYOUT_INFO.replace("{id}", "*")).authenticated())
                 .addFilterBefore(new AuthenticationHeaderFilter(), BasicAuthenticationFilter.class)
                 .build();
     }

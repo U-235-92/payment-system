@@ -23,8 +23,8 @@ public class WalletServiceRestController implements WalletRestControllerApi {
 
     @Override
     public ResponseEntity<UUID> createWallet(
-            String xTraceId,
             CreateWalletRequestDto createWalletRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
@@ -59,8 +59,8 @@ public class WalletServiceRestController implements WalletRestControllerApi {
 
     @Override
     public ResponseEntity<UUID> depositWallet(
-            String xTraceId,
             DepositWalletRequestDto depositWalletRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
@@ -71,8 +71,8 @@ public class WalletServiceRestController implements WalletRestControllerApi {
 
     @Override
     public ResponseEntity<UUID> withdrawalWallet(
-            String xTraceId,
             WithdrawalWalletRequestDto withdrawalWalletRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);
@@ -83,8 +83,8 @@ public class WalletServiceRestController implements WalletRestControllerApi {
 
     @Override
     public ResponseEntity<List<UUID>> transferWallet(
-            String xTraceId,
             TransferWalletRequestDto transferWalletRequestDto,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);

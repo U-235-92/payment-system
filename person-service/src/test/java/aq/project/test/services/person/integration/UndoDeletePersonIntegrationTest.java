@@ -94,7 +94,7 @@ public class UndoDeletePersonIntegrationTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         personRestController.deletePerson(personKeycloakId, traceId, authorization);
 
@@ -103,7 +103,7 @@ public class UndoDeletePersonIntegrationTest {
 
 //        Act & Assert
         Assertions.assertDoesNotThrow(() -> personRestController
-                .undoDeletePerson(traceId, personServiceUndoDeletePersonRequestDto, authorization));
+                .undoDeletePerson(personServiceUndoDeletePersonRequestDto, traceId, authorization));
 
         Optional<Person> personOptional = personRepository.findByKeycloakId(personKeycloakId.toString());
 
@@ -161,7 +161,7 @@ public class UndoDeletePersonIntegrationTest {
             personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
             personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-            personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+            personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
             personKeycloakIdList.add(personKeycloakId);
 

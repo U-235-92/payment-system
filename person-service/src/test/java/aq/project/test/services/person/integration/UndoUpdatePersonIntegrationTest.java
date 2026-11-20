@@ -94,20 +94,20 @@ public class UndoUpdatePersonIntegrationTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceUpdatePersonRequestDto.setFirstName("UpdatedFirstName");
 
-        personRestController.updatePerson(traceId, personServiceUpdatePersonRequestDto, authorization);
+        personRestController.updatePerson(personServiceUpdatePersonRequestDto, traceId, authorization);
 
         UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidUndoUpdatePersonRequestDto();
         personServiceUndoUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
 //        Act & Assert
         Assertions.assertDoesNotThrow(() -> personRestController
-                .undoUpdatePerson(traceId, personServiceUndoUpdatePersonRequestDto, authorization));
+                .undoUpdatePerson(personServiceUndoUpdatePersonRequestDto, traceId, authorization));
 
         Person person = personRepository.findByKeycloakId(personKeycloakId.toString()).get();
 
@@ -161,7 +161,7 @@ public class UndoUpdatePersonIntegrationTest {
             personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
             personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-            personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+            personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
             personKeycloakIdList.add(personKeycloakId);
 
@@ -169,7 +169,7 @@ public class UndoUpdatePersonIntegrationTest {
             personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
             personServiceUpdatePersonRequestDto.setFirstName("UpdatedFirstName");
 
-            personRestController.updatePerson(traceId, personServiceUpdatePersonRequestDto, authorization);
+            personRestController.updatePerson(personServiceUpdatePersonRequestDto, traceId, authorization);
         }
 
 //        Act & Assert

@@ -5,7 +5,7 @@ import aq.project.currency_rate_service.RateApiClient;
 import aq.project.payment_service.PaymentApiClient;
 import aq.project.person_service.PersonApiClient;
 import aq.project.transaction_service.TransactionApiClient;
-import aq.project.utils.client.ClientErrorHandler;
+import aq.project.util.ClientErrorHandler;
 import aq.project.wallet_service.WalletApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +38,8 @@ public class ClientConfiguration {
     @Value("${application.payment-service.uri}")
     private String paymentServiceBaseUrl;
 
+    private final ClientErrorHandler clientErrorHandler;
+
     @Bean(name = "keycloakWebClient")
     public WebClient keycloakWebClient() {
         return WebClient.builder()
@@ -49,7 +51,7 @@ public class ClientConfiguration {
     public KeycloakServiceClient keycloakServiceWebClient(Environment env) {
         WebClient webClient = WebClient.builder()
                 .baseUrl(keycloakServiceBaseUrl)
-                .defaultStatusHandler(ClientErrorHandler::isErrorResponse, ClientErrorHandler::onWebClientErrorResponse)
+                .defaultStatusHandler(clientErrorHandler::isErrorResponse, clientErrorHandler::onWebClientErrorResponse)
                 .build();
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
@@ -64,7 +66,7 @@ public class ClientConfiguration {
     public PersonApiClient personApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(personServiceBaseUrl)
-                .defaultStatusHandler(ClientErrorHandler::isErrorResponse, ClientErrorHandler::onWebClientErrorResponse)
+                .defaultStatusHandler(clientErrorHandler::isErrorResponse, clientErrorHandler::onWebClientErrorResponse)
                 .build();
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
@@ -78,7 +80,7 @@ public class ClientConfiguration {
     public TransactionApiClient transactionApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(transactionServiceBaseUrl)
-                .defaultStatusHandler(ClientErrorHandler::isErrorResponse, ClientErrorHandler::onWebClientErrorResponse)
+                .defaultStatusHandler(clientErrorHandler::isErrorResponse, clientErrorHandler::onWebClientErrorResponse)
                 .build();
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
@@ -92,7 +94,7 @@ public class ClientConfiguration {
     public WalletApiClient walletApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(walletServiceBaseUrl)
-                .defaultStatusHandler(ClientErrorHandler::isErrorResponse, ClientErrorHandler::onWebClientErrorResponse)
+                .defaultStatusHandler(clientErrorHandler::isErrorResponse, clientErrorHandler::onWebClientErrorResponse)
                 .build();
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
@@ -106,7 +108,7 @@ public class ClientConfiguration {
     public RateApiClient rateApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(currencyRateServiceBaseUrl)
-                .defaultStatusHandler(ClientErrorHandler::isErrorResponse, ClientErrorHandler::onWebClientErrorResponse)
+                .defaultStatusHandler(clientErrorHandler::isErrorResponse, clientErrorHandler::onWebClientErrorResponse)
                 .build();
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()
@@ -120,7 +122,7 @@ public class ClientConfiguration {
     public PaymentApiClient paymentApiClient() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(paymentServiceBaseUrl)
-                .defaultStatusHandler(ClientErrorHandler::isErrorResponse, ClientErrorHandler::onWebClientErrorResponse)
+                .defaultStatusHandler(clientErrorHandler::isErrorResponse, clientErrorHandler::onWebClientErrorResponse)
                 .build();
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builder()

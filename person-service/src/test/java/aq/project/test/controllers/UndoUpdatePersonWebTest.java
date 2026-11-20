@@ -93,13 +93,13 @@ public class UndoUpdatePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceUpdatePersonRequestDto.setFirstName("UpdatedFirstName");
 
-        personRestController.updatePerson(traceId, personServiceUpdatePersonRequestDto, authorization);
+        personRestController.updatePerson(personServiceUpdatePersonRequestDto, traceId, authorization);
 
         UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidUndoUpdatePersonRequestDto();
         personServiceUndoUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
@@ -135,7 +135,7 @@ public class UndoUpdatePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidUndoUpdatePersonRequestDto();
         personServiceUndoUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
@@ -171,7 +171,7 @@ public class UndoUpdatePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getInvalidUndoUpdatePersonRequestDto();
 
@@ -205,7 +205,7 @@ public class UndoUpdatePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getInvalidUndoUpdatePersonRequestDto();
 

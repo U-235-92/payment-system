@@ -1,6 +1,6 @@
 package aq.project.test.services.person.unit;
 
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
 import aq.project.entities.Country;
 import aq.project.entities.Person;
 import aq.project.exceptions.EntityAlreadyExistException;
@@ -47,7 +47,7 @@ public class CreatePersonUnitTest {
         person.setId(personId);
         person.getIndividual().setEmail(email);
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setEmail(email);
 
         Country country = getValidCountry();
@@ -71,7 +71,7 @@ public class CreatePersonUnitTest {
 //        Arrange
         String email = "test@mail.aq";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setEmail(email);
 
         Person person = getValidPerson();

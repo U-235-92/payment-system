@@ -26,3 +26,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
+
+app:
+  datasource:
+    - jdbc:postgresql://localhost:5465/transactions_db,root,root
+    - jdbc:postgresql://localhost:5475/transactions_db,root,root

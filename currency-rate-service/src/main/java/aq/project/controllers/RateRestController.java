@@ -19,6 +19,7 @@ import java.util.List;
 public class RateRestController implements RateRestControllerApi {
 
     private final RateService rateService;
+
     private final TraceContext traceContext;
 
     @Override
@@ -35,9 +36,9 @@ public class RateRestController implements RateRestControllerApi {
     public ResponseEntity<RateResponseDto> getRate(
             String from,
             String to,
-            String xTraceId,
             String provider,
             OffsetDateTime date,
+            String xTraceId,
             String authorization
     ) {
         TraceFactory.setUpTraceId(traceContext, xTraceId);

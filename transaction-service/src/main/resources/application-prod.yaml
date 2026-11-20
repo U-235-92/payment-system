@@ -61,5 +61,10 @@ app:
   service:
     keycloak:
       uri: ${KEYCLOAK_SERVICE_BASE_URI}
+
     wallet-service:
       uri: ${WALLET_SERVICE_BASE_URI}
+
+  datasource:
+    - ${SHARD0_DB_URL},${SHARD0_DB_USERNAME},${SHARD0_DB_PASSWORD}
+    - ${SHARD1_DB_URL},${SHARD1_DB_USERNAME},${SHARD1_DB_PASSWORD}

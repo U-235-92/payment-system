@@ -182,7 +182,7 @@ components:
           type: string
 
     PaymentStatus:
-      enum: [ pending, processing, completed, failed ]
+      enum: [ PENDING, PROCESSING, COMPLETED, FAILED ]
 
     PaymentType:
-      enum: [ card, transfer, cash ]
+      enum: [ CARD, TRANSFER, CASH ]

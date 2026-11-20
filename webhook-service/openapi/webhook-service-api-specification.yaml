@@ -105,9 +105,9 @@ components:
           type: string
 
     Status:
-      enum: [ pending, processing, success, fail ]
+      enum: [ PENDING, PROCESSING, SUCCESS, FAIL ]
       description: Allowed operation statuses
 
     OperationType:
-      enum: [ payout, transaction ]
+      enum: [ PAYOUT, TRANSACTION ]
       description: Allowed operation types

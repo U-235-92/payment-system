@@ -446,13 +446,13 @@ components:
           type: string
 
     PaymentMethod:
-      enum: [ card, cash, transfer ]
+      enum: [ CARD, CASH, TRANSFER ]
       description: Allowed payment methods
 
     Status:
-      enum: [ pending, processing, success, fail ]
+      enum: [ PENDING, PROCESSING, SUCCESS, FAIL ]
       description: Allowed payment methods
 
     OperationType:
-      enum: [ payout, transaction ]
+      enum: [ PAYOUT, TRANSACTION ]
       description: Allowed operation types

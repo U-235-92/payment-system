@@ -19,7 +19,7 @@ val artifact = "payment-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "7.0.3-dev"
+val specificationArtifactVersion = "7.0.4-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -109,7 +109,7 @@ val dependencyVersionMap = mapOf(
 	"common-utils" to "5.4.0",
 
 //	Fake payment provider service API specification
-	"fake-payment-provider-service-api-specification" to "7.0.4-dev"
+	"fake-payment-provider-service-api-specification" to "7.0.5-dev"
 )
 
 dependencies {

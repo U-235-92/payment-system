@@ -480,11 +480,11 @@ components:
           description: Valid currency code
 
     WalletStatus:
-      enum: [ active, blocked ]
+      enum: [ ACTIVE, BLOCKED ]
       description: Allowed wallet statuses
 
     WalletUserType:
-      enum: [ business, personal ]
+      enum: [ BUSINESS, PERSONAL ]
       description: Allowed wallet user type
 
     ErrorDto:

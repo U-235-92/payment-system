@@ -21,28 +21,42 @@ public class TransactionRestController implements TransactionRestControllerApi {
 
     @Override
     public Mono<ResponseEntity<InitTransactionResponseDto>> initTransaction(
-            PaymentType type,
+            String type,
             Mono<InitTransactionRequestDto> initTransactionRequestDto,
             String xTraceId,
             String authorization,
             ServerWebExchange exchange
     ) {
-        return initTransactionRequestDto
-                .flatMap(request -> transactionService.initTransaction(type, request))
-                .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
+        try {
+            PaymentType paymentType = PaymentType.valueOf(type);
+
+            return initTransactionRequestDto
+                    .flatMap(request -> transactionService.initTransaction(paymentType, request))
+                    .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
+
+        } catch (IllegalArgumentException e) {
+            return Mono.error(e);
+        }
     }
 
     @Override
     public Mono<ResponseEntity<UUID>> confirmTransaction(
-            PaymentType type,
+            String type,
             Mono<ConfirmTransactionRequestDto> confirmTransactionRequestDto,
             String xTraceId,
             String authorization,
             ServerWebExchange exchange
     ) {
-        return confirmTransactionRequestDto
-                .flatMap(request -> transactionService.confirmTransaction(type, request))
-                .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
+        try {
+            PaymentType paymentType = PaymentType.valueOf(type);
+
+            return confirmTransactionRequestDto
+                    .flatMap(request -> transactionService.confirmTransaction(paymentType, request))
+                    .flatMap(response -> Mono.just(ResponseEntity.ok().body(response)));
+
+        } catch (IllegalArgumentException e) {
+            return Mono.error(e);
+        }
     }
 
     @Override

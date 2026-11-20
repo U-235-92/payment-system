@@ -120,16 +120,16 @@ val dependencyVersionMap = mapOf(
 	"currency-rate-service-api-specification" to "7.0.2-dev",
 
 //	Person service API specification
-	"person-service-api-specification" to "7.0.2-dev",
+	"person-service-api-specification" to "7.0.3-dev",
 
 //	Transaction service API specification
-	"transaction-service-api-specification" to "7.0.5-dev",
+	"transaction-service-api-specification" to "7.0.7-dev",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "7.0.3-dev",
+	"wallet-service-api-specification" to "7.0.4-dev",
 
 //	Payment service API specification
-	"payment-service-api-specification" to "7.0.3-dev",
+	"payment-service-api-specification" to "7.0.4-dev",
 
 //	CommonProjectUtils
 	"common-utils" to "5.4.0"

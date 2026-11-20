@@ -79,6 +79,15 @@ public class TransactionRestControllerExceptionHandler {
         return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(exc), status));
     }
 
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public Mono<ResponseEntity<ErrorDto>> onIllegalArgumentException(IllegalArgumentException exc) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        controllerExceptionLogger.logException(exc, status);
+
+        return Mono.just(ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(exc), status));
+    }
+
     private ErrorDto getErrorDto(Exception e) {
         return ErrorDto.builder()
                 .message(e.getMessage())

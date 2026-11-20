@@ -83,7 +83,7 @@ public class _TransferTransactionService {
         initTransactionRequestDto.setTargetWalletConversionRate(targetWalletConversionRate);
 
         return transactionClient
-                .initTransaction(PaymentType.TRANSFER, Mono.just(initTransactionRequestDto), traceId, authorization)
+                .initTransaction(PaymentType.TRANSFER.toString(), Mono.just(initTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 
@@ -140,7 +140,7 @@ public class _TransferTransactionService {
         confirmTransactionRequestDto.setWalletConversionRate(walletConversionRate);
         confirmTransactionRequestDto.setTargetWalletConversionRate(targetWalletConversionRate);
 
-        return transactionClient.confirmTransaction(PaymentType.TRANSFER, Mono.just(confirmTransactionRequestDto), traceId, authorization)
+        return transactionClient.confirmTransaction(PaymentType.TRANSFER.toString(), Mono.just(confirmTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 }

@@ -73,7 +73,7 @@ public class _DepositTransactionService {
         initTransactionRequestDto.setWalletConversionRate(conversionRate);
 
         return transactionClient
-                .initTransaction(PaymentType.DEPOSIT, Mono.just(initTransactionRequestDto), traceId, authorization)
+                .initTransaction(PaymentType.DEPOSIT.toString(), Mono.just(initTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 
@@ -126,7 +126,7 @@ public class _DepositTransactionService {
 
         confirmTransactionRequestDto.setWalletConversionRate(conversionRate);
 
-        return transactionClient.confirmTransaction(PaymentType.DEPOSIT, Mono.just(confirmTransactionRequestDto), traceId, authorization)
+        return transactionClient.confirmTransaction(PaymentType.DEPOSIT.toString(), Mono.just(confirmTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 }

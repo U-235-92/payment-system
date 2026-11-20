@@ -35,7 +35,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/PaymentType"
+            type: string
           description: Allowed type of payment [ deposit, withdrawal, transfer ]
       requestBody:
         required: true
@@ -91,7 +91,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/PaymentType"
+            type: string
           description: Allowed type of payment [ deposit, withdrawal, transfer ]
       requestBody:
         required: true
@@ -478,11 +478,11 @@ components:
           description: Valid currency code
 
     PaymentType:
-      enum: [ deposit, withdrawal, transfer ]
+      enum: [ DEPOSIT, WITHDRAWAL, TRANSFER ]
       description: Allowed payment operations
 
     TransactionStatus:
-      enum: [ pending, completed, failed ]
+      enum: [ PENDING, COMPLETED, FAILED ]
       description: Allowed transaction statuses
 
     ErrorDto:

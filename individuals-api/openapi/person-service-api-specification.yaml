@@ -417,7 +417,7 @@ components:
           type: string
 
     UndoOperationStatus:
-      enum: [ "FAILED", "COMPLETED" ]
+      enum: [ FAILED, COMPLETED ]
 
     PersonServiceOperation:
-      enum: [ "GET_PERSON_INFO", "CREATE_PERSON", "UPDATE_PERSON", "DELETE_PERSON", "UNDO_UPDATE_PERSON", "UNDO_DELETE_PERSON" ]
+      enum: [ GET_PERSON_INFO, CREATE_PERSON, UPDATE_PERSON, DELETE_PERSON, UNDO_UPDATE_PERSON, UNDO_DELETE_PERSON ]

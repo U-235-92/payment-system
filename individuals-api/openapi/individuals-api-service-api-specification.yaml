@@ -70,7 +70,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/PaymentType"
+            type: string
           description: Allowed type of payment [ deposit, withdrawal, transfer ]
       requestBody:
         required: true
@@ -126,7 +126,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/PaymentType"
+            type: string
           description: Allowed type of payment [ deposit, withdrawal, transfer ]
       requestBody:
         required: true

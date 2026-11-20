@@ -23,7 +23,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
 
     @Override
     public ResponseEntity<InitTransactionResponseDto> initTransaction(
-            PaymentType type,
+            String type,
             InitTransactionRequestDto initTransactionRequestDto,
             String xTraceId,
             String authorization
@@ -35,7 +35,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
 
     @Override
     public ResponseEntity<UUID> confirmTransaction(
-            PaymentType type,
+            String type,
             ConfirmTransactionRequestDto confirmTransactionRequestDto,
             String xTraceId,
             String authorization

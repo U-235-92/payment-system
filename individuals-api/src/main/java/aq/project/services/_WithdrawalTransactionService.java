@@ -73,7 +73,7 @@ public class _WithdrawalTransactionService {
         initTransactionRequestDto.setWalletConversionRate(conversionRate);
 
         return transactionClient
-                .initTransaction(PaymentType.WITHDRAWAL, Mono.just(initTransactionRequestDto), traceId, authorization)
+                .initTransaction(PaymentType.WITHDRAWAL.toString(), Mono.just(initTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 
@@ -126,7 +126,7 @@ public class _WithdrawalTransactionService {
 
         confirmTransactionRequestDto.setWalletConversionRate(conversionRate);
 
-        return transactionClient.confirmTransaction(PaymentType.WITHDRAWAL, Mono.just(confirmTransactionRequestDto), traceId, authorization)
+        return transactionClient.confirmTransaction(PaymentType.WITHDRAWAL.toString(), Mono.just(confirmTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 }

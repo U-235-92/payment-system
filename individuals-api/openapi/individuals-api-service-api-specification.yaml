@@ -751,7 +751,7 @@ components:
     InitTransactionRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ wallet_id, target_wallet_id, amount, payment_type, currency_code ]
+      required: [ wallet_id, amount, payment_type, currency_code ]
       properties:
         wallet_id:
           type: string
@@ -791,7 +791,7 @@ components:
     ConfirmTransactionRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ user_id, wallet_id, target_wallet_id, amount, payment_type, currency_code ]
+      required: [ user_id, wallet_id, payment_method_id, amount, payment_type, currency_code ]
       properties:
         user_id:
           type: string
@@ -805,6 +805,9 @@ components:
           type: string
           format: uuid
           description: UUID of target wallet (for transfer payment method only)
+        payment_method_id:
+          type: integer
+          format: int64
         amount:
           type: number
           format: decimal

@@ -21,14 +21,14 @@ import java.util.UUID;
 @Validated
 @Component
 @RequiredArgsConstructor
-public class WebhookKafkaProducerAspect {
+public class WebhookEventKafkaProducerAspect {
 
     @Value("${spring.application.name}")
     private String serviceName;
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.kafka.WebhookKafkaProducer.sendWebhookEvent(..)) " +
+    @Around("execution(* aq.project.kafka.WebhookEventKafkaProducer.sendWebhookEvent(..)) " +
             "&& args(paymentProviderCallback)")
     public void sendWebhookEvent(
             ProceedingJoinPoint pjp,

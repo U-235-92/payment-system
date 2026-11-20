@@ -18,6 +18,7 @@ CREATE TABLE transactions (
     updated_at TIMESTAMP,
     description VARCHAR(255),
     external_id VARCHAR(100) UNIQUE,
+    payment_id UUID UNIQUE,
     notification_url VARCHAR(2048)
 );
 
@@ -30,6 +31,7 @@ CREATE TABLE payouts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     external_id VARCHAR(100) UNIQUE,
+    payment_id UUID UNIQUE,
     notification_url VARCHAR(2048)
 );
 

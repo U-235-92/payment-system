@@ -333,6 +333,9 @@ components:
           description: Accessible method of payment
         external_id:
           type: string
+        payment_id:
+          type: string
+          format: uuid
         notification_url:
           type: string
           maxLength: 2048
@@ -395,6 +398,9 @@ components:
           description: Valid currency code
         external_id:
           type: string
+        payment_id:
+          type: string
+          format: uuid
         notification_url:
           type: string
 

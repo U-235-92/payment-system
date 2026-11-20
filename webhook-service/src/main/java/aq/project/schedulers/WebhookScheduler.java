@@ -1,7 +1,7 @@
 package aq.project.schedulers;
 
 import aq.project.entities.PaymentProviderCallback;
-import aq.project.kafka.WebhookKafkaProducer;
+import aq.project.kafka.WebhookEventKafkaProducer;
 import aq.project.repositories.PaymentProviderCallbackRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class WebhookScheduler {
 
     private final PaymentProviderCallbackRepository paymentProviderCallbackRepository;
 
-    private final WebhookKafkaProducer webhookKafkaProducer;
+    private final WebhookEventKafkaProducer webhookEventKafkaProducer;
 
     @Scheduled(
             fixedRateString = "${app.scheduler.payment-provider-callback-scheduler}",
@@ -27,8 +27,13 @@ public class WebhookScheduler {
     public void schedulePaymentProviderCallbacks() {
         List<PaymentProviderCallback> unprocessedCallbacks = paymentProviderCallbackRepository.findAllUnprocessed();
 
-        for(PaymentProviderCallback unprocessedCallback : unprocessedCallbacks) {
-            webhookKafkaProducer.sendWebhookEvent(unprocessedCallback);
+        try {
+            for(PaymentProviderCallback unprocessedCallback : unprocessedCallbacks) {
+                webhookEventKafkaProducer.sendWebhookEvent(unprocessedCallback);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while schedule publishing payment provider callback. Exception message: {}",
+                    e.getMessage());
         }
     }
 }

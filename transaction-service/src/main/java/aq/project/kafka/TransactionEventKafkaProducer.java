@@ -2,8 +2,8 @@ package aq.project.kafka;
 
 import aq.project.dto.PaymentType;
 import aq.project.entities.Transaction;
-import aq.project.kafka.events.DepositTransactionRequestEvent;
-import aq.project.kafka.events.WithdrawalTransactionRequestEvent;
+import aq.project.kafka.events.DepositRequestEvent;
+import aq.project.kafka.events.WithdrawalRequestEvent;
 import aq.project.mappers.TransactionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +20,9 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class TransactionEventKafkaProducer {
 
-    @Value("${app.kafka.topics.deposit_transaction_request.name}")
+    @Value("${app.kafka.topics.deposit-transaction-request.name}")
     private String depositTransactionRequestTopic;
-    @Value("${app.kafka.topics.withdrawal_transaction_request.name}")
+    @Value("${app.kafka.topics.withdrawal-transaction-request.name}")
     private String withdrawalTransactionRequestTopic;
 
     private final TransactionMapper transactionMapper = TransactionMapper.INSTANCE;
@@ -32,7 +32,7 @@ public class TransactionEventKafkaProducer {
     public void sendDepositTransactionEvent(
             Transaction transaction
     ) {
-        DepositTransactionRequestEvent event = transactionMapper.toDepositTransactionRequestEvent(transaction);
+        DepositRequestEvent event = transactionMapper.toDepositTransactionRequestEvent(transaction);
 
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(depositTransactionRequestTopic, event);
 
@@ -42,7 +42,7 @@ public class TransactionEventKafkaProducer {
     public void sendWithdrawalTransactionEvent(
             Transaction transaction
     ) {
-        WithdrawalTransactionRequestEvent event = transactionMapper.toWithdrawalTransactionRequestEvent(transaction);
+        WithdrawalRequestEvent event = transactionMapper.toWithdrawalTransactionRequestEvent(transaction);
 
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(withdrawalTransactionRequestTopic, event);
 

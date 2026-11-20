@@ -9,6 +9,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.UUID;
+
 @Mapper
 public interface TransactionMapper {
 
@@ -21,6 +23,7 @@ public interface TransactionMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "description", source = "description")
     @Mapping(target = "externalId", source = "externalId") // transactionId
+    @Mapping(target = "paymentId", source = "paymentId")
     @Mapping(target = "notificationUrl", source = "notificationUrl")
     Transaction toTransaction(CreateTransactionRequestDto dto);
 
@@ -42,9 +45,20 @@ public interface TransactionMapper {
     @Mapping(target = "operationType", expression = "java(toOperationType())")
     @Mapping(target = "description", source = "description")
     @Mapping(target = "notificationUrl", source = "notificationUrl")
+    @Mapping(target = "transactionId", expression = "java(toTransactionId(transaction))")
+    @Mapping(target = "paymentId", source = "paymentId")
     UpdateStatusOperationRequestDto toUpdateStatusOperationRequestDto(Transaction transaction);
 
-        default OperationType toOperationType() {
+    default OperationType toOperationType() {
             return OperationType.TRANSACTION;
-        }
+    }
+
+    default UUID toTransactionId(Transaction transaction) {
+        String externalId = transaction.getExternalId();
+
+        if(externalId == null)
+            throw new NullPointerException("External id is null");
+
+        return UUID.fromString(transaction.getExternalId());
+    }
 }

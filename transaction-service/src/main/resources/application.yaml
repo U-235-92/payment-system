@@ -61,7 +61,7 @@ spring:
       - localhost:39092
       - localhost:49092
     listener:
-      ack-mode: RECORD
+      ack-mode: MANUAL
     producer:
       acks: all
       retries: 5
@@ -155,29 +155,9 @@ app:
         partitions: 3
         replicas: 3
         min-insync-replicas: 2
-      deposit-transaction-complete-response:
-        name: deposit_transaction_complete_response
-        partitions: 3
-        replicas: 3
-        min-insync-replicas: 2
-      deposit-transaction-fail-response:
-        name: deposit_transaction_fail_response
-        partitions: 3
-        replicas: 3
-        min-insync-replicas: 2
 
       withdrawal-transaction-request:
         name: withdrawal_transaction_request
-        partitions: 3
-        replicas: 3
-        min-insync-replicas: 2
-      withdrawal-transaction-complete-response:
-        name: withdrawal_transaction_complete_response
-        partitions: 3
-        replicas: 3
-        min-insync-replicas: 2
-      withdrawal-transaction-fail-response:
-        name: withdrawal_transaction_fail_response
         partitions: 3
         replicas: 3
         min-insync-replicas: 2

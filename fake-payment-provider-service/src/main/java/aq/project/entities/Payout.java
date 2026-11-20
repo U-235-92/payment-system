@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @SuperBuilder
@@ -43,6 +44,10 @@ public class Payout extends AbstractEntity {
     @Size(max = 100)
     @Column(name = "external_id", length = 100, unique = true)
     private String externalId;
+
+    @Nullable
+    @Column(name = "payment_id", unique = true)
+    private UUID paymentId;
 
     @Nullable
     @Size(max = 2048)

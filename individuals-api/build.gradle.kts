@@ -123,7 +123,7 @@ val dependencyVersionMap = mapOf(
 	"person-service-api-specification" to "7.0.2-dev",
 
 //	Transaction service API specification
-	"transaction-service-api-specification" to "7.0.3-dev",
+	"transaction-service-api-specification" to "7.0.5-dev",
 
 //	Wallet service API specification
 	"wallet-service-api-specification" to "7.0.3-dev",
@@ -132,7 +132,7 @@ val dependencyVersionMap = mapOf(
 	"payment-service-api-specification" to "7.0.3-dev",
 
 //	CommonProjectUtils
-	"common-utils" to "5.3.0"
+	"common-utils" to "5.3.1"
 )
 
 dependencies {

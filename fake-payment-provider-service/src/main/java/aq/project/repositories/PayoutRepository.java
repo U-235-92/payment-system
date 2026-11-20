@@ -50,8 +50,7 @@ public interface PayoutRepository extends CrudRepository<Payout, Long> {
             "SELECT p " +
             "FROM Payout p " +
             "JOIN FETCH p.merchant m " +
-            "WHERE m.merchantId = :merchantId " +
-            "AND p.status = :status"
+            "WHERE p.status = :status"
     )
-    List<Payout> findAllByMerchantIdAndStatus(String merchantId, Status status);
+    List<Payout> findAllByStatus(Status status);
 }

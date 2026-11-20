@@ -19,7 +19,7 @@ val artifact = "fake-payment-provider-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "7.0.2-dev"
+val specificationArtifactVersion = "7.0.4-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -106,10 +106,10 @@ val dependencyVersionMap = mapOf(
 	"springdoc-openapi" to "3.0.2",
 
 //	CommonProjectUtils
-	"common-utils" to "5.3.0",
+	"common-utils" to "5.3.1",
 
 //	Webhook service API specification
-	"webhook-service-api-specification" to "7.0.2-dev"
+	"webhook-service-api-specification" to "7.0.4-dev"
 )
 
 dependencies {

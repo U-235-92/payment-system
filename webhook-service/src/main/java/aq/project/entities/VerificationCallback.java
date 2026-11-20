@@ -2,9 +2,7 @@ package aq.project.entities;
 
 import aq.project.dto.OperationType;
 import aq.project.dto.Status;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -32,11 +30,13 @@ public class VerificationCallback extends AbstractEntity {
     private UUID profileId;
 
     @Size(max = 25)
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 25)
     private Status operationStatus;
 
     @Size(max = 255)
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private OperationType operationType;
 
     @NotNull

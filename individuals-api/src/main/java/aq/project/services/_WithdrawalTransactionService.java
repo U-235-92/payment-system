@@ -29,6 +29,8 @@ public class _WithdrawalTransactionService {
 
     private final TransactionApiClient transactionClient;
 
+    private final PaymentService paymentService;
+
     Mono<InitTransactionResponseDto> initTransaction(
             InitTransactionRequestDto initTransactionRequestDto
     ) {
@@ -82,11 +84,19 @@ public class _WithdrawalTransactionService {
 
         String requestCurrencyCode = confirmTransactionRequestDto.getCurrencyCode();
 
+        BigDecimal requestAmount = confirmTransactionRequestDto.getAmount();
+
+        Long requestPaymentMethodId = confirmTransactionRequestDto.getPaymentMethodId();
+
         return fetchTraceId()
                 .flatMap(traceId -> keycloakClient.getAdminBearerToken()
                         .flatMap(authorization -> walletService.getWalletCurrencyCode(requestWalletId)
                                 .flatMap(walletCurrencyCode -> conversionRateService.getConversionRate(requestCurrencyCode, walletCurrencyCode)
-                                        .flatMap(conversionRate -> confirmTransaction(traceId, authorization, conversionRate, confirmTransactionRequestDto)))));
+                                        .flatMap(conversionRate -> confirmTransaction(traceId, authorization, conversionRate, confirmTransactionRequestDto)
+                                                .flatMap(transactionId -> paymentService.createPayment(traceId, authorization, transactionId, requestPaymentMethodId, requestAmount, requestCurrencyCode)
+                                                        .flatMap(paymentServiceResponse -> Mono.just(transactionId))
+                                                        .onErrorResume(paymentServiceException -> transactionClient.failTransaction(transactionId, traceId, authorization)
+                                                                .then(Mono.error(paymentServiceException))))))));
     }
 
     private Mono<UUID> confirmTransaction(

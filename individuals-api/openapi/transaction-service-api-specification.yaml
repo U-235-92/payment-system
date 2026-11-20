@@ -258,6 +258,52 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
           description: Response in case if error was occurred on service side
 
+  /api/v1/transaction/{id}/fail:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: failTransaction
+      tags:
+        - Transaction
+      summary: Mark transaction as failed by given ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Parameter is represented a valid UUID that describes a transaction ID
+          schema:
+            type: string
+            format: uuid
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+      responses:
+        200:
+          description: Returns OK 200 response in case successful handle of operation
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
+
 tags:
   - name: Transaction
     description: Describes operations with transactions

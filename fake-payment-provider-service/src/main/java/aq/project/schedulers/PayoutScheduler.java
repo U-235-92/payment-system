@@ -5,7 +5,6 @@ import aq.project.dto.UpdateStatusOperationRequestDto;
 import aq.project.entities.Payout;
 import aq.project.mappers.PayoutMapper;
 import aq.project.repositories.PayoutRepository;
-import aq.project.services.AuthenticationService;
 import aq.project.services.WebhookService;
 import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,6 @@ public class PayoutScheduler {
 
     private final WebhookService webhookService;
 
-    private final AuthenticationService authenticationService;
-
     private final PayoutRepository payoutRepository;
 
     @Scheduled(
@@ -39,11 +36,9 @@ public class PayoutScheduler {
         String traceId = TraceFactory.genTraceId();
 
         try {
-            String merchantId = authenticationService.getAuthentication().getName();
             Status targetStatus = Status.PENDING;
 
-            List<Payout> pendingPayouts = payoutRepository
-                    .findAllByMerchantIdAndStatus(merchantId, targetStatus);
+            List<Payout> pendingPayouts = payoutRepository.findAllByStatus(targetStatus);
 
             for (Payout pendingPayout : pendingPayouts) {
                 try {

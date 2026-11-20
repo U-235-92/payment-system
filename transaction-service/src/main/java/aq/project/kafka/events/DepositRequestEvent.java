@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record DepositTransactionRequestEvent(
+public record DepositRequestEvent(
         @NotNull UUID transactionId,
         @NotNull UUID userId,
         @NotNull UUID walletId,

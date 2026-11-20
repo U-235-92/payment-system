@@ -2,6 +2,7 @@ package aq.project.schedulers;
 
 import aq.project.dto.PaymentStatus;
 import aq.project.entities.Payment;
+import aq.project.kafka.WebhookEventKafkaProducer;
 import aq.project.repositories.PaymentRepository;
 import aq.project.services.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ public class PaymentScheduler {
     private final PaymentRepository paymentRepository;
 
     private final PaymentService paymentService;
+
+    private final WebhookEventKafkaProducer webhookEventKafkaProducer;
 
     @Scheduled(
             fixedRateString = "${app.service.payment-service.schedulers.schedule-pending-payment}",
@@ -49,6 +52,22 @@ public class PaymentScheduler {
                 paymentService.handleProcessingPayment(processingPayment);
             } catch (Exception e) {
                 onProcessPaymentException(processingPayment, e);
+            }
+        }
+    }
+
+    @Scheduled(
+            fixedRateString = "${app.service.payment-service.schedulers.schedule-fail-payment}",
+            timeUnit = TimeUnit.SECONDS
+    )
+    public void scheduleFailPayment() {
+        List<Payment> failPayments = paymentRepository.findAllUnprocessedByPaymentStatus(PaymentStatus.FAILED);
+
+        for(Payment failPayment : failPayments) {
+            try {
+                webhookEventKafkaProducer.sendWebhookEvent(failPayment);
+            } catch (Exception e) {
+                onProcessPaymentException(failPayment, e);
             }
         }
     }

@@ -5,7 +5,6 @@ import aq.project.dto.UpdateStatusOperationRequestDto;
 import aq.project.entities.Transaction;
 import aq.project.mappers.TransactionMapper;
 import aq.project.repositories.TransactionRepository;
-import aq.project.services.AuthenticationService;
 import aq.project.services.WebhookService;
 import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,6 @@ public class TransactionScheduler {
 
     private final WebhookService webhookService;
 
-    private final AuthenticationService authenticationService;
-
     private final TransactionRepository transactionRepository;
 
     @Scheduled(
@@ -39,11 +36,9 @@ public class TransactionScheduler {
         String traceId = TraceFactory.genTraceId();
 
         try {
-            String merchantId = authenticationService.getAuthentication().getName();
             Status targetStatus = Status.PENDING;
 
-            List<Transaction> pendingTransactions = transactionRepository
-                    .findAllByMerchantIdAndStatus(merchantId, targetStatus);
+            List<Transaction> pendingTransactions = transactionRepository.findAllByStatus(targetStatus);
 
             for (Transaction pendingTransaction : pendingTransactions) {
                 try {

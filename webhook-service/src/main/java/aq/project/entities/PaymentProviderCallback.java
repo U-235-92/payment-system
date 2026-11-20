@@ -2,9 +2,7 @@ package aq.project.entities;
 
 import aq.project.dto.OperationType;
 import aq.project.dto.Status;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -34,6 +32,7 @@ public class PaymentProviderCallback extends AbstractEntity {
 
     @Size(max = 255)
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private OperationType operationType;
 
     @Size(max = 255)
@@ -41,6 +40,7 @@ public class PaymentProviderCallback extends AbstractEntity {
     private String provider;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "target_webhook_status", nullable = false, updatable = false)
     private Status targetWebhookStatus;
 

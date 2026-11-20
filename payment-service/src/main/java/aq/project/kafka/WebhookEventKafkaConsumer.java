@@ -4,6 +4,7 @@ import aq.project.dto.PaymentStatus;
 import aq.project.entities.Payment;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.kafka.events.WebhookEvent;
+import aq.project.kafka.events.WebhookEventStatus;
 import aq.project.repositories.PaymentRepository;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
@@ -26,7 +27,7 @@ public class WebhookEventKafkaConsumer {
     private final TraceContext traceContext;
 
     @Transactional
-    @KafkaListener(topics = "${app.kafka.topics.payment_status_update_response}")
+    @KafkaListener(topics = "${app.kafka.topics.payment-status-update-response}")
     public void onWebhookEvent(
             WebhookEvent webhookEvent,
             Acknowledgment acknowledgment
@@ -37,27 +38,14 @@ public class WebhookEventKafkaConsumer {
 
         UUID paymentId = webhookEvent.paymentId();
 
-        PaymentStatus paymentStatus = null;
+        WebhookEventStatus webhookEventStatus = webhookEvent.status();
 
         try {
-            paymentStatus = PaymentStatus.valueOf(webhookEvent.status());
-
-        } catch (IllegalArgumentException e) {
-            log.error("[{}]: Received invalid payment status value: [{}] for payment with payment id: [{}]. " +
-                            "Exception message: {}",
-                    traceId, paymentStatus, paymentId, e.getMessage());
-
-            acknowledgment.acknowledge();
-
-            return;
-        }
-
-        try {
-            switch (paymentStatus) {
-                case COMPLETED -> {
+            switch (webhookEventStatus) {
+                case SUCCESS -> {
                     Payment payment = getPayment(paymentId);
 
-                    if(!payment.isProcessed() && payment.getStatus() == PaymentStatus.PROCESSING) {
+                    if(isUnprocessedPaymentInProcessingState(payment)) {
                         payment.complete();
                         payment.markProcessed();
 
@@ -65,10 +53,10 @@ public class WebhookEventKafkaConsumer {
                     }
                 }
 
-                case FAILED -> {
+                case FAIL -> {
                     Payment payment = getPayment(paymentId);
 
-                    if(!payment.isProcessed() && payment.getStatus() == PaymentStatus.PROCESSING) {
+                    if(isUnprocessedPaymentInProcessingState(payment) || isUnprocessedPaymentInFailState(payment)) {
                         payment.fail();
                         payment.markProcessed();
 
@@ -88,5 +76,15 @@ public class WebhookEventKafkaConsumer {
         return paymentRepository.findByPaymentId(paymentId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Payment with payment id: [%s] not found", paymentId)));
+    }
+
+    private boolean isUnprocessedPaymentInProcessingState(Payment payment) {
+        return !payment.isProcessed()
+                && payment.getStatus() == PaymentStatus.PROCESSING;
+    }
+
+    private boolean isUnprocessedPaymentInFailState(Payment payment) {
+        return !payment.isProcessed()
+                && payment.getStatus() == PaymentStatus.FAILED;
     }
 }

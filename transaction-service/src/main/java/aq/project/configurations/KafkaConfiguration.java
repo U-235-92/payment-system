@@ -22,42 +22,10 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public NewTopic depositTransactionCompleteResponseTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("deposit-transaction-complete-response");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic depositTransactionFailResponseTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("deposit-transaction-fail-response");
-        return createTopic(config);
-    }
-
-    @Bean
     public NewTopic withdrawalTransactionRequestTopic() {
         KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
                 .getTopics()
                 .get("withdrawal-transaction-request");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic withdrawalTransactionCompleteResponseTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("withdrawal-transaction-complete-response");
-        return createTopic(config);
-    }
-
-    @Bean
-    public NewTopic withdrawalTransactionFailResponseTopic() {
-        KafkaTopicProperties.KafkaTopicConfiguration config = kafkaTopicProperties
-                .getTopics()
-                .get("withdrawal-transaction-fail-response");
         return createTopic(config);
     }
 

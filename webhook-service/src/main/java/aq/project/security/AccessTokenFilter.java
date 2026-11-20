@@ -5,29 +5,27 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.MessageDigest;
 
 import static aq.project.controller.WebhookRestControllerApi.PATH_CONFIRM_OPERATION_WEBHOOK;
 
 @Slf4j
-@Component
+@RequiredArgsConstructor
 public class AccessTokenFilter extends OncePerRequestFilter {
 
     private static final String ACCESS_TOKEN_HASH_HEADER = "x-access-token-hash";
 
     private static final String ACCESS_TOKEN_HASH_ALG = "x-access-token-hash-alg";
 
-    @Value("${app.security.access-token-key}")
-    private String serviceAccessTokenKey;
+    private final String serviceAccessTokenKey;
 
-    @Value("${app.security.access-token-hash-alg}")
-    private String serviceAccessTokenHashAlg;
+    private final String serviceAccessTokenHashAlg;
 
     @Override
     protected void doFilterInternal(
@@ -86,7 +84,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
         try {
             String serviceAccessTokenHash = SecurityUtil.getHash(serviceAccessTokenKey, serviceAccessTokenHashAlg);
 
-            if(requestAccessTokenHash.equals(serviceAccessTokenHash)) {
+            if(MessageDigest.isEqual(requestAccessTokenHash.getBytes(), serviceAccessTokenHash.getBytes())) {
                 filterChain.doFilter(request, response);
 
             } else {

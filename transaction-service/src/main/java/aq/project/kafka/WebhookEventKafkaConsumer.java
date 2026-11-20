@@ -2,6 +2,7 @@ package aq.project.kafka;
 
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.kafka.events.WebhookEvent;
+import aq.project.kafka.events.WebhookEventStatus;
 import aq.project.services.TransactionService;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
@@ -33,15 +34,15 @@ public class WebhookEventKafkaConsumer {
 
         UUID transactionId = webhookEvent.transactionId();
 
-        String operationStatus = webhookEvent.status().toLowerCase();
+        WebhookEventStatus webhookEventStatus = webhookEvent.status();
 
         try {
-            switch (operationStatus) {
-                case "completed" -> transactionService.completeTransaction(transactionId);
+            switch (webhookEventStatus) {
+                case SUCCESS -> transactionService.completeTransaction(transactionId);
 
-                case "failed" -> transactionService.failTransaction(transactionId);
+                case FAIL -> transactionService.failTransaction(transactionId);
 
-                default -> log.error("Received unknown operation status: [{}]", operationStatus);
+                default -> log.error("Received unknown operation status: [{}]", webhookEventStatus);
             }
         } catch (IllegalStateException | EntityNotFoundException e) {
             log.error("[{}]: {} occurred while update transaction status. Exception message: {}",

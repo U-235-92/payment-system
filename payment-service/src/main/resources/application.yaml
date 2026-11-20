@@ -48,7 +48,12 @@ spring:
       - localhost:39092
       - localhost:49092
     listener:
-      ack-mode: RECORD
+      ack-mode: MANUAL
+    producer:
+      acks: all
+      retries: 5
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
     consumer:
       enable-auto-commit: false
       auto-offset-reset: latest
@@ -116,10 +121,8 @@ app:
       schedulers:
         schedule-processing-payment: 5
         schedule-pending-payment: 5
+        schedule-fail-payment: 5
 
   kafka:
-    consumer:
-      group:
-        payment_service_consumer: payment_service_consumer
     topics:
-      payment_status_update_response: payment_status_update_response
+      payment-status-update-response: payment_status_update_response

@@ -1,7 +1,6 @@
 package aq.project.kafka;
 
-import aq.project.dto.OperationType;
-import aq.project.entities.PaymentProviderCallback;
+import aq.project.entities.Payment;
 import aq.project.kafka.events.WebhookEvent;
 import aq.project.mappers.WebhookMapper;
 import aq.project.services.CallbackService;
@@ -18,11 +17,11 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class WebhookKafkaProducer {
+public class WebhookEventKafkaProducer {
 
     private final WebhookMapper webhookMapper = WebhookMapper.INSTANCE;
 
-    @Value("${app.kafka.topics.payment-status-update-response.name}")
+    @Value("${app.kafka.topics.payment-status-update-response}")
     private String paymentStatusUpdateResponseTopic;
 
     private final CallbackService callbackService;
@@ -30,32 +29,27 @@ public class WebhookKafkaProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendWebhookEvent(
-            PaymentProviderCallback paymentProviderCallback
+            Payment payment
     ) {
-        WebhookEvent webhookEvent = webhookMapper.toWebhookEvent(paymentProviderCallback);
+        WebhookEvent webhookEvent = webhookMapper.toWebhookEvent(payment);
 
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate
                 .send(paymentStatusUpdateResponseTopic, webhookEvent);
 
         future.whenComplete((result, exception) -> {
-            OperationType operationType = paymentProviderCallback.getOperationType();
-
-            UUID transactionId = paymentProviderCallback.getTransactionId();
+            UUID transactionId = payment.getTransactionId();
 
             if(exception == null) {
-//                Sending event is finished with no errors.
-//                Mark incoming callback as processed.
-                callbackService.markProcessed(paymentProviderCallback);
+                callbackService.markProcessed(payment);
 
                 long offset = result.getRecordMetadata().offset();
 
-                log.info("Complete send [{}] webhook event with transaction id: [{}] to topic: [{}], offset: [{}]",
-                        operationType, transactionId, paymentStatusUpdateResponseTopic, offset);
+                log.info("Complete send webhook event with transaction id: [{}] to topic: [{}], offset: [{}]",
+                        transactionId, paymentStatusUpdateResponseTopic, offset);
 
             } else {
-//                Sending event is finished with errors.
-                log.error("Error occurred while sending [{}] webhook event with transaction id: [{}] to topic: [{}]",
-                        operationType, transactionId, paymentStatusUpdateResponseTopic);
+                log.error("Error occurred while sending webhook event with transaction id: [{}] to topic: [{}]",
+                        transactionId, paymentStatusUpdateResponseTopic);
             }
         });
     }

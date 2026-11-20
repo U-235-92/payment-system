@@ -2,6 +2,7 @@ package aq.project.configurations;
 
 import aq.project.security.AccessTokenFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -23,7 +24,11 @@ import static aq.project.controller.WebhookRestControllerApi.PATH_CONFIRM_OPERAT
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final AccessTokenFilter accessTokenFilter;
+    @Value("${app.security.access-token-key}")
+    private String serviceAccessTokenKey;
+
+    @Value("${app.security.access-token-hash-alg}")
+    private String serviceAccessTokenHashAlg;
 
     @Bean
     @Order(1)
@@ -47,7 +52,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers(HttpMethod.POST, PATH_CONFIRM_OPERATION_WEBHOOK).permitAll())
-                .addFilterBefore(accessTokenFilter, AuthenticationFilter.class)
+                .addFilterBefore(new AccessTokenFilter(serviceAccessTokenKey, serviceAccessTokenHashAlg), AuthenticationFilter.class)
                 .build();
     }
 

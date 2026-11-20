@@ -67,16 +67,19 @@ components:
   schemas:
     UpdateStatusOperationRequestDto:
       type: object
-      required: [ id, transactionId, status, operation_type ]
+      required: [ id, transaction_id, payment_id, status, operation_type ]
       properties:
         id:
           type: integer
           format: int64
           description: ID of operation (transaction\payout)
-        transactionId:
+        transaction_id:
           type: string
           format: uuid
           description: UUID of processing transaction
+        payment_id:
+          type: string
+          format: uuid
         status:
           $ref: "#/components/schemas/Status"
           description: Status of operation

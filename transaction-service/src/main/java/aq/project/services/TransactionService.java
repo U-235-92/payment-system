@@ -377,8 +377,6 @@ public class TransactionService {
 
         checkTransactionInPendingState(transaction);
 
-        transaction.failTransaction();
-
         PaymentType paymentType = transaction.getPaymentType();
 
         String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
@@ -417,6 +415,7 @@ public class TransactionService {
                 walletApiClient.transferWallet(dto, traceId, authorization);
             }
         }
+        transaction.failTransaction();
     }
 
     private void failTransactionRateLimiterFallback(

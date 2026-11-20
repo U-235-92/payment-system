@@ -3,8 +3,8 @@ package aq.project.mappers;
 import aq.project.dto.ConfirmTransactionRequestDto;
 import aq.project.dto.TransactionInfoResponseDto;
 import aq.project.entities.Transaction;
-import aq.project.kafka.events.DepositTransactionRequestEvent;
-import aq.project.kafka.events.WithdrawalTransactionRequestEvent;
+import aq.project.kafka.events.DepositRequestEvent;
+import aq.project.kafka.events.WithdrawalRequestEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -22,7 +22,7 @@ public interface TransactionMapper {
     @Mapping(target = "amount", source = "walletAmount")
     @Mapping(target = "currency", source = "currencyCode")
     @Mapping(target = "timestamp", expression = "java(toTimestamp())")
-    DepositTransactionRequestEvent toDepositTransactionRequestEvent(Transaction transaction);
+    DepositRequestEvent toDepositTransactionRequestEvent(Transaction transaction);
 
     @Mapping(target = "transactionId", source = "id")
     @Mapping(target = "userId", source = "userId")
@@ -31,7 +31,7 @@ public interface TransactionMapper {
     @Mapping(target = "amount", source = "walletAmount")
     @Mapping(target = "currency", source = "currencyCode")
     @Mapping(target = "timestamp", expression = "java(toTimestamp())")
-    WithdrawalTransactionRequestEvent toWithdrawalTransactionRequestEvent(Transaction transaction);
+    WithdrawalRequestEvent toWithdrawalTransactionRequestEvent(Transaction transaction);
 
     default LocalDateTime toTimestamp() {
         return LocalDateTime.now();

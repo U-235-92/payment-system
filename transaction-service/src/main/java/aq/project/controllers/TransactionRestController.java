@@ -74,4 +74,17 @@ public class TransactionRestController implements TransactionRestControllerApi {
         return ResponseEntity.ok(transactionService
                 .getTransactions(userId, walletId, type, status, dateFrom, dateTo, page, size));
     }
+
+    @Override
+    public ResponseEntity<Void> failTransaction(
+            UUID id,
+            String xTraceId,
+            String authorization
+    ) {
+        TraceFactory.setUpTraceId(traceContext, xTraceId);
+
+        transactionService.failTransaction(id);
+
+        return ResponseEntity.ok().build();
+    }
 }

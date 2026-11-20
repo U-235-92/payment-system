@@ -234,6 +234,17 @@ public class PaymentService {
                         "Exception message: %s",
                 payment.getStatus(), payment.getTransactionId(), exception.getMessage());
 
-        fallback.handleRetryFallback(action, message, exception);
+//        In case if fake-payment-provider-service is not accessed then mark payment as failed.
+        payment.fail();
+
+//        Finalize FAIL status of transaction on other services in transaction flow.
+//        See PaymentScheduler.scheduleFailPayment(..) for details.
+        paymentRepository.save(payment);
+
+        try {
+            fallback.handleRetryFallback(action, message, exception);
+        } catch (Exception ex) {
+//            Exception was suppressed to commit payment status without errors.
+        }
     }
 }

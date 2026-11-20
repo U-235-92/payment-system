@@ -9,6 +9,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.UUID;
+
 @Mapper
 public interface PayoutMapper {
 
@@ -19,6 +21,7 @@ public interface PayoutMapper {
     @Mapping(target = "currency", source = "currencyCode")
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "externalId", source = "externalId") // transactionId
+    @Mapping(target = "paymentId", source = "paymentId")
     @Mapping(target = "notificationUrl", source = "notificationUrl")
     Payout toPayout(CreatePayoutRequestDto createPayoutRequestDto);
 
@@ -38,9 +41,20 @@ public interface PayoutMapper {
     @Mapping(target = "operationType", expression = "java(toOperationType())")
     @Mapping(target = "description", ignore = true)
     @Mapping(target = "notificationUrl", source = "notificationUrl")
+    @Mapping(target = "transactionId", expression = "java(toTransactionId(payout))")
+    @Mapping(target = "paymentId", source = "paymentId")
     UpdateStatusOperationRequestDto toUpdateStatusOperationRequestDto(Payout payout);
 
     default OperationType toOperationType() {
         return OperationType.PAYOUT;
+    }
+
+    default UUID toTransactionId(Payout payout) {
+        String externalId = payout.getExternalId();
+
+        if(externalId == null)
+            throw new NullPointerException("External id is null");
+
+        return UUID.fromString(payout.getExternalId());
     }
 }

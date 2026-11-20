@@ -50,8 +50,7 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
             "SELECT t " +
             "FROM Transaction t " +
             "JOIN FETCH t.merchant m " +
-            "WHERE m.merchantId = :merchantId " +
-            "AND t.status = :status"
+            "WHERE t.status = :status"
     )
-    List<Transaction> findAllByMerchantIdAndStatus(String merchantId, Status status);
+    List<Transaction> findAllByStatus(Status status);
 }

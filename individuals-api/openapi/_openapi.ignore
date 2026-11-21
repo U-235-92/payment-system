@@ -1,30 +1,26 @@
-##################################
-# INDIVIDUALS-API-SERVICE IGNORE #
-##################################
-**/openapi/individuals-api-service/src/main/java/org/**
-**/openapi/individuals-api-service/src/main/java/aq/project/individuals_api_service/**
+**/openapi/currency-rate-service/src/main/java/aq/project/dto/RateResponseDto.java
+**/openapi/currency-rate-service/src/main/java/aq/project/dto/CurrencyResponseDto.java
+**/openapi/currency-rate-service/src/main/java/aq/project/dto/RateProviderResponseDto.java
+**/openapi/currency-rate-service/src/main/java/aq/project/dto/ErrorDto.java
 
-################################
-# CURRENCY-RATE-SERVICE IGNORE #
-################################
-**/openapi/currency-rate-service/src/main/java/aq/project/dto/**
-!**/openapi/currency-rate-service/src/main/java/aq/project/dto/CurrencyRateServiceErrorDto.java
+**/openapi/payment-service/src/main/java/aq/project/dto/PaymentType.java
+**/openapi/payment-service/src/main/java/aq/project/dto/PaymentMethodResponseDto.java
+**/openapi/payment-service/src/main/java/aq/project/dto/ErrorDto.java
 
-##########################
-# PEROSON-SERVICE IGNORE #
-##########################
+**/openapi/person-service/src/main/java/aq/project/dto/CreatePersonRequestDto.java
+**/openapi/person-service/src/main/java/aq/project/dto/UpdatePersonRequestDto.java
+**/openapi/person-service/src/main/java/aq/project/dto/PersonInfoResponseDto.java
+**/openapi/person-service/src/main/java/aq/project/dto/ErrorDto.java
 
-##############################
-# TRANSACTION-SERVICE IGNORE #
-##############################
+**/openapi/transaction-service/src/main/java/aq/project/dto/InitTransactionRequestDto.java
+**/openapi/transaction-service/src/main/java/aq/project/dto/InitTransactionResponseDto.java
+**/openapi/transaction-service/src/main/java/aq/project/dto/ConfirmTransactionRequestDto.java
+**/openapi/transaction-service/src/main/java/aq/project/dto/TransactionStatus.java
+**/openapi/transaction-service/src/main/java/aq/project/dto/TransactionInfoResponseDto.java
+**/openapi/transaction-service/src/main/java/aq/project/dto/ErrorDto.java
 
-#########################
-# WALLET-SERVICE IGNORE #
-#########################
-**/openapi/wallet-service/src/main/java/aq/project/dto/**
-!**/openapi/wallet-service/src/main/java/aq/project/dto/WalletServiceErrorDto.java
+**/openapi/wallet-service/src/main/java/aq/project/dto/CreateWalletRequestDto.java
+**/openapi/wallet-service/src/main/java/aq/project/dto/WalletInfoResponseDto.java
+**/openapi/wallet-service/src/main/java/aq/project/dto/ErrorDto.java
 
-##########################
-# PAYMENT-SERVICE IGNORE #
-##########################
-**/openapi/payment-service/src/main/java/aq/project/dto/PaymentServicePaymentMethodResponseDto.java
+**/openapi/individuals-api-service/src/main/java/aq/project/dto/PaymentType.java

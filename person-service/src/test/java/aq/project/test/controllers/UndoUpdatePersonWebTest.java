@@ -3,9 +3,9 @@ package aq.project.test.controllers;
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
 import aq.project.controllers.PersonRestController;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
-import aq.project.dto.PersonServiceUndoUpdatePersonRequestDto;
-import aq.project.dto.PersonServiceUpdatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
+import aq.project.dto.UndoUpdatePersonRequestDto;
+import aq.project.dto.UpdatePersonRequestDto;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
 import aq.project.repositories.ServiceOperationRepository;
@@ -87,21 +87,21 @@ public class UndoUpdatePersonWebTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceUpdatePersonRequestDto.setFirstName("UpdatedFirstName");
 
-        personRestController.updatePerson(traceId, personServiceUpdatePersonRequestDto, authorization);
+        personRestController.updatePerson(personServiceUpdatePersonRequestDto, traceId, authorization);
 
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidPersonServiceUndoUpdatePersonRequestDto();
+        UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidUndoUpdatePersonRequestDto();
         personServiceUndoUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceUndoUpdatePersonRequestDto);
@@ -129,15 +129,15 @@ public class UndoUpdatePersonWebTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidPersonServiceUndoUpdatePersonRequestDto();
+        UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getValidUndoUpdatePersonRequestDto();
         personServiceUndoUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceUndoUpdatePersonRequestDto);
@@ -165,15 +165,15 @@ public class UndoUpdatePersonWebTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getInvalidPersonServiceUndoUpdatePersonRequestDto();
+        UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getInvalidUndoUpdatePersonRequestDto();
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceUndoUpdatePersonRequestDto);
 
@@ -199,15 +199,15 @@ public class UndoUpdatePersonWebTest {
         String createCountryCode = "ATA";
         String createCountryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
-        PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getInvalidPersonServiceUndoUpdatePersonRequestDto();
+        UndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto = getInvalidUndoUpdatePersonRequestDto();
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceUndoUpdatePersonRequestDto);
 

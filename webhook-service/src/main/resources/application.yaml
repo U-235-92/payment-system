@@ -1,0 +1,70 @@
+server:
+  port: 8088
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
+
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
+  metrics:
+    tags:
+      application: webhook-service
+
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+
+spring:
+  application:
+    name: webhook-service
+
+  profiles:
+    active:
+      - dev
+
+  kafka:
+    bootstrapServers:
+      - localhost:29092
+      - localhost:39092
+      - localhost:49092
+    listener:
+      ack-mode: RECORD
+    producer:
+      acks: all
+      retries: 5
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+
+resilience4j:
+  ratelimiter:
+    instances:
+      confirm-operation-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+app:
+  security:
+    access-token-key: fake_key
+    access-token-hash-alg: SHA-256
+
+  scheduler:
+    payment-provider-callback-scheduler: 15
+
+  kafka:
+    topics:
+      payment-status-update-response:
+        name: payment_status_update_response
+        partitions: 3
+        replicas: 3
+        min_insync_replicas: 2

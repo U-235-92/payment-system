@@ -1,19 +1,22 @@
 server:
   port: 8082
-spring:
-  application:
-    name: person-service
-  profiles:
-    active:
-      - dev
+
 management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
+
   otlp:
     metrics:
       export:
         enabled: false
+
   metrics:
     tags:
       application: person-service
+
   endpoints:
     web:
       exposure:
@@ -21,6 +24,15 @@ management:
           - prometheus
           - info
           - health
+
+spring:
+  application:
+    name: person-service
+
+  profiles:
+    active:
+      - dev
+
 resilience4j:
   ratelimiter:
     instances:

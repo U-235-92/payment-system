@@ -1,0 +1,29 @@
+package aq.project.telemetry;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import reactor.core.publisher.Mono;
+
+import java.security.SecureRandom;
+
+import static aq.project.constants.CustomHttpHeaders.X_TRACE_ID_HEADER;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public abstract class TracePropagator {
+
+    public static String genTraceId() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[16];
+        random.nextBytes(bytes);
+        StringBuilder traceId = new StringBuilder();
+        for(byte b : bytes) {
+            traceId.append(String.format("%02x", b));
+        }
+        return traceId.toString();
+    }
+
+    public static Mono<String> fetchTraceId() {
+        return Mono.deferContextual(context -> Mono
+                .just(context.getOrDefault(X_TRACE_ID_HEADER, genTraceId())));
+    }
+}

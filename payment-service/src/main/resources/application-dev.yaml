@@ -9,21 +9,24 @@ logging:
 spring:
   flyway:
     enabled: false
+
   datasource:
     username: root
     password:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:payment_service_test_db
+
   jpa:
     show-sql: false
     generate-ddl: true
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
-#        format_sql: true # делает запросы многострочными и красивыми
-#        use_sql_comments: true # добавляет в лог название метода репозитория или имя сущности, которая вызвала запрос
+    #        format_sql: true # делает запросы многострочными и красивыми
+    #        use_sql_comments: true # добавляет в лог название метода репозитория или имя сущности, которая вызвала запрос
     hibernate:
       ddl-auto: create-drop
+
   h2:
     console:
       enabled: true

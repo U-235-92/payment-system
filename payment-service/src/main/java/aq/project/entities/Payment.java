@@ -1,30 +1,23 @@
 package aq.project.entities;
 
 import aq.project.dto.PaymentStatus;
+import aq.project.dto.TransactionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Audited
+@Builder
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(
-        name = "payments",
-        uniqueConstraints = @UniqueConstraint(columnNames = { "payment_id", "transaction_id" })
-)
+@Table(name = "payments")
 public class Payment {
 
     @Id
@@ -32,17 +25,25 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "payment_id")
+    @Column(name = "external_id")
+    private Long externalId;
+
+    @Column(name = "payment_id", unique = true)
     private UUID paymentId;
 
     @NotNull
-    @Column(name = "transaction_id", nullable = false)
+    @Column(name = "transaction_id", nullable = false, unique = true)
     private UUID transactionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_method_id")
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private PaymentMethod paymentMethod;
+
+    @NotNull
+    @Size(max = 50)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", length = 50, nullable = false)
+    private TransactionType transactionType;
 
     @NotNull
     @Positive
@@ -56,9 +57,10 @@ public class Payment {
     private String currencyCode;
 
     @NotNull
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private PaymentStatus status;
+    private PaymentStatus status = PaymentStatus.PENDING;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -67,4 +69,28 @@ public class Payment {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
+
+    @Builder.Default
+    @Column(name = "processed")
+    private Boolean processed = false;
+
+    public void fail() {
+        this.status = PaymentStatus.FAILED;
+    }
+
+    public void complete() {
+        this.status = PaymentStatus.COMPLETED;
+    }
+
+    public void processing() {
+        this.status = PaymentStatus.PROCESSING;
+    }
+
+    public boolean isProcessed() {
+        return this.processed == true;
+    }
+
+    public void markProcessed() {
+        this.processed = true;
+    }
 }

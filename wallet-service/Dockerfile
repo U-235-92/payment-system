@@ -21,6 +21,9 @@ COPY --from=builder /source/build/libs/*.jar ./wallet-service.jar
 
 #Spring env:
 ENV SPRING_PROFILES_ACTIVE=prod
+ENV DB_HOST=wallet-service-db
+ENV DB_PORT=5432
+ENV DB_NAME=wallet_service_db
 
-EXPOSE 8083
+EXPOSE 8084
 ENTRYPOINT ["java", "-jar", "wallet-service.jar"]

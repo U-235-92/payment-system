@@ -11,18 +11,13 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 
-import static aq.project.controller.DepositTransactionRestControllerApi.PATH_CREATE_DEPOSIT_TRANSACTION;
-import static aq.project.controller.DepositTransactionRestControllerApi.PATH_GET_DEPOSIT_TRANSACTION_STATUS;
 import static aq.project.controller.PaymentRestControllerApi.PATH_GET_PAYMENT_METHODS;
 import static aq.project.controller.PersonRestControllerApi.*;
 import static aq.project.controller.RateRestControllerApi.*;
 import static aq.project.controller.TokenRestControllerApi.PATH_REFRESH_TOKEN;
-import static aq.project.controller.TransferTransactionRestControllerApi.PATH_CREATE_TRANSFER_TRANSACTION;
-import static aq.project.controller.TransferTransactionRestControllerApi.PATH_GET_TRANSFER_TRANSACTION_STATUS;
+import static aq.project.controller.TransactionRestControllerApi.*;
 import static aq.project.controller.WalletRestControllerApi.PATH_CREATE_WALLET;
 import static aq.project.controller.WalletRestControllerApi.PATH_GET_WALLET_INFO;
-import static aq.project.controller.WithdrawTransactionRestControllerApi.PATH_CREATE_WITHDRAW_TRANSACTION;
-import static aq.project.controller.WithdrawTransactionRestControllerApi.PATH_GET_WITHDRAW_TRANSACTION_STATUS;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -56,13 +51,10 @@ public class SecurityConfiguration {
 
                         .pathMatchers(HttpMethod.POST, PATH_REFRESH_TOKEN).authenticated()
 
-                        .pathMatchers(HttpMethod.POST, PATH_CREATE_DEPOSIT_TRANSACTION).authenticated()
-                        .pathMatchers(HttpMethod.POST, PATH_CREATE_TRANSFER_TRANSACTION).authenticated()
-                        .pathMatchers(HttpMethod.POST, PATH_CREATE_WITHDRAW_TRANSACTION).authenticated()
-
-                        .pathMatchers(HttpMethod.GET, PATH_GET_DEPOSIT_TRANSACTION_STATUS.replace("{transactionId}", "*")).authenticated()
-                        .pathMatchers(HttpMethod.GET, PATH_GET_TRANSFER_TRANSACTION_STATUS.replace("{transactionId}", "*")).authenticated()
-                        .pathMatchers(HttpMethod.GET, PATH_GET_WITHDRAW_TRANSACTION_STATUS.replace("{transactionId}", "*")).authenticated()
+                        .pathMatchers(HttpMethod.GET, PATH_GET_TRANSACTIONS).authenticated()
+                        .pathMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
+                        .pathMatchers(HttpMethod.POST, PATH_CONFIRM_TRANSACTION.replace("{type}", "*")).authenticated()
+                        .pathMatchers(HttpMethod.POST, PATH_INIT_TRANSACTION.replace("{type}", "*")).authenticated()
 
                         .pathMatchers(HttpMethod.POST, PATH_CREATE_WALLET).authenticated()
                         .pathMatchers(HttpMethod.GET, PATH_GET_WALLET_INFO.replace("{walletId}", "*")).authenticated()

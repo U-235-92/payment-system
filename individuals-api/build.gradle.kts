@@ -117,19 +117,22 @@ val dependencyVersionMap = mapOf(
 	"resilience4j" to "2.4.0",
 
 //	Currency rate service API specification
-	"currency-rate-service-api-specification" to "2.1.0-dev",
+	"currency-rate-service-api-specification" to "7.0.2-dev",
 
 //	Person service API specification
-	"person-service-api-specification" to "3.0.0-dev",
+	"person-service-api-specification" to "7.0.3-dev",
 
 //	Transaction service API specification
-	"transaction-service-api-specification" to "2.2.0-dev",
+	"transaction-service-api-specification" to "7.0.8-dev",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "2.1.0-dev",
+	"wallet-service-api-specification" to "7.0.4-dev",
 
 //	Payment service API specification
-	"payment-service-api-specification" to "2.1.0-dev"
+	"payment-service-api-specification" to "7.0.5-dev",
+
+//	CommonProjectUtils
+	"common-utils" to "5.4.0"
 )
 
 dependencies {
@@ -188,6 +191,7 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
 
 //	Mapping
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
@@ -306,4 +310,12 @@ tasks.register<Copy>("fetchExternalApi") {
 		.map { apiSpecification -> zipTree(apiSpecification)
 			.matching { include("*$yamlExtension") } })
 	into("$rootDir/openapi")
+}
+
+tasks.register("printApiSpec") {
+//	Print info about current path to open api specs in local machine
+//	Need to debug operations to figure out which actual versions of specs store in local cache
+	doLast {
+		configurations["apiSpec"].forEach { println(">>> $it") }
+	}
 }

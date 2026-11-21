@@ -3,8 +3,8 @@ package aq.project.test.controllers;
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
 import aq.project.controllers.PersonRestController;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
-import aq.project.dto.PersonServiceUpdatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
+import aq.project.dto.UpdatePersonRequestDto;
 import aq.project.entities.Country;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
@@ -100,7 +100,7 @@ public class UpdatePersonWebTest {
         updateCountry.setCode(updateCountryCode);
         updateCountry.setName(updateCountryName);
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
@@ -108,7 +108,7 @@ public class UpdatePersonWebTest {
 
         personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
 
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceUpdatePersonRequestDto.getCountry().setName(updateCountryName);
         personServiceUpdatePersonRequestDto.getCountry().setCode(updateCountryCode);
@@ -144,7 +144,7 @@ public class UpdatePersonWebTest {
         updateCountry.setCode(updateCountryCode);
         updateCountry.setName(updateCountryName);
 
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceUpdatePersonRequestDto.getCountry().setName(updateCountryName);
         personServiceUpdatePersonRequestDto.getCountry().setCode(updateCountryCode);
@@ -164,9 +164,9 @@ public class UpdatePersonWebTest {
 
     @Test
     @WithMockUser(username = "test-user", password = "test-password")
-    public void failUpdatePersonOnInvalidPersonServiceUpdatePersonRequestDto() throws Exception {
+    public void failUpdatePersonOnInvalidUpdatePersonRequestDto() throws Exception {
 //        Arrange
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getInvalidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getInvalidUpdatePersonRequestDto();
 
         String traceId = UUID.randomUUID().toString();
         String authorization = UUID.randomUUID().toString();
@@ -185,7 +185,7 @@ public class UpdatePersonWebTest {
     @Test
     public void failUpdatePersonOnUnauthorizedRequestDto() throws Exception {
 //        Arrange
-        PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto = getInvalidPersonServiceUpdatePersonRequestDto();
+        UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getInvalidUpdatePersonRequestDto();
 
         String traceId = UUID.randomUUID().toString();
         String authorization = UUID.randomUUID().toString();

@@ -3,7 +3,7 @@ package aq.project.test.controllers;
 import aq.project._utils.ContainerPropertiesConfigurer;
 import aq.project._utils.Containers;
 import aq.project.controllers.PersonRestController;
-import aq.project.dto.PersonServiceCreatePersonRequestDto;
+import aq.project.dto.CreatePersonRequestDto;
 import aq.project.repositories.CountryRepository;
 import aq.project.repositories.PersonRepository;
 import aq.project.repositories.ServiceOperationRepository;
@@ -26,8 +26,8 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.util.UUID;
 
-import static aq.project._utils.entities.PersonServiceEntities.getInvalidPersonServiceCreatePersonRequestDto;
-import static aq.project._utils.entities.PersonServiceEntities.getValidPersonServiceCreatePersonRequestDto;
+import static aq.project._utils.entities.PersonServiceEntities.getInvalidCreatePersonRequestDto;
+import static aq.project._utils.entities.PersonServiceEntities.getValidCreatePersonRequestDto;
 import static aq.project.controller.PersonRestControllerApi.PATH_CREATE_PERSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -86,7 +86,7 @@ public class CreatePersonWebTest {
         String countryCode = "ATA";
         String countryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(countryName);
@@ -118,7 +118,7 @@ public class CreatePersonWebTest {
         String countryCode = "ATA";
         String countryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(countryName);
@@ -142,7 +142,7 @@ public class CreatePersonWebTest {
     @WithMockUser(username = "test-user", password = "test-password")
     public void failCreatePersonOnInvalidPersonServiceCreatePersonRequestDto() throws Exception {
 //        Arrange
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getInvalidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getInvalidCreatePersonRequestDto();
 
         String traceId = UUID.randomUUID().toString();
         String authorization = UUID.randomUUID().toString();
@@ -170,7 +170,7 @@ public class CreatePersonWebTest {
         String countryCode = "ATA";
         String countryName = "Antarctica";
 
-        PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto = getValidPersonServiceCreatePersonRequestDto();
+        CreatePersonRequestDto personServiceCreatePersonRequestDto = getValidCreatePersonRequestDto();
         personServiceCreatePersonRequestDto.setPersonKeycloakId(personKeycloakId);
         personServiceCreatePersonRequestDto.setEmail(email);
         personServiceCreatePersonRequestDto.getCountry().setName(countryName);

@@ -1,6 +1,9 @@
 package aq.project.utils.mappers;
 
-import aq.project.dto.*;
+import aq.project.dto.AddressDto;
+import aq.project.dto.CountryDto;
+import aq.project.dto.CreatePersonRequestDto;
+import aq.project.dto.PersonInfoResponseDto;
 import aq.project.entities.Address;
 import aq.project.entities.Country;
 import aq.project.entities.Individual;
@@ -23,12 +26,12 @@ public interface CreatePersonMapper {
     @Mapping(target = "address", expression = "java(toAddress(dto.getAddress()))")
     @Mapping(target = "individual", expression = "java(toIndividual(dto))")
     @Mapping(target = "instantEmbeddedData", ignore = true)
-    Person toPerson(PersonServiceCreatePersonRequestDto dto);
+    Person toPerson(CreatePersonRequestDto dto);
 
     @Mapping(target = "name", source = "name")
     @Mapping(target = "code", source = "code")
     @Mapping(target = "instantEmbeddedData", ignore = true)
-    Country toCountry(PersonServiceCountryDto dto);
+    Country toCountry(CountryDto dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "state", source = "state")
@@ -36,14 +39,14 @@ public interface CreatePersonMapper {
     @Mapping(target = "address", source = "address")
     @Mapping(target = "zip", source = "zipCode")
     @Mapping(target = "instantEmbeddedData", ignore = true)
-    Address toAddress(PersonServiceAddressDto dto);
+    Address toAddress(AddressDto dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "email", source = "email")
     @Mapping(target = "passportNumber", source = "passportNumber")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "instantEmbeddedData", ignore = true)
-    Individual toIndividual(PersonServiceCreatePersonRequestDto dto);
+    Individual toIndividual(CreatePersonRequestDto dto);
 
-    PersonServicePersonInfoResponseDto toPersonServicePersonInfoResponseDto(Person person);
+    PersonInfoResponseDto toPersonServicePersonInfoResponseDto(Person person);
 }

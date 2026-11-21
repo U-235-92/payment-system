@@ -22,8 +22,7 @@ public class Currency {
 
     @Id
     @NotBlank
-    @Size(max = 3)
-    @Column(name = "iso_code", nullable = false, length = 3)
+    @Column(name = "iso_code", nullable = false)
     private String isoCode;
 
     @PositiveOrZero

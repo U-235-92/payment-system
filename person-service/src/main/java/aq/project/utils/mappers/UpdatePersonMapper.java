@@ -1,10 +1,8 @@
 package aq.project.utils.mappers;
 
-import aq.project.dto.PersonServiceAddressDto;
-import aq.project.dto.PersonServiceCountryDto;
-import aq.project.dto.PersonServiceUpdatePersonRequestDto;
+import aq.project.dto.AddressDto;
+import aq.project.dto.UpdatePersonRequestDto;
 import aq.project.entities.Address;
-import aq.project.entities.Country;
 import aq.project.entities.Individual;
 import aq.project.entities.Person;
 import org.mapstruct.Mapper;
@@ -23,14 +21,14 @@ public interface UpdatePersonMapper {
     @Mapping(target = "instantEmbeddedData", ignore = true)
     @Mapping(target = "country", ignore = true)
     void updatePersonFromDto(
-            PersonServiceUpdatePersonRequestDto dto,
+            UpdatePersonRequestDto dto,
             @MappingTarget Person person
     );
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "instantEmbeddedData", ignore = true)
     void updateAddressFromDto(
-            PersonServiceAddressDto dto,
+            AddressDto dto,
             @MappingTarget Address address
     );
 
@@ -38,7 +36,7 @@ public interface UpdatePersonMapper {
     @Mapping(target = "instantEmbeddedData", ignore = true)
     @Mapping(target = "email", ignore = true)
     void updateIndividualFromDto(
-            PersonServiceUpdatePersonRequestDto dto,
+            UpdatePersonRequestDto dto,
             @MappingTarget Individual individual
     );
 }

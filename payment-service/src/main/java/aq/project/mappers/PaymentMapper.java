@@ -1,0 +1,60 @@
+package aq.project.mappers;
+
+import aq.project.dto.*;
+import aq.project.entities.Payment;
+import aq.project.entities.PaymentMethod;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
+@Mapper
+public interface PaymentMapper {
+
+    PaymentMapper INSTANCE = Mappers.getMapper(PaymentMapper.class);
+
+    @Mapping(target = "paymentMethodId", source = "id")
+    @Mapping(target = "paymentMethodType", source = "type")
+    @Mapping(target = "imageUrl", source = "requiredFields.imageUrl")
+    @Mapping(target = "description", source = "requiredFields.description")
+    @Mapping(target = "placeholder", source = "requiredFields.placeholder")
+    @Mapping(target = "dataType", source = "requiredFields.dataType")
+    @Mapping(target = "validationType", source = "requiredFields.validationType")
+    @Mapping(target = "validationRule", source = "requiredFields.validationRule")
+    @Mapping(target = "defaultValue", source = "requiredFields.defaultValue")
+    PaymentMethodResponseDto toPaymentMethodResponseDto(PaymentMethod paymentMethod);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "paymentId", ignore = true)
+    @Mapping(target = "transactionId", source = "transactionId")
+    @Mapping(target = "paymentMethod", ignore = true)
+    @Mapping(target = "transactionType", source = "transactionType")
+    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "currencyCode", source = "currencyCode")
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    Payment toPayment(CreatePaymentRequestDto dto);
+
+    @Mapping(target = "transactionId", source = "transactionId")
+    @Mapping(target = "paymentId", source = "paymentId")
+    @Mapping(target = "paymentStatus", source = "status")
+    CreatePaymentResponseDto toCreatePaymentResponseDto(Payment payment);
+
+    @Mapping(target = "merchantId", ignore = true)
+    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "currencyCode", source = "currencyCode")
+    @Mapping(target = "externalId", source = "transactionId")
+    @Mapping(target = "paymentId", source = "paymentId")
+    @Mapping(target = "notificationUrl", ignore = true)
+    CreatePayoutRequestDto toCreatePayoutRequestDto(Payment payment);
+
+    @Mapping(target = "merchantId", ignore = true)
+    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "currencyCode", source = "currencyCode")
+    @Mapping(target = "paymentMethod", source = "paymentMethod")
+    @Mapping(target = "externalId", source = "transactionId")
+    @Mapping(target = "paymentId", source = "paymentId")
+    @Mapping(target = "notificationUrl", ignore = true)
+    @Mapping(target = "description", ignore = true)
+    CreateTransactionRequestDto toCreateTransactionRequestDto(Payment payment);
+}

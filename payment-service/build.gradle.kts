@@ -1,37 +1,31 @@
 import org.gradle.internal.extensions.stdlib.capitalized
-import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.java
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
 	java
 	id("maven-publish")
 	id("org.openapi.generator") version "7.18.0"
-	id("org.springframework.boot") version "4.1.0"
+	id("org.springframework.boot") version "4.1.2"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "aq.payment-system"
-version = "1.0.0-dev"
+version = "1.0.0"
 
-extra["springCloudVersion"] = "2025.1.2"
+extra["springCloudVersion"] = "2025.1.4"
 
-/////////////////////////////////////
-// BLOCK OF BUILD SCRIPT VARIABLES //
-/////////////////////////////////////
 val artifact = "payment-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "2.1.0-dev"
+val specificationArtifactVersion = "7.0.5-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
 val openApiSpecificationBuildPath = "$rootDir/build/generated/openapi"
 val openApiIgnore = "$rootDir/openapi/_openapi.ignore"
 
-//////////////////////////////////////////////////////////
-// LOAD OF LOCAL MAVEN REPOSITORY CONNECTION PROPERTIES //
-//////////////////////////////////////////////////////////
 val envFile = file(".env")
 if(envFile.exists()) {
 	envFile.forEachLine { line ->
@@ -44,6 +38,17 @@ if(envFile.exists()) {
 					System.setProperty(key, value)
 				}
 			}
+		}
+	}
+}
+
+sourceSets { // Источники исходников для проекта
+	main {
+		java {
+			srcDir("$rootDir/src/main/java")
+			srcDir("$openApiSpecificationBuildPath/api-contract/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/payment-service/src/main/java")
+			srcDir("${openApiSpecificationBuildPath}/fake-payment-provider-service/src/main/java")
 		}
 	}
 }
@@ -67,52 +72,44 @@ repositories {
 	}
 }
 
-sourceSets {
-	main {
-		java {
-			srcDir("${rootDir}/src/main/java")
-			srcDir("${openApiSpecificationBuildPath}/payment-service/src/main/java")
-			srcDir("${openApiSpecificationBuildPath}/payment-provider-service/src/main/java")
-		}
-	}
+springBoot {
+	mainClass = "aq.project.FakePaymentProviderServiceApplication"
 }
 
 configurations {
 	create("apiSpec")
 }
 
-//////////////////////////
-// PROJECT DEPENDENCIES //
-//////////////////////////
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+	}
+}
+
 val dependencyVersionMap = mapOf(
-//	OpenApi
-	"springdoc-openapi" to "3.0.2",
-
-//	Resilience4j
-	"resilience4j" to "2.4.0",
-
-//	Spring AOP
-	"spring-boot-starter-aop" to "4.0.0-M2",
-
 //	Mapping
 	"mapstruct" to "1.6.3",
-
-//	Logging
-	"logstash-encoder" to "9.0",
-
-//	Test
-	"testcontainers" to "2.0.3",
-	"wiremock-spring-boot" to "4.0.9",
-	"testcontainers-keycloak" to "4.1.1",
 
 //	Lombok MapStruct binding
 	"lombok-mapstruct-binding" to "0.2.0",
 
-//	Spring data envers
-	"spring-data-envers" to "4.0.4",
+//	Observability
+	"logstash-encoder" to "9.0",
 
-//	Payment provider service API specification
-	"payment-provider-service-api-specification" to "2.4.1-dev"
+//	Spring AOP
+	"spring-boot-starter-aop" to "4.0.0-M2",
+
+//	Testcontainers
+	"testcontainers-keycloak" to "4.1.1",
+
+//	OpenApi
+	"springdoc-openapi" to "3.0.2",
+
+//	CommonProjectUtils
+	"common-utils" to "5.4.0",
+
+//	Fake payment provider service API specification
+	"fake-payment-provider-service-api-specification" to "7.0.5-dev"
 )
 
 dependencies {
@@ -120,47 +117,37 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 
 //	Spring Data
-	implementation("org.springframework.boot:spring-boot-starter-flyway")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-h2console")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-flyway")
 	implementation("org.flywaydb:flyway-database-postgresql")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
-	implementation("org.springframework.data:spring-data-envers:${dependencyVersionMap.getValue("spring-data-envers")}")
-
-//	Spring Security
-	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
-	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
-
-//	Observability
-	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-	implementation("io.opentelemetry:opentelemetry-exporter-otlp")
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
 
 //	Spring AOP
 	implementation("org.springframework.boot:spring-boot-starter-aop:${dependencyVersionMap.getValue("spring-boot-starter-aop")}")
 
-//	Spring validation
+//	Spring Security
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
+
+//	Spring Validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
-//	Resilience4j
-	implementation("io.github.resilience4j:resilience4j-spring-boot4:${dependencyVersionMap.getValue("resilience4j")}")
+//	Spring Kafka
+	implementation("org.springframework.boot:spring-boot-starter-kafka")
 
-//	Mapping
+//	MapStruct
 	implementation("org.mapstruct:mapstruct:${dependencyVersionMap.getValue("mapstruct")}")
 	annotationProcessor("org.mapstruct:mapstruct-processor:${dependencyVersionMap.getValue("mapstruct")}")
+	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
 
 //	Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 
-//	Lombok MapStruct binding
-	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:${dependencyVersionMap.getValue("lombok-mapstruct-binding")}")
-
-//	Logback JSON encoder
-	implementation("net.logstash.logback:logstash-logback-encoder:${dependencyVersionMap.getValue("logstash-encoder")}")
+//	Resilience
+	implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
 
 //	OpenApi
 	implementation("tools.jackson.core:jackson-core")
@@ -168,6 +155,14 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-annotations")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${dependencyVersionMap.getValue("springdoc-openapi")}")
+
+//	Observability
+	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
+
+//	Logging
+	implementation("net.logstash.logback:logstash-logback-encoder:${dependencyVersionMap.getValue("logstash-encoder")}")
 
 //	Test
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
@@ -178,29 +173,19 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testImplementation("org.springframework.boot:spring-boot-testcontainers")
-	testImplementation("org.testcontainers:testcontainers-grafana")
-	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	testImplementation("org.testcontainers:testcontainers-postgresql")
+	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
+	testImplementation("org.testcontainers:testcontainers-kafka")
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.wiremock.integrations:wiremock-spring-boot:${dependencyVersionMap.getValue("wiremock-spring-boot")}")
-	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
 
-//	Payment provider service api
-	"apiSpec"("aq.payment-system:payment-provider-service-api-specification:${dependencyVersionMap.getValue("payment-provider-service-api-specification")}")
+//	Util
+	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")
+
+//	Fake payment provider service api
+	"apiSpec"("aq.payment-system:fake-payment-provider-service-api-specification:${dependencyVersionMap.getValue("fake-payment-provider-service-api-specification")}")
 }
 
-dependencyManagement {
-	imports {
-		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-	}
-}
-
-////////////////////
-// BLOCK OF TASKS //
-////////////////////
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
@@ -278,6 +263,17 @@ tasks.register<GenerateTask>("genApiControllers") {
 	))
 }
 
+tasks.register("purgeJarApi") {
+	val root = File(openApiSpecificationBuildPath)
+	if(root.exists()) {
+		for(file in root.listFiles()) {
+			if(file.name.endsWith(".jar")) {
+				file.delete()
+			}
+		}
+	}
+}
+
 tasks.register("purgeExternalApi") {
 	val dir = File("./openapi")
 	for(file in dir.listFiles()) {
@@ -295,14 +291,11 @@ tasks.register<Copy>("fetchExternalApi") {
 	into("$rootDir/openapi")
 }
 
-tasks.register("purgeJarApi") {
-	val root = File(openApiSpecificationBuildPath)
-	if(root.exists()) {
-		for(file in root.listFiles()) {
-			if(file.name.endsWith(".jar")) {
-				file.delete()
-			}
-		}
+tasks.register("printApiSpec") {
+//	Print info about current path to open api specs in local machine
+//	Need to debug operations to figure out which actual versions of specs store in local cache
+	doLast {
+		configurations["apiSpec"].forEach { println(">>> $it") }
 	}
 }
 

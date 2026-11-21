@@ -1,6 +1,7 @@
 package aq.project.configurations;
 
 import aq.project.clients.FrankfurterRateProviderClient;
+import aq.project.utils.client.ClientErrorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,10 @@ public class ClientConfiguration {
         return groups -> {
             groups.forEachGroup((group, clientBuilder, factoryBuilder) -> {
                 switch (group.name()) {
-                    case "currency-rate-service" -> clientBuilder.baseUrl(currencyRateServiceBaseUrl).build();
+                    case "currency-rate-service" -> clientBuilder
+                            .baseUrl(currencyRateServiceBaseUrl)
+                            .defaultStatusHandler(ClientErrorHandler::isErrorResponse, ClientErrorHandler::onClientErrorResponse)
+                            .build();
                 }
             });
         };

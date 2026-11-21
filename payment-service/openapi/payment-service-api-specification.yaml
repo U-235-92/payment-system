@@ -24,19 +24,15 @@ paths:
           schema:
             type: string
             pattern: '^[A-Z]{3}$'
-            minLength: 3
-            maxLength: 3
         - name: countryCode
           in: path
           required: true
           schema:
             type: string
             pattern: '^[A-Z]{3}$'
-            minLength: 3
-            maxLength: 3
         - name: x-trace-id
           in: header
-          required: true
+          required: false
           schema:
             type: string
           description: Identifier of open telemetry trace
@@ -54,13 +50,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PaymentServicePaymentMethodResponseDto"
+                  $ref: "#/components/schemas/PaymentMethodResponseDto"
         400:
           description: Malformed request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -90,20 +86,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PaymentServiceCreatePaymentRequestDto"
+              $ref: "#/components/schemas/CreatePaymentRequestDto"
       responses:
-        200:
+        201:
           description: Payment response DTO which describes result of handle payment request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentServiceCreatePaymentResponseDto"
+                $ref: "#/components/schemas/CreatePaymentResponseDto"
         400:
           description: Malformed request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
@@ -113,9 +109,9 @@ tags:
 
 components:
   schemas:
-    PaymentServicePaymentMethodResponseDto:
+    PaymentMethodResponseDto:
       type: object
-      required: [ payment_method_id, payment_method_type, image_url, description, placeholder, data_type, validation_type, validation_rule, default_value, values_options ]
+      required: [ payment_method_id, payment_method_type ]
       properties:
         payment_method_id:
           type: integer
@@ -141,9 +137,9 @@ components:
           items:
             type: string
 
-    PaymentServiceCreatePaymentRequestDto:
+    CreatePaymentRequestDto:
       type: object
-      required: [ transaction_id, payment_method_id, amount, currency_code, user_fields, trace_id ]
+      required: [ transaction_id, payment_method_id, transaction_type, amount, currency_code ]
       properties:
         transaction_id:
           type: string
@@ -151,6 +147,8 @@ components:
         payment_method_id:
           type: integer
           format: int64
+        transaction_type:
+          $ref: "#/components/schemas/TransactionType"
         amount:
           type: number
           format: decimal
@@ -158,16 +156,12 @@ components:
         currency_code:
           type: string
           pattern: '^[A-Z]{3}$'
-          minLength: 3
-          maxLength: 3
         user_fields:
           type: object
           additionalProperties:
             type: string
-        trace_id:
-          type: string
 
-    PaymentServiceCreatePaymentResponseDto:
+    CreatePaymentResponseDto:
       type: object
       required: [ transaction_id, payment_id, payment_status ]
       properties:
@@ -180,20 +174,21 @@ components:
         payment_status:
           $ref: "#/components/schemas/PaymentStatus"
 
-    PaymentServiceErrorDto:
+    ErrorDto:
       type: object
-      required: [ message ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
       properties:
         message:
           type: string
         trace_id:
           type: string
-        http_status:
-          type: integer
-          format: int32
+
+    TransactionType:
+      enum: [ DEPOSIT, WITHDRAWAL ]
+      description: Allowed payment operations
 
     PaymentStatus:
-      enum: [ "PENDING", "COMPLETED", "FAILED", "CANCELED" ]
+      enum: [ PENDING, PROCESSING, COMPLETED, FAILED ]
 
     PaymentType:
-      enum: [ "CARD", "BANK_TRANSFER", "CASH" ]
+      enum: [ CARD, TRANSFER, CASH ]

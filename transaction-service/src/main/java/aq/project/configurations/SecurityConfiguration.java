@@ -45,8 +45,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers(HttpMethod.POST, PATH_INIT_TRANSACTION.replace("{type}", "*")).authenticated()
-                        .requestMatchers(HttpMethod.POST, PATH_CONFIRM_TRANSACTION.replace("{type}", "*")).authenticated()
+                        .requestMatchers(HttpMethod.POST, PATH_INIT_TRANSACTION).authenticated()
+                        .requestMatchers(HttpMethod.POST, PATH_CONFIRM_TRANSACTION).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTION_STATUS.replace("{id}", "*")).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_TRANSACTIONS).authenticated()
                         .requestMatchers(HttpMethod.POST, PATH_FAIL_TRANSACTION.replace("{id}", "*")).authenticated())

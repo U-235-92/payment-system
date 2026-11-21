@@ -10,7 +10,7 @@ servers:
   - url: http://transaction-service:8083
 
 paths:
-  /api/v1/transaction/{type}/init:
+  /api/v1/transaction/init:
     post:
       security:
         - BearerAuth: [ ]
@@ -31,12 +31,6 @@ paths:
           schema:
             type: string
           description: OAuth 2.0 JWT
-        - name: type
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Allowed type of payment [ deposit, withdrawal, transfer ]
       requestBody:
         required: true
         content:
@@ -66,7 +60,7 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
           description: Response in case if error was occurred on service side
 
-  /api/v1/transaction/{type}/confirm:
+  /api/v1/transaction/confirm:
     post:
       security:
         - BearerAuth: [ ]
@@ -87,12 +81,6 @@ paths:
           schema:
             type: string
           description: OAuth 2.0 JWT
-        - name: type
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Allowed type of payment [ deposit, withdrawal, transfer ]
       requestBody:
         required: true
         content:

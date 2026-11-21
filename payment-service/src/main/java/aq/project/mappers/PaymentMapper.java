@@ -1,9 +1,6 @@
 package aq.project.mappers;
 
-import aq.project.dto.CreatePayoutRequestDto;
-import aq.project.dto.CreatePaymentRequestDto;
-import aq.project.dto.CreatePaymentResponseDto;
-import aq.project.dto.PaymentMethodResponseDto;
+import aq.project.dto.*;
 import aq.project.entities.Payment;
 import aq.project.entities.PaymentMethod;
 import org.mapstruct.Mapper;
@@ -30,6 +27,7 @@ public interface PaymentMapper {
     @Mapping(target = "paymentId", ignore = true)
     @Mapping(target = "transactionId", source = "transactionId")
     @Mapping(target = "paymentMethod", ignore = true)
+    @Mapping(target = "transactionType", source = "transactionType")
     @Mapping(target = "amount", source = "amount")
     @Mapping(target = "currencyCode", source = "currencyCode")
     @Mapping(target = "status", ignore = true)
@@ -49,4 +47,14 @@ public interface PaymentMapper {
     @Mapping(target = "paymentId", source = "paymentId")
     @Mapping(target = "notificationUrl", ignore = true)
     CreatePayoutRequestDto toCreatePayoutRequestDto(Payment payment);
+
+    @Mapping(target = "merchantId", ignore = true)
+    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "currencyCode", source = "currencyCode")
+    @Mapping(target = "paymentMethod", source = "paymentMethod")
+    @Mapping(target = "externalId", source = "transactionId")
+    @Mapping(target = "paymentId", source = "paymentId")
+    @Mapping(target = "notificationUrl", ignore = true)
+    @Mapping(target = "description", ignore = true)
+    CreateTransactionRequestDto toCreateTransactionRequestDto(Payment payment);
 }

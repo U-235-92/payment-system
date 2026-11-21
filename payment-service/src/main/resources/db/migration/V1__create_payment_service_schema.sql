@@ -48,10 +48,11 @@ CREATE TABLE payment_methods (
 
 CREATE TABLE payments (
     id BIGSERIAL PRIMARY KEY,
-    external_id BIGINT UNIQUE,
+    external_id BIGINT,
     payment_id UUID UNIQUE,
     transaction_id UUID NOT NULL UNIQUE,
     payment_method_id BIGINT REFERENCES payment_methods(id),
+    transaction_type VARCHAR(50) NOT NULL,
     amount NUMERIC(18, 2) NOT NULL,
     currency_code VARCHAR(3) NOT NULL,
     status VARCHAR(20) NOT NULL,

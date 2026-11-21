@@ -5,6 +5,7 @@ import aq.project.entities.Payment;
 import aq.project.entities.PaymentMethod;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.fake_payment_provider_service.PayoutApiClient;
+import aq.project.fake_payment_provider_service.TransactionApiClient;
 import aq.project.mappers.PaymentMapper;
 import aq.project.repositories.PaymentMethodRepository;
 import aq.project.repositories.PaymentRepository;
@@ -36,7 +37,9 @@ public class PaymentService {
 
     private final PaymentMethodRepository paymentMethodRepository;
 
-    private final PayoutApiClient payoutApiClient;
+    private final PayoutApiClient payoutClient;
+
+    private final TransactionApiClient transactionClient;
 
     private final AuthorizationService authorizationService;
 
@@ -137,7 +140,7 @@ public class PaymentService {
         String authorization = authorizationService.getAuthorization();
         String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
 
-        ResponseEntity<PayoutInfoResponseDto> responseEntity = payoutApiClient
+        ResponseEntity<PayoutInfoResponseDto> responseEntity = payoutClient
                 .getPayoutInfo(payoutId, authorization, traceId);
 
         HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
@@ -196,29 +199,61 @@ public class PaymentService {
         String authorization = authorizationService.getAuthorization();
         String merchantId = authorizationService.getMerchantId();
 
-        CreatePayoutRequestDto createPayoutRequestDto = paymentMapper.toCreatePayoutRequestDto(payment);
+        TransactionType operationType = payment.getTransactionType();
 
-        createPayoutRequestDto.setMerchantId(merchantId);
+        switch (operationType) {
+            case DEPOSIT -> {
+                CreateTransactionRequestDto createTransactionRequestDto = paymentMapper.toCreateTransactionRequestDto(payment);
 
-        ResponseEntity<PayoutInfoResponseDto> responseEntity = payoutApiClient
-                .createPayout(authorization, createPayoutRequestDto, traceId);
+                ResponseEntity<TransactionInfoResponseDto> responseEntity = transactionClient
+                        .createTransaction(authorization, createTransactionRequestDto, traceId);
 
-        HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
+                HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
 
-        if(httpStatusCode.is2xxSuccessful()) {
+                if(httpStatusCode.is2xxSuccessful()) {
 //            The final process of payment to success/fail state will continue on PaymentStatusKafkaConsumer side
 //            See PaymentStatusKafkaConsumer.onPaymentStatusEvent(..) for details
-            PayoutInfoResponseDto payoutInfoResponseDto = responseEntity.getBody();
+                    TransactionInfoResponseDto transactionInfoResponseDto = responseEntity.getBody();
 
-            if(payoutInfoResponseDto != null) {
-                Long payoutId = payoutInfoResponseDto.getId();
+                    if(transactionInfoResponseDto != null) {
+                        Long transactionId = transactionInfoResponseDto.getId();
 
-                payment.setExternalId(payoutId);
-                payment.processing();
+                        payment.setExternalId(transactionId);
+                        payment.processing();
 
-                paymentRepository.save(payment);
-            } else {
-                throw new IllegalStateException("Received response has no body");
+                        paymentRepository.save(payment);
+                    } else {
+                        throw new IllegalStateException("Received response has no body");
+                    }
+                }
+            }
+
+            case WITHDRAWAL -> {
+                CreatePayoutRequestDto createPayoutRequestDto = paymentMapper.toCreatePayoutRequestDto(payment);
+
+                createPayoutRequestDto.setMerchantId(merchantId);
+
+                ResponseEntity<PayoutInfoResponseDto> responseEntity = payoutClient
+                        .createPayout(authorization, createPayoutRequestDto, traceId);
+
+                HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
+
+                if(httpStatusCode.is2xxSuccessful()) {
+//            The final process of payment to success/fail state will continue on PaymentStatusKafkaConsumer side
+//            See PaymentStatusKafkaConsumer.onPaymentStatusEvent(..) for details
+                    PayoutInfoResponseDto payoutInfoResponseDto = responseEntity.getBody();
+
+                    if(payoutInfoResponseDto != null) {
+                        Long payoutId = payoutInfoResponseDto.getId();
+
+                        payment.setExternalId(payoutId);
+                        payment.processing();
+
+                        paymentRepository.save(payment);
+                    } else {
+                        throw new IllegalStateException("Received response has no body");
+                    }
+                }
             }
         }
     }

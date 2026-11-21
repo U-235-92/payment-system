@@ -1,6 +1,7 @@
 package aq.project.entities;
 
 import aq.project.dto.PaymentStatus;
+import aq.project.dto.TransactionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -24,7 +25,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "external_id", unique = true)
+    @Column(name = "external_id")
     private Long externalId;
 
     @Column(name = "payment_id", unique = true)
@@ -37,6 +38,12 @@ public class Payment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_method_id")
     private PaymentMethod paymentMethod;
+
+    @NotNull
+    @Size(max = 50)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", length = 50, nullable = false)
+    private TransactionType transactionType;
 
     @NotNull
     @Positive

@@ -4,7 +4,6 @@ import aq.project.clients.KeycloakServiceClientFacade;
 import aq.project.dto.ConfirmTransactionRequestDto;
 import aq.project.dto.InitTransactionRequestDto;
 import aq.project.dto.InitTransactionResponseDto;
-import aq.project.dto.PaymentType;
 import aq.project.transaction_service.TransactionApiClient;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -83,7 +82,7 @@ public class _TransferTransactionService {
         initTransactionRequestDto.setTargetWalletConversionRate(targetWalletConversionRate);
 
         return transactionClient
-                .initTransaction(PaymentType.TRANSFER.toString(), Mono.just(initTransactionRequestDto), traceId, authorization)
+                .initTransaction(Mono.just(initTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 
@@ -140,7 +139,7 @@ public class _TransferTransactionService {
         confirmTransactionRequestDto.setWalletConversionRate(walletConversionRate);
         confirmTransactionRequestDto.setTargetWalletConversionRate(targetWalletConversionRate);
 
-        return transactionClient.confirmTransaction(PaymentType.TRANSFER.toString(), Mono.just(confirmTransactionRequestDto), traceId, authorization)
+        return transactionClient.confirmTransaction(Mono.just(confirmTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 }

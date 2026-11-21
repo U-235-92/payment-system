@@ -4,6 +4,7 @@ import aq.project.clients.KeycloakServiceClientFacade;
 import aq.project.dto.CreatePaymentRequestDto;
 import aq.project.dto.CreatePaymentResponseDto;
 import aq.project.dto.PaymentMethodResponseDto;
+import aq.project.dto.TransactionType;
 import aq.project.payment_service.PaymentApiClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,12 +42,14 @@ public class PaymentService {
             String authorization,
             UUID transactionId,
             Long paymentMethodId,
+            TransactionType transactionType,
             BigDecimal amount,
             String currencyCode
     ) {
         CreatePaymentRequestDto createPaymentRequestDto = new CreatePaymentRequestDto()
                 .transactionId(transactionId)
                 .paymentMethodId(paymentMethodId)
+                .transactionType(transactionType)
                 .amount(amount)
                 .currencyCode(currencyCode);
 

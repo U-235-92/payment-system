@@ -4,7 +4,7 @@ import aq.project.clients.KeycloakServiceClientFacade;
 import aq.project.dto.ConfirmTransactionRequestDto;
 import aq.project.dto.InitTransactionRequestDto;
 import aq.project.dto.InitTransactionResponseDto;
-import aq.project.dto.PaymentType;
+import aq.project.dto.TransactionType;
 import aq.project.transaction_service.TransactionApiClient;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +73,7 @@ public class _DepositTransactionService {
         initTransactionRequestDto.setWalletConversionRate(conversionRate);
 
         return transactionClient
-                .initTransaction(PaymentType.DEPOSIT.toString(), Mono.just(initTransactionRequestDto), traceId, authorization)
+                .initTransaction(Mono.just(initTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 
@@ -93,7 +93,7 @@ public class _DepositTransactionService {
                         .flatMap(authorization -> walletService.getWalletCurrencyCode(requestWalletId)
                                 .flatMap(walletCurrencyCode -> conversionRateService.getConversionRate(requestCurrencyCode, walletCurrencyCode)
                                         .flatMap(conversionRate -> confirmTransaction(traceId, authorization, conversionRate, confirmTransactionRequestDto)
-                                                .flatMap(transactionId -> paymentService.createPayment(traceId, authorization, transactionId, requestPaymentMethodId, requestAmount, requestCurrencyCode)
+                                                .flatMap(transactionId -> paymentService.createPayment(traceId, authorization, transactionId, requestPaymentMethodId, TransactionType.DEPOSIT, requestAmount, requestCurrencyCode)
                                                         .flatMap(paymentServiceResponse -> Mono.just(transactionId))
                                                         .onErrorResume(paymentServiceException -> transactionClient.failTransaction(transactionId, traceId, authorization)
                                                                 .then(Mono.error(paymentServiceException))))))));
@@ -126,7 +126,7 @@ public class _DepositTransactionService {
 
         confirmTransactionRequestDto.setWalletConversionRate(conversionRate);
 
-        return transactionClient.confirmTransaction(PaymentType.DEPOSIT.toString(), Mono.just(confirmTransactionRequestDto), traceId, authorization)
+        return transactionClient.confirmTransaction(Mono.just(confirmTransactionRequestDto), traceId, authorization)
                 .flatMap(response -> Mono.just(Objects.requireNonNull(response.getBody())));
     }
 }

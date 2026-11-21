@@ -53,14 +53,20 @@ public class TransactionService {
     ) {
         switch(type) {
             case DEPOSIT -> {
+                initTransactionRequestDto.setPaymentType(type);
+
                 return depositTransactionService.initTransaction(initTransactionRequestDto);
             }
 
             case WITHDRAWAL -> {
+                initTransactionRequestDto.setPaymentType(type);
+
                 return withdrawalTransactionService.initTransaction(initTransactionRequestDto);
             }
 
             case TRANSFER -> {
+                initTransactionRequestDto.setPaymentType(type);
+
                 return transferTransactionService.initTransaction(initTransactionRequestDto);
             }
 
@@ -103,14 +109,20 @@ public class TransactionService {
     ) {
         switch(type) {
             case DEPOSIT -> {
+                confirmTransactionRequestDto.setPaymentType(type);
+
                 return depositTransactionService.confirmTransaction(confirmTransactionRequestDto);
             }
 
             case WITHDRAWAL -> {
+                confirmTransactionRequestDto.setPaymentType(type);
+
                 return withdrawalTransactionService.confirmTransaction(confirmTransactionRequestDto);
             }
 
             case TRANSFER -> {
+                confirmTransactionRequestDto.setPaymentType(type);
+
                 return transferTransactionService.confirmTransaction(confirmTransactionRequestDto);
             }
 

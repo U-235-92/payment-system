@@ -1,0 +1,2 @@
+ALTER TABLE wallets
+    ALTER COLUMN balance TYPE NUMERIC(18, 2);

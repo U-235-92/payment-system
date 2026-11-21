@@ -1,6 +1,5 @@
 package aq.project.entities;
 
-import aq.project.dto.PaymentType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -49,8 +48,8 @@ public class PaymentMethod {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false, length = 64)
-    private PaymentType type;
+    @Column(name = "method", nullable = false, length = 64)
+    private aq.project.dto.PaymentMethod method;
 
     @Column(name = "is_active")
     private Boolean isActive = true;

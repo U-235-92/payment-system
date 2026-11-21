@@ -35,6 +35,8 @@ public class AccessTokenFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String requestPath = request.getRequestURI();
 
+        log.debug(">>>>> Received request on path: {}", requestPath);
+
         if(isRequestedInvalidPath(requestPath)) {
             log.error("Request contains invalid target path: [{}]", requestPath);
 
@@ -85,6 +87,9 @@ public class AccessTokenFilter extends OncePerRequestFilter {
             String serviceAccessTokenHash = SecurityUtil.getHash(serviceAccessTokenKey, serviceAccessTokenHashAlg);
 
             if(MessageDigest.isEqual(requestAccessTokenHash.getBytes(), serviceAccessTokenHash.getBytes())) {
+                log.debug(">>>>> Success handle of request on path: {} for hash: {}",
+                        requestPath, requestAccessTokenHash);
+
                 filterChain.doFilter(request, response);
 
             } else {

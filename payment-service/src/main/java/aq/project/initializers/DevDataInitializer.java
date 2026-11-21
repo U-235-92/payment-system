@@ -1,6 +1,5 @@
 package aq.project.initializers;
 
-import aq.project.dto.PaymentType;
 import aq.project.entities.PaymentMethod;
 import aq.project.entities.PaymentMethodDefinition;
 import aq.project.entities.PaymentMethodRequiredField;
@@ -72,7 +71,7 @@ public class DevDataInitializer implements ApplicationRunner {
         paymentMethod.setRequiredFields(paymentMethodRequiredField);
         paymentMethod.setCreatedAt(OffsetDateTime.now());
         paymentMethod.setUpdatedAt(OffsetDateTime.now());
-        paymentMethod.setType(PaymentType.TRANSFER);
+        paymentMethod.setMethod(aq.project.dto.PaymentMethod.TRANSFER);
         paymentMethod.setLogo("AQ");
         return paymentMethod;
     }

@@ -14,6 +14,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,12 +56,19 @@ public class WebhookService {
         String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
         String accessTokeHash = SecurityUtil.getHash(accessTokenKey, accessTokenHashAlg);
 
+        log.debug(">>>>> Attempt to send request [webhook event] to [webhook-service]");
+
         ResponseEntity<Void> responseEntity = webhookApiClient
                 .confirmOperationWebhook(accessTokeHash, accessTokenHashAlg, updateStatusOperationRequestDto, traceId);
 
+        HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
+
+        log.debug(">>>>> Received response on send request [webhook event] to [webhook-service] " +
+                        "with status code: [{}]", httpStatusCode);
+
 //        If was received 4xx/5xx status code response then error handler will handle that case.
 //        See ClientConfiguration for details.
-        if(responseEntity.getStatusCode().is2xxSuccessful()) {
+        if(httpStatusCode.is2xxSuccessful()) {
 //            Save outbox entity to the final update of transaction/payout status.
 //            See WebhookScheduler.updateOperationStatus(..) for details.
             Webhook webhook = Webhook.builder()

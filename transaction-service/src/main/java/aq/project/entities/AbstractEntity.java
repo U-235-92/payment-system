@@ -1,7 +1,10 @@
 package aq.project.entities;
 
-import jakarta.persistence.*;
-import lombok.Getter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.stereotype.Service;
@@ -9,13 +12,17 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Getter @Service
+@Service
+@SuperBuilder
+@Getter @Setter
 @MappedSuperclass
+@NoArgsConstructor
+@AllArgsConstructor
 public class AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", updatable = false, nullable = false)
+    @NotNull
+    @Column(name = "id", updatable = false)
     private UUID id;
 
     @CreationTimestamp

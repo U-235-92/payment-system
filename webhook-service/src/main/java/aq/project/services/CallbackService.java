@@ -17,8 +17,14 @@ public class CallbackService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markProcessed(PaymentProviderCallback paymentProviderCallback) {
+        log.debug(">>>>> Attempt to mark as [PROCESSED] callback for transaction with id: [{}]",
+                paymentProviderCallback.getTransactionId());
+
         paymentProviderCallback.markProcessed();
 
         paymentProviderCallbackRepository.save(paymentProviderCallback);
+
+        log.debug(">>>>> Successful mark as [PROCESSED] callback for transaction with id: [{}]",
+                paymentProviderCallback.getTransactionId());
     }
 }

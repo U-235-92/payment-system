@@ -13,12 +13,27 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
 
     Optional<Payment> findByTransactionId(UUID transactionId);
 
-    @Query("SELECT p FROM Payment p WHERE p.status = :status")
+    @Query(
+            "SELECT p " +
+            "FROM Payment p " +
+            "JOIN FETCH p.paymentMethod " +
+            "WHERE p.status = :status"
+    )
     List<Payment> findAllByPaymentStatus(PaymentStatus status);
 
-    @Query("SELECT p FROM Payment p WHERE p.status = :status AND p.processed = false")
+    @Query(
+            "SELECT p " +
+            "FROM Payment p " +
+            "JOIN FETCH p.paymentMethod " +
+            "WHERE p.status = :status AND p.processed = false"
+    )
     List<Payment> findAllUnprocessedByPaymentStatus(PaymentStatus status);
 
-    @Query("SELECT p FROM Payment p WHERE p.paymentId = :paymentId")
+    @Query(
+            "SELECT p " +
+            "FROM Payment p " +
+            "JOIN FETCH p.paymentMethod " +
+            "WHERE p.paymentId = :paymentId"
+    )
     Optional<Payment> findByPaymentId(UUID paymentId);
 }

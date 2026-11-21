@@ -40,7 +40,7 @@ CREATE TABLE payment_methods (
     payment_method_required_fields_id BIGINT REFERENCES payment_method_required_fields(id),
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    type VARCHAR(64) NOT NULL,
+    method VARCHAR(64) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     logo TEXT,
     profile_type VARCHAR(24) DEFAULT 'INDIVIDUAL' NOT NULL

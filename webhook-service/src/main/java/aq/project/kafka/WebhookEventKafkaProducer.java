@@ -34,6 +34,9 @@ public class WebhookEventKafkaProducer {
     ) {
         WebhookEvent webhookEvent = webhookMapper.toWebhookEvent(paymentProviderCallback);
 
+        log.debug(">>>>> Attempt to publish [webhook event] into Kafka topic [{}]",
+                paymentStatusUpdateResponseTopic);
+
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate
                 .send(paymentStatusUpdateResponseTopic, webhookEvent);
 

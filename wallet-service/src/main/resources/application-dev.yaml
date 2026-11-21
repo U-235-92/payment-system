@@ -5,6 +5,7 @@ logging:
     web: warn
     org.springframework.security: warn
     org.apache.shardingsphere: info
+    aq.project.services: debug
 
 spring:
   flyway:

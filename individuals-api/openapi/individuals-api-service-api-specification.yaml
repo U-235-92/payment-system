@@ -832,8 +832,7 @@ components:
           description: Valid currency code
 
     TransactionStatus:
-      allOf:
-        - $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
+      $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
 
     TransactionInfoResponseDto:
       allOf:

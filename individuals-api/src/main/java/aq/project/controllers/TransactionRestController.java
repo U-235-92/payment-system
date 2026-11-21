@@ -28,7 +28,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
             ServerWebExchange exchange
     ) {
         try {
-            PaymentType paymentType = PaymentType.valueOf(type);
+            PaymentType paymentType = PaymentType.valueOf(type.toUpperCase());
 
             return initTransactionRequestDto
                     .flatMap(request -> transactionService.initTransaction(paymentType, request))
@@ -48,7 +48,7 @@ public class TransactionRestController implements TransactionRestControllerApi {
             ServerWebExchange exchange
     ) {
         try {
-            PaymentType paymentType = PaymentType.valueOf(type);
+            PaymentType paymentType = PaymentType.valueOf(type.toUpperCase());
 
             return confirmTransactionRequestDto
                     .flatMap(request -> transactionService.confirmTransaction(paymentType, request))

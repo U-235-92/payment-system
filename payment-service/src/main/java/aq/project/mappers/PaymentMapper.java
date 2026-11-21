@@ -13,7 +13,7 @@ public interface PaymentMapper {
     PaymentMapper INSTANCE = Mappers.getMapper(PaymentMapper.class);
 
     @Mapping(target = "paymentMethodId", source = "id")
-    @Mapping(target = "paymentMethodType", source = "type")
+    @Mapping(target = "paymentMethod", source = "method")
     @Mapping(target = "imageUrl", source = "requiredFields.imageUrl")
     @Mapping(target = "description", source = "requiredFields.description")
     @Mapping(target = "placeholder", source = "requiredFields.placeholder")
@@ -51,7 +51,7 @@ public interface PaymentMapper {
     @Mapping(target = "merchantId", ignore = true)
     @Mapping(target = "amount", source = "amount")
     @Mapping(target = "currencyCode", source = "currencyCode")
-    @Mapping(target = "paymentMethod", source = "paymentMethod")
+    @Mapping(target = "paymentMethod", source = "paymentMethod.method")
     @Mapping(target = "externalId", source = "transactionId")
     @Mapping(target = "paymentId", source = "paymentId")
     @Mapping(target = "notificationUrl", ignore = true)

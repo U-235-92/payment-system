@@ -306,8 +306,8 @@ components:
   schemas:
     InitTransactionRequestDto:
       type: object
-      x-class-extra-annotation: "@lombok.Builder"
-      required: [ wallet_id, target_wallet_id, amount, wallet_conversion_rate, target_wallet_conversion_rate, payment_type, currency_code ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
+      required: [ wallet_id, amount, wallet_conversion_rate, payment_type, currency_code ]
       properties:
         wallet_id:
           type: string
@@ -387,8 +387,8 @@ components:
 
     ConfirmTransactionRequestDto:
       type: object
-      x-class-extra-annotation: "@lombok.Builder"
-      required: [ user_id, wallet_id, target_wallet_id, amount, wallet_conversion_rate, target_wallet_conversion_rate, payment_type, currency_code ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
+      required: [ user_id, wallet_id, amount, wallet_conversion_rate, payment_type, currency_code ]
       properties:
         user_id:
           type: string
@@ -427,8 +427,8 @@ components:
 
     TransactionInfoResponseDto:
       type: object
-      x-class-extra-annotation: "@lombok.Builder"
-      required: [ transaction_id, user_id, wallet_id, target_wallet_id, wallet_amount, target_wallet_amount, payment_type, currency_code ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
+      required: [ transaction_id, user_id, wallet_id, wallet_amount, payment_type, currency_code ]
       properties:
         transaction_id:
           type: string

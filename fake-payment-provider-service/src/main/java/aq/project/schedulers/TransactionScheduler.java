@@ -47,11 +47,18 @@ public class TransactionScheduler {
 
                     dto.setStatus(Status.SUCCESS);
 
+                    log.debug(">>>>> Schedule update transaction status on: [{}] for transaction with id: [{}]",
+                            dto.getStatus(), dto.getTransactionId());
+
 //                    Request to update transaction on success status
                     webhookService.updateOperationStatus(dto);
 
 //                    Before status of transaction is updated mark one as processing.
                     pendingTransaction.processing();
+
+                    log.debug(">>>>> Success schedule update transaction status on: [{}] for transaction with id: [{}]",
+                            dto.getStatus(), dto.getTransactionId());
+
                 } catch (Exception e) {
                     log.error("[{}]: {} occurred while update status of transaction with id: [{}]. Exception message: {}",
                             traceId, e.getClass().getSimpleName(), pendingTransaction.getId(), e.getMessage());

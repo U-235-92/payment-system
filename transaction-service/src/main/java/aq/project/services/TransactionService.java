@@ -236,6 +236,7 @@ public class TransactionService {
 
         Transaction newTransaction = transactionMapper.toTransaction(confirmTransactionRequestDto);
 
+        newTransaction.setId(UUID.randomUUID());
         newTransaction.setTransactionStatus(TransactionStatus.PENDING);
         newTransaction.setDescription(null);
         newTransaction.setWalletAmount(walletTotalAmount);
@@ -249,23 +250,35 @@ public class TransactionService {
 
         switch(paymentType) {
             case DEPOSIT ->  {
+                log.debug(">>>>> Start to handle [DEPOSIT] transaction");
+
                 DepositWalletRequestDto dto = new DepositWalletRequestDto()
                         .walletId(savedTransaction.getWalletId())
                         .amount(savedTransaction.getWalletAmount())
                         .currencyCode(savedTransaction.getCurrencyCode());
 
+                log.debug(">>>>> Attempt to send [DEPOSIT] transaction into [wallet-service]");
+
                 walletApiClient.depositWallet(dto, traceId, authorization);
+
+                log.debug(">>>>> Success attempt to send [DEPOSIT] transaction into [wallet-service]");
 
                 transactionEventKafkaProducer.sendDepositTransactionEvent(savedTransaction);
             }
 
             case WITHDRAWAL -> {
+                log.debug(">>>>> Start to handle [WITHDRAWAL] transaction");
+
                 WithdrawalWalletRequestDto dto = new WithdrawalWalletRequestDto()
                         .walletId(savedTransaction.getWalletId())
                         .amount(savedTransaction.getWalletAmount())
                         .currencyCode(savedTransaction.getCurrencyCode());
 
+                log.debug(">>>>> Attempt to send [WITHDRAWAL] transaction into [wallet-service]");
+
                 walletApiClient.withdrawalWallet(dto, traceId, authorization);
+
+                log.debug(">>>>> Success attempt to send [WITHDRAWAL] transaction into [wallet-service]");
 
                 transactionEventKafkaProducer.sendWithdrawalTransactionEvent(savedTransaction);
             }
@@ -373,6 +386,8 @@ public class TransactionService {
     public void failTransaction(
             UUID transactionId
     ) {
+        log.debug(">>>>> Received request to [fail] transaction with id: [{}]", transactionId);
+
         Transaction transaction = getTransaction(transactionId);
 
         checkTransactionInPendingState(transaction);
@@ -456,6 +471,8 @@ public class TransactionService {
     public void completeTransaction(
             UUID transactionId
     ) {
+        log.debug(">>>>> Received request to [complete] transaction with id: [{}]", transactionId);
+
         Transaction transaction = getTransaction(transactionId);
 
         checkTransactionInPendingState(transaction);

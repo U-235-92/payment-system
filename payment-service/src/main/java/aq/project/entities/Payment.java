@@ -40,7 +40,6 @@ public class Payment {
     private PaymentMethod paymentMethod;
 
     @NotNull
-    @Size(max = 50)
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", length = 50, nullable = false)
     private TransactionType transactionType;

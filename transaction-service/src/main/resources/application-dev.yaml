@@ -5,6 +5,10 @@ logging:
     web: warn
     org.springframework.security: warn
     org.apache.shardingsphere: info
+    aq.project.services: debug
+    aq.project.kafka: debug
+#    org.hibernate.SQL: debug # Вывод самого текста SQL-запроса
+#    org.hibernate.orm.jdbc.bind: trace # Вывод параметров запроса
 
 spring:
   flyway:

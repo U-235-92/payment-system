@@ -29,7 +29,13 @@ public class WebhookScheduler {
 
         try {
             for(PaymentProviderCallback unprocessedCallback : unprocessedCallbacks) {
+                log.debug(">>>>> Schedule unprocessed callback for transaction with id {}",
+                        unprocessedCallback.getTransactionId());
+
                 webhookEventKafkaProducer.sendWebhookEvent(unprocessedCallback);
+
+                log.debug(">>>>> Success schedule unprocessed callback for transaction with id {}",
+                        unprocessedCallback.getTransactionId());
             }
         } catch (Exception e) {
             log.error("Error occurred while schedule publishing payment provider callback. Exception message: {}",

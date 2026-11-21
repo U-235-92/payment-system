@@ -30,7 +30,6 @@ public class PaymentProviderCallback extends AbstractEntity {
     @Column(name = "payment_id", nullable = false, unique = true)
     private UUID paymentId;
 
-    @Size(max = 255)
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private OperationType operationType;

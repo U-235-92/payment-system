@@ -46,6 +46,9 @@ public class TransactionService {
         String authenticatedMerchantId = authentication.getName();
         String externalId = createTransactionRequestDto.getExternalId();
 
+        log.debug("Received request to create transaction for merchant with id: [{}] and transaction id [{}]",
+                requestMerchantId, externalId);
+
         merchantService.checkEqualMerchantIds(requestMerchantId, authenticatedMerchantId);
 
         Merchant merchant = merchantService.getMerchant(requestMerchantId);
@@ -59,6 +62,9 @@ public class TransactionService {
         else
             transaction = transactionRepository.findByExternalId(externalId, authenticatedMerchantId)
                     .orElse(createTransaction(createTransactionRequestDto, merchant));
+
+        log.debug("Success handle of request to create transaction for merchant with id: [{}] and transaction id [{}] with response body: {}",
+                requestMerchantId, externalId, transactionMapper.toTransactionInfoResponseDto(transaction));
 
         return transactionMapper.toTransactionInfoResponseDto(transaction);
     }

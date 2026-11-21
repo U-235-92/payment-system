@@ -36,6 +36,9 @@ public class WebhookEventKafkaConsumer {
 
         WebhookEventStatus webhookEventStatus = webhookEvent.status();
 
+        log.debug(">>>>> Received [{}] webhook event from Kafka for transaction with id: [{}]",
+                webhookEventStatus, transactionId);
+
         try {
             switch (webhookEventStatus) {
                 case SUCCESS -> transactionService.completeTransaction(transactionId);

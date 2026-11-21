@@ -47,6 +47,9 @@ public class WebhookService {
 
         OperationType operationType = updateStatusOperationRequestDto.getOperationType();
 
+        log.debug(">>>>> Received request to handle operation: [{}] for transaction id: [{}]",
+                operationType, transactionId);
+
         switch (operationType) {
             case PAYOUT, TRANSACTION -> {
                 boolean isIdempotentHandle = paymentProviderCallbackRepository
@@ -61,6 +64,9 @@ public class WebhookService {
     //                The next step of handle callback will be on scheduler side.
     //                See WebhookScheduler.schedulePaymentProviderCallbacks(..) for details.
                     paymentProviderCallbackRepository.save(paymentProviderCallback);
+
+                    log.debug(">>>>> Success process of request to handle operation: [{}] for transaction id: [{}]",
+                            operationType, transactionId);
                 } else {
                     log.info("Received duplicate of update [{}] for transaction with id: [{}]",
                             operationType, transactionId);

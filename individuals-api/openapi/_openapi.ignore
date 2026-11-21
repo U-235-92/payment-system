@@ -24,3 +24,9 @@
 **/openapi/wallet-service/src/main/java/aq/project/dto/ErrorDto.java
 
 **/openapi/individuals-api-service/src/main/java/aq/project/dto/PaymentType.java
+**/openapi/individuals-api-service/src/main/java/aq/project/dto/AddressDto.java
+**/openapi/individuals-api-service/src/main/java/aq/project/dto/CountryDto.java
+**/openapi/individuals-api-service/src/main/java/aq/project/dto/PersonServiceOperation.java
+**/openapi/individuals-api-service/src/main/java/aq/project/dto/UndoDeletePersonRequestDto.java
+**/openapi/individuals-api-service/src/main/java/aq/project/dto/UndoOperationStatus.java
+**/openapi/individuals-api-service/src/main/java/aq/project/dto/UndoUpdatePersonRequestDto.java

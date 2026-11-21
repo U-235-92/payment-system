@@ -111,13 +111,13 @@ components:
   schemas:
     PaymentMethodResponseDto:
       type: object
-      required: [ payment_method_id, payment_method_type ]
+      required: [ payment_method_id, payment_method ]
       properties:
         payment_method_id:
           type: integer
           format: int64
-        payment_method_type:
-          $ref: "#/components/schemas/PaymentType"
+        payment_method:
+          $ref: "#/components/schemas/PaymentMethod"
         image_url:
           type: string
         description:
@@ -190,5 +190,6 @@ components:
     PaymentStatus:
       enum: [ PENDING, PROCESSING, COMPLETED, FAILED ]
 
-    PaymentType:
-      enum: [ CARD, TRANSFER, CASH ]
+    PaymentMethod:
+      enum: [ CARD, CASH, TRANSFER ]
+      description: Allowed payment methods

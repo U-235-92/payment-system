@@ -133,6 +133,8 @@ public class WalletService {
     ) {
         UUID walletId = depositWalletRequestDto.getWalletId();
 
+        log.debug(">>>>> Received request to deposit wallet with id: [{}]", walletId);
+
         Wallet wallet = getWalletWithLock(walletId);
 
         if(wallet.isBlocked())
@@ -140,7 +142,18 @@ public class WalletService {
 
         BigDecimal amount = depositWalletRequestDto.getAmount();
 
+        log.debug(">>>>> Current balance of wallet: [{} {}] before deposit",
+                wallet.getBalance(), wallet.getWalletType().getCurrencyCode());
+
+        log.debug(">>>>> Current amount of transaction: [{} {}]",
+                depositWalletRequestDto.getAmount(), wallet.getWalletType().getCurrencyCode());
+
+        log.debug(">>>>> Attempt to deposit wallet with id: [{}]", walletId);
+
         wallet.credit(amount);
+
+        log.debug(">>>>> Current balance of wallet: [{} {}] after deposit",
+                wallet.getBalance(), wallet.getWalletType().getCurrencyCode());
 
         return wallet.getId();
     }
@@ -173,6 +186,8 @@ public class WalletService {
     ) {
         UUID walletId = withdrawalWalletRequestDto.getWalletId();
 
+        log.debug(">>>>> Received request to withdrawal wallet with id: [{}]", walletId);
+
         Wallet wallet = getWalletWithLock(walletId);
 
         if(wallet.isBlocked())
@@ -180,8 +195,19 @@ public class WalletService {
 
         BigDecimal amount = withdrawalWalletRequestDto.getAmount();
 
+        log.debug(">>>>> Current balance of wallet: [{} {}] before withdrawal",
+                wallet.getBalance(), wallet.getWalletType().getCurrencyCode());
+
+        log.debug(">>>>> Current amount of transaction: [{} {}]",
+                withdrawalWalletRequestDto.getAmount(), wallet.getWalletType().getCurrencyCode());
+
+        log.debug(">>>>> Attempt to withdrawal wallet with id: [{}]", walletId);
+
         if(wallet.isBalanceExceedAmount(amount)) {
             wallet.debit(amount);
+
+            log.debug(">>>>> Current balance of wallet: [{} {}] after withdrawal",
+                    wallet.getBalance(), wallet.getWalletType().getCurrencyCode());
 
             return wallet.getId();
 

@@ -117,7 +117,7 @@ app:
 
     payment-service:
       merchant-id: payment-service
-      merchant-secret: payment-service-secret
+      merchant-secret: secret
       schedulers:
         schedule-processing-payment: 5
         schedule-pending-payment: 5

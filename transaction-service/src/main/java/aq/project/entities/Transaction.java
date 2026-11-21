@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
-@Builder
+@SuperBuilder
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,7 +26,10 @@ public class Transaction extends AbstractEntity {
     private UUID userId;
 
     @NotNull
-    @Column(name = "wallet_id", nullable = false)
+    @Column(name = "wallet_id", nullable = false, updatable = false)
+//    Marked as [updatable = false] because this column is participant of shard process.
+//    If you remove this declaration you will get Exception [could not execute statement].
+//    You MUST mark sharding columns as [updatable = false].
     private UUID walletId;
 
     @Nullable
@@ -54,7 +57,6 @@ public class Transaction extends AbstractEntity {
     private PaymentType paymentType;
 
     @NotNull
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 32)
     private TransactionStatus transactionStatus = TransactionStatus.PENDING;
@@ -64,7 +66,6 @@ public class Transaction extends AbstractEntity {
     private String description;
 
     @Nullable
-    @Builder.Default
     @Column(name = "fee")
     private BigDecimal fee = BigDecimal.ZERO;
 

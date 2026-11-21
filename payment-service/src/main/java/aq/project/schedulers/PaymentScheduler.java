@@ -33,8 +33,19 @@ public class PaymentScheduler {
 
         for(Payment pendingPayment : pendingPayments) {
             try {
+                log.debug(">>>>> Schedule [PENDING] payment, paymentId: [{}], transactionId: [{}]",
+                        pendingPayment.getPaymentId(), pendingPayment.getTransactionId());
+
                 paymentService.handlePendingPayment(pendingPayment);
+
+                log.debug(">>>>> Success schedule of [PENDING] payment, paymentId: [{}], transactionId: [{}]",
+                        pendingPayment.getPaymentId(), pendingPayment.getTransactionId());
+
             } catch (Exception e) {
+                log.debug(">>>>> Error occurred while schedule of [PENDING] payment, paymentId: [{}], transactionId: [{}]. " +
+                                "Exception message: {}",
+                        pendingPayment.getPaymentId(), pendingPayment.getTransactionId(), e.getMessage());
+
                 onProcessPaymentException(pendingPayment, e);
             }
         }
@@ -49,8 +60,19 @@ public class PaymentScheduler {
 
         for(Payment processingPayment : processingPayments) {
             try {
+                log.debug(">>>>> Schedule [PROCESSING] payment, paymentId: [{}], transactionId: [{}]",
+                        processingPayment.getPaymentId(), processingPayment.getTransactionId());
+
                 paymentService.handleProcessingPayment(processingPayment);
+
+                log.debug(">>>>> Success schedule of [PROCESSING] payment, paymentId: [{}], transactionId: [{}]",
+                        processingPayment.getPaymentId(), processingPayment.getTransactionId());
+
             } catch (Exception e) {
+                log.debug(">>>>> Error occurred while schedule of [PROCESSING] payment, paymentId: [{}], transactionId: [{}]. " +
+                                "Exception message: {}",
+                        processingPayment.getPaymentId(), processingPayment.getTransactionId(), e.getMessage());
+
                 onProcessPaymentException(processingPayment, e);
             }
         }

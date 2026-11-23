@@ -36,7 +36,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/h2-console/**", "/api/v1/**")
-                .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
+                .authorizeHttpRequests(customizer -> customizer
+                        .anyRequest().permitAll())
+                .addFilterBefore(new AccessTokenFilter(serviceAccessTokenKey, serviceAccessTokenHashAlg), AuthenticationFilter.class)
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .cors(CorsConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)

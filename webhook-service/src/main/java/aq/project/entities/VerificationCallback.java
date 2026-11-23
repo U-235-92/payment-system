@@ -31,8 +31,8 @@ public class VerificationCallback extends AbstractEntity {
 
     @Size(max = 25)
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 25)
-    private Status operationStatus;
+    @Column(name = "webhook_status", length = 25)
+    private Status webhookStatus;
 
     @Size(max = 255)
     @Column(name = "type")

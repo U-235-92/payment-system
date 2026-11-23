@@ -87,8 +87,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
             String serviceAccessTokenHash = SecurityUtil.getHash(serviceAccessTokenKey, serviceAccessTokenHashAlg);
 
             if(MessageDigest.isEqual(requestAccessTokenHash.getBytes(), serviceAccessTokenHash.getBytes())) {
-                log.debug(">>>>> Success handle of request on path: {} for hash: {}",
-                        requestPath, requestAccessTokenHash);
+                log.debug(">>>>> Success handle of request on path: {}", requestPath);
 
                 filterChain.doFilter(request, response);
 

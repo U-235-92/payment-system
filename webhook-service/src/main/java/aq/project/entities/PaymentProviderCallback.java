@@ -40,8 +40,8 @@ public class PaymentProviderCallback extends AbstractEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "target_webhook_status", nullable = false, updatable = false)
-    private Status targetWebhookStatus;
+    @Column(name = "webhook_status", nullable = false, updatable = false)
+    private Status webhookStatus;
 
     @NotNull
     @Column(name = "processed", nullable = false)

@@ -29,7 +29,7 @@ public interface WebhookMapper {
     WebhookEvent toWebhookEvent(PaymentProviderCallback paymentProviderCallback);
 
     default WebhookEventStatus toWebhookEventStatus(PaymentProviderCallback paymentProviderCallback) {
-        Status callbackStatus = paymentProviderCallback.getTargetWebhookStatus();
+        Status callbackStatus = paymentProviderCallback.getWebhookStatus();
 
         switch (callbackStatus) {
             case SUCCESS -> {
@@ -59,13 +59,13 @@ public interface WebhookMapper {
         return LocalDateTime.now();
     }
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "body", expression = "java(toCallbackBody(dto))")
     UnknownCallback toUnknownCallbackRepository(UpdateStatusOperationRequestDto dto);
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "body", expression = "java(toCallbackBody(dto))")

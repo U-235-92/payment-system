@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -27,19 +28,21 @@ public class WebhookScheduler {
     public void schedulePaymentProviderCallbacks() {
         List<PaymentProviderCallback> unprocessedCallbacks = paymentProviderCallbackRepository.findAllUnprocessed();
 
-        try {
-            for(PaymentProviderCallback unprocessedCallback : unprocessedCallbacks) {
-                log.debug(">>>>> Schedule unprocessed callback for transaction with id {}",
-                        unprocessedCallback.getTransactionId());
+        for(PaymentProviderCallback unprocessedCallback : unprocessedCallbacks) {
+            UUID transactionId = unprocessedCallback.getTransactionId();
 
+            log.debug(">>>>> Schedule unprocessed callback for transaction with id: [{}]", transactionId);
+
+            try {
                 webhookEventKafkaProducer.sendWebhookEvent(unprocessedCallback);
 
-                log.debug(">>>>> Success schedule unprocessed callback for transaction with id {}",
-                        unprocessedCallback.getTransactionId());
+            } catch (Exception e) {
+                log.error("Error occurred while schedule publishing payment provider callback " +
+                            "for transaction with id: [{}]. Exception message: {}",
+                        transactionId, e.getMessage());
             }
-        } catch (Exception e) {
-            log.error("Error occurred while schedule publishing payment provider callback. Exception message: {}",
-                    e.getMessage());
+
+            log.debug(">>>>> Success schedule unprocessed callback for transaction with id: [{}]", transactionId);
         }
     }
 }

@@ -2,6 +2,7 @@ package aq.project.controllers.handlers;
 
 import aq.project.dto.ErrorDto;
 import aq.project.exceptions.FallbackOperationException;
+import aq.project.exceptions.UnknownOperationStatusException;
 import aq.project.exceptions.UnknownOperationTypeException;
 import aq.project.utils.logging.ControllerExceptionLogger;
 import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
@@ -31,6 +32,15 @@ public class WebhookRestControllerExceptionHandler {
 
     @ExceptionHandler(UnknownOperationTypeException.class)
     public ResponseEntity<ErrorDto> onUnknownOperationTypeException(UnknownOperationTypeException e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        controllerExceptionLogger.logException(e, status);
+
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
+    }
+
+    @ExceptionHandler(UnknownOperationStatusException.class)
+    public ResponseEntity<ErrorDto> onUnknownOperationStatusException(UnknownOperationStatusException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);

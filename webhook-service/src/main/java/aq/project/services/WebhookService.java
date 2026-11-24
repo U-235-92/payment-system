@@ -190,6 +190,7 @@ public class WebhookService {
 
         UnknownCallback unknownCallback = webhookMapper
                 .toUnknownCallbackRepository(updateStatusOperationRequestDto);
+
         unknownCallback.setProcessed(false);
 
         unknownCallbackRepository.save(unknownCallback);

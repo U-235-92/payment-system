@@ -7,7 +7,7 @@ COPY ./webhook-service/settings.gradle.kts ./settings.gradle.kts
 COPY ./webhook-service/src ./src
 COPY ./webhook-service/openapi ./openapi
 COPY ./webhook-service/build.gradle.kts ./build.gradle.kts
-COPY ./webhook-service/.env ./.env
+COPY ./webhook-service/dev.env ./.env
 
 #Build project
 RUN gradle --no-daemon clean bootJar

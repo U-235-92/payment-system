@@ -1,6 +1,5 @@
 package aq.project.aspects;
 
-import aq.project.dto.OperationType;
 import aq.project.dto.UpdateStatusOperationRequestDto;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.Valid;
@@ -38,7 +37,7 @@ public class WebhookServiceAspect {
         String actionName = "confirm-operation";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
-        OperationType operationType = updateStatusOperationRequestDto.getOperationType();
+        String operationType = updateStatusOperationRequestDto.getOperationType();
 
         UUID transactionId = updateStatusOperationRequestDto.getTransactionId();
 

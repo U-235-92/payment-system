@@ -63,6 +63,7 @@ public interface WebhookMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "body", expression = "java(toCallbackBody(dto))")
+    @Mapping(target = "processed", ignore = true)
     UnknownCallback toUnknownCallbackRepository(UpdateStatusOperationRequestDto dto);
 
     @Mapping(target = "id", source = "id")
@@ -73,7 +74,8 @@ public interface WebhookMapper {
     @Mapping(target = "paymentId", source = "paymentId")
     @Mapping(target = "operationType", source = "operationType")
     @Mapping(target = "provider", source = "provider")
-    @Mapping(target = "targetWebhookStatus", source = "status")
+    @Mapping(target = "webhookStatus", source = "status")
+    @Mapping(target = "processed", ignore = true)
     PaymentProviderCallback toPaymentProviderCallback(UpdateStatusOperationRequestDto dto);
 
     default String toCallbackBody(UpdateStatusOperationRequestDto dto) {

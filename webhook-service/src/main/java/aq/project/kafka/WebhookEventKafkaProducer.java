@@ -56,9 +56,13 @@ public class WebhookEventKafkaProducer {
                         operationType, transactionId, paymentStatusUpdateResponseTopic, offset);
 
             } else {
+                String exceptionClass = exception.getClass().getSimpleName();
+                String exceptionMsg = exception.getMessage();
+
 //                Sending event is finished with errors.
-                log.error("Error occurred while sending [{}] webhook event with transaction id: [{}] to topic: [{}]",
-                        operationType, transactionId, paymentStatusUpdateResponseTopic);
+                log.error("{} occurred while sending [{}] webhook event with transaction id: [{}] to topic: [{}]. " +
+                                "Error message: {}",
+                        exceptionClass, operationType, transactionId, paymentStatusUpdateResponseTopic, exceptionMsg);
             }
         });
     }

@@ -16,7 +16,7 @@ extra["springCloudVersion"] = "2025.1.4"
 
 val artifact = "webhook-service"
 
-val specificationArtifactVersion = "7.0.6-dev"
+val specificationArtifactVersion = "7.0.7-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"

@@ -67,6 +67,7 @@ components:
   schemas:
     UpdateStatusOperationRequestDto:
       type: object
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
       required: [ id, transaction_id, payment_id, status, operation_type ]
       properties:
         id:

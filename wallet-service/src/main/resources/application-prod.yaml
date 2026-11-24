@@ -13,10 +13,6 @@ management:
           endpoint: ${OTEL_COLLECTOR_URI}
 
 spring:
-  profiles:
-    active:
-      - ${PROFILE}
-
   security:
     oauth2:
       resourceserver:

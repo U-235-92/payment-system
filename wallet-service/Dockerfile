@@ -7,9 +7,10 @@ COPY ./wallet-service/settings.gradle.kts ./settings.gradle.kts
 COPY ./wallet-service/src ./src
 COPY ./wallet-service/openapi ./openapi
 COPY ./wallet-service/build.gradle.kts ./build.gradle.kts
+COPY ./wallet-service/dev.env ./.env
 
 #Build project
-RUN gradle --no-daemon clean bootJar -x test
+RUN gradle --no-daemon clean bootJar
 
 FROM eclipse-temurin:25-jre
 
@@ -19,11 +20,5 @@ WORKDIR /app
 
 COPY --from=builder /source/build/libs/*.jar ./wallet-service.jar
 
-#Spring env:
-ENV SPRING_PROFILES_ACTIVE=prod
-ENV DB_HOST=wallet-service-db
-ENV DB_PORT=5432
-ENV DB_NAME=wallet_service_db
-
 EXPOSE 8084
-ENTRYPOINT ["java", "-jar", "wallet-service.jar"]
+ENTRYPOINT ["java", "-jar", "wallet-service.jar", "--spring.profiles.active=prod"]

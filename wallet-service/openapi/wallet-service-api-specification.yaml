@@ -412,12 +412,16 @@ components:
     DepositWalletRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ wallet_id, amount, currency_code ]
+      required: [ wallet_id, operation_id, amount, currency_code ]
       properties:
         wallet_id:
           type: string
           format: uuid
           description: UUID of source wallet
+        operation_id:
+          type: string
+          format: uuid
+          description: UUID of operation
         amount:
           type: number
           format: decimal
@@ -432,12 +436,16 @@ components:
     WithdrawalWalletRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ wallet_id, amount, currency_code ]
+      required: [ wallet_id, operation_id, amount, currency_code ]
       properties:
         wallet_id:
           type: string
           format: uuid
           description: UUID of source wallet
+        operation_id:
+          type: string
+          format: uuid
+          description: UUID of operation
         amount:
           type: number
           format: decimal
@@ -452,7 +460,7 @@ components:
     TransferWalletRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ source_wallet_id, target_wallet_id, wallet_amount, target_wallet_amount, currency_code ]
+      required: [ source_wallet_id, target_wallet_id, operation_id, wallet_amount, target_wallet_amount, currency_code ]
       properties:
         source_wallet_id:
           type: string
@@ -462,6 +470,10 @@ components:
           type: string
           format: uuid
           description: UUID of target wallet
+        operation_id:
+          type: string
+          format: uuid
+          description: UUID of operation
         wallet_amount:
           type: number
           format: decimal

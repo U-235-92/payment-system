@@ -2,6 +2,10 @@ package aq.project.entities;
 
 import aq.project.dto.WalletStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -9,13 +13,15 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Builder
+@SuperBuilder
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "wallets")
 public class Wallet extends AbstractEntity {
 
+    @NotBlank
+    @Size(max = 32)
     @Column(name = "name", nullable = false, length = 32)
     private String name;
 
@@ -23,13 +29,17 @@ public class Wallet extends AbstractEntity {
     @JoinColumn(name = "wallet_type_id")
     private WalletType walletType;
 
+    @NotNull
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     private WalletStatus walletStatus = WalletStatus.ACTIVE;
 
+    @NotNull
+    @Positive
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 

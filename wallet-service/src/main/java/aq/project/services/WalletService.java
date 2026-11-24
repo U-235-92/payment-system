@@ -2,8 +2,11 @@ package aq.project.services;
 
 import aq.project.dto.*;
 import aq.project.entities.Wallet;
+import aq.project.entities.WalletOperation;
 import aq.project.exceptions.EntityNotFoundException;
+import aq.project.mappers.OperationMapper;
 import aq.project.mappers.WalletMapper;
+import aq.project.repositories.WalletOperationRepository;
 import aq.project.repositories.WalletRepository;
 import aq.project.utils.resilence.Fallback;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -23,7 +27,11 @@ public class WalletService {
 
     private final WalletMapper walletMapper = WalletMapper.INSTANCE;
 
+    private final OperationMapper operationMapper = OperationMapper.INSTANCE;
+
     private final WalletRepository walletRepository;
+
+    private final WalletOperationRepository walletOperationRepository;
 
     private final Fallback fallback;
 
@@ -131,11 +139,27 @@ public class WalletService {
     public UUID depositWallet(
             DepositWalletRequestDto depositWalletRequestDto
     ) {
+        UUID walletOperationId = depositWalletRequestDto.getOperationId();
+
+        Optional<WalletOperation> walletOperationOptional = walletOperationRepository.findById(walletOperationId);
+
+//        Prevent handle of duplicate request (idempotent operation)
+        if(walletOperationOptional.isPresent())
+            return walletOperationOptional.get()
+                    .getWallet()
+                    .getId();
+
         UUID walletId = depositWalletRequestDto.getWalletId();
 
         log.debug(">>>>> Received request to deposit wallet with id: [{}]", walletId);
 
         Wallet wallet = getWalletWithLock(walletId);
+
+        WalletOperation walletOperation = operationMapper.toWalletOperation(depositWalletRequestDto);
+
+        walletOperation.setWallet(wallet);
+
+        walletOperationRepository.save(walletOperation);
 
         if(wallet.isBlocked())
             onBlockedWallet(walletId, "deposit");
@@ -184,11 +208,27 @@ public class WalletService {
     public UUID withdrawalWallet(
             WithdrawalWalletRequestDto withdrawalWalletRequestDto
     ) {
+        UUID walletOperationId = withdrawalWalletRequestDto.getOperationId();
+
+        Optional<WalletOperation> walletOperationOptional = walletOperationRepository.findById(walletOperationId);
+
+//        Prevent handle of duplicate request (idempotent operation)
+        if(walletOperationOptional.isPresent())
+            return walletOperationOptional.get()
+                    .getWallet()
+                    .getId();
+
         UUID walletId = withdrawalWalletRequestDto.getWalletId();
 
         log.debug(">>>>> Received request to withdrawal wallet with id: [{}]", walletId);
 
         Wallet wallet = getWalletWithLock(walletId);
+
+        WalletOperation walletOperation = operationMapper.toWalletOperation(withdrawalWalletRequestDto);
+
+        walletOperation.setWallet(wallet);
+
+        walletOperationRepository.save(walletOperation);
 
         if(wallet.isBlocked())
             onBlockedWallet(walletId, "withdrawal");
@@ -244,6 +284,17 @@ public class WalletService {
     public List<UUID> transferWallet(
             TransferWalletRequestDto transferWalletRequestDto
     ) {
+        UUID walletOperationId = transferWalletRequestDto.getOperationId();
+
+        Optional<WalletOperation> walletOperationOptional = walletOperationRepository.findById(walletOperationId);
+
+//        Prevent handle of duplicate request (idempotent operation)
+        if(walletOperationOptional.isPresent())
+            return List.of(
+                    walletOperationOptional.get().getWallet().getId(),
+                    walletOperationOptional.get().getTargetWallet().getId()
+            );
+
         UUID sourceWalletId = transferWalletRequestDto.getSourceWalletId();
         UUID targetWalletId = transferWalletRequestDto.getTargetWalletId();
 
@@ -252,6 +303,13 @@ public class WalletService {
 
         Wallet sourceWallet = getWalletWithLock(sourceWalletId);
         Wallet targetWallet = getWalletWithLock(targetWalletId);
+
+        WalletOperation walletOperation = operationMapper.toWalletOperation(transferWalletRequestDto);
+
+        walletOperation.setWallet(sourceWallet);
+        walletOperation.setTargetWallet(targetWallet);
+
+        walletOperationRepository.save(walletOperation);
 
         if(sourceWallet.isBlocked())
             onBlockedWallet(sourceWalletId, "transfer");

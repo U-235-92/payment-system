@@ -64,9 +64,13 @@ public class WalletService {
     ) {
         String action = "create-wallet";
         UUID userId = createWalletRequestDto.getUserId();
+
+        String exceptionClass = exception.getClass().getSimpleName();
+        String exceptionMessage = exception.getMessage();
+
         String message = String.format(
-                "Exception occurred during create of wallet for person with id: [%s]. Exception message: %s",
-                userId, exception.getMessage());
+                "[%s] occurred during create of wallet for person with id: [%s]. Exception message: %s",
+                exceptionClass, userId, exceptionMessage);
 
         fallback.handleRateLimiterFallback(action, message, exception);
 
@@ -93,9 +97,13 @@ public class WalletService {
             throw exception;
 
         String action = "get-wallet-info";
+
+        String exceptionClass = exception.getClass().getSimpleName();
+        String exceptionMessage = exception.getMessage();
+
         String message = String.format(
-                "Exception occurred during getting wallet info for wallet with id: [%s]. Exception message: %s",
-                walletId, exception.getMessage());
+                "[%s] occurred during getting wallet info for wallet with id: [%s]. Exception message: %s",
+                exceptionClass, walletId, exceptionMessage);
 
         fallback.handleRateLimiterFallback(action, message, exception);
 
@@ -122,9 +130,13 @@ public class WalletService {
             throw exception;
 
         String action = "get-wallet-currency-code";
+
+        String exceptionClass = exception.getClass().getSimpleName();
+        String exceptionMessage = exception.getMessage();
+
         String message = String.format(
-                "Exception occurred during getting wallet currency code for wallet with id: [%s]. Exception message: %s",
-                walletId, exception.getMessage());
+                "[%s] occurred during getting wallet currency code for wallet with id: [%s]. Exception message: %s",
+                exceptionClass, walletId, exceptionMessage);
 
         fallback.handleRateLimiterFallback(action, message, exception);
 
@@ -151,9 +163,18 @@ public class WalletService {
 
         UUID walletId = depositWalletRequestDto.getWalletId();
 
+        String requestCurrencyCode = depositWalletRequestDto.getCurrencyCode();
+
         log.debug(">>>>> Received request to deposit wallet with id: [{}]", walletId);
 
         Wallet wallet = getWalletWithLock(walletId);
+
+        String walletCurrencyCode = wallet.getWalletType().getCurrencyCode();
+
+        if(!walletCurrencyCode.equals(requestCurrencyCode))
+            throw new IllegalStateException(String.format(
+                    "Received request with mismatch request currency code: [%s] and wallet currency code: [%s] " +
+                            "for wallet with id: [%s]", requestCurrencyCode, walletCurrencyCode, wallet.getId()));
 
         WalletOperation walletOperation = operationMapper.toWalletOperation(depositWalletRequestDto);
 
@@ -191,9 +212,13 @@ public class WalletService {
             throw exception;
 
         String action = "deposit-wallet";
+
+        String exceptionClass = exception.getClass().getSimpleName();
+        String exceptionMessage = exception.getMessage();
+
         String message = String.format(
-                "Exception occurred during deposit sufficient on wallet with id: [%s]. Exception message: %s",
-                depositWalletRequestDto.getWalletId(), exception.getMessage());
+                "[%s] occurred during deposit sufficient on wallet with id: [%s]. Exception message: %s",
+                exceptionClass, depositWalletRequestDto.getWalletId(), exceptionMessage);
 
         fallback.handleRateLimiterFallback(action, message, exception);
 
@@ -220,9 +245,18 @@ public class WalletService {
 
         UUID walletId = withdrawalWalletRequestDto.getWalletId();
 
+        String requestCurrencyCode = withdrawalWalletRequestDto.getCurrencyCode();
+
         log.debug(">>>>> Received request to withdrawal wallet with id: [{}]", walletId);
 
         Wallet wallet = getWalletWithLock(walletId);
+
+        String walletCurrencyCode = wallet.getWalletType().getCurrencyCode();
+
+        if(!walletCurrencyCode.equals(requestCurrencyCode))
+            throw new IllegalStateException(String.format(
+                    "Received request with mismatch request currency code: [%s] and wallet currency code: [%s] " +
+                            "for wallet with id: [%s]", requestCurrencyCode, walletCurrencyCode, wallet.getId()));
 
         WalletOperation walletOperation = operationMapper.toWalletOperation(withdrawalWalletRequestDto);
 
@@ -267,9 +301,13 @@ public class WalletService {
             throw exception;
 
         String action = "withdrawal-wallet";
+
+        String exceptionClass = exception.getClass().getSimpleName();
+        String exceptionMessage = exception.getMessage();
+
         String message = String.format(
-                "Exception occurred during withdrawal sufficient from wallet with id: [%s]. Exception message: %s",
-                withdrawalWalletRequestDto.getWalletId(), exception.getMessage());
+                "[%s] occurred during withdrawal sufficient from wallet with id: [%s]. Exception message: %s",
+                exceptionClass, withdrawalWalletRequestDto.getWalletId(), exceptionMessage);
 
         fallback.handleRateLimiterFallback(action, message, exception);
 
@@ -295,6 +333,8 @@ public class WalletService {
                     walletOperationOptional.get().getTargetWallet().getId()
             );
 
+        String requestCurrencyCode = transferWalletRequestDto.getCurrencyCode();
+
         UUID sourceWalletId = transferWalletRequestDto.getSourceWalletId();
         UUID targetWalletId = transferWalletRequestDto.getTargetWalletId();
 
@@ -303,6 +343,19 @@ public class WalletService {
 
         Wallet sourceWallet = getWalletWithLock(sourceWalletId);
         Wallet targetWallet = getWalletWithLock(targetWalletId);
+
+        String sourceWalletCurrencyCode = sourceWallet.getWalletType().getCurrencyCode();
+        String targetWalletCurrencyCode = targetWallet.getWalletType().getCurrencyCode();
+
+        if(!sourceWalletCurrencyCode.equals(requestCurrencyCode))
+            throw new IllegalStateException(String.format(
+                    "Received request with mismatch request currency code: [%s] and wallet currency code: [%s] " +
+                            "for wallet with id: [%s]", requestCurrencyCode, sourceWalletCurrencyCode, sourceWallet.getId()));
+
+        if(!targetWalletCurrencyCode.equals(requestCurrencyCode))
+            throw new IllegalStateException(String.format(
+                    "Received request with mismatch request currency code: [%s] and wallet currency code: [%s] " +
+                            "for wallet with id: [%s]", requestCurrencyCode, sourceWalletCurrencyCode, targetWallet.getId()));
 
         WalletOperation walletOperation = operationMapper.toWalletOperation(transferWalletRequestDto);
 
@@ -317,8 +370,8 @@ public class WalletService {
         if(targetWallet.isBlocked())
             onBlockedWallet(targetWalletId, "transfer");
 
-        BigDecimal walletAmount = transferWalletRequestDto.getWalletAmount();
-        BigDecimal targetWalletAmount = transferWalletRequestDto.getTargetWalletAmount();
+        BigDecimal walletAmount = transferWalletRequestDto.getAmount();
+        BigDecimal targetWalletAmount = transferWalletRequestDto.getTargetAmount();
 
         if(sourceWallet.isBalanceExceedAmount(walletAmount)) {
             sourceWallet.debit(walletAmount);
@@ -345,12 +398,18 @@ public class WalletService {
             throw exception;
 
         String action = "transfer-wallet";
+
+        String exceptionClass = exception.getClass().getSimpleName();
+        String exceptionMessage = exception.getMessage();
+
         String message = String.format(
-                "Exception occurred during transfer sufficient from wallet with id: [%s] to wallet with id: [%s]. " +
+                "[%s] occurred during transfer sufficient from wallet with id: [%s] to wallet with id: [%s]. " +
                 "Exception message: %s",
+                exceptionClass,
                 transferWalletRequestDto.getSourceWalletId(),
                 transferWalletRequestDto.getTargetWalletId(),
-                exception.getMessage());
+                exceptionMessage
+        );
 
         fallback.handleRateLimiterFallback(action, message, exception);
 

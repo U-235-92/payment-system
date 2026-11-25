@@ -344,7 +344,7 @@ components:
           type: number
           format: decimal
           default: 0.00
-          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+          x-extra-annotation: "@jakarta.validation.constraints.PositiveOrZero"
           description: Wallet balance
         currency_code:
           type: string
@@ -382,7 +382,7 @@ components:
         balance:
           type: number
           format: decimal
-          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+          x-extra-annotation: "@jakarta.validation.constraints.PositiveOrZero"
           description: Wallet balance
         currency_code:
           type: string
@@ -460,7 +460,7 @@ components:
     TransferWalletRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ source_wallet_id, target_wallet_id, operation_id, wallet_amount, target_wallet_amount, currency_code ]
+      required: [ source_wallet_id, target_wallet_id, operation_id, amount, target_amount, currency_code ]
       properties:
         source_wallet_id:
           type: string
@@ -474,13 +474,13 @@ components:
           type: string
           format: uuid
           description: UUID of operation
-        wallet_amount:
+        amount:
           type: number
           format: decimal
           minimum: 0.01
           description: Amount of transaction
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
-        target_wallet_amount:
+        target_amount:
           type: number
           format: decimal
           minimum: 0.01

@@ -2,10 +2,7 @@ package aq.project.entities;
 
 import aq.project.dto.WalletStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -39,7 +36,7 @@ public class Wallet extends AbstractEntity {
     private WalletStatus walletStatus = WalletStatus.ACTIVE;
 
     @NotNull
-    @Positive
+    @PositiveOrZero
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 

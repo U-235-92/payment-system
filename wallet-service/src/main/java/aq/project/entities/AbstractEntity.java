@@ -2,6 +2,7 @@ package aq.project.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @Getter @Service
 @MappedSuperclass
+@NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class AbstractEntity {
 

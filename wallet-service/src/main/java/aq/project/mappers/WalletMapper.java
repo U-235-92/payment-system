@@ -13,6 +13,9 @@ public interface WalletMapper {
 
     WalletMapper INSTANCE = Mappers.getMapper(WalletMapper.class);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "name", source = "name")
     @Mapping(target = "walletType", expression = "java(toWalletType(dto))")
     @Mapping(target = "userId", source = "userId")
@@ -21,6 +24,9 @@ public interface WalletMapper {
     @Mapping(target = "archivedAt", ignore = true)
     Wallet toWallet(CreateWalletRequestDto dto);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "modifiedAt", ignore = true)
     @Mapping(target = "currencyCode", source = "currencyCode")
     @Mapping(target = "userType", source = "userType")
     @Mapping(target = "creator", source = "creator")

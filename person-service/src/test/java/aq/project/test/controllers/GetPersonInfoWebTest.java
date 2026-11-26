@@ -88,7 +88,7 @@ public class GetPersonInfoWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(countryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(countryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
 //        Act & Assert
         mockMvc.perform(get(PATH_GET_PERSON_INFO.replace("{personKeycloakId}", personKeycloakId.toString()))

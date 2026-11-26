@@ -92,7 +92,7 @@ public class UndoDeletePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         personRestController.deletePerson(personKeycloakId, traceId, authorization);
 
@@ -130,7 +130,7 @@ public class UndoDeletePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getValidUndoDeletePersonRequestDto();
         personServiceUndoDeletePersonRequestDto.setPersonKeycloakId(personKeycloakId);
@@ -166,7 +166,7 @@ public class UndoDeletePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getInvalidUndoDeletePersonRequestDto();
 
@@ -200,7 +200,7 @@ public class UndoDeletePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto = getInvalidUndoDeletePersonRequestDto();
 

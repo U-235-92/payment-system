@@ -124,7 +124,7 @@ public class CreatePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(countryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(countryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         String json = OBJECT_MAPPER.writeValueAsString(personServiceCreatePersonRequestDto);
 

@@ -91,7 +91,7 @@ public class DeletePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(countryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(countryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
 //        Act & Assert
         mockMvc.perform(delete(PATH_DELETE_PERSON.replace("{personKeycloakId}", personKeycloakId.toString()))

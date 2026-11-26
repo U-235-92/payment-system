@@ -106,7 +106,7 @@ public class UpdatePersonWebTest {
         personServiceCreatePersonRequestDto.getCountry().setName(createCountryName);
         personServiceCreatePersonRequestDto.getCountry().setCode(createCountryCode);
 
-        personRestController.createPerson(traceId, personServiceCreatePersonRequestDto, authorization);
+        personRestController.createPerson(personServiceCreatePersonRequestDto, traceId, authorization);
 
         UpdatePersonRequestDto personServiceUpdatePersonRequestDto = getValidUpdatePersonRequestDto();
         personServiceUpdatePersonRequestDto.setPersonKeycloakId(personKeycloakId);

@@ -46,8 +46,8 @@ public abstract class WalletServiceEntities {
                 .sourceWalletId(UUID.randomUUID())
                 .targetWalletId(UUID.randomUUID())
                 .operationId(UUID.randomUUID())
-                .amount(BigDecimal.valueOf(85.58))
-                .targetAmount(BigDecimal.valueOf(85.58))
+                .transferAmount(BigDecimal.valueOf(85.58))
+                .totalAmount(BigDecimal.valueOf(85.58))
                 .currencyCode("RUB")
                 .build();
     }

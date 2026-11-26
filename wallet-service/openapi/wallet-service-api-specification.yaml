@@ -460,7 +460,7 @@ components:
     TransferWalletRequestDto:
       type: object
       x-class-extra-annotation: "@lombok.Builder"
-      required: [ source_wallet_id, target_wallet_id, operation_id, amount, target_amount, currency_code ]
+      required: [ source_wallet_id, target_wallet_id, operation_id, transfer_amount, total_amount, currency_code ]
       properties:
         source_wallet_id:
           type: string
@@ -474,17 +474,17 @@ components:
           type: string
           format: uuid
           description: UUID of operation
-        amount:
+        transfer_amount:
           type: number
           format: decimal
           minimum: 0.01
-          description: Amount of transaction
+          description: Amount of transfer without fee. This is pure amount which source wallet want to transfer to target wallet
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
-        target_amount:
+        total_amount:
           type: number
           format: decimal
           minimum: 0.01
-          description: Amount of transaction
+          description: Amount of transfer with addition fee tax. This is amount which is substructed from source wallet
           x-extra-annotation: "@jakarta.validation.constraints.Positive"
         currency_code:
           type: string

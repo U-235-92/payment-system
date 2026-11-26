@@ -370,12 +370,12 @@ public class WalletService {
         if(targetWallet.isBlocked())
             onBlockedWallet(targetWalletId, "transfer");
 
-        BigDecimal walletAmount = transferWalletRequestDto.getAmount();
-        BigDecimal targetWalletAmount = transferWalletRequestDto.getTargetAmount();
+        BigDecimal totalAmount = transferWalletRequestDto.getTotalAmount();
+        BigDecimal transferAmount = transferWalletRequestDto.getTransferAmount();
 
-        if(sourceWallet.isBalanceExceedAmount(walletAmount)) {
-            sourceWallet.debit(walletAmount);
-            targetWallet.credit(targetWalletAmount);
+        if(sourceWallet.isBalanceExceedAmount(totalAmount)) {
+            sourceWallet.debit(totalAmount);
+            targetWallet.credit(transferAmount);
 
             log.info("Success transfer sufficient from wallet with id: [{}] to wallet with id: [{}]",
                     sourceWalletId, targetWalletId);
@@ -385,7 +385,7 @@ public class WalletService {
         } else {
             throw new IllegalStateException(
                     String.format("Amount of transfer operation: [%s %s] is exceeded current balance of source wallet",
-                            walletAmount, transferWalletRequestDto.getCurrencyCode()));
+                            totalAmount, transferWalletRequestDto.getCurrencyCode()));
         }
     }
 

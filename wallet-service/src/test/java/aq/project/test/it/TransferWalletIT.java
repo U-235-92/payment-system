@@ -52,30 +52,30 @@ public class TransferWalletIT {
 //        Arrange
         CreateWalletRequestDto createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(80));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(80.00));
 
         UUID walletId = walletService.createWallet(createWalletRequestDto);
 
         createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(50));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(50.00));
 
         UUID targetWalletId = walletService.createWallet(createWalletRequestDto);
 
         TransferWalletRequestDto transferWalletRequestDto = WalletServiceEntities.getTransferWalletRequestDto();
 
-        transferWalletRequestDto.setAmount(BigDecimal.valueOf(30));
-        transferWalletRequestDto.setTargetAmount(BigDecimal.valueOf(30));
+        transferWalletRequestDto.setTransferAmount(BigDecimal.valueOf(30.00));
+        transferWalletRequestDto.setTotalAmount(BigDecimal.valueOf(30.00));
         transferWalletRequestDto.setSourceWalletId(walletId);
         transferWalletRequestDto.setTargetWalletId(targetWalletId);
 
 //        Act & Assert
         Assertions.assertDoesNotThrow(() -> walletService.transferWallet(transferWalletRequestDto));
 
-        BigDecimal walletAssertBalance = BigDecimal.valueOf(50);
+        BigDecimal walletAssertBalance = BigDecimal.valueOf(50.00);
         BigDecimal walletBalance = walletRepository.findById(walletId).get().getBalance();
 
-        BigDecimal targetWalletAssertBalance = BigDecimal.valueOf(80);
+        BigDecimal targetWalletAssertBalance = BigDecimal.valueOf(80.00);
         BigDecimal targetWalletBalance = walletRepository.findById(targetWalletId).get().getBalance();
 
         Assertions.assertTrue(walletAssertBalance.compareTo(walletBalance) == 0);
@@ -89,21 +89,21 @@ public class TransferWalletIT {
 
         CreateWalletRequestDto createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(80));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(80.00));
 
         UUID walletId = walletService.createWallet(createWalletRequestDto);
 
         createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(50));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(50.00));
 
         UUID targetWalletId = walletService.createWallet(createWalletRequestDto);
 
         TransferWalletRequestDto transferWalletRequestDto = WalletServiceEntities.getTransferWalletRequestDto();
 
         transferWalletRequestDto.setOperationId(operationId);
-        transferWalletRequestDto.setAmount(BigDecimal.valueOf(30));
-        transferWalletRequestDto.setTargetAmount(BigDecimal.valueOf(30));
+        transferWalletRequestDto.setTransferAmount(BigDecimal.valueOf(30.00));
+        transferWalletRequestDto.setTotalAmount(BigDecimal.valueOf(30.00));
         transferWalletRequestDto.setSourceWalletId(walletId);
         transferWalletRequestDto.setTargetWalletId(targetWalletId);
 
@@ -111,10 +111,10 @@ public class TransferWalletIT {
         walletService.transferWallet(transferWalletRequestDto);
         walletService.transferWallet(transferWalletRequestDto);
 
-        BigDecimal walletAssertBalance = BigDecimal.valueOf(50);
+        BigDecimal walletAssertBalance = BigDecimal.valueOf(50.00);
         BigDecimal walletBalance = walletRepository.findById(walletId).get().getBalance();
 
-        BigDecimal targetWalletAssertBalance = BigDecimal.valueOf(80);
+        BigDecimal targetWalletAssertBalance = BigDecimal.valueOf(80.00);
         BigDecimal targetWalletBalance = walletRepository.findById(targetWalletId).get().getBalance();
 
         Assertions.assertTrue(walletAssertBalance.compareTo(walletBalance) == 0);
@@ -136,8 +136,8 @@ public class TransferWalletIT {
 
         TransferWalletRequestDto transferWalletRequestDto = WalletServiceEntities.getTransferWalletRequestDto();
 
-        transferWalletRequestDto.setAmount(BigDecimal.valueOf(30));
-        transferWalletRequestDto.setTargetAmount(BigDecimal.valueOf(30));
+        transferWalletRequestDto.setTransferAmount(BigDecimal.valueOf(30.00));
+        transferWalletRequestDto.setTotalAmount(BigDecimal.valueOf(30.00));
         transferWalletRequestDto.setSourceWalletId(walletId);
         transferWalletRequestDto.setTargetWalletId(targetWalletId);
 
@@ -157,14 +157,14 @@ public class TransferWalletIT {
 
         createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(50));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(50.00));
 
         UUID targetWalletId = walletService.createWallet(createWalletRequestDto);
 
         TransferWalletRequestDto transferWalletRequestDto = WalletServiceEntities.getTransferWalletRequestDto();
 
-        transferWalletRequestDto.setAmount(BigDecimal.valueOf(30));
-        transferWalletRequestDto.setTargetAmount(BigDecimal.valueOf(30));
+        transferWalletRequestDto.setTransferAmount(BigDecimal.valueOf(30.00));
+        transferWalletRequestDto.setTotalAmount(BigDecimal.valueOf(30.00));
         transferWalletRequestDto.setSourceWalletId(walletId);
         transferWalletRequestDto.setTargetWalletId(targetWalletId);
 
@@ -178,8 +178,8 @@ public class TransferWalletIT {
 //        Arrange
         TransferWalletRequestDto transferWalletRequestDto = WalletServiceEntities.getTransferWalletRequestDto();
 
-        transferWalletRequestDto.setAmount(BigDecimal.valueOf(-30.00));
-        transferWalletRequestDto.setTargetAmount(BigDecimal.valueOf(30));
+        transferWalletRequestDto.setTotalAmount(BigDecimal.valueOf(-30.00));
+        transferWalletRequestDto.setTransferAmount(BigDecimal.valueOf(30.00));
         transferWalletRequestDto.setSourceWalletId(null);
         transferWalletRequestDto.setTargetWalletId(null);
 
@@ -193,22 +193,22 @@ public class TransferWalletIT {
 //        Arrange
         CreateWalletRequestDto createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(80));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(80.00));
         createWalletRequestDto.setCurrencyCode("RUB");
 
         UUID walletId = walletService.createWallet(createWalletRequestDto);
 
         createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(50));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(50.00));
         createWalletRequestDto.setCurrencyCode("EUR");
 
         UUID targetWalletId = walletService.createWallet(createWalletRequestDto);
 
         TransferWalletRequestDto transferWalletRequestDto = WalletServiceEntities.getTransferWalletRequestDto();
 
-        transferWalletRequestDto.setAmount(BigDecimal.valueOf(30));
-        transferWalletRequestDto.setTargetAmount(BigDecimal.valueOf(30));
+        transferWalletRequestDto.setTransferAmount(BigDecimal.valueOf(30.00));
+        transferWalletRequestDto.setTotalAmount(BigDecimal.valueOf(30.00));
         transferWalletRequestDto.setSourceWalletId(walletId);
         transferWalletRequestDto.setTargetWalletId(targetWalletId);
         transferWalletRequestDto.setCurrencyCode("USD");
@@ -223,20 +223,20 @@ public class TransferWalletIT {
 //        Arrange
         CreateWalletRequestDto createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(80));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(80.00));
 
         UUID walletId = walletService.createWallet(createWalletRequestDto);
 
         createWalletRequestDto = WalletServiceEntities.getCreateWalletRequestDto();
 
-        createWalletRequestDto.setBalance(BigDecimal.valueOf(50));
+        createWalletRequestDto.setBalance(BigDecimal.valueOf(50.00));
 
         UUID targetWalletId = walletService.createWallet(createWalletRequestDto);
 
         TransferWalletRequestDto transferWalletRequestDto = WalletServiceEntities.getTransferWalletRequestDto();
 
-        transferWalletRequestDto.setAmount(BigDecimal.valueOf(30));
-        transferWalletRequestDto.setTargetAmount(BigDecimal.valueOf(30));
+        transferWalletRequestDto.setTransferAmount(BigDecimal.valueOf(30.00));
+        transferWalletRequestDto.setTotalAmount(BigDecimal.valueOf(30.00));
         transferWalletRequestDto.setSourceWalletId(walletId);
         transferWalletRequestDto.setTargetWalletId(targetWalletId);
 

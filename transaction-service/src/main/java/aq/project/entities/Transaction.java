@@ -76,4 +76,16 @@ public class Transaction extends AbstractEntity {
     public void completeTransaction() {
         transactionStatus = TransactionStatus.COMPLETED;
     }
+
+    public boolean isPending() {
+        return transactionStatus == TransactionStatus.PENDING;
+    }
+
+    public boolean isFailed() {
+        return transactionStatus == TransactionStatus.FAILED;
+    }
+
+    public boolean isComplete() {
+        return transactionStatus == TransactionStatus.COMPLETED;
+    }
 }

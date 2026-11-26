@@ -9,7 +9,6 @@ import aq.project.utils.telemetry.TraceFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -25,8 +24,7 @@ public class WebhookEventKafkaConsumer {
 
     @KafkaListener(topics = "${app.kafka.topics.payment-status-update-response.name}")
     public void onWebhookEvent(
-            WebhookEvent webhookEvent,
-            Acknowledgment acknowledgment
+            WebhookEvent webhookEvent
     ) {
         String traceId = (traceContext.getTraceId() == null)
                 ? TraceFactory.genTraceId()
@@ -41,7 +39,7 @@ public class WebhookEventKafkaConsumer {
 
         try {
             switch (webhookEventStatus) {
-                case SUCCESS -> transactionService.completeTransaction(transactionId);
+                case SUCCESS -> transactionService.confirmTransaction(transactionId);
 
                 case FAIL -> transactionService.failTransaction(transactionId);
 
@@ -50,8 +48,6 @@ public class WebhookEventKafkaConsumer {
         } catch (IllegalStateException | EntityNotFoundException e) {
             log.error("[{}]: {} occurred while update transaction status. Exception message: {}",
                     traceId, e.getClass().getSimpleName(), e.getMessage());
-        } finally {
-            acknowledgment.acknowledge();
         }
     }
 }

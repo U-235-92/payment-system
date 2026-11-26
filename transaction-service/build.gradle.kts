@@ -113,7 +113,7 @@ val dependencyVersionMap = mapOf(
 	"common-utils" to "5.4.0",
 
 //	Wallet service API specification
-	"wallet-service-api-specification" to "7.0.4-dev"
+	"wallet-service-api-specification" to "7.0.8-dev"
 )
 
 dependencies {

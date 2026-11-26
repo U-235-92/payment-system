@@ -61,7 +61,7 @@ spring:
       - localhost:39092
       - localhost:49092
     listener:
-      ack-mode: MANUAL
+      ack-mode: RECORD
     producer:
       acks: all
       retries: 5
@@ -111,22 +111,6 @@ resilience4j:
 
   circuitbreaker:
     instances:
-      init-transaction-circuitbreaker:
-        sliding-window-type: TIME_BASED
-        sliding-window-size: 86400
-        minimum-number-of-calls: 5
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 30s
-        slow-call-rate-threshold: 50
-
-      confirm-transaction-circuitbreaker:
-        sliding-window-type: TIME_BASED
-        sliding-window-size: 86400
-        minimum-number-of-calls: 5
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 30s
-        slow-call-rate-threshold: 50
-
       fail-transaction-circuitbreaker:
         sliding-window-type: TIME_BASED
         sliding-window-size: 86400
@@ -134,6 +118,20 @@ resilience4j:
         failure-rate-threshold: 50
         slow-call-duration-threshold: 30s
         slow-call-rate-threshold: 50
+
+  retry:
+    instances:
+      init-transaction-retry:
+        max-attempts: 3
+        wait-duration: 500
+        fail-after-max-attempts: true
+        exponential-backoff-multiplier: 1.5
+
+      confirm-transaction-retry:
+        max-attempts: 3
+        wait-duration: 500
+        fail-after-max-attempts: true
+        exponential-backoff-multiplier: 1.5
 
 app:
   transaction:

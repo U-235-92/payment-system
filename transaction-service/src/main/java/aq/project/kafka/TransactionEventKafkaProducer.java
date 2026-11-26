@@ -29,24 +29,30 @@ public class TransactionEventKafkaProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public void sendDepositTransactionEvent(
+    public void publishTransactionEvent(
             Transaction transaction
     ) {
-        DepositRequestEvent event = transactionMapper.toDepositTransactionRequestEvent(transaction);
+        PaymentType paymentType = transaction.getPaymentType();
 
-        CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(depositTransactionRequestTopic, event);
+        switch (paymentType) {
+            case DEPOSIT -> {
+                DepositRequestEvent event = transactionMapper.toDepositTransactionRequestEvent(transaction);
 
-        handleWhenComplete(transaction, future);
-    }
+                CompletableFuture<SendResult<String, Object>> future = kafkaTemplate
+                        .send(depositTransactionRequestTopic, event);
 
-    public void sendWithdrawalTransactionEvent(
-            Transaction transaction
-    ) {
-        WithdrawalRequestEvent event = transactionMapper.toWithdrawalTransactionRequestEvent(transaction);
+                handleWhenComplete(transaction, future);
+            }
 
-        CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(withdrawalTransactionRequestTopic, event);
+            case WITHDRAWAL -> {
+                WithdrawalRequestEvent event = transactionMapper.toWithdrawalTransactionRequestEvent(transaction);
 
-        handleWhenComplete(transaction, future);
+                CompletableFuture<SendResult<String, Object>> future = kafkaTemplate
+                        .send(withdrawalTransactionRequestTopic, event);
+
+                handleWhenComplete(transaction, future);
+            }
+        }
     }
 
     private void handleWhenComplete(

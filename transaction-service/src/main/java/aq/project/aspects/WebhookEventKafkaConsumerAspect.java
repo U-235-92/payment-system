@@ -10,7 +10,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -30,11 +29,10 @@ public class WebhookEventKafkaConsumerAspect {
     private final ServiceAspectHandler serviceAspectHandler;
 
     @Around("execution(* aq.project.kafka.WebhookEventKafkaConsumer.onWebhookEvent(..)) " +
-            "&& args(webhookEvent, acknowledgment)")
+            "&& args(webhookEvent)")
     public void onWebhookEvent(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid WebhookEvent webhookEvent,
-            Acknowledgment acknowledgment
+            @NotNull @Valid WebhookEvent webhookEvent
     ) throws Throwable {
 //        Prepare handler metadata
         String actionName = "on-webhook-event";

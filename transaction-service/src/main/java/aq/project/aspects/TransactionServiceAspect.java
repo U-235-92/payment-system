@@ -82,6 +82,29 @@ public class TransactionServiceAspect {
         );
     }
 
+    @Around("execution(void aq.project.services.TransactionService.confirmTransaction(..)) " +
+            "&& args(transactionId)")
+    public void confirmTransaction(
+            ProceedingJoinPoint pjp,
+            @NotNull UUID transactionId
+    ) throws Throwable {
+//        Prepare handler metadata
+        String actionName = "confirm-transaction";
+        String tracerName = serviceName + "." + actionName + "-tracer";
+
+        String logOnBeginning = String.format("Received request to confirm transaction with id: [%s]", transactionId);
+
+//        Handler logic call
+        serviceAspectHandler.handle(
+                pjp,
+                tracerName,
+                serviceName,
+                actionName,
+                logOnBeginning,
+                null
+        );
+    }
+
     @Around("execution(* aq.project.services.TransactionService.getTransactionStatus(..)) " +
             "&& args(transactionId)")
     public TransactionStatus getTransactionStatus(
@@ -118,30 +141,6 @@ public class TransactionServiceAspect {
         String tracerName = serviceName + "." + actionName + "-tracer";
 
         String logOnBeginning = String.format("Received request to fail transaction with id: [%s]",
-                transactionId);
-
-//        Handler logic call
-        serviceAspectHandler.handle(
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                logOnBeginning,
-                null
-        );
-    }
-
-    @Around("execution(* aq.project.services.TransactionService.completeTransaction(..)) " +
-            "&& args(transactionId)")
-    public void completeTransaction(
-            ProceedingJoinPoint pjp,
-            @NotNull UUID transactionId
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "complete-transaction";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-
-        String logOnBeginning = String.format("Received request to complete transaction with id: [%s]",
                 transactionId);
 
 //        Handler logic call

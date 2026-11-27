@@ -12,7 +12,6 @@ import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.TraceContext;
 import aq.project.utils.telemetry.TraceFactory;
 import aq.project.wallet_service.WalletApiClient;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -108,38 +107,59 @@ public class TransactionService {
 
         String currencyCode = initTransactionRequestDto.getCurrencyCode();
 
-        if(isBalanceExceedAmount(walletBalance, totalAmount)) {
-            return new InitTransactionResponseDto()
-                    .walletId(pendingWalletInfo.getWalletId())
-                    .amount(amount)
-                    .conversionRate(walletConversionRate)
-                    .fee(fee)
-                    .totalAmount(totalAmount)
-                    .available(true)
-                    .description(null)
-                    .paymentType(paymentType)
-                    .currencyCode(currencyCode);
-        } else {
-            log.warn("[{}]: Success init [{}] transaction for wallet with id: [{}]. " +
-                            "Warning: initialization of transaction is not available. " +
-                            "Amount of operation is exceeded current balance of wallet",
-                    traceId, paymentType, initTransactionRequestDto.getWalletId());
+        switch (paymentType) {
+            case WITHDRAWAL, TRANSFER -> {
+                if(isBalanceExceedAmount(walletBalance, totalAmount)) {
+                    return new InitTransactionResponseDto()
+                            .walletId(pendingWalletInfo.getWalletId())
+                            .amount(amount)
+                            .conversionRate(walletConversionRate)
+                            .fee(fee)
+                            .totalAmount(totalAmount)
+                            .available(true)
+                            .description(null)
+                            .paymentType(paymentType)
+                            .currencyCode(currencyCode);
+                } else {
+                    log.warn("[{}]: Success init [{}] transaction for wallet with id: [{}]. " +
+                                    "Warning: initialization of transaction is not available. " +
+                                    "Amount of operation is exceeded current balance of wallet",
+                            traceId, paymentType, initTransactionRequestDto.getWalletId());
 
-            String description = String.format(
-                    "Process [%s] transaction is not allowed for wallet with id: [%s]. " +
-                    "Total amount of operation: [%s] is exceeded current balance of wallet",
-                    paymentType, pendingWalletInfo.getWalletId(), totalAmount);
+                    String description = String.format(
+                            "Process [%s] transaction is not allowed for wallet with id: [%s]. " +
+                                    "Total amount of operation: [%s] is exceeded current balance of wallet",
+                            paymentType, pendingWalletInfo.getWalletId(), totalAmount);
 
-            return new InitTransactionResponseDto()
-                    .walletId(pendingWalletInfo.getWalletId())
-                    .amount(amount)
-                    .conversionRate(walletConversionRate)
-                    .fee(fee)
-                    .totalAmount(totalAmount)
-                    .available(false)
-                    .description(description)
-                    .paymentType(paymentType)
-                    .currencyCode(currencyCode);
+                    return new InitTransactionResponseDto()
+                            .walletId(pendingWalletInfo.getWalletId())
+                            .amount(amount)
+                            .conversionRate(walletConversionRate)
+                            .fee(fee)
+                            .totalAmount(totalAmount)
+                            .available(false)
+                            .description(description)
+                            .paymentType(paymentType)
+                            .currencyCode(currencyCode);
+                }
+            }
+
+            case DEPOSIT -> {
+                return new InitTransactionResponseDto()
+                        .walletId(pendingWalletInfo.getWalletId())
+                        .amount(amount)
+                        .conversionRate(walletConversionRate)
+                        .fee(fee)
+                        .totalAmount(totalAmount)
+                        .available(true)
+                        .description(null)
+                        .paymentType(paymentType)
+                        .currencyCode(currencyCode);
+            }
+
+            default -> {
+                throw new IllegalStateException("Unexpected payment type: " + paymentType);
+            }
         }
     }
 
@@ -181,7 +201,7 @@ public class TransactionService {
                 "%s occurred during init [%s] transaction for wallet with id: [%s]. Exception message: %s",
                 exceptionClass, initTransactionRequestDto.getPaymentType(), walletId, exceptionMessage);
 
-        fallback.handleCircuitBreakerFallback(action, message, exception);
+        fallback.handleRetryFallback(action, message, exception);
 
         return null;
     }
@@ -335,7 +355,7 @@ public class TransactionService {
                 "%s occurred during confirm [%s] transaction for wallet with id: [%s]. Exception message: %s",
                 exceptionClass, confirmTransactionRequestDto.getPaymentType(), walletId, exceptionMessage);
 
-        fallback.handleCircuitBreakerFallback(action, message, exception);
+        fallback.handleRetryFallback(action, message, exception);
 
         return null;
     }
@@ -344,6 +364,7 @@ public class TransactionService {
             name = "confirm-transaction-retry",
             fallbackMethod = "confirmTransactionRetryFallback"
     )
+    @Transactional
     public void confirmTransaction(
             UUID transactionId
     ) {
@@ -358,7 +379,6 @@ public class TransactionService {
         }
 
         String traceId = traceContext.getTraceId();
-        String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
 
         PaymentType paymentType = transaction.getPaymentType();
 
@@ -375,6 +395,8 @@ public class TransactionService {
                         .amount(transaction.getWalletAmount())
                         .currencyCode(transaction.getCurrencyCode());
 
+                String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
+
                 walletApiClient.depositWallet(dto, traceId, authorization);
             }
 
@@ -384,7 +406,15 @@ public class TransactionService {
                         .amount(transaction.getWalletAmount())
                         .currencyCode(transaction.getCurrencyCode());
 
+                String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
+
                 walletApiClient.withdrawalWallet(dto, traceId, authorization);
+            }
+
+            default -> {
+                log.warn("[{}]: Received unexpected transaction payment type: [{}] for transaction with id: [{}]",
+                        traceId, paymentType, transactionId);
+                return;
             }
         }
 
@@ -398,18 +428,15 @@ public class TransactionService {
             UUID transactionId,
             Exception exception
     ) throws Exception {
-        if(exception instanceof IllegalStateException)
+        if(exception instanceof IllegalStateException
+                || exception instanceof EntityNotFoundException)
             throw exception;
 
         String action = "confirm-transaction";
 
-        Transaction transaction = getTransaction(transactionId);
-
-//        Mark transaction as FAILED after limit of retry was achieved
-        transaction.failTransaction();
-
-//        Publish transaction event to Kafka topic about fail transaction
-        transactionEventKafkaProducer.publishTransactionEvent(transaction);
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Transaction with id: [%s] not found", transactionId)));
 
         String exceptionClass = exception.getClass().getSimpleName();
         String exceptionMessage = exception.getMessage();
@@ -418,11 +445,7 @@ public class TransactionService {
                 "%s occurred during confirm [%s] transaction for wallet with id: [%s]. Exception message: %s",
                 exceptionClass, transaction.getPaymentType(), transaction.getWalletId(), exceptionMessage);
 
-        try {
-            fallback.handleCircuitBreakerFallback(action, message, exception);
-        } catch (Exception e) {
-//            Suppressed to success update status of transaction entity as FAILED.
-        }
+        fallback.handleRetryFallback(action, message, exception);
     }
 
     @RateLimiter(
@@ -460,10 +483,6 @@ public class TransactionService {
             name = "fail-transaction-rate-limiter",
             fallbackMethod = "failTransactionRateLimiterFallback"
     )
-    @CircuitBreaker(
-            name = "fail-transaction-circuitbreaker",
-            fallbackMethod = "failTransactionCircuitBreakerFallback"
-    )
     @Transactional
     public void failTransaction(
             UUID transactionId
@@ -494,33 +513,19 @@ public class TransactionService {
         PaymentType paymentType = transaction.getPaymentType();
 
         String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
-        String authorization = JwtUtil.toBearerToken(tokenService.getAdminJwt());
 
         switch (paymentType) {
-            case DEPOSIT -> {
-//                    Compensation on fail
-                WithdrawalWalletRequestDto dto = new WithdrawalWalletRequestDto()
-                        .walletId(transaction.getWalletId())
-                        .amount(transaction.getWalletAmount())
-                        .currencyCode(transaction.getCurrencyCode());
+            case DEPOSIT, WITHDRAWAL -> {
+                transaction.failTransaction();
 
-                walletApiClient.withdrawalWallet(dto, traceId, authorization);
+                log.debug(">>>>> Success handle of request to [fail] transaction with id: [{}]", transactionId);
             }
 
-            case WITHDRAWAL ->  {
-//                    Compensation on fail
-                DepositWalletRequestDto dto = new DepositWalletRequestDto()
-                        .walletId(transaction.getWalletId())
-                        .amount(transaction.getWalletAmount())
-                        .currencyCode(transaction.getCurrencyCode());
-
-                walletApiClient.depositWallet(dto, traceId, authorization);
+            default -> {
+                log.warn("[{}]: Received unexpected transaction payment type: [{}] for transaction with id: [{}]",
+                        traceId, paymentType, transactionId);
             }
         }
-
-        transaction.failTransaction();
-
-        log.debug(">>>>> Success handle of request to [fail] transaction with id: [{}]", transactionId);
     }
 
     private void failTransactionRateLimiterFallback(
@@ -537,26 +542,6 @@ public class TransactionService {
                 exceptionClass, transactionId, exceptionMessage);
 
         fallback.handleRateLimiterFallback(action, message, exception);
-    }
-
-    private void failTransactionCircuitBreakerFallback(
-            UUID transactionId,
-            Exception exception
-    ) throws Exception {
-        if(exception instanceof EntityNotFoundException
-                || exception instanceof IllegalStateException)
-            throw exception;
-
-        String action = "fail-transaction";
-
-        String exceptionClass =  exception.getClass().getSimpleName();
-        String exceptionMessage = exception.getMessage();
-
-        String message = String.format(
-                "%s occurred during fail transaction with id: [%s]. Exception message: %s",
-                exceptionClass, transactionId, exceptionMessage);
-
-        fallback.handleCircuitBreakerFallback(action, message, exception);
     }
 
     private Transaction getTransaction(

@@ -30,44 +30,19 @@ public class TransactionEventKafkaProducerAspect {
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.kafka.TransactionEventKafkaProducer.sendDepositTransactionEvent(..)) " +
+    @Around("execution(* aq.project.kafka.TransactionEventKafkaProducer.publishTransactionEvent(..)) " +
             "&& args(transaction)")
-    public void sendDepositTransactionEvent(
+    public void publishTransactionEvent(
             ProceedingJoinPoint pjp,
             @NotNull @Valid Transaction transaction
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "send-deposit-transaction-event";
+        String actionName = "publish-transaction-event";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
-        String logOnBeginning = String.format("Sending [deposit] transaction with transaction id: [%s] " +
+        String logOnBeginning = String.format("Publish [%s] transaction with transaction id: [%s] " +
                 "request event to kafka-topic: [%s]",
-                transaction.getId(), depositTransactionRequestTopic);
-
-//        Handler logic call
-        serviceAspectHandler.handle(
-                pjp,
-                tracerName,
-                serviceName,
-                actionName,
-                logOnBeginning,
-                null
-        );
-    }
-
-    @Around("execution(* aq.project.kafka.TransactionEventKafkaProducer.sendWithdrawalTransactionEvent(..)) " +
-            "&& args(transaction)")
-    public void sendWithdrawalTransactionEvent(
-            ProceedingJoinPoint pjp,
-            @NotNull @Valid Transaction transaction
-    ) throws Throwable {
-//        Prepare handler metadata
-        String actionName = "send-withdrawal-transaction-event";
-        String tracerName = serviceName + "." + actionName + "-tracer";
-
-        String logOnBeginning = String.format("Sending [withdrawal] transaction with transaction id: [%s] " +
-                "request event to kafka-topic: [%s]",
-                transaction.getId(), withdrawalTransactionRequestTopic);
+                transaction.getPaymentType(), transaction.getId(), depositTransactionRequestTopic);
 
 //        Handler logic call
         serviceAspectHandler.handle(

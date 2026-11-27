@@ -102,6 +102,9 @@ val dependencyVersionMap = mapOf(
 //	Testcontainers
 	"testcontainers-keycloak" to "4.1.1",
 
+//	Wiremock
+	"wiremock-spring-boot" to "4.0.9",
+
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
 
@@ -197,6 +200,8 @@ dependencies {
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")
+	testImplementation("org.wiremock.integrations:wiremock-spring-boot:${dependencyVersionMap.getValue("wiremock-spring-boot")}")
+	testImplementation("com.github.dasniko:testcontainers-keycloak:${dependencyVersionMap.getValue("testcontainers-keycloak")}")
 
 //	Util
 	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")

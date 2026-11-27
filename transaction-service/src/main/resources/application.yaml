@@ -109,16 +109,6 @@ resilience4j:
         limit-refresh-period: 1s
         limit-for-period: 100
 
-  circuitbreaker:
-    instances:
-      fail-transaction-circuitbreaker:
-        sliding-window-type: TIME_BASED
-        sliding-window-size: 86400
-        minimum-number-of-calls: 5
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 30s
-        slow-call-rate-threshold: 50
-
   retry:
     instances:
       init-transaction-retry:

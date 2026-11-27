@@ -10,7 +10,7 @@ COPY ./wallet-service/build.gradle.kts ./build.gradle.kts
 COPY ./wallet-service/dev.env ./.env
 
 #Build project
-RUN gradle --no-daemon clean bootJar
+RUN gradle --no-daemon clean bootJar -x test
 
 FROM eclipse-temurin:25-jre
 

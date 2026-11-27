@@ -7,6 +7,7 @@ COPY ./transaction-service/settings.gradle.kts ./settings.gradle.kts
 COPY ./transaction-service/src ./src
 COPY ./transaction-service/openapi ./openapi
 COPY ./transaction-service/build.gradle.kts ./build.gradle.kts
+COPY ./transaction-service/dev.env ./.env
 
 #Build project
 RUN gradle --no-daemon clean bootJar -x test
@@ -19,8 +20,5 @@ WORKDIR /app
 
 COPY --from=builder /source/build/libs/*.jar ./transaction-service.jar
 
-#Spring env:
-ENV SPRING_PROFILES_ACTIVE=prod
-
 EXPOSE 8083
-ENTRYPOINT ["java", "-jar", "transaction-service.jar"]
+ENTRYPOINT ["java", "-jar", "transaction-service.jar", "--spring.profiles.active=prod"]

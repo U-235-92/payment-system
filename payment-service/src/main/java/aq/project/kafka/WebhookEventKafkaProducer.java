@@ -1,8 +1,6 @@
 package aq.project.kafka;
 
-import aq.project.entities.Payment;
 import aq.project.kafka.events.WebhookEvent;
-import aq.project.mappers.WebhookMapper;
 import aq.project.services.CallbackService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +17,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class WebhookEventKafkaProducer {
 
-    private final WebhookMapper webhookMapper = WebhookMapper.INSTANCE;
-
     @Value("${app.kafka.topics.payment-status-update-response}")
     private String paymentStatusUpdateResponseTopic;
 
@@ -29,18 +25,17 @@ public class WebhookEventKafkaProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendWebhookEvent(
-            Payment payment
+            WebhookEvent webhookEvent
     ) {
-        WebhookEvent webhookEvent = webhookMapper.toWebhookEvent(payment);
+        UUID transactionId = webhookEvent.transactionId();
+        UUID paymentId = webhookEvent.paymentId();
 
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate
                 .send(paymentStatusUpdateResponseTopic, webhookEvent);
 
         future.whenComplete((result, exception) -> {
-            UUID transactionId = payment.getTransactionId();
-
             if(exception == null) {
-                callbackService.markProcessed(payment);
+                callbackService.markProcessed(paymentId);
 
                 long offset = result.getRecordMetadata().offset();
 

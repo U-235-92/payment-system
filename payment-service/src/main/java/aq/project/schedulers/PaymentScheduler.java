@@ -2,7 +2,6 @@ package aq.project.schedulers;
 
 import aq.project.dto.PaymentStatus;
 import aq.project.entities.Payment;
-import aq.project.kafka.WebhookEventKafkaProducer;
 import aq.project.repositories.PaymentRepository;
 import aq.project.services.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +20,6 @@ public class PaymentScheduler {
     private final PaymentRepository paymentRepository;
 
     private final PaymentService paymentService;
-
-    private final WebhookEventKafkaProducer webhookEventKafkaProducer;
 
     @Scheduled(
             fixedRateString = "${app.service.payment-service.schedulers.schedule-pending-payment}",
@@ -47,49 +44,6 @@ public class PaymentScheduler {
                         pendingPayment.getPaymentId(), pendingPayment.getTransactionId(), e.getMessage());
 
                 onProcessPaymentException(pendingPayment, e);
-            }
-        }
-    }
-
-    @Scheduled(
-            fixedRateString = "${app.service.payment-service.schedulers.schedule-processing-payment}",
-            timeUnit = TimeUnit.SECONDS
-    )
-    public void scheduleProcessingPayment() {
-        List<Payment> processingPayments = paymentRepository.findAllUnprocessedByPaymentStatus(PaymentStatus.PROCESSING);
-
-        for(Payment processingPayment : processingPayments) {
-            try {
-                log.debug(">>>>> Schedule [PROCESSING] payment, paymentId: [{}], transactionId: [{}]",
-                        processingPayment.getPaymentId(), processingPayment.getTransactionId());
-
-                paymentService.handleProcessingPayment(processingPayment);
-
-                log.debug(">>>>> Success schedule of [PROCESSING] payment, paymentId: [{}], transactionId: [{}]",
-                        processingPayment.getPaymentId(), processingPayment.getTransactionId());
-
-            } catch (Exception e) {
-                log.debug(">>>>> Error occurred while schedule of [PROCESSING] payment, paymentId: [{}], transactionId: [{}]. " +
-                                "Exception message: {}",
-                        processingPayment.getPaymentId(), processingPayment.getTransactionId(), e.getMessage());
-
-                onProcessPaymentException(processingPayment, e);
-            }
-        }
-    }
-
-    @Scheduled(
-            fixedRateString = "${app.service.payment-service.schedulers.schedule-fail-payment}",
-            timeUnit = TimeUnit.SECONDS
-    )
-    public void scheduleFailPayment() {
-        List<Payment> failPayments = paymentRepository.findAllUnprocessedByPaymentStatus(PaymentStatus.FAILED);
-
-        for(Payment failPayment : failPayments) {
-            try {
-                webhookEventKafkaProducer.sendWebhookEvent(failPayment);
-            } catch (Exception e) {
-                onProcessPaymentException(failPayment, e);
             }
         }
     }

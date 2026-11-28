@@ -10,7 +10,6 @@ import aq.project.repositories.PaymentRepository;
 import aq.project.utils.resilence.Fallback;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
-import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -59,7 +58,7 @@ public class PaymentService {
         newPayment.setPaymentMethod(paymentMethod);
 
 //        Continue to async handle saved payment.
-//        See PaymentScheduler.schedulePendingPayment(..) for details.
+//        See PaymentScheduler.schedulePendingPayment(...) for details.
         Payment savedPayment = paymentRepository.save(newPayment);
 
         log.debug(">>>>> Success handle of request to create payment with payment method id: {}", paymentMethodId);
@@ -78,7 +77,7 @@ public class PaymentService {
                         "Exception message: %s",
                 paymentServiceCreatePaymentRequestDto.getTransactionId(), exception.getMessage());
 
-        fallback.handleRetryFallback(action, message, exception);
+        fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
     }
@@ -116,46 +115,11 @@ public class PaymentService {
                         "Exception message: %s",
                 currencyCode, countryCode, exception.getMessage());
 
-        fallback.handleRetryFallback(action, message, exception);
+        fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
     }
 
-    @Retry(
-            name = "handle-processing-payment-retry",
-            fallbackMethod = "handleProcessingPaymentFallbackRetry"
-    )
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleProcessingPayment(
-            Payment payment
-    ) {
-        TransactionType transactionType = payment.getTransactionType();
-
-        switch (transactionType) {
-            case DEPOSIT -> transactionService.handleProcessingTransactionPayment(payment);
-
-            case WITHDRAWAL -> payoutService.handleProcessingPayoutPayment(payment);
-        }
-    }
-
-    private void handleProcessingPaymentFallbackRetry(
-            Payment payment,
-            Exception exception
-    ) {
-        String action = "handle-processed-payment";
-
-        String message = String.format(
-                "Exception occurred during handle of payment in status: [%s] for transaction with id: [%s]. " +
-                        "Exception message: %s",
-                payment.getStatus(), payment.getTransactionId(), exception.getMessage());
-
-        fallback.handleRetryFallback(action, message, exception);
-    }
-
-    @Retry(
-            name = "handle-pending-payment-retry",
-            fallbackMethod = "handlePendingPaymentRetryFallback"
-    )
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handlePendingPayment(
             Payment payment
@@ -166,38 +130,6 @@ public class PaymentService {
             case DEPOSIT -> transactionService.handlePendingTransactionPayment(payment);
 
             case WITHDRAWAL -> payoutService.handlePendingPayoutPayment(payment);
-        }
-    }
-
-    private void handlePendingPaymentRetryFallback(
-            Payment payment,
-            Exception exception
-    ) {
-        String action = "handle-pending-payment";
-
-        PaymentStatus paymentStatus = payment.getStatus();
-
-        UUID transactionId = payment.getTransactionId();
-
-        String exceptionClassName = exception.getClass().getSimpleName();
-        String exceptionMessage = exception.getMessage();
-
-        String message = String.format(
-                "%s occurred during handle of [%s] payment for transaction with id: [%s]. " +
-                        "Exception message: %s",
-                exceptionClassName, paymentStatus, transactionId, exceptionMessage);
-
-//        In case if fake-payment-provider-service is not accessed then mark payment as failed.
-        payment.fail();
-
-//        Finalize FAIL status of transaction on other services in transaction flow.
-//        See PaymentScheduler.scheduleFailPayment(..) for details.
-        paymentRepository.save(payment);
-
-        try {
-            fallback.handleRetryFallback(action, message, exception);
-        } catch (Exception ex) {
-//            Exception was suppressed to commit payment status without errors.
         }
     }
 }

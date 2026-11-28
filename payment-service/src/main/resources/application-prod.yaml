@@ -13,10 +13,6 @@ management:
           endpoint: ${OTEL_COLLECTOR_URI}
 
 spring:
-  profiles:
-    active:
-      - ${PROFILE}
-
   kafka:
     bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS}
 

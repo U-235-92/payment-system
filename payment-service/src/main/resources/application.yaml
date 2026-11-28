@@ -73,6 +73,11 @@ spring:
           issuer-uri: http://localhost:8080/realms/payment-system
           jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
 
+  cloud:
+    circuitbreaker:
+      resilience4j:
+        enabled: false
+
 resilience4j:
   ratelimiter:
     instances:
@@ -86,25 +91,13 @@ resilience4j:
 
   retry:
     instances:
-      handle-pending-payment-retry:
+      handle-pending-payout-retry:
         max-attempts: 3
         wait-duration: 500ms
         exponential-backoff-multiplier: 1.5
         fail-after-max-attempts: true
 
-      handle-processing-payment-retry:
-        max-attempts: 3
-        wait-duration: 500ms
-        exponential-backoff-multiplier: 1.5
-        fail-after-max-attempts: true
-
-      handle-complete-payment-retry:
-        max-attempts: 3
-        wait-duration: 500ms
-        exponential-backoff-multiplier: 1.5
-        fail-after-max-attempts: true
-
-      handle-fail-payment-retry:
+      handle-pending-transaction-retry:
         max-attempts: 3
         wait-duration: 500ms
         exponential-backoff-multiplier: 1.5
@@ -119,9 +112,7 @@ app:
       merchant-id: payment-service
       merchant-secret: secret
       schedulers:
-        schedule-processing-payment: 5
         schedule-pending-payment: 5
-        schedule-fail-payment: 5
 
   kafka:
     topics:

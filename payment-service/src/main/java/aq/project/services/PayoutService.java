@@ -1,20 +1,24 @@
 package aq.project.services;
 
 import aq.project.dto.CreatePayoutRequestDto;
+import aq.project.dto.PaymentStatus;
 import aq.project.dto.PayoutInfoResponseDto;
-import aq.project.dto.Status;
 import aq.project.entities.Payment;
 import aq.project.fake_payment_provider_service.PayoutApiClient;
 import aq.project.mappers.PaymentMapper;
 import aq.project.repositories.PaymentRepository;
-import aq.project.utils.telemetry.TraceContext;
+import aq.project.utils.resilence.Fallback;
 import aq.project.utils.telemetry.TraceFactory;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -29,59 +33,12 @@ public class PayoutService {
 
     private final AuthorizationService authorizationService;
 
-    private final TraceContext traceContext;
+    private final Fallback fallback;
 
-    @Transactional
-    public void handleProcessingPayoutPayment(
-            Payment payment
-    ) {
-        Long payoutId = payment.getExternalId();
-
-        String authorization = authorizationService.getAuthorization();
-        String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
-
-        log.debug(">>>>> Attempt to send get payout info request to [fake-payment-provider-service]");
-
-        ResponseEntity<PayoutInfoResponseDto> responseEntity = payoutClient
-                .getPayoutInfo(payoutId, authorization, traceId);
-
-        HttpStatusCode httpStatusCode = responseEntity.getStatusCode();
-
-        log.debug(">>>>> Received response on get payout info request from [fake-payment-provider-service] " +
-                "with status code: {}", httpStatusCode);
-
-        if(httpStatusCode.is2xxSuccessful()) {
-            PayoutInfoResponseDto payoutInfoResponseDto = responseEntity.getBody();
-
-            log.debug(">>>>> Received response on get payout info request from [fake-payment-provider-service] " +
-                    "with body: {}", payoutInfoResponseDto);
-
-            if(payoutInfoResponseDto != null) {
-                Status payoutStatus = payoutInfoResponseDto.getStatus();
-
-                switch (payoutStatus) {
-                    case SUCCESS -> {
-//                        The final process of payment by sending result of operation into individuals-api-service
-//                        See PaymentScheduler.scheduleCompletePayment(..) for details
-                        payment.complete();
-
-                        paymentRepository.save(payment);
-                    }
-
-                    case FAIL -> {
-//                        The final process of payment by sending result of operation into individuals-api-service
-//                        See PaymentScheduler.scheduleFailPayment(..) for details
-                        payment.fail();
-
-                        paymentRepository.save(payment);
-                    }
-                }
-            } else {
-                log.error("[{}]: Received response has no body", traceId);
-            }
-        }
-    }
-
+    @Retry(
+            name = "handle-pending-payout-retry",
+            fallbackMethod = "handlePendingPayoutPaymentRetryFallback"
+    )
     @Transactional
     public void handlePendingPayoutPayment(
             Payment payment
@@ -106,8 +63,8 @@ public class PayoutService {
                 "with status code: {}", httpStatusCode);
 
         if(httpStatusCode.is2xxSuccessful()) {
-//            The final process of payment to success/fail state will continue on PaymentStatusKafkaConsumer side
-//            See PaymentStatusKafkaConsumer.onPaymentStatusEvent(..) for details
+//            The final process of payment to success/fail state will continue on WebhookEventKafkaConsumer side
+//            See WebhookEventKafkaConsumer.onWebhookEvent(...) for details
             PayoutInfoResponseDto payoutInfoResponseDto = responseEntity.getBody();
 
             log.debug(">>>>> Received response on [payout request] from [fake-payment-provider-service] " +
@@ -124,5 +81,33 @@ public class PayoutService {
                 throw new IllegalStateException("Received response has no body");
             }
         }
+    }
+
+    private void handlePendingPayoutPaymentRetryFallback(
+            Payment payment,
+            Exception exception
+    ) throws Exception {
+        log.debug(">>>>> Fallback call. Exception details: {}. Message: {}",
+                exception.getClass().getSimpleName(), exception.getMessage());
+
+        if(exception instanceof HttpClientErrorException
+                || exception instanceof IllegalStateException)
+            throw exception;
+
+        String action = "handle-pending-payout";
+
+        PaymentStatus paymentStatus = payment.getStatus();
+
+        UUID transactionId = payment.getTransactionId();
+
+        String exceptionClassName = exception.getClass().getSimpleName();
+        String exceptionMessage = exception.getMessage();
+
+        String message = String.format(
+                "%s occurred during handle of [%s] payout for transaction with id: [%s]. " +
+                        "Exception message: %s",
+                exceptionClassName, paymentStatus, transactionId, exceptionMessage);
+
+        fallback.handleRetryFallback(action, message, exception);
     }
 }

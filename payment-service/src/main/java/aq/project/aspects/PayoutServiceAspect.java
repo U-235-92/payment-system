@@ -1,6 +1,6 @@
 package aq.project.aspects;
 
-import aq.project.kafka.events.WebhookEvent;
+import aq.project.entities.Payment;
 import aq.project.utils.telemetry.ServiceAspectHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -19,26 +18,25 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Component
 @RequiredArgsConstructor
-public class PaymentStatusKafkaConsumerAspect {
+public class PayoutServiceAspect {
 
     @Value("${spring.application.name}")
     private String serviceName;
 
     private final ServiceAspectHandler serviceAspectHandler;
 
-    @Around("execution(* aq.project.kafka.WebhookEventKafkaConsumer.onWebhookEvent(..)) " +
-            "&& args(webhookEvent, acknowledgment)")
-    public void onWebhookEvent(
+    @Around("execution(* aq.project.services.PaymentService.handlePendingPayoutPayment(..)) " +
+            "&& args(payment)")
+    public void handlePendingPayoutPayment(
             ProceedingJoinPoint pjp,
-            @NotNull @Valid WebhookEvent webhookEvent,
-            Acknowledgment acknowledgment
+            @NotNull @Valid Payment payment
     ) throws Throwable {
 //        Prepare handler metadata
-        String actionName = "on-webhook-event";
+        String actionName = "handle-payout";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
-        String logOnBeginning = String.format("Received request to update a status of payment with id: [%s]",
-                webhookEvent.paymentId());
+        String logOnBeginning = String.format("Received request to handle [%s] payout for transaction with id: [%s]",
+                payment.getStatus(), payment.getTransactionId());
 
 //        Handler logic call
         serviceAspectHandler.handle(

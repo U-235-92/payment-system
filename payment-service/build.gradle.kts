@@ -99,11 +99,11 @@ val dependencyVersionMap = mapOf(
 //	Spring AOP
 	"spring-boot-starter-aop" to "4.0.0-M2",
 
-//	Testcontainers
-	"testcontainers-keycloak" to "4.1.1",
-
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
+
+//	Wiremock
+	"wiremock-spring-boot" to "4.0.9",
 
 //	CommonProjectUtils
 	"common-utils" to "5.4.0",
@@ -174,10 +174,13 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
+	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers-kafka")
+	testImplementation("org.testcontainers:testcontainers-postgresql")
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")
+	testImplementation("org.wiremock.integrations:wiremock-spring-boot:${dependencyVersionMap.getValue("wiremock-spring-boot")}")
 
 //	Util
 	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")

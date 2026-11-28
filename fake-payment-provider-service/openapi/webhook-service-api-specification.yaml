@@ -67,12 +67,13 @@ components:
   schemas:
     UpdateStatusOperationRequestDto:
       type: object
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
       required: [ id, transaction_id, payment_id, status, operation_type ]
       properties:
         id:
-          type: integer
-          format: int64
-          description: ID of operation (transaction\payout)
+          type: string
+          format: uuid
+          description: UUID of request operation
         transaction_id:
           type: string
           format: uuid
@@ -84,7 +85,7 @@ components:
           $ref: "#/components/schemas/Status"
           description: Status of operation
         operation_type:
-          $ref: "#/components/schemas/OperationType"
+          type: string
           description: Operation type (transaction\payout)
         provider:
           type: string

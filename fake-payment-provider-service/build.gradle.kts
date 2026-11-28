@@ -19,7 +19,7 @@ val artifact = "fake-payment-provider-service"
 
 val yamlExtension = ".yaml"
 
-val specificationArtifactVersion = "7.0.5-dev"
+val specificationArtifactVersion = "7.0.7-dev"
 val specificationArtifactJarName = "${artifact}-api-specification-${specificationArtifactVersion}.jar"
 
 val openApiSpecificationYamlPath = "$rootDir/openapi/${artifact}-api-specification.yaml"
@@ -102,6 +102,9 @@ val dependencyVersionMap = mapOf(
 //	Testcontainers
 	"testcontainers-keycloak" to "4.1.1",
 
+//	Wiremock
+	"wiremock-spring-boot" to "4.0.9",
+
 //	OpenApi
 	"springdoc-openapi" to "3.0.2",
 
@@ -109,7 +112,7 @@ val dependencyVersionMap = mapOf(
 	"common-utils" to "5.4.0",
 
 //	Webhook service API specification
-	"webhook-service-api-specification" to "7.0.5-dev"
+	"webhook-service-api-specification" to "7.0.7-dev"
 )
 
 dependencies {
@@ -174,6 +177,7 @@ dependencies {
 	testCompileOnly("org.projectlombok:lombok")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")
+	testImplementation("org.wiremock.integrations:wiremock-spring-boot:${dependencyVersionMap.getValue("wiremock-spring-boot")}")
 
 //	Util
 	implementation("aq.payment-system:common-utils:${dependencyVersionMap.getValue("common-utils")}")

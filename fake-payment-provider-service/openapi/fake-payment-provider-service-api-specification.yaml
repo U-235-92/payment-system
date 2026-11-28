@@ -119,8 +119,8 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
+            format: uuid
           description: Transaction id
         - name: Authorization
           in: header
@@ -261,8 +261,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
+            format: uuid
           description: Id of payout
         - name: Authorization
           in: header
@@ -349,8 +349,8 @@ components:
       required: [ id, merchant_id, amount, currency_code, payment_method, status, created_at ]
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
+          format: uuid
         merchant_id:
           type: string
         amount:
@@ -409,8 +409,8 @@ components:
       required: [ id, merchant_id, amount, currency_code, status, created_at ]
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
+          format: uuid
         merchant_id:
           type: string
         amount:

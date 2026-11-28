@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -61,9 +62,10 @@ public class TransactionService {
             transaction = createTransaction(createTransactionRequestDto, merchant);
         else
             transaction = transactionRepository.findByExternalId(externalId, authenticatedMerchantId)
-                    .orElse(createTransaction(createTransactionRequestDto, merchant));
+                    .orElseGet(() -> createTransaction(createTransactionRequestDto, merchant));
 
-        log.debug("Success handle of request to create transaction for merchant with id: [{}] and transaction id [{}] with response body: {}",
+        log.debug("Success handle of request to create transaction for merchant with id: [{}] " +
+                        "and transaction id [{}] with response body: {}",
                 requestMerchantId, externalId, transactionMapper.toTransactionInfoResponseDto(transaction));
 
         return transactionMapper.toTransactionInfoResponseDto(transaction);
@@ -81,7 +83,7 @@ public class TransactionService {
                         "Exception message: %s",
                 createTransactionRequestDto.getMerchantId(), exception.getMessage());
 
-        fallback.handleRetryFallback(action, message, exception);
+        fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
     }
@@ -144,7 +146,7 @@ public class TransactionService {
                         "Exception message: %s",
                 authenticatedMerchantId, exception.getMessage());
 
-        fallback.handleRetryFallback(action, message, exception);
+        fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
     }
@@ -154,7 +156,7 @@ public class TransactionService {
             fallbackMethod = "getTransactionInfoRateLimiterFallback"
     )
     public TransactionInfoResponseDto getTransactionInfo(
-            Long id,
+            UUID id,
             Authentication authentication
     ) {
         String authenticatedMerchantId = authentication.getName();
@@ -179,7 +181,7 @@ public class TransactionService {
                         "Exception message: %s",
                 authenticatedMerchantId, id, exception.getMessage());
 
-        fallback.handleRetryFallback(action, message, exception);
+        fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
     }

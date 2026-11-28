@@ -1,6 +1,5 @@
 package aq.project.services;
 
-import aq.project.dto.OperationType;
 import aq.project.dto.Status;
 import aq.project.dto.UpdateStatusOperationRequestDto;
 import aq.project.entities.Webhook;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -48,9 +48,9 @@ public class WebhookService {
     public void updateOperationStatus(
             UpdateStatusOperationRequestDto updateStatusOperationRequestDto
     ) {
-        Long operationEntityId = updateStatusOperationRequestDto.getId();
+        UUID operationEntityId = updateStatusOperationRequestDto.getId();
 
-        OperationType operationType = updateStatusOperationRequestDto.getOperationType();
+        String operationType = updateStatusOperationRequestDto.getOperationType();
 
         String notificationUrl = updateStatusOperationRequestDto.getNotificationUrl();
         String traceId = traceContext.getTraceId() == null ? TraceFactory.genTraceId() : traceContext.getTraceId();
@@ -70,7 +70,7 @@ public class WebhookService {
 //        See ClientConfiguration for details.
         if(httpStatusCode.is2xxSuccessful()) {
 //            Save outbox entity to the final update of transaction/payout status.
-//            See WebhookScheduler.updateOperationStatus(..) for details.
+//            See WebhookScheduler.updateOperationStatus(...) for details.
             Webhook webhook = Webhook.builder()
                     .operationType(operationType)
                     .entityId(operationEntityId)
@@ -90,9 +90,9 @@ public class WebhookService {
     ) {
         String action = "update-operation-status";
 
-        OperationType operationType = updateStatusOperationRequestDto.getOperationType();
+        String operationType = updateStatusOperationRequestDto.getOperationType();
         Status operationStatus = updateStatusOperationRequestDto.getStatus();
-        Long operationId = updateStatusOperationRequestDto.getId();
+        UUID operationId = updateStatusOperationRequestDto.getId();
 
         String message = String.format(
                 "Exception occurred during update operation: [%s] with id: [%s] on status: [%s]. " +

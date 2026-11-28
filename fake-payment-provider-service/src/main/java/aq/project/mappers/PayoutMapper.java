@@ -45,8 +45,9 @@ public interface PayoutMapper {
     @Mapping(target = "paymentId", source = "paymentId")
     UpdateStatusOperationRequestDto toUpdateStatusOperationRequestDto(Payout payout);
 
-    default OperationType toOperationType() {
-        return OperationType.PAYOUT;
+    default String toOperationType() {
+        return OperationType.PAYOUT
+                .getValue();
     }
 
     default UUID toTransactionId(Payout payout) {

@@ -1,6 +1,5 @@
 package aq.project.schedulers;
 
-import aq.project.dto.OperationType;
 import aq.project.dto.Status;
 import aq.project.entities.Payout;
 import aq.project.entities.Transaction;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -41,17 +41,17 @@ public class WebhookScheduler {
         List<Webhook> unprocessedWebhooks = webhookRepository.findAllUnprocessed();
 
         for(Webhook unprocessedWebhook : unprocessedWebhooks) {
-            OperationType operationType = unprocessedWebhook.getOperationType();
+            String operationType = unprocessedWebhook.getOperationType();
 
-            Long operationEntityId = unprocessedWebhook.getEntityId();
+            UUID entityId = unprocessedWebhook.getEntityId();
 
             try {
                 switch (operationType) {
-                    case PAYOUT -> {
+                    case "PAYOUT" -> {
                         log.info("[{}]: Attempt to update of payout status with payout id: [{}] on: [{}] status",
-                                traceId, operationEntityId, Status.SUCCESS);
+                                traceId, entityId, Status.SUCCESS);
 
-                        Payout payout = getPayout(operationEntityId);
+                        Payout payout = getPayout(entityId);
 
                         Status payoutStatus = payout.getStatus();
 
@@ -65,11 +65,11 @@ public class WebhookScheduler {
                         }
                     }
 
-                    case TRANSACTION -> {
+                    case "TRANSACTION" -> {
                         log.info("[{}]: Attempt to update of transaction status with transaction id: [{}] on: [{}] status",
-                                traceId, operationEntityId, Status.SUCCESS);
+                                traceId, entityId, Status.SUCCESS);
 
-                        Transaction transaction = getTransaction(operationEntityId);
+                        Transaction transaction = getTransaction(entityId);
 
                         Status transactionStatus = transaction.getStatus();
 
@@ -85,7 +85,7 @@ public class WebhookScheduler {
                 }
             } catch (Exception e) {
                 log.error("[{}]: {} occurred while update [{}] status with id: [{}]. Exception message: {}",
-                        traceId, e.getClass().getSimpleName(), operationType, operationEntityId, e.getMessage());
+                        traceId, e.getClass().getSimpleName(), operationType, entityId, e.getMessage());
             } finally {
                 unprocessedWebhook.processed();
             }
@@ -93,13 +93,13 @@ public class WebhookScheduler {
         log.info("[{}]: Schedule update operation status was finished", traceId);
     }
 
-    private Payout getPayout(Long id) {
+    private Payout getPayout(UUID id) {
         return payoutRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Payout with id: [%s] not found", id)));
     }
 
-    private Transaction getTransaction(Long id) {
+    private Transaction getTransaction(UUID id) {
         return transactionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Transaction with id: [%s] not found", id)));

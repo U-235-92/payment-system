@@ -8,8 +8,9 @@ import org.springframework.data.repository.CrudRepository;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface TransactionRepository extends CrudRepository<Transaction, Long> {
+public interface TransactionRepository extends CrudRepository<Transaction, UUID> {
 
     @Query(
             "SELECT t " +
@@ -35,7 +36,7 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
             "WHERE m.merchantId = :merchantId " +
             "AND t.id = :id"
     )
-    Optional<Transaction> findByIdAndMerchantId(Long id, String merchantId);
+    Optional<Transaction> findByIdAndMerchantId(UUID id, String merchantId);
 
     @Query(
             "SELECT t " +

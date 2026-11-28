@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Aspect
 @Order(1)
@@ -88,7 +89,7 @@ public class PayoutServiceAspect {
             "&& args(id, authentication)")
     public PayoutInfoResponseDto getPayoutInfo(
             ProceedingJoinPoint pjp,
-            @NotNull Long id,
+            @NotNull UUID id,
             @NotNull Authentication authentication
     ) throws Throwable {
 //        Prepare handler metadata

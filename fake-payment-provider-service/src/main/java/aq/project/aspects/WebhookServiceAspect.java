@@ -14,6 +14,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.UUID;
+
 @Aspect
 @Order(1)
 @Validated
@@ -36,8 +38,8 @@ public class WebhookServiceAspect {
         String actionName = "update-operation-status";
         String tracerName = serviceName + "." + actionName + "-tracer";
 
-        OperationType operationType = updateStatusOperationRequestDto.getOperationType();
-        Long operationId = updateStatusOperationRequestDto.getId();
+        String operationType = updateStatusOperationRequestDto.getOperationType();
+        UUID operationId = updateStatusOperationRequestDto.getId();
 
         String logOnBeginning = String.format(
                 "Received request to update [%s] status with [%s] id: [%s]",

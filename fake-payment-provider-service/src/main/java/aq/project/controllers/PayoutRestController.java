@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class PayoutRestController implements PayoutRestControllerApi {
 
     @Override
     public ResponseEntity<PayoutInfoResponseDto> getPayoutInfo(
-            Long id,
+            UUID id,
             String authorization,
             String xTraceId
     ) {

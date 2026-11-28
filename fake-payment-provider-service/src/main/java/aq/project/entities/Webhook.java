@@ -1,6 +1,5 @@
 package aq.project.entities;
 
-import aq.project.dto.OperationType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +10,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder()
@@ -25,13 +25,12 @@ public class Webhook {
     private Long id;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
     @Column(name = "event_type", length = 50, nullable = false)
-    private OperationType operationType;
+    private String operationType;
 
     @NotNull
-    @Column(name = "entity_id", nullable = false)
-    private Long entityId;
+    @Column(name = "entity_uuid")
+    private UUID entityId;
 
     @Nullable
     @JdbcTypeCode(SqlTypes.JSON)

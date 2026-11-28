@@ -51,7 +51,7 @@ public class CommonRestControllerExceptionHandler {
 
     @ExceptionHandler(NotEqualsEntityException.class)
     public ResponseEntity<ErrorDto> onNotEqualsEntityException(NotEqualsEntityException e) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
+        HttpStatus status = HttpStatus.CONFLICT;
 
         controllerExceptionLogger.logException(e, status);
 

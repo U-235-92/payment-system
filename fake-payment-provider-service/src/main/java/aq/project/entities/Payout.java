@@ -20,7 +20,7 @@ public class Payout extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "merchant_id", nullable = false)
+    @JoinColumn(name = "merchant_uuid", nullable = false)
     private Merchant merchant;
 
     @NotNull

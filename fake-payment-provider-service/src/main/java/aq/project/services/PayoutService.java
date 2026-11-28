@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -58,7 +59,11 @@ public class PayoutService {
             payout = createPayout(createPayoutRequestDto, merchant);
         else
             payout = payoutRepository.findByExternalId(externalId, authenticatedMerchantId)
-                    .orElse(createPayout(createPayoutRequestDto, merchant));
+                    .orElseGet(() -> createPayout(createPayoutRequestDto, merchant));
+
+        log.debug("Success handle of request to create payout for merchant with id: [{}] " +
+                        "and transaction id [{}] with response body: {}",
+                requestMerchantId, externalId, payoutMapper.toPayoutInfoResponseDto(payout));
 
         return payoutMapper.toPayoutInfoResponseDto(payout);
     }
@@ -90,7 +95,7 @@ public class PayoutService {
         newPayout.setStatus(Status.PENDING);
 
 //        Continue to async handle saved payout.
-//        See PayoutScheduler.updatePayoutStatus(..).
+//        See PayoutScheduler.updatePayoutStatus(...).
         return payoutRepository.save(newPayout);
     }
 
@@ -148,7 +153,7 @@ public class PayoutService {
             fallbackMethod = "getPayoutInfoRateLimiterFallback"
     )
     public PayoutInfoResponseDto getPayoutInfo(
-            Long id,
+            UUID id,
             Authentication authentication
     ) {
         String authenticatedMerchantId = authentication.getName();

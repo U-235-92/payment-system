@@ -1,12 +1,10 @@
 package aq.project.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
+@Builder
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,15 +16,19 @@ public class PaymentMethodDefinition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Column(name = "is_all_currencies")
     private boolean isAllCurrencies = false;
 
+    @Builder.Default
     @Column(name = "is_all_countries")
     private boolean isAllCountries = false;
 
+    @Builder.Default
     @Column(name = "is_priority")
     private boolean isPriority = false;
 
+    @Builder.Default
     @Column(name = "is_active")
     private boolean isActive = true;
 }

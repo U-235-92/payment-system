@@ -1,52 +1,61 @@
 server:
   port: ${SERVICE_PORT}
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_COLLECTOR_URI}
+
 spring:
-  application:
-    name: ${SERVICE_NAME}
+  profiles:
+    active:
+      - ${PROFILE}
+
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${OAUTH2_JWT_ISSUER_URI}
           jwk-set-uri: ${OAUTH2_JWT_JWK_SET_URI}
+
       client:
         provider:
           keycloak:
             issuer-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI}
             token-uri: ${OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI}
+
         registration:
           keycloak:
             client-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID}
             client-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET}
             admin-id: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_ID}
             admin-secret: ${OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_ADMIN_SECRET}
-management:
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: ${OTEL_COLLECTOR_URI} # Connect to OTEL collector
-  metrics:
-    tags:
-      application: ${SERVICE_NAME}
+
 application:
   keycloak-service:
     name: ${KEYCLOAK_SERVICE_NAME}
     realm: ${KEYCLOAK_REALM}
     uri: ${KEYCLOAK_SERVICE_URI}
     admin-uri: ${KEYCLOAK_ADMIN_URI}
+
   person-service:
     name: ${PERSON_SERVICE_NAME}
     uri: ${PERSON_SERVICE_URI}
+
   wallet-service:
     name: ${WALLET_SERVICE_NAME}
     uri: ${WALLET_SERVICE_URI}
+
   transaction-service:
     name: ${TRANSACTION_SERVICE_NAME}
     uri: ${TRANSACTION_SERVICE_URI}
+
   currency-rate-service:
     name: ${CURRENCY_RATE_SERVICE_NAME}
     uri: ${CURRENCY_RATE_SERVICE_URI}
+
   payment-service:
     name: ${PAYMENT_SERVICE_NAME}
     uri: ${PAYMENT_SERVICE_URI}

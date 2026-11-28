@@ -1,6 +1,6 @@
 package aq.project.utils.mappers.dto;
 
-import aq.project.dto.CurrencyResponse;
+import aq.project.dto.CurrencyResponseDto;
 import aq.project.entities.Currency;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +14,7 @@ public abstract class CurrencyResponseMapper {
     @Mapping(target = "description", expression = "java(toDescription(currency))")
     @Mapping(target = "active", expression = "java(toActive(currency))")
     @Mapping(target = "symbol", expression = "java(toSymbol(currency))")
-    public abstract CurrencyResponse toCurrencyResponse(Currency currency);
+    public abstract CurrencyResponseDto toCurrencyResponseDto(Currency currency);
 
     protected String toCode(Currency currency) {
         return currency.getIsoCode();

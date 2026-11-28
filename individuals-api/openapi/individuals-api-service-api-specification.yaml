@@ -9,9 +9,6 @@ servers:
   - url: http://localhost:8081
   - url: http://individuals-api:8081
 
-#############
-# ENDPOINTS #
-#############
 paths:
   /api/v1/token/refresh-token:
     post:
@@ -26,79 +23,118 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IndividualsApiServiceTokenRequestDto"
+              $ref: "#/components/schemas/TokenRequestDto"
               description: Represents data of refresh token
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceTokenResponseDto"
+                $ref: "#/components/schemas/TokenResponseDto"
           description: Returns updated pair of access & refresh tokens
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
-  /api/v1/transaction/deposit/status/{transactionId}:
-    get:
-      security:
-        - BearerAuth: [ ]
-      operationId: getDepositTransactionStatus
-      tags:
-        - DepositTransaction
-      summary: Get transaction status by given ID
-      parameters:
-        - name: transactionId
-          in: path
-          required: true
-          description: Parameter is represented a valid UUID that describes a transaction ID
-          schema:
-            type: string
-            format: uuid
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
-          description: Returns current status of transaction by given ID
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
-        500:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
-
-  /api/v1/transaction/deposit/create:
+  /api/v1/transaction/{type}/init:
     post:
       security:
         - BearerAuth: [ ]
-      operationId: createDepositTransaction
+      operationId: initTransaction
       tags:
-        - DepositTransaction
-      summary: Handle incoming deposit transaction request
+        - Transaction
+      summary: It is used to get transaction conditions
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Allowed type of payment [ deposit, withdrawal, transfer ]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IndividualsApiServiceDepositTransactionRequestDto"
-              description: Represents data of deposit transaction request
+              $ref: "#/components/schemas/InitTransactionRequestDto"
+              description: Represents data of init transaction request
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InitTransactionResponseDto"
+          description: Returns dto that represents conditions of transaction
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
+
+  /api/v1/transaction/{type}/confirm:
+    post:
+      security:
+        - BearerAuth: [ ]
+      operationId: confirmTransaction
+      tags:
+        - Transaction
+      summary: It is used to confirm transaction
+      parameters:
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Allowed type of payment [ deposit, withdrawal, transfer ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmTransactionRequestDto"
+              description: Represents data of init transaction request
       responses:
         200:
           content:
@@ -106,163 +142,156 @@ paths:
               schema:
                 type: string
                 format: uuid
-          description: Returns ID of requested transaction
+          description: Returns UUID of confirmed transaction
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
 
-  /api/v1/transaction/transfer/status/{transactionId}:
+  /api/v1/transaction/{id}/status:
     get:
       security:
         - BearerAuth: [ ]
-      operationId: getTransferTransactionStatus
+      operationId: getTransactionStatus
       tags:
-        - TransferTransaction
-      summary: Get transaction status by given ID
+        - Transaction
+      summary: It is used get actual status of transaction
       parameters:
-        - name: transactionId
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - name: id
           in: path
           required: true
-          description: Parameter is represented a valid UUID that describes a transaction ID
           schema:
             type: string
             format: uuid
+          description: Allowed UUID of transaction
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
-          description: Returns current status of transaction by given ID
+                $ref: "#/components/schemas/TransactionStatus"
+          description: Current status of transaction
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
 
-  /api/v1/transaction/transfer/create:
-    post:
-      security:
-        - BearerAuth: [ ]
-      operationId: createTransferTransaction
-      tags:
-        - TransferTransaction
-      summary: Handle incoming transfer transaction request
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/IndividualsApiServiceTransferTransactionRequestDto"
-              description: Represents data of transfer transaction request
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: string
-                format: uuid
-          description: Returns ID of requested transaction
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
-        500:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
-
-  /api/v1/transaction/withdraw/status/{transactionId}:
+  /api/v1/transactions:
     get:
       security:
         - BearerAuth: [ ]
-      operationId: getWithdrawTransactionStatus
+      operationId: getTransactions
       tags:
-        - WithdrawTransaction
-      summary: Get transaction status by given ID
+        - Transaction
+      summary: Search for transactions by specified filters with paging
       parameters:
-        - name: transactionId
-          in: path
-          required: true
-          description: Parameter is represented a valid UUID that describes a transaction ID
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+          description: OAuth 2.0 JWT
+        - in: query
+          name: userId
           schema:
             type: string
             format: uuid
+        - in: query
+          name: walletId
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: type
+          schema:
+            $ref: "#/components/schemas/PaymentType"
+        - in: query
+          name: status
+          schema:
+            $ref: "#/components/schemas/TransactionStatus"
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: page
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            format: int32
+            default: 20
       responses:
         200:
+          description: List of transactions
           content:
             application/json:
               schema:
-                $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
-          description: Returns current status of transaction by given ID
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionInfoResponseDto"
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if was received incorrect request
+        401:
+          description: Response in case if unauthorized request was received
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
-
-  /api/v1/transaction/withdraw/create:
-    post:
-      security:
-        - BearerAuth: [ ]
-      operationId: createWithdrawTransaction
-      tags:
-        - WithdrawTransaction
-      summary: Handle incoming withdraw transaction request
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/IndividualsApiServiceWithdrawTransactionRequestDto"
-              description: Represents data of withdraw transaction request
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: string
-                format: uuid
-          description: Returns ID of requested transaction
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 4xx client error was occurred
-        500:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
-          description: Returns ErrorDto if any 5xx server error was occurred
+                $ref: "#/components/schemas/ErrorDto"
+          description: Response in case if error was occurred on service side
 
   /api/v1/person/create-person:
     post:
@@ -277,26 +306,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IndividualsApiServiceCreatePersonRequestDto"
+              $ref: "#/components/schemas/CreatePersonRequestDto"
               description: Represents data of create user request
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceTokenResponseDto"
+                $ref: "#/components/schemas/TokenResponseDto"
           description: Returns pairs of access & refresh tokens which are represented created user
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/person/login-person:
@@ -312,26 +341,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IndividualsApiServiceLoginPersonRequestDto"
+              $ref: "#/components/schemas/LoginPersonRequestDto"
               description: Represents data of login user request
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceTokenResponseDto"
+                $ref: "#/components/schemas/TokenResponseDto"
           description: Returns pairs of access & refresh tokens which are represented login user
         400:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/person/update-person:
@@ -347,7 +376,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IndividualsApiServiceUpdatePersonRequestDto"
+              $ref: "#/components/schemas/UpdatePersonRequestDto"
               description: Represents data of update person request
       responses:
         200:
@@ -356,13 +385,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/person/delete-person/{personKeycloakId}:
@@ -386,13 +415,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/create:
@@ -422,13 +451,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/wallet/info/{walletId}:
@@ -458,13 +487,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 4xx client error was occurred
         500:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
           description: Returns ErrorDto if any 5xx server error was occurred
 
   /api/v1/currency-rate/get-rate:
@@ -513,19 +542,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RateResponse'
+                $ref: '#/components/schemas/RateResponseDto'
           description: Курс найден
         404:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
+                $ref: '#/components/schemas/ErrorDto'
           description: Курс не найден
         400:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
+                $ref: '#/components/schemas/ErrorDto'
           description: Ошибка запроса
 
   /api/v1/currency-rate/get-currencies:
@@ -543,7 +572,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CurrencyResponse'
+                  $ref: '#/components/schemas/CurrencyResponseDto'
           description: Список валют
 
   /api/v1/currency-rate/get-rate-providers:
@@ -561,7 +590,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RateProviderResponse'
+                  $ref: '#/components/schemas/RateProviderResponseDto'
           description: Провайдеры
 
   /api/v1/currency-rate/get-currency-info/{code}:
@@ -585,13 +614,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrencyResponse'
+                $ref: '#/components/schemas/CurrencyResponseDto'
           description: Информация по валюте
         400:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
+                $ref: '#/components/schemas/ErrorDto'
           description: Returns ErrorDto if any 4xx client error was occurred
 
   /api/v1/currency-rate/get-rate-provider-info/{code}:
@@ -615,13 +644,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RateProviderResponse'
+                $ref: '#/components/schemas/RateProviderResponseDto'
           description: Информация по поставщику валют
         400:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndividualsApiServiceErrorDto'
+                $ref: '#/components/schemas/ErrorDto'
           description: Returns ErrorDto if any 4xx client error was occurred
 
   /api/v1/payment/get-payment-methods/{currencyCode}/{countryCode}:
@@ -657,38 +686,30 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PaymentServicePaymentMethodResponseDto"
+                  $ref: "#/components/schemas/PaymentMethodResponseDto"
         400:
           description: Malformed request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IndividualsApiServiceErrorDto"
+                $ref: "#/components/schemas/ErrorDto"
         401:
           description: Request is unauthorized or credentials are incorrect
 
-########
-# TAGS #
-########
 tags:
   - name: Token
     description: Describes operations with tokens
-  - name: DepositTransaction
-    description: Describes operations with deposit transactions
-  - name: TransferTransaction
-    description: Describes operations with transfer transactions
-  - name: WithdrawTransaction
-    description: Describes operations with withdraw transactions
+  - name: Transaction
+    description: Describes operations with transactions
   - name: Person
     description: Describes operations with persons
   - name: Wallet
     description: Describes operations with wallets
   - name: Rate
     description: Describes operations with currencies and its rates
+  - name: Payment
+    description: Describes operations with payments
 
-######################
-# COMPONENTS SCHEMAS #
-######################
 components:
   securitySchemes:
     bearerAuth:
@@ -697,240 +718,7 @@ components:
       bearerFormat: JWT
 
   schemas:
-    ##########################################
-    # INDIVIDUALS-API SERVICE API COMPONENTS #
-    ##########################################
-    IndividualsApiServiceDepositTransactionRequestDto:
-      type: object
-      required: [ wallet_id, payment_method_id, currency_code, amount ]
-      properties:
-        wallet_id:
-          type: string
-          format: uuid
-        payment_method_id:
-          type: integer
-          format: int64
-        currency_code:
-          type: string
-          pattern: '^[A-Z]{3}$'
-        amount:
-          type: string
-          format: decimal
-          x-extra-annotation: "@jakarta.validation.constraints.Positive"
-
-    IndividualsApiServiceTransferTransactionRequestDto:
-      type: object
-      required: [ sender_wallet_id, recipient_wallet_id, payment_method_id, currency_code, amount ]
-      properties:
-        sender_wallet_id:
-          type: string
-          format: uuid
-        recipient_wallet_id:
-          type: string
-          format: uuid
-        payment_method_id:
-          type: integer
-          format: int64
-        currency_code:
-          type: string
-          pattern: '^[A-Z]{3}$'
-        amount:
-          type: string
-          format: decimal
-          x-extra-annotation: "@jakarta.validation.constraints.Positive"
-
-    IndividualsApiServiceWithdrawTransactionRequestDto:
-      type: object
-      required: [ wallet_id, payment_method_id, currency_code, amount ]
-      properties:
-        wallet_id:
-          type: string
-          format: uuid
-        payment_method_id:
-          type: integer
-          format: int64
-        currency_code:
-          type: string
-          pattern: '^[A-Z]{3}$'
-        amount:
-          type: string
-          format: decimal
-          x-extra-annotation: "@jakarta.validation.constraints.Positive"
-
-    IndividualsApiServiceLoginPersonRequestDto:
-      type: object
-      required: [ email, password ]
-      properties:
-        email:
-          type: string
-          x-extra-annotations:
-            - "@jakarta.validation.constraints.Email"
-            - "@jakarta.validation.constraints.NotBlank"
-        password:
-          type: string
-
-    IndividualsApiServicePersonInfoResponseDto:
-      type: object
-      required: [ person_keycloak_id, first_name, last_name, phone_number, passport_number, email,
-                  country_name, country_code, state, city, address, zip_code, roles, created_at ]
-      properties:
-        person_keycloak_id:
-          type: string
-          format: uuid
-        first_name:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        last_name:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        phone_number:
-          type: string
-          pattern: '^[0-9]{11}$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        passport_number:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        email:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Email"
-        country_name:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        country_code:
-          type: string
-          pattern: '^[A-Z]{3}$'
-        state:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        city:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        address:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        zip_code:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        roles:
-          type: array
-          items:
-            type: string
-        created_at:
-          type: string
-          format: date-time
-
-    IndividualsApiServiceCreatePersonRequestDto:
-      type: object
-      required: [ username, password, confirm_password, first_name, last_name, email, phone_number, passport_number,
-                  country_name, country_code, state, city, address, zip_code ]
-      properties:
-        person_keycloak_id:
-          type: string
-          format: uuid
-        username:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        password:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        confirm_password:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        first_name:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        last_name:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        email:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Email"
-        phone_number:
-          type: string
-          pattern: '^[0-9]{11}$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        passport_number:
-          type: string
-        country_name:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        country_code:
-          type: string
-          pattern: '^[A-Z]{3}$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        state:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        city:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        address:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        zip_code:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        active:
-          type: boolean
-          default: true
-
-    IndividualsApiServiceUpdatePersonRequestDto:
-      type: object
-      required: [ person_keycloak_id, password, confirm_password, first_name, last_name, phone_number, passport_number,
-                  country_name, country_code, state, city, address, zip_code, active ]
-      properties:
-        person_keycloak_id:
-          type: string
-          format: uuid
-        password:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        confirm_password:
-          type: string
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        first_name:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        last_name:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        phone_number:
-          type: string
-          pattern: '^[0-9]{11}$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        passport_number:
-          type: string
-        country_name:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        country_code:
-          type: string
-          pattern: '^[A-Z]{3}$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        state:
-          type: string
-        city:
-          type: string
-          pattern: '^[A-Z][a-z]*$'
-          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
-        address:
-          type: string
-        zip_code:
-          type: string
-        active:
-          type: boolean
-
-    IndividualsApiServiceTokenRequestDto:
+    TokenRequestDto:
       type: object
       required: [ refresh_token ]
       properties:
@@ -939,7 +727,7 @@ components:
           x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
           description: Valid refresh JWT
 
-    IndividualsApiServiceTokenResponseDto:
+    TokenResponseDto:
       type: object
       required: [ person_keycloak_id, access_token, refresh_token, expires_in, token_type ]
       properties:
@@ -956,56 +744,178 @@ components:
         token_type:
           type: string
 
-    IndividualsApiServiceErrorDto:
+    PaymentType:
+      allOf:
+        - $ref: "./transaction-service-api-specification.yaml#/components/schemas/PaymentType"
+
+    InitTransactionRequestDto:
       type: object
-      required: [ message ]
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
+      required: [ wallet_id, amount, currency_code ]
+      properties:
+        wallet_id:
+          type: string
+          format: uuid
+          description: UUID of source wallet
+        target_wallet_id:
+          type: string
+          format: uuid
+          description: UUID of target wallet (for transfer payment method only)
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        wallet_conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        target_wallet_conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency (for transfer payment method only)
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        payment_type:
+          $ref: "#/components/schemas/PaymentType"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+
+    InitTransactionResponseDto:
+      allOf:
+        - $ref: "./transaction-service-api-specification.yaml#/components/schemas/InitTransactionResponseDto"
+
+    ConfirmTransactionRequestDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
+      required: [ user_id, wallet_id, payment_method_id, amount, currency_code ]
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: UUID of user
+        wallet_id:
+          type: string
+          format: uuid
+          description: UUID of source wallet
+        target_wallet_id:
+          type: string
+          format: uuid
+          description: UUID of target wallet (for transfer payment method only)
+        payment_method_id:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Amount of transaction
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        wallet_conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        target_wallet_conversion_rate:
+          type: number
+          format: decimal
+          description: Conversion rate for currency (for transfer payment method only)
+          x-extra-annotation: "@jakarta.validation.constraints.Positive"
+        payment_type:
+          $ref: "#/components/schemas/PaymentType"
+        currency_code:
+          type: string
+          pattern: '[A-Z]{3}'
+          description: Valid currency code
+
+    TransactionStatus:
+      $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionStatus"
+
+    TransactionInfoResponseDto:
+      allOf:
+        - $ref: "./transaction-service-api-specification.yaml#/components/schemas/TransactionInfoResponseDto"
+
+    CreatePersonRequestDto:
+      allOf:
+        - $ref: "./person-service-api-specification.yaml#/components/schemas/CreatePersonRequestDto"
+      properties:
+        username:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        password:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        confirm_password:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+
+    UpdatePersonRequestDto:
+      allOf:
+        - $ref: "./person-service-api-specification.yaml#/components/schemas/UpdatePersonRequestDto"
+      properties:
+        password:
+          type: string
+          x-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+
+    PersonInfoResponseDto:
+      allOf:
+        - $ref: "./person-service-api-specification.yaml#/components/schemas/PersonInfoResponseDto"
+      properties:
+        person_keycloak_id:
+          type: string
+          format: uuid
+        roles:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+
+    LoginPersonRequestDto:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+          x-extra-annotations:
+            - "@jakarta.validation.constraints.Email"
+            - "@jakarta.validation.constraints.NotBlank"
+        password:
+          type: string
+
+    CreateWalletRequestDto:
+      allOf:
+        - $ref: "./wallet-service-api-specification.yaml#/components/schemas/CreateWalletRequestDto"
+
+    WalletInfoResponseDto:
+      allOf:
+        - $ref: "./wallet-service-api-specification.yaml#/components/schemas/WalletInfoResponseDto"
+
+    RateResponseDto:
+      allOf:
+        - $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/RateResponseDto"
+
+    CurrencyResponseDto:
+      allOf:
+        - $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/CurrencyResponseDto"
+
+    RateProviderResponseDto:
+      allOf:
+        - $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/RateProviderResponseDto"
+
+    PaymentMethodResponseDto:
+      allOf:
+        - $ref: "./payment-service-api-specification.yaml#/components/schemas/PaymentMethodResponseDto"
+
+    ErrorDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
       properties:
         message:
           type: string
         trace_id:
           type: string
-        http_status:
-          type: integer
-          format: int32
-
-    ########################################
-    # CURRENCY RATE SERVICE API COMPONENTS #
-    ########################################
-    RateProviderResponse:
-      $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/RateProviderResponse"
-
-    CurrencyResponse:
-      $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/CurrencyResponse"
-
-    RateResponse:
-      $ref: "./currency-rate-service-api-specification.yaml#/components/schemas/RateResponse"
-
-    #################################
-    # WALLET SERVICE API COMPONENTS #
-    #################################
-    CreateWalletRequestDto:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CreateWalletRequestDto"
-
-    WalletInfoResponseDto:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/WalletInfoResponseDto"
-
-    WalletStatus:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/WalletStatus"
-
-    CardType:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardType"
-
-    CardCvvDefinition:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardCvvDefinition"
-
-    CardNumberDefinition:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardNumberDefinition"
-
-    CardExpirationDateDefinition:
-      $ref: "./wallet-service-api-specification.yaml#/components/schemas/CardExpirationDateDefinition"
-
-    ##################################
-    # PAYMENT SERVICE API COMPONENTS #
-    ##################################
-    PaymentServicePaymentMethodResponseDto:
-      $ref: "./payment-service-api-specification.yaml#/components/schemas/PaymentServicePaymentMethodResponseDto"

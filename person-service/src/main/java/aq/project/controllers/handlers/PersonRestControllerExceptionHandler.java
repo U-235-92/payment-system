@@ -1,10 +1,11 @@
 package aq.project.controllers.handlers;
 
-import aq.project.dto.PersonServiceErrorDto;
+import aq.project.dto.ErrorDto;
 import aq.project.exceptions.EntityAlreadyExistException;
 import aq.project.exceptions.EntityNotFoundException;
 import aq.project.exceptions.ProcessOperationException;
 import aq.project.utils.logging.ControllerExceptionLogger;
+import aq.project.utils.rest_controller_error_handle.ErrorResponseEntityFactory;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -25,91 +25,81 @@ public class PersonRestControllerExceptionHandler {
 
 //    Project specific exceptions
     @ExceptionHandler(EntityAlreadyExistException.class)
-    public ResponseEntity<PersonServiceErrorDto> onEntityAlreadyExistException(EntityAlreadyExistException e) {
+    public ResponseEntity<ErrorDto> onEntityAlreadyExistException(EntityAlreadyExistException e) {
         HttpStatus status = HttpStatus.CONFLICT;
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<PersonServiceErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<ErrorDto> onEntityNotFoundException(EntityNotFoundException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(ProcessOperationException.class)
-    public ResponseEntity<PersonServiceErrorDto> onProcessOperationException(ProcessOperationException e) {
+    public ResponseEntity<ErrorDto> onProcessOperationException(ProcessOperationException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
 //    Non project specific exceptions
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<PersonServiceErrorDto> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorDto> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<PersonServiceErrorDto> onConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<ErrorDto> onConstraintViolationException(ConstraintViolationException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<PersonServiceErrorDto> onMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        controllerExceptionLogger.logException(e, status);
-
-        return getErrorResponseEntity(status, e);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<PersonServiceErrorDto> onHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<ErrorDto> onHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<PersonServiceErrorDto> onIllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<ErrorDto> onIllegalArgumentException(IllegalArgumentException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<PersonServiceErrorDto> onRuntimeException(RuntimeException e) {
+    public ResponseEntity<ErrorDto> onRuntimeException(RuntimeException e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         controllerExceptionLogger.logException(e, status);
 
-        return getErrorResponseEntity(status, e);
+        return ErrorResponseEntityFactory.getErrorResponseEntity(getErrorDto(e), status);
     }
 
-    private ResponseEntity<PersonServiceErrorDto> getErrorResponseEntity(HttpStatus status, Exception e) {
-        return ResponseEntity.status(status)
-                .body(new PersonServiceErrorDto()
-                        .httpStatus(status.value())
-                        .message(e.getMessage()));
+    private ErrorDto getErrorDto(Exception e) {
+        return ErrorDto.builder()
+                .message(e.getMessage())
+                .build();
     }
 }

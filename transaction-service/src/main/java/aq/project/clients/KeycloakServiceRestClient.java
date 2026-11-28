@@ -25,7 +25,7 @@ public interface KeycloakServiceRestClient {
     }
 
     @PostExchange(
-            value = "${service.keycloak.endpoints.token}",
+            value = "${app.service.keycloak.endpoints.token}",
             contentType = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
     String getAdminJwtInternal(@RequestBody LinkedMultiValueMap<String, String> formUrlEncoded);

@@ -7,6 +7,7 @@ COPY ./payment-service/settings.gradle.kts ./settings.gradle.kts
 COPY ./payment-service/src ./src
 COPY ./payment-service/openapi ./openapi
 COPY ./payment-service/build.gradle.kts ./build.gradle.kts
+COPY ./payment-service/dev.env ./.env
 
 #Build project
 RUN gradle --no-daemon clean bootJar -x test
@@ -19,11 +20,5 @@ WORKDIR /app
 
 COPY --from=builder /source/build/libs/*.jar ./payment-service.jar
 
-#Spring env:
-ENV SPRING_PROFILES_ACTIVE=prod
-ENV DB_HOST=payment-service-db
-ENV DB_PORT=5432
-ENV DB_NAME=payment_service_db
-
 EXPOSE 8087
-ENTRYPOINT ["java", "-jar", "payment-service.jar"]
+ENTRYPOINT ["java", "-jar", "payment-service.jar", "--spring.profiles.active=prod"]

@@ -1,0 +1,62 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations:
+      - classpath:db/migration
+    create-schemas: true
+
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    org.hibernate: info
+    aq.project.services: debug
+
+resilience4j:
+  retry:
+    instances:
+      fail-payment-retry:
+        max-attempts: 3
+        wait-duration: 100
+        fail-after-max-attempts: true
+        exponential-backoff-multiplier: 1
+
+      update-operation-status-retry:
+        max-attempts: 3
+        wait-duration: 100
+        fail-after-max-attempts: true
+        exponential-backoff-multiplier: 1
+
+  ratelimiter:
+    instances:
+      create-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      get-transaction-list-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      get-transaction-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      create-payout-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      get-payout-list-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1
+
+      get-payout-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 1

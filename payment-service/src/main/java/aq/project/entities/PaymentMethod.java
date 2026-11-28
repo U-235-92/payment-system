@@ -1,24 +1,28 @@
 package aq.project.entities;
 
-import aq.project.dto.PaymentType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
 
 @Entity
+@Builder
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "payment_methods")
+@NamedEntityGraph(
+        name = "payment_method_entity_graph",
+        attributeNodes = {
+                @NamedAttributeNode("requiredFields"),
+                @NamedAttributeNode("definition")
+        }
+)
 public class PaymentMethod {
 
     @Id
@@ -26,11 +30,11 @@ public class PaymentMethod {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(name = "payment_method_required_fields_id")
     private PaymentMethodRequiredField requiredFields;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(name = "payment_method_definitions_id")
     private PaymentMethodDefinition definition;
 
@@ -44,8 +48,8 @@ public class PaymentMethod {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false, length = 64)
-    private PaymentType type;
+    @Column(name = "method", nullable = false, length = 64)
+    private aq.project.dto.PaymentMethod method;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
@@ -55,6 +59,7 @@ public class PaymentMethod {
 
     @NotBlank
     @Size(max = 24)
+    @Builder.Default
     @Column(name = "profile_type", nullable = false, length = 24)
     private String profileType = "INDIVIDUAL";
 }

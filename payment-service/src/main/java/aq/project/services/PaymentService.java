@@ -1,127 +1,135 @@
 package aq.project.services;
 
-import aq.project.dto.PaymentServiceCreatePaymentRequestDto;
-import aq.project.dto.PaymentServiceCreatePaymentResponseDto;
-import aq.project.dto.PaymentServicePaymentMethodResponseDto;
+import aq.project.dto.*;
 import aq.project.entities.Payment;
 import aq.project.entities.PaymentMethod;
-import aq.project.exceptions.*;
+import aq.project.exceptions.EntityNotFoundException;
+import aq.project.mappers.PaymentMapper;
 import aq.project.repositories.PaymentMethodRepository;
-import aq.project.utils.handlers.PaymentHandler;
-import aq.project.utils.handlers.PaymentProviderServiceHandler;
-import aq.project.utils.handlers.PaymentServiceHandler;
-import aq.project.utils.mappers.PaymentMapper;
+import aq.project.repositories.PaymentRepository;
 import aq.project.utils.resilence.Fallback;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
     private final PaymentMapper paymentMapper = PaymentMapper.INSTANCE;
 
+    private final PaymentRepository paymentRepository;
+
     private final PaymentMethodRepository paymentMethodRepository;
 
-    private final PaymentServiceHandler paymentServiceHandler;
-    private final PaymentProviderServiceHandler paymentProviderServiceHandler;
+    private final TransactionService transactionService;
 
-    private final PaymentHandler paymentHandler;
+    private final PayoutService payoutService;
 
     private final Fallback fallback;
 
     @RateLimiter(
             name = "create-payment-rate-limiter",
-            fallbackMethod = "createPaymentFallback"
+            fallbackMethod = "createPaymentRateLimiterFallback"
     )
-    @CircuitBreaker(
-            name = "create-payment-circuitbreaker",
-            fallbackMethod = "createPaymentFallback"
-    )
-    public PaymentServiceCreatePaymentResponseDto createPayment(
-            PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto
+    @Transactional
+    public CreatePaymentResponseDto createPayment(
+            CreatePaymentRequestDto createPaymentRequestDto
     ) {
-        try {
-            Payment createdPayment = paymentHandler.createPayment(paymentServiceCreatePaymentRequestDto);
+        Long paymentMethodId = createPaymentRequestDto.getPaymentMethodId();
 
-            return paymentMapper.toPaymentServiceCreatePaymentResponseDto(createdPayment);
+        log.debug(">>>>> Received request to create payment with payment method id: {}", paymentMethodId);
 
-        } catch (Exception e) {
-            UUID transactionId = paymentServiceCreatePaymentRequestDto.getTransactionId();
+        PaymentMethod paymentMethod = getPaymentMethod(paymentMethodId);
 
-            paymentServiceHandler.failPayment(transactionId);
+        Payment newPayment = paymentMapper.toPayment(createPaymentRequestDto);
 
-            paymentProviderServiceHandler.failPayment(paymentServiceCreatePaymentRequestDto);
+        newPayment.setPaymentId(UUID.randomUUID());
+        newPayment.setStatus(PaymentStatus.PENDING);
+        newPayment.setProcessed(false);
+        newPayment.setPaymentMethod(paymentMethod);
 
-            throw e;
-        }
+//        Continue to async handle saved payment.
+//        See PaymentScheduler.schedulePendingPayment(...) for details.
+        Payment savedPayment = paymentRepository.save(newPayment);
+
+        log.debug(">>>>> Success handle of request to create payment with payment method id: {}", paymentMethodId);
+
+        return paymentMapper.toCreatePaymentResponseDto(savedPayment);
     }
 
-    private PaymentServiceCreatePaymentResponseDto createPaymentFallback(
-            PaymentServiceCreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
-            Exception exception
-    ) throws Exception {
-        Predicate<Exception> fallbackExceptionPredicate = exc ->
-                exc instanceof ProcessOperationException
-                || exc instanceof ProhibitedOperationException
-                || exc instanceof EntityAlreadyExistsException
-                || exc instanceof EntityNotFoundException
-                || exc instanceof ServiceHttpException
-                || exc instanceof ClientHttpException;
-
-        if(fallbackExceptionPredicate.test(exception))
-            throw exception;
-
-        UUID transactionId = paymentServiceCreatePaymentRequestDto.getTransactionId();
-
+    private CreatePaymentResponseDto createPaymentRateLimiterFallback(
+            CreatePaymentRequestDto paymentServiceCreatePaymentRequestDto,
+            RequestNotPermitted exception
+    ) {
         String action = "create-payment";
-        String message = String.format(
-                "Exception occurred during create of payment for transaction with id: [%s]",
-                transactionId);
 
-        fallback.handleBulkheadFallback(action, message, exception);
+        String message = String.format(
+                "Exception occurred during creating a payment for transaction with id: [%s]. " +
+                        "Exception message: %s",
+                paymentServiceCreatePaymentRequestDto.getTransactionId(), exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
+    }
+
+    private PaymentMethod getPaymentMethod(Long paymentMethodId) {
+        return paymentMethodRepository.findById(paymentMethodId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Payment method with id: [%s] not found", paymentMethodId)));
     }
 
     @RateLimiter(
             name = "get-payment-methods-rate-limiter",
-            fallbackMethod = "getPaymentMethodsFallback"
+            fallbackMethod = "getPaymentMethodsRateLimiterFallback"
     )
-    public List<PaymentServicePaymentMethodResponseDto> getPaymentMethods(
+    public List<PaymentMethodResponseDto> getPaymentMethods(
             String currencyCode,
             String countryCode
     ) {
-        List<PaymentMethod> paymentMethodList = paymentMethodRepository.findAllByCurrencyCodeAndCountryCode(currencyCode, countryCode);
-
-        List<PaymentServicePaymentMethodResponseDto> paymentMethodDtoList = new ArrayList<>();
-
-        for(PaymentMethod paymentMethod : paymentMethodList) {
-            PaymentServicePaymentMethodResponseDto dto = paymentMapper.toPaymentServicePaymentMethodResponseDto(paymentMethod);
-            paymentMethodDtoList.add(dto);
-        }
-        return paymentMethodDtoList;
+        return paymentMethodRepository
+                .findAllByCurrencyCodeAndCountryCode(currencyCode, countryCode)
+                .stream()
+                .map(paymentMapper::toPaymentMethodResponseDto)
+                .toList();
     }
 
-    private List<PaymentServicePaymentMethodResponseDto> getPaymentMethodsFallback(
+    private List<PaymentMethodResponseDto> getPaymentMethodsRateLimiterFallback(
             String currencyCode,
             String countryCode,
-            Exception exception
+            RequestNotPermitted exception
     ) {
         String action = "get-payment-methods";
-        String message = String.format(
-                "Exception occurred during getting of payment methods for currency code: [%s] and country code: [%s]",
-                currencyCode, countryCode);
 
-        fallback.handleBulkheadFallback(action, message, exception);
+        String message = String.format(
+                "Exception occurred during getting payment methods for currency: [%s] and country: [%s]. " +
+                        "Exception message: %s",
+                currencyCode, countryCode, exception.getMessage());
+
+        fallback.handleRateLimiterFallback(action, message, exception);
 
         return null;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handlePendingPayment(
+            Payment payment
+    ) {
+        TransactionType operationType = payment.getTransactionType();
+
+        switch (operationType) {
+            case DEPOSIT -> transactionService.handlePendingTransactionPayment(payment);
+
+            case WITHDRAWAL -> payoutService.handlePendingPayoutPayment(payment);
+        }
     }
 }

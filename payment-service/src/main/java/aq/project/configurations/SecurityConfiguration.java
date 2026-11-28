@@ -1,6 +1,5 @@
 package aq.project.configurations;
 
-import aq.project.utils.security.HeaderValidatorHttpFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +10,10 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFilter;
 
 import static aq.project.controller.PaymentRestControllerApi.PATH_CREATE_PAYMENT;
 import static aq.project.controller.PaymentRestControllerApi.PATH_GET_PAYMENT_METHODS;
@@ -26,31 +25,29 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(1)
-    @Profile("dev")
+    @Profile(value = { "dev" })
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) {
         return http
-                .securityMatcher("/api/v1/**")
+                .securityMatcher("/h2-console/**", "/api/v1/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().permitAll())
-                .oauth2Client(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .cors(CorsConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
                 .build();
     }
 
     @Bean
     @Order(2)
-    @Profile({ "prod", "test" })
+    @Profile(value = { "prod", "test" })
     public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) {
         return http
                 .securityMatcher("/api/v1/**")
                 .csrf(AbstractHttpConfigurer::disable)
-                .oauth2Client(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers(HttpMethod.POST, PATH_CREATE_PAYMENT).authenticated()
                         .requestMatchers(HttpMethod.GET, PATH_GET_PAYMENT_METHODS.replace("{currencyCode}/{countryCode}", "*/*")).authenticated())
-                .addFilterBefore(new HeaderValidatorHttpFilter(), AuthenticationFilter.class)
                 .build();
     }
 

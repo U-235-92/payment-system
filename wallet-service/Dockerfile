@@ -7,6 +7,7 @@ COPY ./wallet-service/settings.gradle.kts ./settings.gradle.kts
 COPY ./wallet-service/src ./src
 COPY ./wallet-service/openapi ./openapi
 COPY ./wallet-service/build.gradle.kts ./build.gradle.kts
+COPY ./wallet-service/dev.env ./.env
 
 #Build project
 RUN gradle --no-daemon clean bootJar -x test
@@ -19,8 +20,5 @@ WORKDIR /app
 
 COPY --from=builder /source/build/libs/*.jar ./wallet-service.jar
 
-#Spring env:
-ENV SPRING_PROFILES_ACTIVE=prod
-
-EXPOSE 8083
-ENTRYPOINT ["java", "-jar", "wallet-service.jar"]
+EXPOSE 8084
+ENTRYPOINT ["java", "-jar", "wallet-service.jar", "--spring.profiles.active=prod"]

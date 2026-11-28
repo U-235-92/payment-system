@@ -1,0 +1,114 @@
+openapi: 3.1.0
+
+info:
+  title: webhook-service-api-specification
+  description: Common webhook-service API specification. It describes all REST endpoints and DTO objects
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8088
+  - url: http://webhook-service:8088
+
+paths:
+  /api/v1/webhook/payment-provider:
+    post:
+      summary: Incoming notification about status of payout/transaction (success/fail). Request validates by its signature
+      security: [ ]
+      operationId: confirmOperationWebhook
+      tags:
+        - Webhook
+      parameters:
+        - name: x-access-token-hash
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Hash of access token
+        - name: x-access-token-hash-alg
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Valid hash algorithm
+        - name: x-trace-id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Identifier of open telemetry trace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusOperationRequestDto"
+      responses:
+        200:
+          description: Notification was confirmed and status was updated
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+        401:
+          description: Request has got invalid signature
+
+tags:
+  - name: Webhook
+    description: Describes operations with webhooks
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    UpdateStatusOperationRequestDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder @lombok.AllArgsConstructor"
+      required: [ id, transaction_id, payment_id, status, operation_type ]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: UUID of request operation
+        transaction_id:
+          type: string
+          format: uuid
+          description: UUID of processing transaction
+        payment_id:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/Status"
+          description: Status of operation
+        operation_type:
+          type: string
+          description: Operation type (transaction\payout)
+        provider:
+          type: string
+          description: Name of provider
+        description:
+          type: string
+          description: Optional description of operation
+        notification_url:
+          type: string
+
+    ErrorDto:
+      type: object
+      x-class-extra-annotation: "@lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
+      properties:
+        message:
+          type: string
+        trace_id:
+          type: string
+
+    Status:
+      enum: [ PENDING, PROCESSING, SUCCESS, FAIL ]
+      description: Allowed operation statuses
+
+    OperationType:
+      enum: [ PAYOUT, TRANSACTION ]
+      description: Allowed operation types

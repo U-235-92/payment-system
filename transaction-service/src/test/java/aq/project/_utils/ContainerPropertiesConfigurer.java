@@ -35,8 +35,8 @@ public class ContainerPropertiesConfigurer {
         registry.add("spring.security.oauth2.client.registration.keycloak.client-secret", () -> CLIENT_SECRET);
         registry.add("spring.security.oauth2.client.registration.keycloak.admin-id", () -> ADMIN_CLIENT_ID);
         registry.add("spring.security.oauth2.client.registration.keycloak.admin-secret", () -> CLIENT_SECRET);
-        registry.add("service.keycloak.uri", () -> keycloakContainerBaseExposedUrl);
-        registry.add("service.keycloak.endpoints.token", () -> keycloakContainerBaseExposedUrl + TOKEN_URI);
+        registry.add("app.service.keycloak.uri", () -> keycloakContainerBaseExposedUrl);
+        registry.add("app.service.keycloak.endpoints.token", () -> keycloakContainerBaseExposedUrl + TOKEN_URI);
     }
 
     public static void registerApplicationContextKafkaContainerProperties(
@@ -45,6 +45,7 @@ public class ContainerPropertiesConfigurer {
     ) {
         registry.add("spring.kafka.bootstrapServers", container::getBootstrapServers);
     }
+
 
     public static void registerApplicationContextPostgresqlContainerProperties(
             DynamicPropertyRegistry registry,

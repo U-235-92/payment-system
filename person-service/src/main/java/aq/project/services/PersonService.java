@@ -41,17 +41,17 @@ public class PersonService {
     )
     @Transactional
     public UUID createPerson(
-            PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto
+            CreatePersonRequestDto createPersonRequestDto
     ) {
-        String email = personServiceCreatePersonRequestDto.getEmail();
+        String email = createPersonRequestDto.getEmail();
 
         if(personRepository.findByEmail(email).isPresent())
             throw new EntityAlreadyExistException(
                     String.format("Person with email: [%s] is already exists", email));
 
-        Person person = createPersonMapper.toPerson(personServiceCreatePersonRequestDto);
+        Person person = createPersonMapper.toPerson(createPersonRequestDto);
 
-        String requestCountryCode = personServiceCreatePersonRequestDto.getCountry().getCode();
+        String requestCountryCode = createPersonRequestDto.getCountry().getCode();
 
         Optional<Country> optionalCountry = countryRepository.findByCountryCode(requestCountryCode);
 
@@ -69,14 +69,14 @@ public class PersonService {
     }
 
     private UUID createPersonRateLimiterFallback(
-            PersonServiceCreatePersonRequestDto personServiceCreatePersonRequestDto,
+            CreatePersonRequestDto createPersonRequestDto,
             Exception exception
     ) throws Exception {
         if(exception instanceof EntityAlreadyExistException)
             throw exception;
 
         String action = "create-person";
-        String email = personServiceCreatePersonRequestDto.getEmail();
+        String email = createPersonRequestDto.getEmail();
         String message = String.format(
                 "Exception occurred during creating of person with email: [%s]. Exception message: %s",
                 email, exception.getMessage());
@@ -92,18 +92,18 @@ public class PersonService {
     )
     @Transactional
     public void updatePerson(
-            PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto
+            UpdatePersonRequestDto updatePersonRequestDto
     ) {
-        String personKeycloakId = personServiceUpdatePersonRequestDto.getPersonKeycloakId().toString();
+        String personKeycloakId = updatePersonRequestDto.getPersonKeycloakId().toString();
 
         Person currentPerson = personRepository.findByKeycloakId(personKeycloakId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Person with keycloak id: [%s] doesn't exist", personKeycloakId)));
 
-        updatePersonMapper.updatePersonFromDto(personServiceUpdatePersonRequestDto, currentPerson);
+        updatePersonMapper.updatePersonFromDto(updatePersonRequestDto, currentPerson);
 
-        if(personServiceUpdatePersonRequestDto.getCountry() != null) {
-            PersonServiceCountryDto countryDto = personServiceUpdatePersonRequestDto.getCountry();
+        if(updatePersonRequestDto.getCountry() != null) {
+            CountryDto countryDto = updatePersonRequestDto.getCountry();
             String requestCountryCode = countryDto.getCode();
             Country currentCountry = createCountryIfNotExist(requestCountryCode, countryDto);
             currentPerson.setCountry(currentCountry);
@@ -111,14 +111,14 @@ public class PersonService {
     }
 
     private void updatePersonRateLimiterFallback(
-            PersonServiceUpdatePersonRequestDto personServiceUpdatePersonRequestDto,
+            UpdatePersonRequestDto updatePersonRequestDto,
             Exception exception
     ) throws Exception {
         if(exception instanceof EntityNotFoundException)
             throw exception;
 
         String action = "update-person";
-        UUID personKeycloakId = personServiceUpdatePersonRequestDto.getPersonKeycloakId();
+        UUID personKeycloakId = updatePersonRequestDto.getPersonKeycloakId();
         String message = String.format(
                 "Exception occurred during update of person with keycloak id: [%s]. Exception message: %s",
                 personKeycloakId, exception.getMessage());
@@ -128,12 +128,12 @@ public class PersonService {
 
     private Country createCountryIfNotExist(
             String countryCode,
-            PersonServiceCountryDto dto
+            CountryDto countryDto
     ) {
         return countryRepository.findByCountryCode(countryCode)
                 .orElseGet(() -> {
                    Country country = new Country();
-                    updateCountryMapper.updateCountryFromDto(dto, country);
+                    updateCountryMapper.updateCountryFromDto(countryDto, country);
                    return countryRepository.save(country);
                 });
     }
@@ -144,9 +144,9 @@ public class PersonService {
     )
     @Transactional
     public void undoUpdatePerson(
-            PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto
+            UndoUpdatePersonRequestDto undoUpdatePersonRequestDto
     ) {
-        UUID personKeycloakId = personServiceUndoUpdatePersonRequestDto.getPersonKeycloakId();
+        UUID personKeycloakId = undoUpdatePersonRequestDto.getPersonKeycloakId();
 
         undoService.checkUndoUpdate();
 
@@ -154,7 +154,7 @@ public class PersonService {
     }
 
     private void undoUpdatePersonRateLimiterFallback(
-            PersonServiceUndoUpdatePersonRequestDto personServiceUndoUpdatePersonRequestDto,
+            UndoUpdatePersonRequestDto undoUpdatePersonRequestDto,
             Exception exception
     ) throws Exception {
         if(exception instanceof ProcessOperationException
@@ -162,7 +162,7 @@ public class PersonService {
             throw exception;
 
         String action = "undo-update-person";
-        UUID personKeycloakId = personServiceUndoUpdatePersonRequestDto.getPersonKeycloakId();
+        UUID personKeycloakId = undoUpdatePersonRequestDto.getPersonKeycloakId();
         String message = String.format(
                 "Exception occurred during undo update of person with keycloak id: [%s]. Exception message: %s",
                 personKeycloakId, exception.getMessage());
@@ -206,9 +206,9 @@ public class PersonService {
     )
     @Transactional
     public void undoDeletePerson(
-            PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto
+            UndoDeletePersonRequestDto undoDeletePersonRequestDto
     ) {
-        UUID personKeycloakId = personServiceUndoDeletePersonRequestDto.getPersonKeycloakId();
+        UUID personKeycloakId = undoDeletePersonRequestDto.getPersonKeycloakId();
 
         undoService.checkUndoDelete();
 
@@ -216,7 +216,7 @@ public class PersonService {
     }
 
     private void undoDeletePersonRateLimiterFallback(
-            PersonServiceUndoDeletePersonRequestDto personServiceUndoDeletePersonRequestDto,
+            UndoDeletePersonRequestDto undoDeletePersonRequestDto,
             Exception exception
     ) throws Exception {
         if(exception instanceof ProcessOperationException
@@ -224,7 +224,7 @@ public class PersonService {
             throw exception;
 
         String action = "undo-delete-person";
-        UUID personKeycloakId = personServiceUndoDeletePersonRequestDto.getPersonKeycloakId();
+        UUID personKeycloakId = undoDeletePersonRequestDto.getPersonKeycloakId();
         String message = String.format(
                 "Exception occurred during undo delete of person with keycloak id: [%s]. Exception message: %s",
                 personKeycloakId, exception.getMessage());
@@ -236,7 +236,7 @@ public class PersonService {
             name = "get-person-info-rate-limiter",
             fallbackMethod = "getPersonInfoRateLimiterFallback"
     )
-    public PersonServicePersonInfoResponseDto getPersonInfo(
+    public PersonInfoResponseDto getPersonInfo(
             UUID personKeycloakId
     ) {
         Person person = personRepository.findByKeycloakId(personKeycloakId.toString())

@@ -1,0 +1,3 @@
+**/openapi/webhook-service/src/main/java/aq/project/dto/Status.java
+**/openapi/webhook-service/src/main/java/aq/project/dto/OperationType.java
+**/openapi/webhook-service/src/main/java/aq/project/dto/ErrorDto.java

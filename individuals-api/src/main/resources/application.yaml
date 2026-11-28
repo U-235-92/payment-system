@@ -1,19 +1,48 @@
 server:
   port: 8081
+
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
+
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
+  metrics:
+    tags:
+      application: individuals-api
+
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+
 spring:
   application:
     name: individuals-api
+
   profiles:
     active:
       - dev
+
   main:
     web-application-type: reactive
+
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/payment-system
           jwk-set-uri: http://localhost:8080/realms/payment-system/protocol/openid-connect/certs
+
       client:
         provider:
           keycloak:
@@ -25,52 +54,10 @@ spring:
             client-secret: qomP5PU6JMurRIXkbFpQP0kbhqqA6RT5
             admin-id: payment-system-admin-cli
             admin-secret: RGybolPwVl7FMtZDyZCn6owhkY3ewtam
-management:
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: http://localhost:4318/v1/traces # Connect to OTEL collector
-  otlp:
-    metrics:
-      export:
-        enabled: false
-  metrics:
-    tags:
-      application: individuals-api
-  endpoints:
-    web:
-      exposure:
-        include:
-          - prometheus
-          - info
-          - health
 
 resilience4j:
   circuitbreaker:
     instances:
-      create-deposit-transaction-circuitbreaker:
-        sliding-window-type: COUNT_BASED
-        sliding-window-size: 100
-        minimum-number-of-calls: 10
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 10s
-        slow-call-rate-threshold: 50
-      create-withdraw-transaction-circuitbreaker:
-        sliding-window-type: COUNT_BASED
-        sliding-window-size: 100
-        minimum-number-of-calls: 10
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 10s
-        slow-call-rate-threshold: 50
-      create-transfer-transaction-circuitbreaker:
-        sliding-window-type: COUNT_BASED
-        sliding-window-size: 100
-        minimum-number-of-calls: 10
-        failure-rate-threshold: 50
-        slow-call-duration-threshold: 10s
-        slow-call-rate-threshold: 50
-
       create-wallet-circuitbreaker:
         sliding-window-type: COUNT_BASED
         sliding-window-size: 100
@@ -79,6 +66,42 @@ resilience4j:
         slow-call-duration-threshold: 10s
         slow-call-rate-threshold: 50
       get-wallet-info-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      get-wallet-currency-code-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+
+      init-transaction-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      confirm-transaction-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      get-transaction-status-circuitbreaker:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 50
+      get-transactions-circuitbreaker:
         sliding-window-type: COUNT_BASED
         sliding-window-size: 100
         minimum-number-of-calls: 10
@@ -136,31 +159,26 @@ resilience4j:
 
   ratelimiter:
     instances:
-      create-deposit-transaction-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      get-deposit-transaction-status-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-
-      create-withdraw-transaction-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      get-withdraw-transaction-status-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-
-      create-transfer-transaction-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-      get-transfer-transaction-status-rate-limiter:
-        limit-refresh-period: 1s
-        limit-for-period: 100
-
       create-wallet-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
       get-wallet-info-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-wallet-currency-code-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+
+      init-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      confirm-transaction-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-transaction-status-rate-limiter:
+        limit-refresh-period: 1s
+        limit-for-period: 100
+      get-transactions-rate-limiter:
         limit-refresh-period: 1s
         limit-for-period: 100
 
@@ -201,83 +219,19 @@ application:
   person-service:
     name: person-service
     uri: http://localhost:8082
-    endpoints:
-      create-person: /api/v1/person/create-person
-      delete-person: /api/v1/person/delete-person
-      undo-delete-person: /api/v1/person/undo-delete-person
-      update-person: /api/v1/person/update-person
-      undo-update-person: /api/v1/person/undo-update-person
-      get-person-info: /api/v1/person/get-person-info
-
-  wallet-service:
-    name: wallet-service
-    uri: http://localhost:8083
-    endpoints:
-      create-wallet: /api/v1/wallet/create
-      get-wallet-info: /api/v1/wallet/info
-      get-wallet-currency: /api/v1/wallet/currency
 
   transaction-service:
     name: transaction-service
+    uri: http://localhost:8083
+
+  wallet-service:
+    name: wallet-service
     uri: http://localhost:8084
-    endpoints:
-      get-deposit-transaction-status: /api/v1/transaction/deposit/status
-      get-transfer-transaction-status: /api/v1/transaction/transfer/status
-      get-withdraw-transaction-status: /api/v1/transaction/withdraw/status
-
-      create-deposit-transaction: /api/v1/transaction/deposit/create
-      create-transfer-transaction: /api/v1/transaction/transfer/create
-      create-withdraw-transaction: /api/v1/transaction/withdraw/create
-
-      fail-deposit-transaction: /api/v1/transaction/deposit/fail
-      fail-transfer-transaction: /api/v1/transaction/transfer/fail
-      fail-withdraw-transaction: /api/v1/transaction/withdraw/fail
 
   currency-rate-service:
     name: currency-rate-service
     uri: http://localhost:8085
-    endpoints:
-      get-rate: /api/v1/currency-rate/get-rate
-      get-rate-providers: /api/v1/currency-rate/get-rate-providers
-      get-rate-provider: /api/v1/currency-rate/get-rate-provider-info
-      get-currencies: /api/v1/currency-rate/get-currencies
-      get-currency: /api/v1/currency-rate/get-currency-info
 
   payment-service:
     name: payment-service
     uri: http://localhost:8087
-    endpoints:
-      get-payment-methods: /api/v1/payment/get-payment-methods
-      create-payment: /api/v1/payment/create-payment
-
-  individuals-api:
-    endpoints:
-#      Notification:
-      deposit-transaction-notification: /api/v1/deposit-transaction-notification
-      transfer-transaction-notification: /api/v1/transfer-transaction-notification
-      withdraw-transaction-notification: /api/v1/withdraw-transaction-notification
-#      Person service operations:
-      create-person: /api/v1/person/create-person
-      login-person: /api/v1/person/login-person
-      update-person: /api/v1/person/update-person
-      delete-person: /api/v1/person/delete-person
-      get-person-info: /api/v1/person/get-person-info
-#      Token service operations:
-      refresh-token: /api/v1/token/refresh-token
-#      Currency rate service operations:
-      get-rate: /api/v1/currency-rate/get-rate
-      get-rate-providers: /api/v1/currency-rate/get-rate-providers
-      get-rate-provider: /api/v1/currency-rate/get-rate-provider-info
-      get-currencies: /api/v1/currency-rate/get-currencies
-      get-currency: /api/v1/currency-rate/get-currency-info
-#      Transaction service operations:
-      get-deposit-transaction-status: /api/v1/transaction/deposit/status
-      get-transfer-transaction-status: /api/v1/transaction/transfer/status
-      get-withdraw-transaction-status: /api/v1/transaction/withdraw/status
-
-      create-deposit-transaction: /api/v1/transaction/deposit/create
-      create-transfer-transaction: /api/v1/transaction/transfer/create
-      create-withdraw-transaction: /api/v1/transaction/withdraw/create
-#      Wallet service operations:
-      create-wallet: /api/v1/wallet/create
-      get-wallet-info: /api/v1/wallet/info
